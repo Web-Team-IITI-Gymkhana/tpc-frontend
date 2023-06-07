@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const middleware = (req: NextRequest) => {
-  const session: Number = 0;
-  if (session === 1 && !req.url.includes("/login")) {
-    return NextResponse.redirect(new URL("http://localhost:3000/login"));
+  const token = req.cookies.get("token");
+  console.log(req.url);
+  console.log(req.nextUrl);
+
+  if (token === undefined) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/login";
+    console.log(url);
+    return NextResponse.redirect(url);
   } else {
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-url", req.url);
@@ -11,6 +17,10 @@ const middleware = (req: NextRequest) => {
       request: { headers: requestHeaders },
     });
   }
+};
+
+export const config = {
+  matcher: ["/seasons", "/members", "/companies"],
 };
 
 export default middleware;
