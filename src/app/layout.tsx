@@ -14,6 +14,7 @@ export default function RootLayout({
           Training And Placement Cell(TPC)| Indian Institute Of
           Technology,Indore(IITI)
         </title>
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
         <meta
           name="description"
           content="A website used by training and placement cell of Indian Institute of Technology Indore(IITI) to manage placement and internship processes of various companies that come to our campus and to manage student information."
