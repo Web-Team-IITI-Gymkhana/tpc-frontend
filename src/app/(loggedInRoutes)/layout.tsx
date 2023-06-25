@@ -13,7 +13,11 @@ interface NavLinks {
 }
 
 const navlinks: Array<NavLinks> = [
-  { label: "Home", ref: "/", icon: "Home" },
+  { 
+    label: "Home", 
+    ref: "/", 
+    icon: "Home" 
+  },
   {
     label: "Seasons",
     ref: "/seasons",
@@ -47,7 +51,7 @@ const LoggedInLayout: FunctionComponent<LoggedInLayoutProps> = ({
         </div>
       </div>
       <div className="flex h-[92vh] min-h-[440px]">
-        <div className="flex-col w-fit ml-0 pt-5 border-r-2 bg-white">
+        <div className="flex-col w-fit ml-0 p-2 pt-5 border-r-2 bg-white">
           {navlinks &&
             navlinks.map((item: NavLinks, index) => {
               return (
