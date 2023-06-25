@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { FunctionComponent, ReactElement } from "react";
-import { Button, Fade, Tooltip, Zoom, duration } from "@mui/material";
+import { Button, Fade, ListItemButton, Tooltip, Zoom, duration } from "@mui/material";
 import { IconButton } from "@mui/material";
 import {
   Home,
@@ -9,6 +9,7 @@ import {
   Assignment,
   ManageAccounts,
 } from "@mui/icons-material";
+import { usePathname } from "next/navigation";
 
 const LinkItem = ({
   link,
@@ -19,6 +20,11 @@ const LinkItem = ({
   label: String;
   icon: String;
 }) => {
+  const pathname = usePathname();
+  const isSelected = () => {
+    return pathname === link;
+  }
+
   return (
     <div className="block px-2 my-2">
       <Link href={{ pathname: link }} prefetch={true}>
@@ -30,18 +36,21 @@ const LinkItem = ({
           placement="right"
           disableInteractive
         >
-          {/* <Button
-            size="medium"
-            variant="contained"
-            className="w-full items-start rounded-md bg-blue-400"
-          > */}
-          <IconButton className="h-fit aspect-square">
+          <ListItemButton 
+            className="h-fit aspect-square"
+            sx={{ 
+              borderRadius: 8, 
+              backgroundColor: (isSelected() ? '#b3e5fc': 'none' ),
+              "&:hover": { 
+                backgroundColor: (isSelected() ? '#9addfb': '#d1e5f4' )
+              },
+            }}
+          >
             {icon === "Home" && <Home color="secondary" />}
             {icon === "Business" && <Business color="secondary" />}
             {icon === "Assignment" && <Assignment color="secondary" />}
             {icon === "ManageAccounts" && <ManageAccounts color="secondary" />}
-          </IconButton>
-          {/* </Button> */}
+          </ListItemButton>
         </Tooltip>
       </Link>
     </div>
