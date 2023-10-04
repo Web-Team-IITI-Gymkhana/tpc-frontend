@@ -10,13 +10,6 @@ const Sidebar = (props: any) => {
 
   return (
     <motion.div
-      style={{
-        zIndex: 1000,
-        overflow: "hidden",
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-      }}
       initial={{ x: -208, opacity: 0 }}
       animate={context.isOpen ? "open" : "closed"}
       transition={{ duration: 0.3, type: "spring" }}
@@ -24,9 +17,9 @@ const Sidebar = (props: any) => {
         closed: { x: -208, opacity: 1 },
         open: { x: -8, opacity: 1 },
       }}
-      className={`bg-gray-900 pt-3 pl-4 w-[208px] absolute h-[92vh] bottom-0`}
+      className="z-40 overflow-hidden left-0 fixed bg-gray-900 pt-3 px-4 w-[208px] flex flex-col h-full"
     >
-      Sidebar
+      <div className="flex-auto">Sidebar</div>
     </motion.div>
   );
 };
