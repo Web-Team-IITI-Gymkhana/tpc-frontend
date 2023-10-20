@@ -1,12 +1,14 @@
-//this will be used to create the login modal.
-import React from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { SessionProvider } from "next-auth/react";
+import LoginModal from "@/components/loginForms/loginModal";
 
-const LoginModal = () => {
+const LoginModalPage = async () => {
+  const session = await getServerSession(authOptions);
+
   return (
-    <div>
-      <h1>Login Modal</h1>
-    </div>
+    <SessionProvider session={session}>
+      <LoginModal />
+    </SessionProvider>
   );
 };
-
-export default LoginModal;

@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next lint && next dev",
-    "build": "next lint && next build",
-    "start": "next lint && next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "framer-motion": "^10.16.4",
     "next": "latest",
+    "next-auth": "^4.23.2",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-google-button": "^0.7.2"
   },
   "devDependencies": {
     "@types/node": "latest",

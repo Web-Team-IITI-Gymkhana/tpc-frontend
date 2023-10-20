@@ -27,13 +27,12 @@ const RootLayout = ({ children, auth }: Props) => {
     <html lang="en">
       <body className={inter.className}>
         <ToggleProvider>
-          <div className="flex flex-col h-screen">
+          <div className="flex flex-col h-screen overflow-scroll">
             <nav className="bg-gray-800">
               <div className="max-w-7xl mx-auto px-2 sm:px-4">
                 <div className="flex items-center justify-between h-[8vh]">
                   {/* Mobile menu button*/}
                   <MenuButton />
-
                   {/* Logo */}
                   <div className="flex-shrink-0 flex items-center">
                     <Link href="/" className="text-white font-bold text-2xl">

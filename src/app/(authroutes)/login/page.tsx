@@ -1,16 +1,17 @@
-//this page will be used as the login page
-//it will be used to create 3 sections of login, one for each type of user
-//user can select the type of user they are and then login
-//this page will be used to create the admin login page.
-//this page will be used to create the recruiter login page.
-//this will be used to create the student login page.
+//this will be used to create the login page.
 import React from "react";
+import LoginForm from "@/components/loginForms/loginForm";
+import { SessionProvider } from "next-auth/react";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
-const LoginPage = () => {
+const LoginPage = async () => {
+  const session = await getServerSession(authOptions);
+
   return (
-    <div>
-      <h1>Login Page</h1>
-    </div>
+    <SessionProvider session={session}>
+      <LoginForm />
+    </SessionProvider>
   );
 };
 
