@@ -1,29 +1,22 @@
 "use client";
 
 import React from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import GoogleButton from "react-google-button";
+import { useSearchParams } from "next/navigation";
 
 const GoogleLoginButton = () => {
-  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const callbackUrl = "/";
 
   return (
-    <>
-      {session && session?.user ? (
-        <div>
-          <button
-            onClick={() => signOut()}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Sign Out
-          </button>
-        </div>
-      ) : (
-        <div>
-          <GoogleButton onClick={() => signIn("google")}>Sign In</GoogleButton>
-        </div>
-      )}
-    </>
+    <div>
+      <GoogleButton
+        onClick={() => signIn("google", { callbackUrl: callbackUrl })}
+      >
+        Sign In With Google
+      </GoogleButton>
+    </div>
   );
 };
 

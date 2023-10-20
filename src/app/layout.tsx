@@ -7,6 +7,7 @@ import { ToggleProvider } from "@/contextProviders/ToggleProvider";
 import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import NavButtonGroup from "@/components/NavButtonGroup";
+import NextAuthProvider from "@/contextProviders/sessionProvider";
 
 interface Props {
   children: React.ReactNode;
@@ -48,12 +49,14 @@ const RootLayout = ({ children, auth }: Props) => {
               </div>
             </nav>
             {/* Page Content */}
-            <div className="flex-auto flex overflow-hidden">
-              {/* sidebar and main content share this space */}
-              <Sidebar />
-              <MainContent>{children}</MainContent>
-            </div>
-            {auth}
+            <NextAuthProvider>
+              <div className="flex-auto flex overflow-hidden">
+                {/* sidebar and main content share this space */}
+                <Sidebar />
+                <MainContent>{children}</MainContent>
+              </div>
+              {auth}
+            </NextAuthProvider>
           </div>
         </ToggleProvider>
       </body>

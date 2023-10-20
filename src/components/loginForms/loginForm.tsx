@@ -219,7 +219,7 @@ const LoginForm = () => {
                         Submit
                       </button>
                       {/* google button */}
-                      {/* <GoogleLoginButton /> */}
+                      <GoogleLoginButton />
                     </div>
                   </div>
                 </div>
