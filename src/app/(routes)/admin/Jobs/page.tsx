@@ -1,5 +1,4 @@
-import { useRouter } from "next/router";
-import { Jobs } from "../../../../dummyData/jobs"
+import { Jobs } from "../../../../dummyData/job"
 import JobCard from "@/components/jobs/JobCard";
 interface Props { }
 
