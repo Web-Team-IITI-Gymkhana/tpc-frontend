@@ -1,7 +1,6 @@
 import React from 'react'
 
-export default function
-    ({ ele }: any) {
+export default function JAFCard({ ele }: any) {
     return (
         
             <div className="xl:w-1/4 lg:w-1/2 md:w-full px-8 py-6 border-l-2 border-gray-200 border-opacity-60">

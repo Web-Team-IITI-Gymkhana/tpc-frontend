@@ -53,7 +53,7 @@ export default async function EachCompanyPage({ params }: Props) {
                         </div>
                     )}
                     <section className="text-gray-600 body-font">
-                        <h1 className="text-center mt-10 mb-2">Sample Cards for Jobs , PPO's and Recruiters in company section</h1>
+                        <h1 className="text-center mt-10 mb-2">Sample Cards for Jobs , PPOs and Recruiters in company section</h1>
                         <div className="container px-5  mx-auto">
                             <div className="flex flex-wrap">
                                 <JAFCard />

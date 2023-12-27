@@ -9,6 +9,9 @@ import MainContent from "@/components/MainContent";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
 import toast, { Toaster } from 'react-hot-toast';
+import { Providers } from "@/store/provider";
+
+
 interface Props {
   children: React.ReactNode;
   auth: React.ReactNode;
@@ -54,7 +57,7 @@ const RootLayout = ({ children, auth }: Props) => {
               <div className="flex-auto flex">
                 {/* sidebar and main content share this space */}
                 <Sidebar />
-                <MainContent>{children}</MainContent>
+                <MainContent><Providers>{children}</Providers></MainContent>
               </div>
               {auth}
             </NextAuthProvider>
