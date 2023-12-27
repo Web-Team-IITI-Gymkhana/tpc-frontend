@@ -8,7 +8,7 @@ import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
-
+import toast, { Toaster } from 'react-hot-toast';
 interface Props {
   children: React.ReactNode;
   auth: React.ReactNode;
@@ -28,7 +28,7 @@ const RootLayout = ({ children, auth }: Props) => {
     <html lang="en">
       <body className={inter.className}>
         <ToggleProvider>
-          <div className="flex flex-col h-screen overflow-scroll">
+          <div className="flex flex-col ">
             <nav className="bg-gray-800">
               <div className="max-w-7xl mx-auto px-2 sm:px-4">
                 <div className="flex items-center justify-between h-[8vh]">
@@ -49,8 +49,9 @@ const RootLayout = ({ children, auth }: Props) => {
               </div>
             </nav>
             {/* Page Content */}
+            <Toaster />
             <NextAuthProvider>
-              <div className="flex-auto flex overflow-hidden">
+              <div className="flex-auto flex">
                 {/* sidebar and main content share this space */}
                 <Sidebar />
                 <MainContent>{children}</MainContent>

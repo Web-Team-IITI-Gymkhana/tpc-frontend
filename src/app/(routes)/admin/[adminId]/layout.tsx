@@ -7,10 +7,11 @@ interface Props {
   children: React.ReactNode;
 }
 
-const AdminLayout = ({ children }: Props) => {
+const EachAdminLayout = ({ children }: Props) => {
   return (<div>
+    
     {children}
     </div>);
 };
 
-export default AdminLayout;
+export default EachAdminLayout;
