@@ -1,7 +1,5 @@
 "use client"
 import * as React from "react"
-import { StudentsData } from '../../../dummyData/students'
-import { COLUMNS } from './columns'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -37,33 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-
-
-type Round = {
-  id: string;
-  roundName: string;
-  result: "Pass" | "Fail";
-};
-
-type OnCampusOffer = {
-  id: string;
-  companyName: string;
-  offerStatus: "Accepted" | "Pending" | "Rejected";
-};
-
-type Penalty = {
-  id: string;
-  reason: string;
-  penaltyPoints: number;
-};
-
-type PpoOffer = {
-  id: string;
-  companyName: string;
-  offerStatus: "Accepted" | "Pending" | "Rejected";
-};
-
-export type Student = {
+interface Student {
   memberId: string;
   name: string;
   rollNo: string;
@@ -72,16 +44,23 @@ export type Student = {
   branch: string;
   graduationYear: string;
   currentCPI: number;
-  resume: string;
+  resume: string | null; // Assuming resume can be a link or null
   totalPenalty: number;
-  rounds: Round[];
-  oncampusoffers: OnCampusOffer[];
-  penalties: Penalty[];
-  ppoOffers: PpoOffer[];
-};
+  createdAt: string;
+  updatedAt: string;
+  member: {
+    id: string;
+    email: string;
+    name: string;
+    contact: string | null; // Assuming contact can be a phone number or null
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
 
 
-const data: any = StudentsData
+
 
 
 export const columns: ColumnDef<Student>[] = [
@@ -123,6 +102,11 @@ export const columns: ColumnDef<Student>[] = [
     cell: ({ row }) => <div>{row.getValue("category")}</div>,
   },
   {
+    accessorKey: "member.email",
+    header: "Email",
+    cell: ({ row }) => <div>{row.original.member.email}</div>,
+  },
+  {
     accessorKey: "gender",
     header: "Gender",
     cell: ({ row }) => <div>{row.getValue("gender")}</div>,
@@ -159,13 +143,13 @@ export const columns: ColumnDef<Student>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.memberId)}
+              
             >
-              Copy payment ID
+              View Profile
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Delete Student</DropdownMenuItem>
+            <DropdownMenuItem>Update Student</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -173,11 +157,12 @@ export const columns: ColumnDef<Student>[] = [
   },
 ]
 
-export default function StudentTable() {
+export default function StudentTable({ data }: any) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
@@ -195,7 +180,7 @@ export default function StudentTable() {
     onRowSelectionChange: setRowSelection,
     initialState: {
       pagination: {
-          pageSize: 5,
+        pageSize: 5,
       },
     },
     state: {
@@ -205,19 +190,67 @@ export default function StudentTable() {
       rowSelection,
     },
   })
+  const [filters, setFilters] = React.useState<any>([]);
+
+  const handleFilterChange = (columnId: string, value: string) => {
+    const existingFilterIndex = filters.findIndex((filter: any) => filter.columnId === columnId);
+    if (existingFilterIndex === -1) {
+      setFilters([...filters, { columnId, value }])
+    } else {
+      setFilters((x: any) => x.filter((y: any) => y.columnId !== columnId))
+    }
+  };
+  console.log(filters)
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        
+      <div className="flex items-center py-4 justify-start">
+
+        {filters.map((ele: any,index:any) => {
+          return (
+            <div key={index}>
+            <Input
+              placeholder={`Filter ${ele.columnId}...`}
+              value={(table.getColumn(ele.columnId)?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn(ele.columnId)?.setFilterValue(event.target.value)
+              }
+              className="w-full mx-2"
+            />
+            </div>
+          )
+        })}
+
+
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="ml-auto mx-2">
+              Filters <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={!!filters.find((x: any) => x.columnId === column.id)}
+                    onCheckedChange={(value: any) => {
+                      handleFilterChange(column.id, ''); // Initialize filter with an empty string
+                    }}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button className="ml-auto">
@@ -295,23 +328,32 @@ export default function StudentTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex items-center">
+          <div className="flex-1 text-sm text-muted-foreground items-center">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <div>
+            <Button
+            className="ml-3"
+            >
+              Delete Selected Students
+            </Button>
+          </div>
         </div>
         <div className="space-x-2">
           <Button
-            
-            
+
+
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
           </Button>
           <Button
-            
-            
+
+
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

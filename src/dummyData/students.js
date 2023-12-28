@@ -1,368 +1,186 @@
 export const StudentsData = [
     {
-        "memberId": "a8f241b5-042e-4ea2-a4c8-d05845f5510a",
-        "name": "John Doe",
-        "rollNo": "2023001",
+        "memberId": "1f73b28b-3d01-42c1-9761-8914b8d534d1",
+        "name": "John Smith",
+        "rollNo": "201",
         "category": "General",
         "gender": "Male",
-        "branch": "Computer Science",
-        "graduationYear": "2023-12-31",
+        "branch": "Computer Engineering",
+        "graduationYear": "2023-05-15T00:00:00.000Z",
         "currentCPI": 8.5,
-        "resume": "Link to John Doe's resume",
-        "totalPenalty": 2,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Pass"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [
-            {
-                "id": "2f42b29d-c929-4388-88ac-82f36e0e21e5",
-                "companyName": "TechCorp",
-                "offerStatus": "Accepted"
-            },
-            {
-                "id": "ae29da67-b11e-41d5-9a85-35b8c171d9c9",
-                "companyName": "InnoTech",
-                "offerStatus": "Pending"
-            }
-        ],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Late Submission",
-                "penaltyPoints": 1
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Plagiarism",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": [
-            {
-                "id": "8d7ed2b9-52a3-4cbb-8e85-18827156d9a2",
-                "companyName": "TechSolutions",
-                "offerStatus": "Accepted"
-            }
-        ]
+        "resume": "Link to John Smith's resume",
+        "totalPenalty": 1,
+        "createdAt": "2023-12-15T09:30:20.123Z",
+        "updatedAt": "2023-12-15T11:45:30.456Z",
+        "member": {
+            "id": "1f73b28b-3d01-42c1-9761-8914b8d534d1",
+            "email": "john.smith@example.com",
+            "name": "John Smith",
+            "contact": "+1 (555) 123-4567",
+            "role": "Student",
+            "createdAt": "2023-12-15T09:30:10.987Z",
+            "updatedAt": "2023-12-15T11:45:40.789Z"
+        }
     },
     {
-        "memberId": "b987dc42-4f66-4e54-bb47-8b05157d1a23",
-        "name": "Jane Smith",
-        "rollNo": "2023002",
+        "memberId": "cc0a0b01-cc3b-40e5-a542-4c7952189615",
+        "name": "Emily Davis",
+        "rollNo": "202",
         "category": "OBC",
         "gender": "Female",
         "branch": "Electrical Engineering",
-        "graduationYear": "2023-12-31",
+        "graduationYear": "2023-05-20T00:00:00.000Z",
         "currentCPI": 7.8,
-        "resume": "Link to Jane Smith's resume",
-        "totalPenalty": 1,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Pass"
-            }
-        ],
-        "oncampusoffers": [
-            {
-                "id": "2f42b29d-c929-4388-88ac-82f36e0e21e5",
-                "companyName": "InnoTech",
-                "offerStatus": "Rejected"
-            },
-            {
-                "id": "ae29da67-b11e-41d5-9a85-35b8c171d9c9",
-                "companyName": "TechSolutions",
-                "offerStatus": "Accepted"
-            }
-        ],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Late Submission",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
+        "resume": "Link to Emily Davis's resume",
+        "totalPenalty": 2,
+        "createdAt": "2023-12-15T10:15:25.321Z",
+        "updatedAt": "2023-12-15T12:30:35.654Z",
+        "member": {
+            "id": "cc0a0b01-cc3b-40e5-a542-4c7952189615",
+            "email": "emily.davis@example.com",
+            "name": "Emily Davis",
+            "contact": "+1 (555) 987-6543",
+            "role": "Student",
+            "createdAt": "2023-12-15T10:15:15.876Z",
+            "updatedAt": "2023-12-15T12:30:45.987Z"
+        }
     },
     {
-        "memberId": "c3e5a7d8-53b2-4f71-bfce-3b5928019d04",
-        "name": "Alice Johnson",
-        "rollNo": "2023003",
+        "memberId": "1e960b58-8c67-45f8-8a9d-d0a13a58645a",
+        "name": "Alexandra Lee",
+        "rollNo": "203",
         "category": "SC",
         "gender": "Female",
         "branch": "Mechanical Engineering",
-        "graduationYear": "2023-12-31",
+        "graduationYear": "2023-05-25T00:00:00.000Z",
         "currentCPI": 8.2,
-        "resume": "Link to Alice Johnson's resume",
+        "resume": "Link to Alexandra Lee's resume",
+        "totalPenalty": 1,
+        "createdAt": "2023-12-15T11:00:30.432Z",
+        "updatedAt": "2023-12-15T13:15:40.765Z",
+        "member": {
+            "id": "1e960b58-8c67-45f8-8a9d-d0a13a58645a",
+            "email": "alexandra.lee@example.com",
+            "name": "Alexandra Lee",
+            "contact": "+1 (555) 234-5678",
+            "role": "Student",
+            "createdAt": "2023-12-15T11:00:20.987Z",
+            "updatedAt": "2023-12-15T13:15:50.098Z"
+        }
+    },
+    {
+        "memberId": "2d25f4f2-8b50-42f8-8b3b-7febbf9a6cc7",
+        "name": "Christopher Patel",
+        "rollNo": "204",
+        "category": "General",
+        "gender": "Male",
+        "branch": "Civil Engineering",
+        "graduationYear": "2023-05-30T00:00:00.000Z",
+        "currentCPI": 7.5,
+        "resume": "Link to Christopher Patel's resume",
+        "totalPenalty": 3,
+        "createdAt": "2023-12-15T11:45:35.543Z",
+        "updatedAt": "2023-12-15T14:00:45.876Z",
+        "member": {
+            "id": "2d25f4f2-8b50-42f8-8b3b-7febbf9a6cc7",
+            "email": "christopher.patel@example.com",
+            "name": "Christopher Patel",
+            "contact": "+1 (555) 345-6789",
+            "role": "Student",
+            "createdAt": "2023-12-15T11:45:25.109Z",
+            "updatedAt": "2023-12-15T14:00:55.432Z"
+        }
+    },
+    {
+        "memberId": "19e6b2f9-b829-4c58-b307-6d3ff5570df6",
+        "name": "Sophia Johnson",
+        "rollNo": "205",
+        "category": "OBC",
+        "gender": "Female",
+        "branch": "Chemical Engineering",
+        "graduationYear": "2023-06-05T00:00:00.000Z",
+        "currentCPI": 8.0,
+        "resume": "Link to Sophia Johnson's resume",
         "totalPenalty": 0,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Pass"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Pass"
-            }
-        ],
-        "oncampusoffers": [
-            {
-                "id": "2f42b29d-c929-4388-88ac-82f36e0e21e5",
-                "companyName": "TechCorp",
-                "offerStatus": "Accepted"
-            },
-            {
-                "id": "ae29da67-b11e-41d5-9a85-35b8c171d9c9",
-                "companyName": "InnoTech",
-                "offerStatus": "Accepted"
-            }
-        ],
-        "penalties": [],
-        "ppoOffers": []
+        "createdAt": "2023-12-15T12:30:40.987Z",
+        "updatedAt": "2023-12-15T15:45:50.320Z",
+        "member": {
+            "id": "19e6b2f9-b829-4c58-b307-6d3ff5570df6",
+            "email": "sophia.johnson@example.com",
+            "name": "Sophia Johnson",
+            "contact": "+1 (555) 456-7890",
+            "role": "Student",
+            "createdAt": "2023-12-15T12:30:30.432Z",
+            "updatedAt": "2023-12-15T15:46:00.654Z"
+        }
     },
     {
-        "memberId": "d3b1a3f2-4a84-4ca2-a1f2-34a2c4f31b2a",
-        "name": "Bob Williams",
-        "rollNo": "2023004",
+        "memberId": "f7a1c6bc-dde4-46c7-a07b-d034e3e94e8e",
+        "name": "William Kim",
+        "rollNo": "206",
         "category": "General",
         "gender": "Male",
-        "branch": "Civil Engineering",
-        "graduationYear": "2023-12-31",
-        "currentCPI": 7.5,
-        "resume": "Link to Bob Williams's resume",
-        "totalPenalty": 3,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Plagiarism",
-                "penaltyPoints": 2
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Attendance Shortage",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
+        "branch": "Aerospace Engineering",
+        "graduationYear": "2023-06-10T00:00:00.000Z",
+        "currentCPI": 7.9,
+        "resume": "Link to William Kim's resume",
+        "totalPenalty": 2,
+        "createdAt": "2023-12-15T13:15:45.543Z",
+        "updatedAt": "2023-12-15T16:30:55.876Z",
+        "member": {
+            "id": "f7a1c6bc-dde4-46c7-a07b-d034e3e94e8e",
+            "email": "william.kim@example.com",
+            "name": "William Kim",
+            "contact": "+1 (555) 567-8901",
+            "role": "Student",
+            "createdAt": "2023-12-15T13:15:35.109Z",
+            "updatedAt": "2023-12-15T16:31:05.432Z"
+        }
     },
     {
-        "memberId": "d3b1a3f2-4a84-4ca2-a1f2-34a2c4f31b2a",
-        "name": "Bob Williams",
-        "rollNo": "2023004",
-        "category": "General",
+        "memberId": "999229a2-2672-42f1-8767-65efc9a4cdaa",
+        "name": "Daniel Brown",
+        "rollNo": "207",
+        "category": "SC",
         "gender": "Male",
-        "branch": "Civil Engineering",
-        "graduationYear": "2023-12-31",
-        "currentCPI": 7.5,
-        "resume": "Link to Bob Williams's resume",
-        "totalPenalty": 3,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Plagiarism",
-                "penaltyPoints": 2
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Attendance Shortage",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
+        "branch": "Biomedical Engineering",
+        "graduationYear": "2023-06-15T00:00:00.000Z",
+        "currentCPI": 8.3,
+        "resume": "Link to Daniel Brown's resume",
+        "totalPenalty": 1,
+        "createdAt": "2023-12-15T14:00:40.987Z",
+        "updatedAt": "2023-12-15T17:15:50.320Z",
+        "member": {
+            "id": "999229a2-2672-42f1-8767-65efc9a4cdaa",
+            "email": "daniel.brown@example.com",
+            "name": "Daniel Brown",
+            "contact": "+1 (555) 678-9012",
+            "role": "Student",
+            "createdAt": "2023-12-15T14:00:30.432Z",
+            "updatedAt": "2023-12-15T17:16:00.654Z"
+        }
     },
     {
-        "memberId": "d3b1a3f2-4a84-4ca2-a1f2-34a2c4f31b2a",
-        "name": "Bob Williams",
-        "rollNo": "2023004",
+        "memberId": "326d11f0-196d-4087-8c7f-0d3c6c5c3c85",
+        "name": "Olivia Garcia",
+        "rollNo": "208",
         "category": "General",
-        "gender": "Male",
-        "branch": "Civil Engineering",
-        "graduationYear": "2023-12-31",
-        "currentCPI": 7.5,
-        "resume": "Link to Bob Williams's resume",
-        "totalPenalty": 3,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Plagiarism",
-                "penaltyPoints": 2
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Attendance Shortage",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
+        "gender": "Female",
+        "branch": "Industrial Engineering",
+        "graduationYear": "2023-06-20T00:00:00.000Z",
+        "currentCPI": 7.7,
+        "resume": "Link to Olivia Garcia's resume",
+        "totalPenalty": 2,
+        "createdAt": "2023-12-15T14:45:45.543Z",
+        "updatedAt": "2023-12-15T18:00:55.876Z",
+        "member": {
+            "id": "326d11f0-196d-4087-8c7f-0d3c6c5c3c85",
+            "email": "olivia.garcia@example.com",
+            "name": "Olivia Garcia",
+            "contact": "+1 (555) 789-0123",
+            "role": "Student",
+            "createdAt": "2023-12-15T14:45:35.109Z",
+            "updatedAt": "2023-12-15T18:01:05.432Z"
+        }
     },
-    {
-        "memberId": "d3b1a3f2-4a84-4ca2-a1f2-34a2c4f31b2a",
-        "name": "Bob Williams",
-        "rollNo": "2023004",
-        "category": "General",
-        "gender": "Male",
-        "branch": "Civil Engineering",
-        "graduationYear": "2023-12-31",
-        "currentCPI": 7.5,
-        "resume": "Link to Bob Williams's resume",
-        "totalPenalty": 3,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Plagiarism",
-                "penaltyPoints": 2
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Attendance Shortage",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
-    },
-    {
-        "memberId": "d3b1a3f2-4a84-4ca2-a1f2-34a2c4f31b2a",
-        "name": "Bob Williams",
-        "rollNo": "2023004",
-        "category": "General",
-        "gender": "Male",
-        "branch": "Civil Engineering",
-        "graduationYear": "2023-12-31",
-        "currentCPI": 7.5,
-        "resume": "Link to Bob Williams's resume",
-        "totalPenalty": 3,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Plagiarism",
-                "penaltyPoints": 2
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Attendance Shortage",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
-    },
-    {
-        "memberId": "d3b1a3f2-4a84-4ca2-a1f2-34a2c4f31b2a",
-        "name": "Bob Williams",
-        "rollNo": "2023004",
-        "category": "General",
-        "gender": "Male",
-        "branch": "Civil Engineering",
-        "graduationYear": "2023-12-31",
-        "currentCPI": 7.5,
-        "resume": "Link to Bob Williams's resume",
-        "totalPenalty": 3,
-        "rounds": [
-            {
-                "id": "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-                "roundName": "Technical Interview",
-                "result": "Fail"
-            },
-            {
-                "id": "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-                "roundName": "HR Interview",
-                "result": "Fail"
-            }
-        ],
-        "oncampusoffers": [],
-        "penalties": [
-            {
-                "id": "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-                "reason": "Plagiarism",
-                "penaltyPoints": 2
-            },
-            {
-                "id": "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-                "reason": "Attendance Shortage",
-                "penaltyPoints": 1
-            }
-        ],
-        "ppoOffers": []
-    },
-    
 ]
