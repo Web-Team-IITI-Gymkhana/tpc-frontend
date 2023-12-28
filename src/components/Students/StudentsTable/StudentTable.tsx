@@ -208,14 +208,14 @@ export default function StudentTable({ data }: any) {
 
         {filters.map((ele: any,index:any) => {
           return (
-            <div key={index}>
+            <div key={index} className="w-full mx-2">
             <Input
               placeholder={`Filter ${ele.columnId}...`}
               value={(table.getColumn(ele.columnId)?.getFilterValue() as string) ?? ""}
               onChange={(event) =>
                 table.getColumn(ele.columnId)?.setFilterValue(event.target.value)
               }
-              className="w-full mx-2"
+              className="w-full "
             />
             </div>
           )
