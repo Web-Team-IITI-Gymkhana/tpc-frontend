@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/store/store.ts", "src/components/Students/StudentsTable/StudentTable.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/store/store.ts", "src/components/Students/StudentsTable/StudentTable.tsx", "src/middleware.ts"],
   "exclude": ["node_modules"]
 }

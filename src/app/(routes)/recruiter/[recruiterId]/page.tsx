@@ -1,4 +1,3 @@
-//this is the page.tsx file that contains the page component for the recruiter/[recruiterId] route
 "use client";
 import React from "react";
 

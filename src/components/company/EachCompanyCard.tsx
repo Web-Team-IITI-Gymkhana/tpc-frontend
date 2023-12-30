@@ -1,6 +1,6 @@
 
 interface Props { 
-    ele:{
+    EachCompanyItem:{
         name:String,
         id:String,
         jafs:any,
@@ -11,7 +11,7 @@ interface Props {
 
 
 
-export default function EachCompanyCard({ele}:Props) {
+export default function EachCompanyCard({EachCompanyItem}:Props) {
     return (
         <div>
             <div className="-my-8 divide-y-2 divide-gray-100">

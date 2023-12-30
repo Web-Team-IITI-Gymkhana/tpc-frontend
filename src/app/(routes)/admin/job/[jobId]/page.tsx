@@ -1,5 +1,6 @@
 import {Jobs} from '../../../../../dummyData/job'
-
+import { fetchEachJob } from '@/helpers/api'
+import { cookies } from 'next/headers'
 interface Props{
     params :{
         jobId:String,
@@ -8,7 +9,7 @@ interface Props{
 
 
 const EachJobPage = async ({params}:Props) =>{
-    const EachJob = fetchEachJob(params.jobId);
+    const EachJob = fetchEachJob(cookies()?.get('accessToken')?.value,params.jobId);
     return (
         <div>
             {params.jobId}
@@ -16,13 +17,7 @@ const EachJobPage = async ({params}:Props) =>{
     )
 }
 
-const fetchEachJob = (id:String) =>{
-    // const res = await fetch('')
-    // const json = res.json()
-    // return json
 
-    return Jobs.find((x)=>x.id === id)
-}
 
 export default EachJobPage;
 

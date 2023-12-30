@@ -1,7 +1,8 @@
 import JAFCard from "@/components/company/JAFCard";
 import EachCompanyCard from "@/components/company/EachCompanyCard"
 import { AllCompanies } from "@/dummyData/company"
-
+import { fetchEachCompanyDetails } from "@/helpers/api";
+import { cookies } from "next/headers";
 interface Props {
     params: {
         companyId: String
@@ -18,8 +19,7 @@ interface CompanyData {
 
 
 export default async function EachCompanyPage({ params }: Props) {
-    const EachCompany = await fetchEachCompanyDetails(params.companyId);
-    console.log(EachCompany)
+    const EachCompany = await fetchEachCompanyDetails(cookies().get('accessToken')?.value,params.companyId)
     return (
         <div>
             <section className="text-gray-600 body-font">
@@ -70,9 +70,3 @@ export default async function EachCompanyPage({ params }: Props) {
 }
 
 
-const fetchEachCompanyDetails = async (id: String) => {
-    // const res = await fetch('')
-    // const json = res.json()
-    // return json
-    return AllCompanies.find((x) => x.id === id)
-}

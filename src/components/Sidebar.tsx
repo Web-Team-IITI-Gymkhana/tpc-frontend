@@ -1,13 +1,44 @@
-//this is the sidebar component
-//it uses the ToggleContext to get the isOpen state and the sidebarToggle function
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
-import { SessionDropDown } from "./SideBar/DropDowns/SessionDropDown";
+import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Cookies from 'js-cookie';
+import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown";
+import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
+import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
+import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
+import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
 
-const Sidebar = (props: any) => {
+interface Framework {
+  value: string;
+  label: string;
+}
+
+interface Season {
+  id: string;
+  year: string;
+  type: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Props {
+  AllSeasons: {
+    seasons: Season[];
+  }
+}
+
+const Sidebar = ({ AllSeasons }: Props) => {
   const context = useContext(ToggleContext);
+  const userString = Cookies.get('user');
+
+  const user = userString ? JSON.parse(userString) : null;
+  const isAdmin = user?.userType === "ADMIN";
+  const userRole = user?.userType?.toLowerCase();
+
 
   return (
     <motion.div
@@ -21,13 +52,42 @@ const Sidebar = (props: any) => {
       className="z-40 overflow-hidden left-0 fixed bg-gray-900 pt-3 px-4 w-[223px] flex flex-col h-full"
     >
       <div className="flex-auto">
-        <div>
-          <div className="m-2">Seasons</div>
-          <SessionDropDown />
-        </div>
+        {isAdmin && (
+          <div>
+            <div>
+              <div className="m-2">Companies</div>
+              <CompanyDropDown userRole={userRole} />
+            </div>
+            <div>
+              <div className="m-2">Jobs</div>
+              <JobDropDown userRole={userRole} />
+            </div>
+
+            <div>
+              <div className="m-2">Students</div>
+              <StudentDropDown userRole={userRole} />
+            </div>
+
+            <div>
+              <div className="m-2">Faculties</div>
+              <FacultyDropDown userRole={userRole} />
+            </div>
+            
+            <div>
+              <div className="m-2">Recruiters</div>
+              <RecruiterDropDown userRole={userRole} />
+            </div>
+            
+            <div>
+              <div className="m-2">Seasons</div>
+              <SessionDropDown AllSeasons={AllSeasons} />
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
 };
 
 export default Sidebar;
+
