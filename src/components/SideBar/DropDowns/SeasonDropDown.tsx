@@ -53,9 +53,9 @@ export function SessionDropDown({AllSeasons}:Props) {
       localStorage.removeItem('season')
     }
   };
-  const SeasonsInDropDown: SeasonInDropDown[] = AllSeasons.seasons.map((season) => ({
-    value: `${season.type.toLowerCase()}-${season.year.toLowerCase()}`,
-    label: `${season.type.toLowerCase()}-${season.year.toLowerCase()}`,
+  const SeasonsInDropDown: SeasonInDropDown[] = AllSeasons?.seasons?.map((season) => ({
+    value: `${season?.type?.toLowerCase()}-${season?.year?.toLowerCase()}`,
+    label: `${season?.type?.toLowerCase()}-${season?.year?.toLowerCase()}`,
     id: season.id
   }));
   return (
@@ -91,7 +91,7 @@ export function SessionDropDown({AllSeasons}:Props) {
                   )}
                 />
               </CommandItem>
-            {SeasonsInDropDown.map((season: SeasonInDropDown) => (
+            {SeasonsInDropDown?.map((season: SeasonInDropDown) => (
               <CommandItem
                 key={season.value}
                 value={season.value}

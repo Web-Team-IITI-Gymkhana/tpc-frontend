@@ -70,8 +70,9 @@ const LoginForm = () => {
                         }).then((response:{data:{accessToken:string}})=>{
                           Cookies.set('accessToken',response.data.accessToken,{ expires: 365 })
                           Cookies.set('user',JSON.stringify(jwtDecode(response.data.accessToken)),{ expires: 365 })
-                          router.push('/')
                           toast.success('logged in')
+                          window.location.href = "/"
+                          
                         }).catch((err)=>{
                           console.log(err)
                           toast.error('Some Error Occured')
