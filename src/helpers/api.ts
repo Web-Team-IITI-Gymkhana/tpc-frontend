@@ -2,7 +2,7 @@ import { AllCompanies } from "@/dummyData/company"
 import { Jobs } from "@/dummyData/job"
 import { StudentsData } from "@/dummyData/students"
 const url = (NextUrl: string) => {
-	return `https://ag-test-demo-ws-5000.tfy-ctl-euwe1-devtest.devtest.truefoundry.tech/api/v1${NextUrl}`
+	return `http://tpc.iiti.ac.in/api/v1${NextUrl}`
 }
 
 const redirect = () => {
@@ -33,7 +33,7 @@ export const fetchCompany = async (accessToken: string | undefined) => {
 		redirect()
 		return;
 	}
-	const res = await fetch('https://ag-test-demo-ws-5000.tfy-ctl-euwe1-devtest.devtest.truefoundry.tech/api/v1/companies', {
+	const res = await fetch('http://tpc.iiti.ac.in/api/v1/companies', {
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
 
