@@ -64,7 +64,7 @@ const LoginForm = () => {
                           toast.error('Email is Required');
                           return;
                         }
-                        axios.post('https://ag-test-demo-ws-5000.tfy-ctl-euwe1-devtest.devtest.truefoundry.tech/api/v1/auth/login/',{
+                        axios.post('http://tpc.iiti.ac.in/api/v1/auth/login/',{
                           email:email,
                           role:role?.toUpperCase(),
                         }).then((response:{data:{accessToken:string}})=>{
