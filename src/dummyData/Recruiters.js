@@ -1,3 +1,1 @@
-export const RecruitersData = [
-    
-]
+export const RecruitersData = [];

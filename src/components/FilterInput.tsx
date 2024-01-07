@@ -1,14 +1,18 @@
 // FilterInput.tsx
 
-import React from 'react';
-import {Input} from './ui/input'
+import React from "react";
+import { Input } from "./ui/input";
 interface FilterInputProps {
   columnId: string;
   value: string | undefined;
   onFilterChange: (columnId: string, value: string) => void;
 }
 
-const FilterInput: React.FC<FilterInputProps> = ({ columnId, value, onFilterChange }) => {
+const FilterInput: React.FC<FilterInputProps> = ({
+  columnId,
+  value,
+  onFilterChange,
+}) => {
   return (
     <Input
       placeholder={`Filter ${columnId}...`}

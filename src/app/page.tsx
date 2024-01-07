@@ -16,10 +16,10 @@ const Home = () => {
   // const session = await getServerSession(config);
 
   const { data: session, status } = useSession();
-  console.log('session',session?.user);
+  console.log("session", session?.user);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex h-full flex-col items-center justify-between p-24">
       Home page
     </main>
   );

@@ -3,10 +3,7 @@ interface Props {
 }
 
 const CompanyLayout = ({ children }: Props) => {
-  return (<div>
-    
-    {children}
-    </div>);
+  return <div>{children}</div>;
 };
 
 export default CompanyLayout;
