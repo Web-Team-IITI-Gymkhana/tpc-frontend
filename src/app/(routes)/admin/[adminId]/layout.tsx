@@ -3,10 +3,7 @@ interface Props {
 }
 
 const EachAdminLayout = ({ children }: Props) => {
-  return (<div>
-    
-    {children}
-    </div>);
+  return <div>{children}</div>;
 };
 
 export default EachAdminLayout;

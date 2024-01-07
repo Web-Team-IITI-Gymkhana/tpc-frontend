@@ -14,7 +14,7 @@ const MainContent = ({ children }: { children: ReactNode }) => {
         closed: { x: 0, opacity: 1 },
         open: { x: 200, opacity: 0.9 },
       }}
-      className="flex-grow bg-gray-100 p-4 text-black"
+      className="flex-grow bg-gray-100  text-black"
     >
       {children}
     </motion.div>

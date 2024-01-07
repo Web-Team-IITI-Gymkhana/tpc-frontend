@@ -3,9 +3,7 @@ interface Props {
 }
 
 const AdminJobsLayout = ({ children }: Props) => {
-  return (<div>
-    {children}
-    </div>);
+  return <div>{children}</div>;
 };
 
 export default AdminJobsLayout;

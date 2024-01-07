@@ -8,12 +8,11 @@ import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { Providers } from "@/store/provider";
-import {redirect} from 'next/navigation'
-import { cookies } from 'next/headers';
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { fetchAllSeasons } from "@/helpers/api";
-
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,8 +28,10 @@ interface Props {
 
 const RootLayout = async ({ children, auth }: Props) => {
   const className = inter.className;
-  const AllSeasons = await fetchAllSeasons(cookies()?.get('accessToken')?.value)
-  console.log(AllSeasons)
+  const AllSeasons = await fetchAllSeasons(
+    cookies()?.get("accessToken")?.value,
+  );
+  console.log(AllSeasons);
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -57,16 +58,19 @@ const RootLayout = async ({ children, auth }: Props) => {
             </nav>
             {/* Page Content */}
             <Toaster />
-            
-              <NextAuthProvider>
-                <div className="flex-auto flex">
-                  {/* sidebar and main content share this space */}
-                  <Sidebar AllSeasons={AllSeasons} />
-                  <MainContent><Providers>{children}</Providers></MainContent>
+
+            <NextAuthProvider>
+              <div className="flex-auto flex">
+                {/* sidebar and main content share this space */}
+                <Sidebar AllSeasons={AllSeasons} />
+                <div className="m-10 shadow-[0px_1px_10px_5px] shadow-gray-300  border-2 w-full !bg-transparent ">
+                  <MainContent>
+                    <Providers>{children}</Providers>
+                  </MainContent>
                 </div>
-                {auth}
-              </NextAuthProvider>
-            
+              </div>
+              {auth}
+            </NextAuthProvider>
           </div>
         </ToggleProvider>
       </body>
@@ -75,5 +79,3 @@ const RootLayout = async ({ children, auth }: Props) => {
 };
 
 export default RootLayout;
-
-

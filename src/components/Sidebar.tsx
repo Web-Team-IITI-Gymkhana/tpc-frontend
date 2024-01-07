@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown";
 import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
 import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
@@ -28,17 +28,16 @@ interface Season {
 interface Props {
   AllSeasons: {
     seasons: Season[];
-  }
+  };
 }
 
 const Sidebar = ({ AllSeasons }: Props) => {
   const context = useContext(ToggleContext);
-  const userString = Cookies.get('user');
+  const userString = Cookies.get("user");
 
   const user = userString ? JSON.parse(userString) : null;
   const isAdmin = user?.userType === "ADMIN";
   const userRole = user?.userType?.toLowerCase();
-
 
   return (
     <motion.div
@@ -72,12 +71,12 @@ const Sidebar = ({ AllSeasons }: Props) => {
               <div className="m-2">Faculties</div>
               <FacultyDropDown userRole={userRole} />
             </div>
-            
+
             <div>
               <div className="m-2">Recruiters</div>
               <RecruiterDropDown userRole={userRole} />
             </div>
-            
+
             <div>
               <div className="m-2">Seasons</div>
               <SessionDropDown AllSeasons={AllSeasons} />
@@ -90,4 +89,3 @@ const Sidebar = ({ AllSeasons }: Props) => {
 };
 
 export default Sidebar;
-

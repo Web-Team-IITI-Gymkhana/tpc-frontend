@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class Loading extends Component {
   render() {

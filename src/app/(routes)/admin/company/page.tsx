@@ -1,41 +1,29 @@
-
-import CompanyCard from "@/components/company/CompanyCard";
-import { AllCompanies } from '../../../../dummyData/company'
+import { fetchCompanyRecruiters } from "@/helpers/api";
 import { cookies } from "next/headers";
-import { fetchCompany } from "@/helpers/api";
-interface Props { }
+interface Props {}
 
-interface company{
-  "id": string,
-  "name": string,
-  "metadata": object,
-  "createdAt": string,
-  "updatedAt": string
+interface company {
+  id: string;
+  name: string;
+  metadata: object;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const CompanyPage = async () => {
-  const Companies = await fetchCompany(cookies()?.get('accessToken')?.value)
-
-  if(Companies.companies.length===0){
-    return <h1 className="text-center text-black text-3xl font-bold flex justify-center items-center w-full h-screen">No Comapanies Currently Registered</h1>
-  }
+  const AllRecruiters = await fetchCompanyRecruiters(cookies()?.get('accessToken')?.value,cookies().get('companyId')?.value)
+  console.log('AllRecruiters',AllRecruiters)
   return (
-    <div className=" ">
-      <h1 className="text-center font-bold text-2xl text-black my-10 ">All Companies For The Season { }</h1>
-      <div className="grid sm:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-10">
-        {Companies?.companies.map((Company:company, index:number) => {
-          return (
-            <div key={index}>
-              <CompanyCard Company={Company} />
-            </div>
-          )
-        })}
-      </div>
-    </div >
+  <div className="">
+    {AllRecruiters.recruiters?.map((ele:any,index:any)=>{
+      return (
+        <div>{ele?.user?.name}</div>
+      )
+    })}
+  </div>
   );
 };
 
 export default CompanyPage;
 
-
-
+// http://tpc.iiti.ac.in/api/v1/companies/3f1d7e53-2069-4820-8d91-64b81f79cf7a/recruiters

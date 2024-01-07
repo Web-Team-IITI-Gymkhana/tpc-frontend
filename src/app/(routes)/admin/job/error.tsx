@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class Error extends Component {
   render() {
