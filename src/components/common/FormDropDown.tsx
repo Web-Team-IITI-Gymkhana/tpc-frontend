@@ -1,8 +1,6 @@
 "use client";
 import * as React from "react";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,20 +16,20 @@ import {
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
 
-interface Job {
+interface OptionInterface {
   value: string;
   label: string;
-  path: string;
 }
 
 interface Props {
-  userRole: string;
+  data: OptionInterface[];
+  value: string;
+  setValue: Function;
 }
 
-export function JobDropDown({ userRole }: Props) {
+const FormDropDown = ({ data, value, setValue }: Props) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const router = useRouter();
+  //   const [value, setValue] = React.useState("");
 
   const handleSelect = (currentValue: string) => {
     setValue(currentValue);
@@ -45,10 +43,11 @@ export function JobDropDown({ userRole }: Props) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between !text-black"
+          className="w-[200px] justify-between !text-black"
         >
           {value
-            ? job.find((job) => job.value === value)?.label
+            ? data.find((option: OptionInterface) => option.value === value)
+                ?.label
             : "Select Event"}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -61,18 +60,13 @@ export function JobDropDown({ userRole }: Props) {
           />
           <CommandEmpty>Found Nothing.</CommandEmpty>
           <CommandGroup>
-            {job.map((job: Job) => (
+            {data.map((option: OptionInterface) => (
               <CommandItem
-                key={job.value}
-                value={job.value}
+                key={option.value}
+                value={option.value}
                 onSelect={(currentValue: string) => handleSelect(currentValue)}
               >
-                <Link
-                  className="flex w-full"
-                  href={`/${userRole}/job${job.path}`}
-                >
-                  {job.label}
-                </Link>
+                {option.label}
               </CommandItem>
             ))}
           </CommandGroup>
@@ -80,17 +74,6 @@ export function JobDropDown({ userRole }: Props) {
       </PopoverContent>
     </Popover>
   );
-}
+};
 
-const job: Job[] = [
-  {
-    value: "all jobs",
-    label: "All Jobs",
-    path: "/",
-  },
-  {
-    value: "add jobs",
-    label: "Add Jobs",
-    path: "/add",
-  },
-];
+export default FormDropDown;

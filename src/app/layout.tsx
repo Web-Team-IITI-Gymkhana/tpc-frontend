@@ -8,11 +8,11 @@ import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { Providers } from "@/store/provider";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { fetchAllSeasons } from "@/helpers/api";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,40 +34,35 @@ const RootLayout = async ({ children, auth }: Props) => {
   console.log(AllSeasons);
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={className}>
         <ToggleProvider>
-          <div className="flex flex-col ">
-            <nav className="bg-gray-800">
-              <div className="max-w-7xl mx-auto px-2 sm:px-4">
-                <div className="flex items-center justify-between h-[8vh]">
-                  {/* Mobile menu button*/}
-                  <MenuButton />
-                  {/* Logo */}
-                  <div className="flex-shrink-0 flex items-center">
-                    <Link href="/" className="text-white font-bold text-2xl">
-                      <div className="hidden sm:block">
-                        Training And Placement Cell (IITI)
-                      </div>
-                      <div className="block sm:hidden">TPC</div>
-                    </Link>
-                  </div>
-                  {/* Links */}
-                  <NavButtonGroup />
+          <div className="flex flex-col">
+            <nav className="shadow-xl bg-gray-900">
+              <div className="max-w-7xl mx-auto px-2 sm:px-4 flex justify-between items-center h-[8vh]">
+                <div className="flex-shrink-0 flex items-center">
+                  <Link href="/" className="text-white font-bold text-2xl">
+                    <div className="hidden sm:block mx-2">TPC</div>
+                  </Link>
                 </div>
+                <NavButtonGroup />
               </div>
             </nav>
             {/* Page Content */}
             <Toaster />
 
             <NextAuthProvider>
-              <div className="flex-auto flex">
+              <div className="flex-auto flex h-[92vh] ">
                 {/* sidebar and main content share this space */}
-                <Sidebar AllSeasons={AllSeasons} />
-                <div className="m-10 shadow-[0px_1px_10px_5px] shadow-gray-300  border-2 w-full !bg-transparent ">
-                  <MainContent>
-                    <Providers>{children}</Providers>
-                  </MainContent>
-                </div>
+                <Suspense fallback={<>Loading...</>}>
+                  <Sidebar AllSeasons={AllSeasons} />
+                </Suspense>
+                <MainContent>
+                  <Providers>
+                    <div className="mx-2 my-4 rounded-md bg-white">
+                      {children}
+                    </div>
+                  </Providers>
+                </MainContent>
               </div>
               {auth}
             </NextAuthProvider>

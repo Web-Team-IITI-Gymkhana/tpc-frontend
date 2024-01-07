@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { Jobs } from "../../../../dummyData/job";
 import JobCard from "@/components/jobs/JobCard";
 import { fetchAllJobs } from "@/helpers/api";
-interface Props {}
 
 const AdminJobsPage = async () => {
   const AllJobs = await fetchAllJobs(
@@ -13,6 +12,14 @@ const AdminJobsPage = async () => {
     null,
     null,
   );
+  console.log(AllJobs);
+  if (AllJobs?.jobs?.length === 0) {
+    return (
+      <h1 className="text-center text-black text-3xl font-bold flex justify-center items-center w-full h-full">
+        No Jobs Currently Registered
+      </h1>
+    );
+  }
   return (
     <div>
       <h1 className="text-center font-bold my-10 text-3xl">Jobs</h1>

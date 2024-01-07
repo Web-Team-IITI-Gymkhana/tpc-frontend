@@ -60,20 +60,6 @@ const CompanyPage = async () => {
                       key={index}
                       className="cursor-pointer hover:text-gray-600 hover:scale-95 transition-all fade-in-out"
                     >
-                      <CompanyCard Company={Company} />
-                    </div>
-
-                    <Separator className="my-2" />
-                  </>
-                );
-              })}
-              {Companies?.companies.map((Company: company, index: number) => {
-                return (
-                  <>
-                    <div
-                      key={index}
-                      className="cursor-pointer hover:text-gray-600 hover:scale-95 transition-all fade-in-out"
-                    >
                       {Company.name}
                     </div>
                     <Separator className="my-2" />

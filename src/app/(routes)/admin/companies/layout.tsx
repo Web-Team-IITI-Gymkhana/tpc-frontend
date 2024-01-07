@@ -5,8 +5,8 @@ interface Props {
 
 const CompanyLayout = ({ children, allcompanies }: Props) => {
   return (
-    <div className="grid grid-cols-[300px_auto]">
-      {allcompanies}
+    <div className="">
+      {/* {allcompanies} */}
       {children}
     </div>
   );

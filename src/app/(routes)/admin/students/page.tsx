@@ -6,7 +6,6 @@ const StudentPage = async () => {
   const AllStudents = await fetchStudentData(
     cookies()?.get("accessToken")?.value,
   );
-  console.log("AllStudents", AllStudents);
   return (
     <div>
       <h1 className="text-center font-bold text-3xl my-5">Students</h1>

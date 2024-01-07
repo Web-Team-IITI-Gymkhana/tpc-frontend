@@ -36,22 +36,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import DeleteStudentModal from "../Operations/DeleteStudentModal";
 
 interface Student {
-  memberId: string;
-  name: string;
-  rollNo: string;
-  category: string;
-  gender: string;
-  branch: string;
-  graduationYear: string;
-  currentCPI: number;
-  resume: string | null; // Assuming resume can be a link or null
-  totalPenalty: number;
-  createdAt: string;
-  updatedAt: string;
-  member: {
+ id:string;
+ userId:string;
+  user: {
     id: string;
     email: string;
     name: string;
@@ -60,6 +49,9 @@ interface Student {
     createdAt: string;
     updatedAt: string;
   };
+  companyId:string;
+  createdAt:string;
+  updatedAt:string;
 }
 
 const customStyles = {
@@ -90,68 +82,19 @@ const customStyles = {
 
 export const columns: ColumnDef<Student>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
+    accessorKey: "user.name",
     header: "Name",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="lowercase">{row.original.user.name}</div>,
   },
   {
-    accessorKey: "rollNo",
-    header: "Roll Number",
-    cell: ({ row }) => <div>{row.getValue("rollNo")}</div>,
-  },
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => <div>{row.getValue("category")}</div>,
-  },
-  {
-    accessorKey: "member.email",
+    accessorKey: "user.email",
     header: "Email",
-    cell: ({ row }) => <div>{row.original.member.email}</div>,
+    cell: ({ row }) => <div>{row.original.user.email}</div>,
   },
   {
-    accessorKey: "gender",
-    header: "Gender",
-    cell: ({ row }) => <div>{row.getValue("gender")}</div>,
-  },
-  {
-    accessorKey: "branch",
-    header: "Branch",
-    cell: ({ row }) => <div>{row.getValue("branch")}</div>,
-  },
-  {
-    accessorKey: "graduationYear",
-    header: "Graduation Year",
-    cell: ({ row }) => <div>{row.getValue("graduationYear")}</div>,
-  },
-  {
-    accessorKey: "currentCPI",
-    header: "Current CPI",
-    cell: ({ row }) => <div>{row.getValue("currentCPI")}</div>,
+    accessorKey: "user.contact",
+    header: "Contact",
+    cell: ({ row }) => <div>{row.original.user.contact}</div>,
   },
   {
     id: "actions",
@@ -168,10 +111,6 @@ export const columns: ColumnDef<Student>[] = [
             style={customStyles}
             contentLabel="Example Modal"
           >
-            <DeleteStudentModal
-              isDeleteModalOpen={isDeleteModalOpen}
-              memberId={[student.memberId]}
-            />
           </Modal>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -182,15 +121,7 @@ export const columns: ColumnDef<Student>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem>View Profile</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                isDeleteModalOpen = true;
-              }}
-            >
-              Delete Student
-            </DropdownMenuItem>
-            <DropdownMenuItem>Update Student</DropdownMenuItem>
+            
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -198,7 +129,7 @@ export const columns: ColumnDef<Student>[] = [
   },
 ];
 
-export default function StudentTable({ data }: any) {
+export default function RecruitersTable({ data }: any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -247,82 +178,12 @@ export default function StudentTable({ data }: any) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 justify-start">
-        {filters.map((ele: any, index: any) => {
-          return (
-            <div key={index} className="w-full mx-2">
-              <Input
-                placeholder={`Filter ${ele.columnId}...`}
-                value={
-                  (table.getColumn(ele.columnId)?.getFilterValue() as string) ??
-                  ""
-                }
-                onChange={(event) =>
-                  table
-                    .getColumn(ele.columnId)
-                    ?.setFilterValue(event.target.value)
-                }
-                className="w-full "
-              />
-            </div>
-          );
-        })}
+      <div className="flex items-center justify-start">
+        
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="ml-auto mx-2">
-              Filters <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={
-                      !!filters.find((x: any) => x.columnId === column.id)
-                    }
-                    onCheckedChange={(value: any) => {
-                      handleFilterChange(column.id, ""); // Initialize filter with an empty string
-                    }}
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value: any) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        
       </div>
       <div className="rounded-md border">
         <Table>
@@ -374,16 +235,8 @@ export default function StudentTable({ data }: any) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex items-center">
-          <div className="flex-1 text-sm text-muted-foreground items-center">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div>
-            <Button className="ml-3">Delete Selected Students</Button>
-          </div>
-        </div>
+      <div className="flex items-center justify-end space-x-2 py-4 ">
+        
         <div className="space-x-2">
           <Button
             onClick={() => table.previousPage()}

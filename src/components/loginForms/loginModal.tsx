@@ -13,7 +13,7 @@ const LoginModal = () => {
       onClick={(e) => {
         router.back();
       }}
-      className="flex align-middle justify-center absolute h-screen w-full z-40 bg-white/30 backdrop-blur-sm"
+      className="flex align-middle justify-center absolute h-full w-full z-40 bg-white/30 backdrop-blur-sm"
     >
       <div
         className="h-fit mt-5 sm:my-auto"
