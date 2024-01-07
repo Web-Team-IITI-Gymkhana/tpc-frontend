@@ -1,8 +1,6 @@
 "use client";
 import * as React from "react";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -18,20 +16,20 @@ import {
 } from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
 
-interface Companies {
+interface OptionInterface {
   value: string;
   label: string;
-  path: string;
 }
 
 interface Props {
-  userRole: string;
+  data: OptionInterface[];
+  value: string;
+  setValue: Function;
 }
 
-export function CompanyDropDown({ userRole }: Props) {
+const FormDropDown = ({ data, value, setValue }: Props) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const router = useRouter();
+  //   const [value, setValue] = React.useState("");
 
   const handleSelect = (currentValue: string) => {
     setValue(currentValue);
@@ -48,7 +46,8 @@ export function CompanyDropDown({ userRole }: Props) {
           className="w-[200px] justify-between !text-black"
         >
           {value
-            ? companies.find((company) => company.value === value)?.label
+            ? data.find((option: OptionInterface) => option.value === value)
+                ?.label
             : "Select Event"}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -61,18 +60,13 @@ export function CompanyDropDown({ userRole }: Props) {
           />
           <CommandEmpty>Found Nothing.</CommandEmpty>
           <CommandGroup>
-            {companies.map((company: Companies) => (
+            {data.map((option: OptionInterface) => (
               <CommandItem
-                key={company.value}
-                value={company.value}
+                key={option.value}
+                value={option.value}
                 onSelect={(currentValue: string) => handleSelect(currentValue)}
               >
-                <Link
-                  className="flex w-full"
-                  href={`/${userRole}/company${company.path}`}
-                >
-                  {company.label}
-                </Link>
+                {option.label}
               </CommandItem>
             ))}
           </CommandGroup>
@@ -80,17 +74,6 @@ export function CompanyDropDown({ userRole }: Props) {
       </PopoverContent>
     </Popover>
   );
-}
+};
 
-const companies: Companies[] = [
-  {
-    value: "all companies",
-    label: "All Companies",
-    path: "/",
-  },
-  {
-    value: "add companies",
-    label: "Add Companies",
-    path: "/add",
-  },
-];
+export default FormDropDown;

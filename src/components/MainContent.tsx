@@ -7,14 +7,14 @@ const MainContent = ({ children }: { children: ReactNode }) => {
   const context = useContext(ToggleContext);
   return (
     <motion.div
-      initial={{ x: 0, opacity: 1 }}
+      initial={{ width: context.isOpen ? "82vw" : "95vw" }}
       animate={context.isOpen ? "open" : "closed"}
-      transition={{ duration: 0.3, type: "spring" }}
+      transition={{ duration: 0.2 }}
       variants={{
-        closed: { x: 0, opacity: 1 },
-        open: { x: 200, opacity: 0.9 },
+        closed: { width: "95vw" },
+        open: { width: "82vw" },
       }}
-      className="flex-grow bg-gray-100 p-4 text-black"
+      className="flex-grow bg-gray-200 p-4 text-black overflow-y-scroll"
     >
       {children}
     </motion.div>

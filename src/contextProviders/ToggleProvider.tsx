@@ -12,7 +12,7 @@ const ToggleContext = createContext<IToggleContext>({
 });
 
 const ToggleProvider = ({ children }: { children: ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const sidebarToggle = () => {
     setIsOpen(!isOpen);
   };
