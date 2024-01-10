@@ -7,7 +7,9 @@ const CompanyLayout = ({ children, allcompanies }: Props) => {
   return (
     <div className="">
       {/* {allcompanies} */}
-      {children}
+      <div className="mx-2 my-4 rounded-md bg-white">
+        {children}
+      </div>
     </div>
   );
 };

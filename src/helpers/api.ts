@@ -86,18 +86,6 @@ export const fetchAllJobs = async (
   return json;
 };
 
-export const fetchEachJob = (accessToken: string | undefined, id: String) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  // const res = await fetch('')
-  // const json = res.json()
-  // return json
-
-  return Jobs.find((x) => x.id === id);
-};
-
 export const fetchStudentData = async (accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -131,3 +119,32 @@ export const fetchCompanyRecruiters = async (
   const json = res.json();
   return json;
 };
+
+export const fetchJobSalary = async (accessToken:string | undefined,jobId:string | undefined) =>{
+  if(!accessToken || accessToken===undefined){
+    redirect()
+    return ;
+  }
+  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/salary/`,{
+    headers:{
+      Authorization:`Bearer ${accessToken}`
+    }
+  });
+  const json = res.json()
+  return json
+}
+
+export const fetchEachJob = async (accessToken:string | undefined,jobId:String | undefined) =>{
+  if(!accessToken || accessToken===undefined){
+    redirect()
+    return ;
+  }
+  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}`,{
+    headers : {
+      Authorization : `Bearer ${accessToken}`
+    }
+  })
+
+  const json = res.json();
+  return json;
+}

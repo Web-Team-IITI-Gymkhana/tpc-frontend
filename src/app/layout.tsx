@@ -58,9 +58,9 @@ const RootLayout = async ({ children, auth }: Props) => {
                 </Suspense>
                 <MainContent>
                   <Providers>
-                    <div className="mx-2 my-4 rounded-md bg-white">
+                    
                       {children}
-                    </div>
+                    
                   </Providers>
                 </MainContent>
               </div>

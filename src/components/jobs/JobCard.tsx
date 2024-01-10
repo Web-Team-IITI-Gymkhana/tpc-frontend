@@ -1,5 +1,8 @@
 import React from "react";
 import Link from "next/link";
+import { Separator } from "../ui/separator";
+import { fetchJobSalary } from "@/helpers/api";
+import { cookies } from "next/headers";
 interface Event {
   id: string;
   name: string;
@@ -30,53 +33,48 @@ interface RoleOffered {
 
 interface Props {
   jobItem: {
-    id: string;
-    seasonId: string;
-    recruiterId: string;
-    companyId: string;
-    role: string;
-    metadata: string;
-    docs: string;
-    publicAccess: boolean;
-    eligibilityCpi: number;
-    status: string;
-    events: Event[];
-    tpcCoordinators: Coordinator[];
-    facultyCoordinatorApprovals: FacultyCoordinatorApproval[];
-    onCampusOffers: OnCampusOffer[];
-    rolesOffered: RoleOffered[];
+    id: string,
+    seasonId: string,
+    "companyId": string,
+    "role": string,
+    "recruiterId": string,
+    "active": boolean,
+    "eligibility": any,
+    "currentStatusId": string,
+    "metadata": any,
+    "createdAt": string,
+    "updatedAt": string
   };
+  salary: null |  {
+    salary: string,
+    salaryPeriod: string,
+    metadata: any,
+    constraints: any
+  }
 }
 
-const JobCard = ({ jobItem }: Props) => {
+const JobCard = async ({ jobItem }: Props) => {
+  const salary = await fetchJobSalary(cookies()?.get('accessToken')?.value, jobItem.id)
+  console.log(salary)
   return (
-    <div className="border-2">
-      <div className="p-12 shadow-xl flex flex-col items-start">
-        {/* <span className="inline-block py-1 px-2 rounded bg-indigo-50 text-indigo-500 text-xs font-medium tracking-widest">
-          CPI {jobItem.eligibilityCpi}+
-        </span> */}
-        <h2 className="sm:text-3xl text-2xl title-font font-medium text-gray-900 mt-4 mb-4">
+    <div className="">
+      <div className="rounded-xl bg-white text-black p-5">
+        <div className="font-semibold text-md ">
           {jobItem.role}
-        </h2>
-        {/* <p className="leading-relaxed mb-8">{jobItem.metadata}</p> */}
-        <div className="flex items-center flex-wrap pb-4 mb-4 border-b-2 border-gray-100 mt-auto w-full">
-          <Link
-            href={`/admin/job/${jobItem.id}`}
-            className="text-indigo-500 inline-flex items-center"
-          >
-            Learn More
-            <svg
-              className="w-4 h-4 ml-2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14"></path>
-              <path d="M12 5l7 7-7 7"></path>
-            </svg>
+        </div>
+        <Separator className="my-4" />
+        <div className="text-xs my-2">
+          Rs 45000 / Month
+        </div>
+        <div className="text-xs my-2">
+          3 Months
+        </div>
+        <div className="flex justify-between text-xs">
+          <div className="bg-gray-200 my-1 p-2 rounded-md">
+            Internship
+          </div>
+          <Link href={`/admin/jobs/${jobItem.id}`} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
+            View Details {'>'}
           </Link>
         </div>
       </div>

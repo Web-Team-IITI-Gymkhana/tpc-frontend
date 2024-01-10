@@ -56,36 +56,39 @@ const CompanyPage = async () => {
           <AllCompaniesComponent />
         </div>
         <div>
-          <div className="flex justify-between items-center">
-            <div className="text-3xl font-bold mx-5 my-5">{cookies().get('companyName')?.value}</div>
-            <div className="flex">
-              <Button variant={"outline"} className="mr-5">See Jobs</Button>
-              <Button className="mr-5">Update</Button>
-              <Button className="mr-5" variant="destructive">Delete</Button>
-            </div>
-          </div>
-          <Separator />
-          <div className="h-[66vh] overflow-y-scroll">
-            <div className="">
-              <h1 className="text-xl font-semibold text-start mx-5 my-3">Company Details</h1>
-              <div className="mx-16">
-                <ul className="list-disc">
-                  <li>Company Website : <a className="text-blue-600 font-medium">click here</a></li>
-                  <li>Year Of Establishment : 2014</li>
-                  <li>Social Media : <a className="text-blue-600 font-medium">click here</a></li>
-                  <li>Company Size : 1.5 M</li>
-                  <li>Annual Turnover : $278.19 B</li>
-                </ul>
+          {cookies()?.get('companyId') != undefined && (
+          <><div className="flex justify-between items-center">
+              <div className="text-3xl font-bold mx-5 my-5">{cookies().get('companyName')?.value}</div>
+              <div className="flex">
+                <Button variant={"outline"} className="mr-5">See Jobs</Button>
+                <Button className="mr-5">Update</Button>
+                <Button className="mr-5" variant="destructive">Delete</Button>
               </div>
-            </div>
-            <h1 className="text-xl font-semibold text-start mx-5 my-3">Recruiter Details</h1>
-            <div className="mx-10">
-              <RecruitersTable data={Recruiters?.recruiters} />
-              
-            </div>
+            </div><Separator /><div className="h-[66vh] overflow-y-scroll">
+                <div className="">
+                  <h1 className="text-xl font-semibold text-start mx-5 my-3">Company Details</h1>
+                  <div className="mx-16">
+                    <ul className="list-disc">
+                      <li>Company Website : <a className="text-blue-600 font-medium">click here</a></li>
+                      <li>Year Of Establishment : 2014</li>
+                      <li>Social Media : <a className="text-blue-600 font-medium">click here</a></li>
+                      <li>Company Size : 1.5 M</li>
+                      <li>Annual Turnover : $278.19 B</li>
+                    </ul>
+                  </div>
+                </div>
+                <h1 className="text-xl font-semibold text-start mx-5 my-3">Recruiter Details</h1>
+                <div className="mx-10">
+                  <RecruitersTable data={Recruiters?.recruiters} />
 
-          </div>
-        </div>
+                </div>
+
+              </div></>
+          
+          )}
+
+       
+      </div>
       </div>
     </div>
   );
