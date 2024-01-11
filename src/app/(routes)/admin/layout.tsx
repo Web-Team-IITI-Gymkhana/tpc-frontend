@@ -8,7 +8,7 @@ interface Props {
 }
 
 const AdminLayout = ({ children }: Props) => {
-  return <div>{children}</div>;
+  return <>{children}</>;
 };
 
 export default AdminLayout;

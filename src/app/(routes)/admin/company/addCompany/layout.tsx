@@ -1,8 +1,4 @@
-// below is the layout that will contain the form for add company
-
 import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
 
 interface Props {
   children: React.ReactNode;

@@ -1,10 +1,9 @@
-// Below is the form used to add a company to the database
 "use client";
 import FormDropDown from "@/components/common/FormDropDown";
-import React, { useEffect } from "react";
+import { useState } from "react";
 
 const AddCompany = () => {
-  const [form, setForm] = React.useState({
+  const [form, setForm] = useState({
     name: "",
     postalAddress: "",
     website: "",
@@ -13,10 +12,6 @@ const AddCompany = () => {
     socialMediaPageLink: "",
     category: "",
     sector: "",
-  });
-
-  useEffect(() => {
-    console.log(form);
   });
 
   return (

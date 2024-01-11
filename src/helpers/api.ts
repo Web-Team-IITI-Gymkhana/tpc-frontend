@@ -1,6 +1,7 @@
 import { AllCompanies } from "@/dummyData/company";
 import { Jobs } from "@/dummyData/job";
 import { StudentsData } from "@/dummyData/students";
+import { RecruitersData } from "@/dummyData/recruiters";
 const url = (NextUrl: string) => {
   return `http://tpc.iiti.ac.in/api/v1${NextUrl}`;
 };
@@ -41,7 +42,7 @@ export const fetchCompany = async (accessToken: string | undefined) => {
 
 export const fetchEachCompanyDetails = async (
   accessToken: string | undefined,
-  id: String,
+  id: String
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -59,7 +60,7 @@ export const fetchAllJobs = async (
   recruiterId: string | null,
   companyId: string | null,
   role: string | null,
-  active: boolean | null,
+  active: boolean | null
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -104,4 +105,15 @@ export const fetchStudentData = async (accessToken: string | undefined) => {
   // const json = res.json()
   // return json
   return StudentsData;
+};
+
+export const fetchRecruiterData = async (accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  // const res = await fetch('')
+  // const json = res.json()
+  // return json
+  return RecruitersData;
 };

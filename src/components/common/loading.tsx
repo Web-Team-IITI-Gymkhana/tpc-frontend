@@ -1,3 +1,5 @@
-export default function Loading() {
-  return <div> Loading...</div>;
-}
+const Loading = () => {
+  return <>Loading...</>;
+};
+
+export default Loading;

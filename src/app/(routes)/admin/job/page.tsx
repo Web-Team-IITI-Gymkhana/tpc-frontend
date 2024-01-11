@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { Jobs } from "../../../../dummyData/job";
 import JobCard from "@/components/jobs/JobCard";
 import { fetchAllJobs } from "@/helpers/api";
 

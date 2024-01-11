@@ -1,12 +1,12 @@
 import React, { Suspense } from "react";
 import Loading from "@/components/common/loading";
 
-interface Props {
+interface RecruitersLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminJobsLayout = ({ children }: Props) => {
+const RecruitersLayout = ({ children }: RecruitersLayoutProps) => {
   return <Suspense fallback={<Loading />}>{children}</Suspense>;
 };
 
-export default AdminJobsLayout;
+export default RecruitersLayout;
