@@ -10,7 +10,7 @@ const StudentPage = async () => {
     <div>
       <h1 className="text-center font-bold text-3xl my-5">Students</h1>
       <div>
-        <StudentTable data={AllStudents} />
+        <StudentTable data={AllStudents?.students} />
       </div>
     </div>
   );
