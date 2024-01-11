@@ -51,13 +51,17 @@ const RootLayout = async ({ children, auth }: Props) => {
             <Toaster />
 
             <NextAuthProvider>
-              <div className="flex-auto flex h-[92vh]">
+              <div className="flex-auto flex h-[92vh] ">
                 {/* sidebar and main content share this space */}
                 <Suspense fallback={<>Loading...</>}>
                   <Sidebar AllSeasons={AllSeasons} />
                 </Suspense>
                 <MainContent>
-                  <Providers>{children}</Providers>
+                  <Providers>
+                    
+                      {children}
+                    
+                  </Providers>
                 </MainContent>
               </div>
               {auth}
