@@ -1,8 +1,10 @@
 import { Separator } from "@/components/ui/separator";
 import { Jobs } from "../../../../../dummyData/job";
-import { fetchEachJob } from "@/helpers/api";
+import { fetchEachJob, fetchJobEvents } from "@/helpers/api";
 import { cookies } from "next/headers";
 import { Button } from "@/components/ui/button";
+import EventCard from "@/components/jobs/EventCard";
+import { AddEventDialog } from "@/components/jobs/AddEventDialog";
 
 interface Props {
   params: {
@@ -15,6 +17,8 @@ const EachJobPage = async ({ params }: Props) => {
     cookies()?.get("accessToken")?.value,
     params.jobId,
   );
+
+  const AllEvents = await fetchJobEvents(cookies()?.get("accessToken")?.value, params.jobId)
   return (
     <div className="m-10 bg-white p-5 border-2 rounded-xl">
       <div className="  font-semibold text-xl">
@@ -66,15 +70,28 @@ const EachJobPage = async ({ params }: Props) => {
           <li> have relevant skills and interests</li>
         </ul>
       </div>
+      <div>
+        <h1 className="text-lg font-semibold my-2">Our Events</h1>
+        <div className="mx-10 grid lg:grid-cols-3 grid-cols-1 gap-2">
+          {AllEvents?.event?.map((ele: any, index: number) => {
+            return (
+              <div key={index} className="flex justify-center items-center my-2">
+                <EventCard ele={ele} jobId={params.jobId} />
+              </div>
+            )
+          })}
+        </div>
+      </div>
       <div className="my-5 flex justify-between mx-5 items-center">
         <Button  >Apply Now</Button>
         <div className="flex justify-center items-center">
-        <Button  className="mx-2 my-2">Update</Button>
-        <Button variant={"destructive"} className="mx-2 my-2">Delete</Button>
-      </div>
+          <AddEventDialog  jobId={params.jobId} />
+          <Button className="mx-2 my-2">Update Job</Button>
+          <Button variant={"destructive"} className="mx-2 my-2">Delete Job</Button>
+        </div>
 
       </div>
-      
+
 
     </div>
   );
