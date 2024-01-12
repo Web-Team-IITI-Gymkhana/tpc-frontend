@@ -26,7 +26,7 @@ const AddJobForm = ({ companiesDropDownOptions }: Props) => {
   const numStages = 4;
 
   return (
-    <div className="mx-2 my-[1vh] h-[84vh] py-[2vh] rounded-md bg-white">
+    <div className="mx-2 my-[1vh] h-[84vh] py-[1vh] rounded-md bg-white">
       <div className="mx-2 my-[2vh]">
         <div className="flex justify-between mx-1 h-[6vh]">
           <div className="flex items-center">
@@ -37,7 +37,7 @@ const AddJobForm = ({ companiesDropDownOptions }: Props) => {
           </div>
         </div>
         <hr />
-        <div className="mt-4 mx-3 min-h-[60vh]">
+        <div className="mt-4 mx-3 max-h-[70vh] h-fit">
           {formStage === 1 ? (
             <AddJobFormOne
               job={job}

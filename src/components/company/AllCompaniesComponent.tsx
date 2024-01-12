@@ -33,7 +33,7 @@ const AllCompaniesComponent = async () => {
   }
   const Recruiters = await fetchCompanyRecruiters(
     cookies()?.get("accessToken")?.value,
-    cookies()?.get("companyId")?.value,
+    cookies()?.get("companyId")?.value
   );
   console.log("Recruiters", Recruiters);
   return (
@@ -55,7 +55,7 @@ const AllCompaniesComponent = async () => {
         <div id="main_content">
           <div className="flex justify-center items-center my-10">
             <Button>
-              <Link href="/admin/company/addCompany">Add Company</Link>
+              <Link href="/admin/companies/addCompany">Add Company</Link>
             </Button>
           </div>
           <div className="m-4">

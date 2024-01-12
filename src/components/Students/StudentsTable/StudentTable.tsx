@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-import { useState } from "react";
 import Modal from "react-modal";
 import {
   ColumnDef,
@@ -14,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, X } from "lucide-react";
+import { ChevronDown, MoreHorizontal, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -201,7 +200,7 @@ export const columns: ColumnDef<Student>[] = [
 export default function StudentTable({ data }: any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
 
   const [columnVisibility, setColumnVisibility] =
@@ -235,7 +234,7 @@ export default function StudentTable({ data }: any) {
 
   const handleFilterChange = (columnId: string, value: string) => {
     const existingFilterIndex = filters.findIndex(
-      (filter: any) => filter.columnId === columnId,
+      (filter: any) => filter.columnId === columnId
     );
     if (existingFilterIndex === -1) {
       setFilters([...filters, { columnId, value }]);
@@ -336,7 +335,7 @@ export default function StudentTable({ data }: any) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -355,7 +354,7 @@ export default function StudentTable({ data }: any) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

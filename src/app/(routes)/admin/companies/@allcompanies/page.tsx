@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { use } from "react";
+import { useRouter } from "next/navigation";
 interface Props {}
 
 interface company {
@@ -19,6 +21,7 @@ interface company {
 
 const CompanyPage = async () => {
   const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
+  const router = useRouter();
 
   if (Companies.companies.length === 0) {
     return (
@@ -45,7 +48,13 @@ const CompanyPage = async () => {
 
         <div id="main_content">
           <div className="flex justify-center items-center my-10">
-            <Button>Add Company</Button>
+            <Button
+              onClick={() => {
+                router.push("/admin/companies/addCompany");
+              }}
+            >
+              Add Company
+            </Button>
           </div>
           <div className="m-4">
             <Input type="text" placeholder="Search..." />

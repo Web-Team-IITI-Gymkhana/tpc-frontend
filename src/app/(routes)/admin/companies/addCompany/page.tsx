@@ -21,7 +21,7 @@ const AddCompany = () => {
       </div>
       <hr className="col-span-12 mt-2 mb-4" />
 
-      <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mx-4">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mx-4 max-h-[60vh] overflow-y-scroll px-2">
         <div className="sm:col-span-3">
           <label
             htmlFor="first-name"
@@ -280,6 +280,14 @@ const AddCompany = () => {
             />
           </div>
         </div>
+      </div>
+      <div className="w-full mt-2 flex justify-center">
+        <button
+          className="px-4 py-2 rounded-md bg-blue-500 text-white mx-1"
+          onClick={() => {}}
+        >
+          Submit
+        </button>
       </div>
     </>
   );

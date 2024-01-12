@@ -6,7 +6,7 @@ interface Props {
 }
 
 const AddJobLayout = ({ children }: Props) => {
-  return <JobFormProvider>{children}</JobFormProvider>;
+  return <>{children}</>;
 };
 
 export default AddJobLayout;

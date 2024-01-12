@@ -9,19 +9,15 @@ interface Props {
   setJob: Function;
 }
 
-const AddJobFormOne = async ({
-  companiesDropDownOptions,
-  job,
-  setJob,
-}: Props) => {
+const AddJobFormOne = ({ companiesDropDownOptions, job, setJob }: Props) => {
   return (
     <>
-      <div className="block font-bold text-[20px] text-underline">
+      <div className="block font-bold text-[20px] text-underline h-fit">
         Company And Job Profile
       </div>
       <hr className="col-span-12 mt-2 mb-4" />
 
-      <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mx-4">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mx-4 max-h-[50vh] overflow-y-scroll">
         <div className="col-span-3">
           <label
             htmlFor="company"
