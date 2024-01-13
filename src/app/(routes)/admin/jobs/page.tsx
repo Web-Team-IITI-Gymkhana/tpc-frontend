@@ -9,10 +9,10 @@ const AdminJobsPage = async () => {
     null,
     null,
     null,
-    null,
+    null
   );
   console.log(AllJobs);
-  
+
   if (AllJobs?.jobs?.length === 0) {
     return (
       <h1 className="text-center text-black text-3xl font-bold flex justify-center items-center w-full h-full">
@@ -20,17 +20,17 @@ const AdminJobsPage = async () => {
       </h1>
     );
   }
-  
+
   return (
     <div>
-      <h1 className="text-center font-bold my-10 text-3xl">Jobs</h1>
+      <h1 className="text-center font-bold my-6 text-3xl">Jobs</h1>
       <section className="text-gray-600 body-font overflow-hidden">
-        <div className="container px-5  mx-auto">
+        <div className="container px-5 mx-auto">
           <div className="gap-10 grid md:grid-cols-3">
             {AllJobs?.jobs?.map((ele: any, index: number) => {
               return (
                 <div key={index}>
-                  <JobCard jobItem={ele} salary={null}  />
+                  <JobCard jobItem={ele} salary={null} />
                 </div>
               );
             })}

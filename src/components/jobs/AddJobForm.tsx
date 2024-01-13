@@ -4,7 +4,7 @@ import AddJobFormOne from "@/components/jobs/AddJobFormOne";
 import AddJobFormThree from "@/components/jobs/AddJobFormThree";
 import AddJobFormTwo from "@/components/jobs/AddJobFormTwo";
 import { useState } from "react";
-import { Company, Job } from "@/app/(routes)/admin/job/addJob/page";
+import { Company, Job } from "@/app/(routes)/admin/jobs/addJob/page";
 import { OptionInterface } from "../common/FormDropDown";
 
 interface Props {

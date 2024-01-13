@@ -1,5 +1,5 @@
 "use client";
-import { Job, Company } from "@/app/(routes)/admin/job/addJob/page";
+import { Job, Company } from "@/app/(routes)/admin/jobs/addJob/page";
 import FormDropDown from "../common/FormDropDown";
 import { OptionInterface } from "../common/FormDropDown";
 

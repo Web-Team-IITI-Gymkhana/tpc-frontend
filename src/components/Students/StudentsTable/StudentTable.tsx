@@ -50,7 +50,7 @@ interface Student {
   totalPenalty: number;
   createdAt: string;
   updatedAt: string;
-  member: {
+  user: {
     id: string;
     email: string;
     name: string;
@@ -113,14 +113,14 @@ export const columns: ColumnDef<Student>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "user.name",
     header: "Name",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="lowercase">{row.original.user.name}</div>,
   },
   {
     accessorKey: "rollNo",
     header: "Roll Number",
-    cell: ({ row }) => <div>{row.getValue("rollNo")}</div>,
+    cell: ({ row }) => <div>{row.getValue('rollNo')}</div>,
   },
   {
     accessorKey: "category",
@@ -128,9 +128,9 @@ export const columns: ColumnDef<Student>[] = [
     cell: ({ row }) => <div>{row.getValue("category")}</div>,
   },
   {
-    accessorKey: "member.email",
+    accessorKey: "user.email",
     header: "Email",
-    cell: ({ row }) => <div>{row.original.member.email}</div>,
+    cell: ({ row }) => <div>{row.original.user.email}</div>,
   },
   {
     accessorKey: "gender",
@@ -138,19 +138,9 @@ export const columns: ColumnDef<Student>[] = [
     cell: ({ row }) => <div>{row.getValue("gender")}</div>,
   },
   {
-    accessorKey: "branch",
-    header: "Branch",
-    cell: ({ row }) => <div>{row.getValue("branch")}</div>,
-  },
-  {
-    accessorKey: "graduationYear",
-    header: "Graduation Year",
-    cell: ({ row }) => <div>{row.getValue("graduationYear")}</div>,
-  },
-  {
-    accessorKey: "currentCPI",
-    header: "Current CPI",
-    cell: ({ row }) => <div>{row.getValue("currentCPI")}</div>,
+    accessorKey: "contact",
+    header: "Contact",
+    cell: ({ row }) => <div>{row.original.user.contact}</div>,
   },
   {
     id: "actions",
