@@ -9,30 +9,31 @@ type StepProps = {
 
 const JobDetails = ({ errors, values, handleChange }: StepProps) => (
   <Form layout="vertical">
+    <h1 className="text-xl">Job Details</h1>
     <Row gutter={24}>
       <Col span={12}>
-        <Form.Item label="Title Name">
+        <Form.Item label="Job Title">
           <Input
-            name="title"
-            placeholder="title"
+            name="jobTitle"
+            placeholder="Job Title"
             onChange={handleChange}
-            value={values.title}
+            value={values.jobTitle}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
         <Form.Item
-          label="Attachment"
-          required
-          hasFeedback
-          validateStatus={!!errors.designation ? "error" : ""}
-          help={errors.designation ? `${errors.designation}`:""}
+          label="Descritption"
+          // required
+          // hasFeedback
+          // validateStatus={!!errors.designation ? "error" : ""}
+          // help={errors.designation ? `${errors.designation}`:""}
         >
           <Input
-            name="attachment"
-            placeholder="attachment"
+            name="description"
+            placeholder="Descritption"
             onChange={handleChange}
-            value={values.attachment}
+            value={values.description}
           />
         </Form.Item>
       </Col>
@@ -43,19 +44,85 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => (
         <Form.Item label="Skill">
           <Input
             name="skill"
-            placeholder="skill"
+            placeholder="Skill"
             onChange={handleChange}
             value={values.skill}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item label="Description">
+        <Form.Item label="Attachments">
           <Input
-            name="description"
-            placeholder="description"
+            name="attachments"
+            placeholder="Attachments"
             onChange={handleChange}
-            value={values.description}
+            value={values.attachments}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
+    <Row gutter={24}>
+      <Col span={12}>
+        <Form.Item label="Location">
+          <Input
+            name="location"
+            placeholder="Location"
+            onChange={handleChange}
+            value={values.location}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item label="Vacancies">
+          <Input
+            name="vacancies"
+            placeholder="Vacancies"
+            onChange={handleChange}
+            value={values.vacancies}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
+    <Row gutter={24}>
+      <Col span={12}>
+        <Form.Item label="Basic Criteria">
+          <Input
+            name="basicCriteria"
+            placeholder="Basic Criteria"
+            onChange={handleChange}
+            value={values.basicCriteria}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item label="Offer Letter Date">
+          <Input
+            name="offerLetterDate"
+            placeholder="Offer Letter Date"
+            onChange={handleChange}
+            value={values.offerLetterDate}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
+    <Row gutter={24}>
+      <Col span={12}>
+        <Form.Item label="Tentative Joining Date">
+          <Input
+            name="tentativeJoiningDate"
+            placeholder="Tentative Joining Date"
+            onChange={handleChange}
+            value={values.tentativeJoiningDate}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item label="Duration">
+          <Input
+            name="duration"
+            placeholder="Duration"
+            onChange={handleChange}
+            value={values.duration}
           />
         </Form.Item>
       </Col>

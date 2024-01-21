@@ -16,7 +16,7 @@ function JAF() {
   const [finalValues, setFinalValues] = React.useState({});
   return (
     <div className="flex w-full justify-start gap-10 p-10 align-center">
-      <div className="w-1/3 flex justify-center items-center border-2 border-gray-500">
+      <div className="w-1/3 justify-center items-center border-2 border-gray-500 hidden lg:flex">
         <p>
           SOME CONTENT ABOUT IIT INDORE
         </p>
@@ -40,13 +40,21 @@ function JAF() {
           establishmentYear:"",
           annualTurnover:"",
           socialMedia:"",
-          employerName: "",
+          recruiterName: "",
           designation: "",
-          totalExperience: "",          
-          title:"",
+          email: "",          
+          phone:"",
+          landline:"",
+          jobTitle:"",
           description:"",
-          attachment:"",
-          skill:"",
+          attachments:"",
+          skills:"",
+          location:"",
+          vacancies:"",
+          basicCriteria:"",
+          offerLetterDate:"",
+          tentativeJoiningDate:"",
+          duration:"",
         }}
         onSubmit={(values: any) => {
           setFinalValues(values);
@@ -71,7 +79,9 @@ function JAF() {
           {
             component: RecruiterDetails,
             validationSchema: Yup.object().shape({
-              designation: Yup.string().required("Designation is required")
+              designation: Yup.string().required("Required"),
+              phone: Yup.number().typeError("Enter a valid number").required("Required"),
+              email: Yup.string().email("Enter valid email").required("Required")
             })
           },
           {
@@ -93,10 +103,10 @@ function JAF() {
           return (
             <Space direction="vertical" size="large">
               <Steps current={currentStepIndex}>
-                <Step title="Season Details" description="Season info" />
+                <Step title="Season Details &nbsp;&nbsp;&nbsp;" description="Season info" />
                 <Step title="Company Details" description="Company info" />
-                <Step title="Recruiter Details" description="Recruited info" />
-                <Step title="Job Details" description="Job info" />                
+                <Step title="Recruiter Details&nbsp;" description="Recruited info" />
+                <Step title="Job Details&nbsp;" description="Job info" />                
               </Steps>
               {renderComponent()}
               <Row className="gap-20 justify-center">

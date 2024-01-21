@@ -24,6 +24,7 @@ const SeasonDetails = ({ errors, values, handleChange }: StepProps) => {
 
   return(  
   <Form layout="vertical">
+    <h1 className="text-xl">Season Details</h1>
     <Row gutter={32}>
       <Col span={12}>
         <Form.Item label="Year"                             

@@ -9,20 +9,21 @@ type StepProps = {
 
 const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => (
   <Form layout="vertical">
+    <h1 className="text-xl">Recruiter Details</h1>
     <Row gutter={24}>
       <Col span={12}>
-        <Form.Item label="Employer Name">
+        <Form.Item label="Recruiter Name">
           <Input
-            name="employerName"
-            placeholder="Employer Name"
+            name="recruiterName"
+            placeholder="Recruiter Name"
             onChange={handleChange}
-            value={values.employerName}
+            value={values.recruiterName}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
         <Form.Item
-          label="Desissgnation"
+          label="Designation"
           required
           hasFeedback
           validateStatus={!!errors.designation ? "error" : ""}
@@ -40,25 +41,45 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => (
 
     <Row gutter={24}>
       <Col span={12}>
-        <Form.Item label="Total Experience">
+        <Form.Item label="Email"
+        required
+        validateStatus={!!errors.email ? "error" : ""}
+        help={errors.email ? `${errors.email}`:""}
+        >
           <Input
-            name="totalExperience"
-            placeholder="Total Experience"
+            name="email"
+            placeholder="Email"
             onChange={handleChange}
-            value={values.totalExperience}
+            value={values.email}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item label="City">
+        <Form.Item label="Phone"
+        required
+        validateStatus={!!errors.phone ? "error" : ""}
+        help={errors.phone ? `${errors.phone}`:""}>
           <Input
-            name="city"
-            placeholder="City"
+            name="phone"            
+            placeholder="Phone"
             onChange={handleChange}
-            value={values.city}
+            value={values.phone}           
           />
         </Form.Item>
       </Col>
+    </Row>
+
+    <Row gutter={24}>
+      <Col span={12}>
+        <Form.Item label="Landline">
+          <Input
+            name="landline"
+            placeholder="Landline"
+            onChange={handleChange}
+            value={values.landline}
+          />
+        </Form.Item>
+      </Col>     
     </Row>
   </Form>
 );
