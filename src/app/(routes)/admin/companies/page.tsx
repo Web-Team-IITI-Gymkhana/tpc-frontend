@@ -1,21 +1,23 @@
-import { Button } from "@/components/ui/button"
-import { cookies } from "next/headers";
-import { Card, CardContent } from "@/components/ui/card"
-
-
-interface Props { }
+'use client'
+import { fetchCompany } from "@/helpers/api";
+import Cookies from "js-cookie";
+import {ColumnDef} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, X } from "lucide-react";
 import {
-  fetchAllJobs,
-  fetchCompany,
-  fetchCompanyRecruiters,
-} from "@/helpers/api";
-import AllCompaniesComponent from "@/components/company/AllCompaniesComponent";
-import { Suspense } from "react";
-import { Separator } from "@/components/ui/separator";
-import RecruitersTable from "@/components/RecruitersTable";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import TableComponent from "@/components/TableComponent/TableComponent";
+import Link from "next/link";
 
 
-interface company {
+interface Company {
   id: string;
   name: string;
   metadata: object;
@@ -23,77 +25,89 @@ interface company {
   updatedAt: string;
 }
 
-const CompanyPage = async () => {
-  const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
-  console.log(Companies)
-  if (Companies.companies.length === 0) {
-    return (
-      <h1 className="text-center text-black text-3xl font-bold flex justify-center items-center w-full h-full">
-        No Comapanies Currently Registered
-      </h1>
-    );
-  }
-
-  const Recruiters = await fetchCompanyRecruiters(
-    cookies()?.get("accessToken")?.value,
-    cookies()?.get("companyId")?.value,
-  );
-
-  const CompanyRelatedJobs = await fetchAllJobs(
-    cookies()?.get("accessToken")?.value,
-    null,
-    null,
-    cookies()?.get("companyId")?.value,
-    null,
-    null,
-  );
-
-  console.log("CRJ", CompanyRelatedJobs);
-  return (
-    <div className="">
-      <div className="grid grid-cols-[300px_auto]">
-        <div>
-          <AllCompaniesComponent />
-        </div>
-        <div>
-          {cookies()?.get('companyId') != undefined && (
-          <><div className="flex justify-between items-center">
-              <div className="text-3xl font-bold mx-5 my-5">{cookies().get('companyName')?.value}</div>
-              <div className="flex">
-                <Button variant={"outline"} className="mr-5">See Jobs</Button>
-                <Button className="mr-5">Update</Button>
-                <Button className="mr-5" variant="destructive">Delete</Button>
-              </div>
-            </div><Separator /><div className="h-[66vh] overflow-y-scroll">
-                <div className="">
-                  <h1 className="text-xl font-semibold text-start mx-5 my-3">Company Details</h1>
-                  <div className="mx-16">
-                    <ul className="list-disc">
-                      <li>Company Website : <a className="text-blue-600 font-medium">click here</a></li>
-                      <li>Year Of Establishment : 2014</li>
-                      <li>Social Media : <a className="text-blue-600 font-medium">click here</a></li>
-                      <li>Company Size : 1.5 M</li>
-                      <li>Annual Turnover : $278.19 B</li>
-                    </ul>
-                  </div>
-                </div>
-                <h1 className="text-xl font-semibold text-start mx-5 my-3">Recruiter Details</h1>
-                <div className="mx-10">
-                  <RecruitersTable data={Recruiters?.recruiters} />
-
-                </div>
-
-              </div></>
+const columns: ColumnDef<Company>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value: any) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "id",
+    header: "Compnay Id",
+    cell: ({ row }) => <div className="lowercase">{row.getValue('id')}</div>,
+  },
+  {
+    accessorKey: "name",
+    header: "Company Name",
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const company = row.original;
+      console.log(company);
+      let isDeleteModalOpen = false;
+      return (
+        <DropdownMenu>
           
-          )}
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem><Link href={`/admin/companies/${company.id}`}>View Company</Link></DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                isDeleteModalOpen = true;
+              }}
+            >
+              Delete Company
+            </DropdownMenuItem>
+            <DropdownMenuItem>Update Company</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
 
-       
-      </div>
+const CompaniesPage = async () => {
+  const AllCompanies = await fetchCompany(
+    Cookies.get("accessToken"),
+  );
+  return (
+    <div className="m-10">
+      
+      <h1 className="text-center font-bold text-3xl py-5">Companies</h1>
+      <div>
+        <TableComponent isAddButton={true} AddButtonText={"Add Companies"} data={AllCompanies?.companies} columns={columns} />
       </div>
     </div>
   );
 };
 
-export default CompanyPage;
-
-// http://tpc.iiti.ac.in/api/v1/companies/3f1d7e53-2069-4820-8d91-64b81f79cf7a/recruiters
+export default CompaniesPage;

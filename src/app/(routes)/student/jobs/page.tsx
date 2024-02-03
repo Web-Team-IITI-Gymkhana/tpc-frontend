@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
 import JobCard from "@/components/jobs/JobCard";
 import { fetchAllJobs } from "@/helpers/api";
 
 const AdminJobsPage = async () => {
   const AllJobs = await fetchAllJobs(
-    cookies()?.get("accessToken")?.value,
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyVHlwZSI6IkFETUlOIiwiZW1haWwiOiJ0cGNAaWl0aS5hYy5pbiIsIm5hbWUiOiJIYXJzaCBUYWxhdGkiLCJpYXQiOjE3MDU4Mzg0MjgsImV4cCI6MTcwNjQ0MzIyOCwiYXVkIjoidHBjLWJhY2tlbmQiLCJpc3MiOiJ0cGMuaWl0aS5hYy5pbiIsInN1YiI6IjYzYjI4YTVhLWVjN2QtNDk0Ni1iYzBhLTU0NTQwNDNiNzgzNyJ9.0IinsVQz-FV1w4DDUINvLEa5_h65T4CBhQJj8ISfGig",
     null,
     null,
     null,

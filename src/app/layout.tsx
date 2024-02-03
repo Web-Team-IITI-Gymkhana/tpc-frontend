@@ -7,7 +7,7 @@ import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/store/provider";
 import { cookies } from "next/headers";
 import { fetchAllSeasons } from "@/helpers/api";
@@ -28,11 +28,12 @@ interface Props {
 const RootLayout = async ({ children, auth }: Props) => {
   const className = inter.className;
   const AllSeasons = await fetchAllSeasons(
-    cookies()?.get("accessToken")?.value,
+    cookies()?.get("accessToken")?.value
   );
   console.log(AllSeasons);
   return (
     <html lang="en">
+      <head></head>
       <body className={className}>
         <ToggleProvider>
           <div className="flex flex-col">
@@ -56,11 +57,7 @@ const RootLayout = async ({ children, auth }: Props) => {
                   <Sidebar AllSeasons={AllSeasons} />
                 </Suspense>
                 <MainContent>
-                  <Providers>
-                    
-                      {children}
-                    
-                  </Providers>
+                  <Providers>{children}</Providers>
                 </MainContent>
               </div>
               {auth}

@@ -1,9 +1,9 @@
 import { AllCompanies } from "@/dummyData/company";
-import { Jobs } from "@/dummyData/job";
-import { StudentsData } from "@/dummyData/students";
-import { RecruitersData } from "@/dummyData/recruiters";
+import axios from "axios";
+
 const url = (NextUrl: string) => {
-  return `http://tpc.iiti.ac.in/api/v1${NextUrl}`;
+  return `http://10.250.9.45:3000/api/v1${NextUrl}`;
+  // return `${process.env.BACKEND_URL}/api/v1${NextUrl}`;
 };
 
 const redirect = () => {
@@ -16,7 +16,7 @@ export const fetchAllSeasons = async (accessToken: string | undefined) => {
     redirect();
     return;
   }
-  const res = await fetch(url("/seasons"), {
+  let res = await fetch(url("/seasons"), {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -31,7 +31,8 @@ export const fetchCompany = async (accessToken: string | undefined) => {
     redirect();
     return;
   }
-  const res = await fetch("http://tpc.iiti.ac.in/api/v1/companies", {
+  let apiUrl = url("/companies");
+  const res = await fetch(apiUrl, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -92,7 +93,8 @@ export const fetchStudentData = async (accessToken: string | undefined) => {
     redirect();
     return;
   }
-  const res = await fetch("http://tpc.iiti.ac.in/api/v1/students", {
+  let apiUrl = url("/students");
+  const res = await fetch(apiUrl, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -109,18 +111,15 @@ export const fetchCompanyRecruiters = async (
     redirect();
     return;
   }
-
-  const res = await fetch(
-    `http://tpc.iiti.ac.in/api/v1/companies/${companyId}/recruiters/`,
-    {
-      next: {
-        tags: ["AllRecruiters"],
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  let apiUrl = url(`/companies/${companyId}/recruiters`);
+  const res = await fetch(apiUrl, {
+    next: {
+      tags: ["AllRecruiters"],
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   const json = res.json();
   return json;
 };
@@ -133,14 +132,12 @@ export const fetchJobSalary = async (
     redirect();
     return;
   }
-  const res = await fetch(
-    `http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/salary/`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  let apiUrl = url(`/jobs/${jobId}/salary`);
+  const res = await fetch(apiUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   const json = res.json();
   return json;
 };
@@ -153,7 +150,8 @@ export const fetchEachJob = async (
     redirect();
     return;
   }
-  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}`, {
+  let apiUrl = url(`/jobs/${jobId}`);
+  const res = await fetch(apiUrl, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -163,21 +161,43 @@ export const fetchEachJob = async (
   return json;
 };
 
-export const fetchJobEvents = async (accessToken : string | undefined,jobId : String | undefined) =>{
-  if(!accessToken || accessToken===undefined){
+export const fetchJobEvents = async (
+  accessToken: string | undefined,
+  jobId: String | undefined
+) => {
+  if (!accessToken || accessToken === undefined) {
     redirect();
-    return ;
+    return;
   }
-  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events`,{
+  let apiUrl = url(`/jobs/${jobId}/events`);
+  const res = await fetch(apiUrl, {
     next: {
       tags: ["AllEvents"],
     },
-    headers:{
-      Authorization : `Bearer ${accessToken}`
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-    
-  })
+  });
 
-  const json = res.json()
-  return json
-}
+  const json = res.json();
+  return json;
+};
+
+export const passwordlessLoginVerify = async (token: string) => {
+  let apiUrl = url("/auth/passwordless/verify");
+  const response = await axios
+    .post(apiUrl, {
+      token: token,
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  if (response?.data.success === true) {
+    return {
+      ...response,
+      data: { ...response.data, message: "Success" },
+    };
+  } else {
+    return response;
+  }
+};
