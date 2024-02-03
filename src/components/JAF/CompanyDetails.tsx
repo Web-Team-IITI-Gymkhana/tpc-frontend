@@ -1,6 +1,7 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
-import { Form, Input, Row, Col, Select, SelectProps } from "antd";
-
+import { Form, Input, Row, Col, Select, SelectProps, InputNumber } from "antd";
+import {useState, useEffect} from "react"
+import axios from "axios"
 
 type StepProps = {
   errors: FormikErrors<FormikValues>;
@@ -8,19 +9,30 @@ type StepProps = {
   handleChange: FormikHandlers["handleChange"];
 };
 
-const options: SelectProps['options'] = [];
-
-for (let i = 10; i < 36; i++) {
-  options.push({
-    label: i.toString(36) + i,
-    value: i.toString(36) + i,
-  });
-}
-
 
 
 const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
   
+
+  const [domains, setDomains] = useState<SelectProps['options']>([])
+  const [countries, setCountries] = useState([]);
+  let countryOptions:any = [];
+  const options: SelectProps['options'] = [];
+  useEffect(() => {
+    
+    axios.get("http://10.250.9.45:3000/api/v1/jaf")
+    .then((res) => {      
+      res.data.domains.map((domain:any) => {
+        options.push({value:domain, label:domain})
+      })
+      setDomains(options)
+      res.data.countries.map((it:any) => {
+        countryOptions.push({value:it, label:it})
+      })
+      setCountries(countryOptions)
+    })
+
+  }, [])
 
   return(
   <Form layout="vertical">
@@ -68,21 +80,22 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
             placeholder="Please Select"                                     
             defaultValue={values.domains.length ? values.domains : []}
             onChange={(value) => values.domains=value}
-            options={options}
+            options={domains}
           >            
           </Select>
         </Form.Item>
       </Col>
       <Col span={12}>
         <Form.Item label="Category">
-        <Select                                   
-            defaultValue={`${values.category}`}
+        <Select        
+            placeholder = "Please Select"                           
+            defaultValue={values.category ? `${values.category}`:null}
             onChange={(value) => values.category = value}
             options={[
-              { value: 'public', label: 'Public' },
-              { value: 'governmnet', label: 'Governmnet' },
-              { value: 'psu', label: 'PSU' },
-              { value: 'mnc', label: 'MNC' },
+              { value: 'PUBLIC', label: 'Public' },
+              { value: 'GOVERNMENT', label: 'Governmnet' },
+              { value: 'PSU', label: 'PSU' },
+              { value: 'MNC', label: 'MNC' },
             ]}
           >            
           </Select>
@@ -200,14 +213,14 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item label="Country">
-        <Input
-            name="country"
-            placeholder="Country"
-            defaultValue={values.country}
-            onChange={handleChange}
-            value={values.country}
-          />
+        <Form.Item label="Country">        
+          <Select                                             
+            onChange={(value) => values.country = value}
+            placeholder="Please Select"
+            options={countries}
+            defaultValue={values.country ? `${values.country}` : null}
+          >            
+          </Select>
         </Form.Item>
       </Col>
     </Row>

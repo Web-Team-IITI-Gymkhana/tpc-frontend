@@ -9,18 +9,18 @@ import JobDetails from "./JobDetails";
 import RecruiterDetails from "./RecruiterDetails";
 import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
+import axios from "axios"
 
 const { Step } = Steps;
 
 function JAF() {
   const [finalValues, setFinalValues] = React.useState({});
-  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/  
+  
 
   return (
     <div className="flex w-full justify-start gap-10 p-10 align-center">
-      <div className="w-1/3 justify-center items-center border-2 border-gray-500 hidden lg:flex">
-        <p>SOME CONTENT ABOUT IIT INDORE</p>
-      </div>
+      
       <div className="ml-auto mr-auto h-screen">
         <FormikWizard      
           
@@ -29,14 +29,14 @@ function JAF() {
             compName: "",
             website: "",
             domains: [],
-            category: "public",
+            category: "",
             line1: "",
             line2: "",
             city: "",
             state: "",
             zipCode: "",
             country: "",
-            size: "",
+            size:"",
             yearOfEstablishment: "",
             annualTurnover: "",
             socialMediaLink: "",
@@ -52,11 +52,11 @@ function JAF() {
             attachment: "",
             skills: "",
             location: "",
-            noOfVacancies: 0,            
+            noOfVacancies: "",            
 
             offerLetterReleaseDate: "",
             joiningDate: "",
-            duration: 0,
+            duration: "",
 
             selectionMode: "",
             shortlistFromResume: false,
@@ -67,25 +67,11 @@ function JAF() {
 
             others: "",
 
-            numberOfMembers: 0,
-            numberOfRooms: 0,
+            numberOfMembers: "",
+            numberOfRooms: "",
             otherRequirements: "",
 
-            salaries:[],
-            
-            salaryPeriod: 0, 
-            basicProgs: [],
-            basicGenders: [],
-            basicCategories: [],
-            basicMinCPI: 0,
-            basicTenth: 0,
-            basicTwelveth: 0,
-            
-            baseSalary: 0,
-            totalCTC: 0,
-            takeHomeSalary: 0,
-            grossSalary: 0,
-            otherCompensations: 0,            
+            salaries:[],                        
             jobOthers: "",
           }}
           onSubmit={(values: any) => {
@@ -113,13 +99,13 @@ function JAF() {
                 name: values.recName,
                 designation: values.designation,
                 email: values.email,
-                phoneNumber: "+91 "+values.phoneNumber,//with country code default +91 8793849280
+                contact: "+91 "+values.phoneNumber,//with country code default +91 8793849280
                 landline: values.landline,
               },
               job: {
                 role: values.role,
                 description: values.description,
-                attachment: values.attachment,//file
+                //attachment: values.attachment,//file
                 skills: values.skills,
                 location: values.location,
                 noOfVacancies: values.noOfVacancies,                
@@ -161,6 +147,63 @@ function JAF() {
                 others: values.jobOthers,//other textarea
               },
             };
+            console.log(submitValues)
+            axios.post("http://10.250.9.45:3000/api/v1/jaf",{
+              seasonId: values.seasonId,
+              company: {
+                name: values.compName,
+                website: values.website,
+                domains: values.domains,
+                category: values.category,
+                address: {
+                  line1: values.line1,
+                  line2: values.line2,
+                  city: values.city,
+                  state: values.state,
+                  zipCode: values.zipCode,
+                  country: values.country,
+                },
+                size: values.size,
+                yearOfEstablishment: values.yearOfEstablishment,
+                annualTurnover: values.annualTurnover,
+                socialMediaLink: values.socialMediaLink,
+              },
+              recruiter: {
+                name: values.recName,
+                designation: values.designation,
+                email: values.email,
+                phoneNumber: "+91 "+values.phoneNumber,
+                landline: values.landline,
+              },
+              job: {
+                role: values.role,
+                description: values.description,
+                //attachment: values.attachment,//file
+                skills: values.skills,
+                location: values.location,
+                noOfVacancies: values.noOfVacancies,                
+                offerLetterReleaseDate: values.offerLetterReleaseDate,
+                joiningDate: values.joiningDate,
+                duration: values.duration,
+                selectionProcedure: {
+                  selectionMode: values.selectionMode,
+                  shortlistFromResume: values.shortlistFromResume,
+                  groupDiscussion:values.groupDiscussion,
+                  tests: values.tests,
+                  interviews: values.interviews,                  
+                  others: values.others,
+                  requirements: {
+                    numberOfMembers: values.numberOfMembers,
+                    numberOfRooms: values.numberOfRooms,
+                    otherRequirements: values.otherRequirements,
+                  },
+                },
+                salaries: values.salaries,                
+                others: values.jobOthers,
+              },
+            }).then((res) => {
+              console.log(res)
+            }).catch((err) => console.log(err))
             setFinalValues(submitValues);
           }}
           validateOnNext
@@ -171,7 +214,7 @@ function JAF() {
               // validationSchema: Yup.object().shape({
               //   year: Yup.number().typeError("Please enter a valid Year").required("Required"),
               //   type: Yup.string().required("Required"),
-              // })
+              // }),
             },
             {
               component: CompanyDetails,

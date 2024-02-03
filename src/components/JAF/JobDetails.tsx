@@ -1,6 +1,7 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
-import { Form, Upload, message, Input, Card, Checkbox,Select, Row, Col, Button, UploadProps } from "antd";
-
+import { Form, Upload, message, Input, Card, Checkbox,Select, Row, Col, Button, UploadProps, SelectProps } from "antd";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   UploadOutlined,
   CloseOutlined,  
@@ -36,16 +37,38 @@ type StepProps = {
 const JobDetails = ({ errors, values, handleChange }: StepProps) => {
   const [form] = Form.useForm();
 
-  const handleTests = (vals: any) => {
-    console.log(vals);
-    values.tests = vals;
-  };
+  const [testType, setTestType] = useState([])
+  const [interviewType, setInterviewType] = useState([])
+  const [programs, setPrograms] = useState<SelectProps['options']>([])
+  let testTypeOptions:any = []
+  let interviewTypeOptions:any = []
+  const programsOptions:SelectProps['options'] = []
+
+  useEffect(() => {
+    
+    axios.get("http://10.250.9.45:3000/api/v1/jaf")
+    .then((res) => {      
+      res.data.testTypes.map((it:any) => {
+        testTypeOptions.push({value:it, label: it})
+      })
+      setTestType(testTypeOptions)
+      res.data.interviewTypes.map((it:any) => {
+        interviewTypeOptions.push({value:it, label: it})
+      })
+      setInterviewType(interviewTypeOptions)
+      res.data.programs.map((it:any) => {
+        programsOptions.push({value:it.id, label: `${it.branch} - ${it.course} - ${it.year}`})
+      })
+      setPrograms(programsOptions)
+    })
+      
+  }, [])
 
   return (
     <Form
       layout="vertical"
       form={form}
-      initialValues={{ tests: [{ type:"aptitude", duration:""}], interviews: [{type:"technical", duration:""}], salaries: [{}] }}
+      initialValues={{ tests: [{ type:"APTITUDE", duration:""}], interviews: [{type:"TECHNICAL", duration:""}], salaries: [{}] }}
       onValuesChange={() => {
         values.interviews = form.getFieldsValue().interviews;
         values.tests = form.getFieldsValue().tests;
@@ -55,9 +78,9 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
           const obj = {
             salaryPeriod: salary.salaryPeriod,//text
             criteria: {
-              programs: salary.programs ? salary.programs:"program1",//dropdown from backend
-              genders: salary.genders ? salary.genders:"gender1",//dropdown from backend
-              categories: salary.categories ? salary.categories:"category1",//dropdown from backend
+              programs: salary.programs ? salary.programs:[],//dropdown from backend
+              genders: salary.genders ? salary.genders:[],//dropdown from backend
+              categories: salary.categories ? salary.categories:[],//dropdown from backend
               minCPI: salary.minCPI ? salary.minCPI:0,//number
               tenthMarks: salary.tenthMarks ? salary.tenthMarks:0,//number
               twelvethMarks: salary.twelvethMarks ? salary.twelvethMarks:0,//number
@@ -66,7 +89,7 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
             totalCTC: salary.totalCTC ? salary.totalCTC:0,
             takeHomeSalary: salary.takeHomeSalary ? salary.takeHomeSalary:0,
             grossSalary: salary.grossSalary ? salary.grossSalary:0,
-            otherCompensations: salary.otherCompensations ? salary.otherCompensations : "",//textbox
+            otherCompensations: salary.otherCompensations ? salary.otherCompensations : 0,//textbox
           }
           objx.push(obj)
         })
@@ -195,9 +218,10 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
           <Select      
             placeholder="Please select"
             onChange={(value) => values.selectionMode = value}
+            defaultValue={values.selectionMode ? `${values.selectionMode}`:null}
             options={[
-              { value: 'online', label: 'Online' },
-              { value: 'offline', label: 'Offline' },              
+              { value: 'ONLINE', label: 'Online' },
+              { value: 'OFFLINE', label: 'Offline' },              
             ]}
           >            
           </Select>
@@ -252,11 +276,8 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                     >
                       <Select
                        placeholder="Please select"                        
-                       options={[
-                        { value: 'aptitude', label: 'Aptitude' },
-                        { value: 'technical', label: 'Technical' }, 
-                        { value: 'assignment', label: 'Assignment' },                  
-                      ]}
+                       options={testType}
+                       
                       />
                     </Form.Item>
                   </Col>
@@ -306,10 +327,7 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                     >
                      <Select
                        placeholder="Please select"                        
-                       options={[
-                         { value: 'technical', label: 'Technical' },                                       
-                        { value: 'HR', label: 'HR' },
-                      ]}
+                       options={interviewType}
                       />
                     </Form.Item>
                   </Col>
@@ -392,23 +410,22 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                 <Row gutter={24}>
                   <Col span={12}>
                     <Form.Item label="Programs" name={[field.name, "programs"]}>
-                    <Select      
-                        placeholder="Please select"                        
-                        options={[
-                          { value: 'program1', label: 'Program1' },
-                          { value: 'program2', label: 'Program2' },              
-                        ]}
-                      >    
-                      </Select>                            
+                    <Select          
+                      mode="multiple"           
+                      placeholder="Please Select"
+                      options={programs}
+                    >            
+                    </Select>                                                    
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item label="Genders" name={[field.name, "genders"]}>
                     <Select      
+                      mode="multiple"
                         placeholder="Please select"                        
                         options={[
-                          { value: 'gender1', label: 'Gender1' },
-                          { value: 'gender2', label: 'Gender2' },              
+                          { value: 'MALE', label: 'Male' },
+                          { value: 'FEMALE', label: 'Female' },              
                         ]}
                       >    
                       </Select>  
@@ -419,10 +436,11 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                   <Col span={12}>
                     <Form.Item label="Categories" name={[field.name, "categories"]}>
                     <Select      
+                        mode="multiple"
                         placeholder="Please select"                        
                         options={[
-                          { value: 'category1', label: 'Category1' },
-                          { value: 'category2', label: 'Category2' },              
+                          { value: 'GENERAL', label: 'General' },
+                          { value: 'PWD', label: 'PWD' },              
                         ]}
                       >    
                       </Select> 
