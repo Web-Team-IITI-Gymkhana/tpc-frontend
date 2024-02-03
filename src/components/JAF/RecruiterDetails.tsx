@@ -1,5 +1,5 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
-import { Form, Input, Row, Col } from "antd";
+import { Form, Input, Row, Col, InputNumber, Space } from "antd";
 
 type StepProps = {
   errors: FormikErrors<FormikValues>;
@@ -7,17 +7,21 @@ type StepProps = {
   handleChange: FormikHandlers["handleChange"];
 };
 
-const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => (
-  <Form layout="vertical">
+const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
+
+  const [form] = Form.useForm();
+
+  return(
+  <Form layout="vertical" >
     <h1 className="text-xl">Recruiter Details</h1>
     <Row gutter={24}>
       <Col span={12}>
         <Form.Item label="Recruiter Name">
           <Input
-            name="recruiterName"
+            name="recName"
             placeholder="Recruiter Name"
             onChange={handleChange}
-            value={values.recruiterName}
+            value={values.recName}
           />
         </Form.Item>
       </Col>
@@ -55,17 +59,23 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => (
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item label="Phone"
-        required
-        validateStatus={!!errors.phone ? "error" : ""}
-        help={errors.phone ? `${errors.phone}`:""}>
+        
+        <Form.Item label="Phone"      
+        required   
+          validateStatus={!!errors.phoneNumber ? "error" : ""}
+          help={errors.phoneNumber ? `${errors.phoneNumber}`:""}
+        >
+            {/* <Input style={{ width: '20%' }} defaultValue="+91" name="code" />
+            <Input style={{ width: '80%' }} placeholder="Phone Number" name="number"/> */}
           <Input
-            name="phone"            
+            name="phoneNumber"            
             placeholder="Phone"
             onChange={handleChange}
-            value={values.phone}           
-          />
+            value={values.phoneNumber}   
+            addonBefore="+91"      
+            />          
         </Form.Item>
+       
       </Col>
     </Row>
 
@@ -82,6 +92,6 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => (
       </Col>     
     </Row>
   </Form>
-);
+)};
 
 export default RecruiterDetails;

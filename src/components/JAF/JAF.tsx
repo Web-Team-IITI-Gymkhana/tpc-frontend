@@ -14,126 +14,238 @@ const { Step } = Steps;
 
 function JAF() {
   const [finalValues, setFinalValues] = React.useState({});
+  const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
   return (
     <div className="flex w-full justify-start gap-10 p-10 align-center">
       <div className="w-1/3 justify-center items-center border-2 border-gray-500 hidden lg:flex">
-        <p>
-          SOME CONTENT ABOUT IIT INDORE
-        </p>
+        <p>SOME CONTENT ABOUT IIT INDORE</p>
       </div>
       <div className="ml-auto mr-auto h-screen">
-      <FormikWizard
-        initialValues={{
-          year:"2024",
-          type:"intern",
-          name: "",
-          website: "",
-          domains: [],
-          category:"public",          
-          addressLine1: "",
-          addressLine2: "",
-          city:"",
-          state:"",
-          zipcode:"",
-          country:"",
-          companySize:"",
-          establishmentYear:"",
-          annualTurnover:"",
-          socialMedia:"",
-          recruiterName: "",
-          designation: "",
-          email: "",          
-          phone:"",
-          landline:"",
-          jobTitle:"",
-          description:"",
-          attachments:"",
-          skills:"",
-          location:"",
-          vacancies:"",
-          basicCriteria:"",
-          offerLetterDate:"",
-          tentativeJoiningDate:"",
-          duration:"",
-        }}
-        onSubmit={(values: any) => {
-          setFinalValues(values);
-        }}
-        validateOnNext
-        activeStepIndex={0}
-        steps={[
-          {
-            component: SeasonDetails,
-            validationSchema: Yup.object().shape({
-              year: Yup.number().typeError("Please enter a valid Year").required("Required"),
-              type: Yup.string().required("Required"),              
-            })
-          },
-          {
-            component: CompanyDetails,
-            validationSchema: Yup.object().shape({
-              name: Yup.string().required("Required"),
-              website: Yup.string().url("Enter valid URL").required("Required"),
-            })
-          },
-          {
-            component: RecruiterDetails,
-            validationSchema: Yup.object().shape({
-              designation: Yup.string().required("Required"),
-              phone: Yup.number().typeError("Enter a valid number").required("Required"),
-              email: Yup.string().email("Enter valid email").required("Required")
-            })
-          },
-          {
-            component: JobDetails,
-            validationSchema: Yup.object().shape({
-              designation: Yup.string().required("Designation is required")
-            })
-          }
-        ]}
-      >
-        {({
-          currentStepIndex,
-          renderComponent,
-          handlePrev,
-          handleNext,
-          isNextDisabled,
-          isPrevDisabled
-        }: RenderProps) => {
-          return (
-            <Space direction="vertical" size="large">
-              <Steps current={currentStepIndex}>
-                <Step title="Season Details &nbsp;&nbsp;&nbsp;" description="Season info" />
-                <Step title="Company Details" description="Company info" />
-                <Step title="Recruiter Details&nbsp;" description="Recruited info" />
-                <Step title="Job Details&nbsp;" description="Job info" />                
-              </Steps>
-              {renderComponent()}
-              <Row className="gap-20 justify-center">
-                <Button
-                  disabled={isPrevDisabled}
-                  type="primary"
-                  onClick={handlePrev}
-                >
-                  Previous
-                </Button>
-                <Button
-                  disabled={isNextDisabled}
-                  type="primary"
-                  onClick={handleNext}                  
-                >
-                  {currentStepIndex === 3 ? "Finish" : "Next"}
-                </Button>
-              </Row>
-              <Row>
-                <Col>
-                  <pre>{JSON.stringify(finalValues, null, 2)}</pre>
-                </Col>
-              </Row>
-            </Space>
-          );
-        }}
-      </FormikWizard>
+        <FormikWizard      
+          
+          initialValues={{
+            seasonId: "",
+            compName: "",
+            website: "",
+            domains: [],
+            category: "public",
+            line1: "",
+            line2: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            country: "",
+            size: "",
+            yearOfEstablishment: "",
+            annualTurnover: "",
+            socialMediaLink: "",
+
+            recName: "",
+            designation: "",
+            email: "",
+            phoneNumber: "",
+            landline: "",
+
+            role: "",
+            description: "",
+            attachment: "",
+            skills: "",
+            location: "",
+            noOfVacancies: 0,            
+
+            offerLetterReleaseDate: "",
+            joiningDate: "",
+            duration: 0,
+
+            selectionMode: "",
+            shortlistFromResume: false,
+            groupDiscussion: false,
+
+            tests:[],
+            interviews:[],
+
+            others: "",
+
+            numberOfMembers: 0,
+            numberOfRooms: 0,
+            otherRequirements: "",
+
+            salaries:[],
+            
+            salaryPeriod: 0, 
+            basicProgs: [],
+            basicGenders: [],
+            basicCategories: [],
+            basicMinCPI: 0,
+            basicTenth: 0,
+            basicTwelveth: 0,
+            
+            baseSalary: 0,
+            totalCTC: 0,
+            takeHomeSalary: 0,
+            grossSalary: 0,
+            otherCompensations: 0,            
+            jobOthers: "",
+          }}
+          onSubmit={(values: any) => {
+            const submitValues = {
+              seasonId: values.seasonId,
+              company: {
+                name: values.compName,
+                website: values.website,
+                domains: values.domains,
+                category: values.category,
+                address: {
+                  line1: values.line1,
+                  line2: values.line2,
+                  city: values.city,
+                  state: values.state,
+                  zipCode: values.zipCode,//zipcode check
+                  country: values.country,
+                },
+                size: values.size,
+                yearOfEstablishment: values.yearOfEstablishment,
+                annualTurnover: values.annualTurnover,
+                socialMediaLink: values.socialMediaLink,
+              },
+              recruiter: {
+                name: values.recName,
+                designation: values.designation,
+                email: values.email,
+                phoneNumber: "+91 "+values.phoneNumber,//with country code default +91 8793849280
+                landline: values.landline,
+              },
+              job: {
+                role: values.role,
+                description: values.description,
+                attachment: values.attachment,//file
+                skills: values.skills,
+                location: values.location,
+                noOfVacancies: values.noOfVacancies,                
+                offerLetterReleaseDate: values.offerLetterReleaseDate,//date
+                joiningDate: values.joiningDate,//date
+                duration: values.duration,
+                selectionProcedure: {
+                  selectionMode: values.selectionMode,//dropdown - online/offline
+                  shortlistFromResume: values.shortlistFromResume,
+                  groupDiscussion:values.groupDiscussion,
+                  tests: values.tests,// type - dropdown, duration
+                  interviews: values.interviews,                  
+                  others: values.others,//textarea
+                  requirements: {
+                    numberOfMembers: values.numberOfMembers,
+                    numberOfRooms: values.numberOfRooms,
+                    otherRequirements: values.otherRequirements,
+                  },
+                },
+                salaries: values.salaries,
+                // salaries: [
+                //   {                    
+                    // salaryPeriod: values.salaryPeriod,//text
+                    // criteria: {
+                    //   programs: values.basicProgs,//dropdown from backend
+                    //   genders: values.basicGenders,//dropdown from backend
+                    //   categories: values.basicCategories,//dropdown from backend
+                    //   minCPI: values.basicMinCPI,//number
+                    //   tenthMarks: values.basicTenth,//number
+                    //   twelvethMarks: values.basicTwelveth,//number
+                    // },
+                    // baseSalary: values.baseSalary,
+                    // totalCTC: values.totalCTC,
+                    // takeHomeSalary: values.takeHomeSalary,
+                    // grossSalary: values.grossSalary,
+                    // otherCompensations: values.otherCompensations,//textbox
+                  //},
+                // ],
+                others: values.jobOthers,//other textarea
+              },
+            };
+            setFinalValues(submitValues);
+          }}
+          validateOnNext
+          activeStepIndex={0}
+          steps={[
+            {
+              component: SeasonDetails,
+              // validationSchema: Yup.object().shape({
+              //   year: Yup.number().typeError("Please enter a valid Year").required("Required"),
+              //   type: Yup.string().required("Required"),
+              // })
+            },
+            {
+              component: CompanyDetails,
+              validationSchema: Yup.object().shape({
+                compName: Yup.string().required("Required"),
+                website: Yup.string()
+                  .url("Enter valid URL")
+                  .required("Required"),
+              }),
+            },
+            {
+              component: RecruiterDetails,
+              validationSchema: Yup.object().shape({
+                designation: Yup.string().required("Required"),
+                phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid').required("Required"),                
+                email: Yup.string().email("Enter valid email").required("Required")
+              })
+            },
+            {
+              component: JobDetails,
+              validationSchema: Yup.object().shape({
+                designation: Yup.string().required("Designation is required")
+              })
+            }
+          ]}
+        >
+          {({
+            currentStepIndex,
+            renderComponent,
+            handlePrev,
+            handleNext,
+            isNextDisabled,
+            isPrevDisabled,
+          }: RenderProps) => {
+            return (
+              <Space direction="vertical" size="large">
+                <Steps current={currentStepIndex}>
+                  <Step
+                    title="Season Details &nbsp;&nbsp;&nbsp;"
+                    description="Season info"
+                  />
+                  <Step title="Company Details" description="Company info" />
+                  <Step
+                    title="Recruiter Details&nbsp;"
+                    description="Recruited info"
+                  />
+                  <Step title="Job Details&nbsp;" description="Job info" />
+                </Steps>
+                {renderComponent()}
+                <Row className="gap-20 justify-center">
+                  <Button
+                    disabled={isPrevDisabled}
+                    type="primary"
+                    onClick={handlePrev}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    disabled={isNextDisabled}
+                    type="primary"
+                    onClick={handleNext}
+                  >
+                    {currentStepIndex === 3 ? "Finish" : "Next"}
+                  </Button>
+                </Row>
+                <Row>
+                  <Col>
+                    <pre>{JSON.stringify(finalValues, null, 2)}</pre>
+                  </Col>
+                </Row>
+              </Space>
+            );
+          }}
+        </FormikWizard>
       </div>
     </div>
   );

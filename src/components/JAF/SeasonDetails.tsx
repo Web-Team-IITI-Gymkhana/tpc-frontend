@@ -12,21 +12,11 @@ type StepProps = {
 
 const SeasonDetails = ({ errors, values, handleChange }: StepProps) => {
 
-  const handleChange2 = (value: string, name: string) => {
-    if(name === "year"){
-      values.year=value
-    }
-    else{
-      values.type=value
-    }
-    console.log(values.type)
-  }
-
   return(  
   <Form layout="vertical">
     <h1 className="text-xl">Season Details</h1>
     <Row gutter={32}>
-      <Col span={12}>
+      {/* <Col span={12}>
         <Form.Item label="Year"                             
         >
            <Select                                   
@@ -41,12 +31,12 @@ const SeasonDetails = ({ errors, values, handleChange }: StepProps) => {
           >            
           </Select>
         </Form.Item>
-      </Col>
+      </Col> */}
       <Col span={12}>
         <Form.Item label="Type">
-          <Select                                   
-            defaultValue={`${values.type}`}
-            onChange={(value) => values.type = value}
+          <Select                                             
+            onChange={(value) => values.seasonId = value}
+            placeholder="Please Select"
             options={[
               { value: 'intern', label: 'Intern' },
               { value: 'placement', label: 'Placement' },

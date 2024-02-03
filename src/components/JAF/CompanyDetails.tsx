@@ -31,14 +31,14 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
           label="Company Name"
           required
           hasFeedback
-          validateStatus={!!errors.name ? "error" : ""}
-          help={errors.name ? `${errors.name}`:""}
+          validateStatus={!!errors.compName ? "error" : ""}
+          help={errors.compName ? `${errors.compName}`:""}
         >
           <Input
-            name="name"
+            name="compName"
             placeholder="Company Name"
             onChange={handleChange}
-            value={values.name}
+            value={values.compName}
           />
         </Form.Item>
       </Col>
@@ -94,22 +94,22 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
       <Col span={12}>
         <Form.Item label="Company Size">
         <Input
-            name="companySize"
+            name="size"
             placeholder="Company Size"
-            defaultValue={values.companySize}
+            defaultValue={values.size}
             onChange={handleChange}
-            value={values.companySize}
+            value={values.size}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
         <Form.Item label="Year of Establishment">
         <Input
-            name="establishmentYear"
+            name="yearOfEstablishment"
             placeholder="Year of Establishment"
-            defaultValue={values.establishmentYear}
+            defaultValue={values.yearOfEstablishment}
             onChange={handleChange}
-            value={values.establishmentYear}
+            value={values.yearOfEstablishment}
           />
         </Form.Item>
       </Col>
@@ -129,11 +129,11 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
       <Col span={12}>
         <Form.Item label="Social Media Link">
         <Input
-            name="socailMedia"
+            name="socialMediaLink"
             placeholder="Social Media Link"
-            defaultValue={values.socailMedia}
+            defaultValue={values.socialMediaLink}
             onChange={handleChange}
-            value={values.socailMedia}
+            value={values.socialMediaLink}
           />
         </Form.Item>
       </Col>
@@ -143,22 +143,22 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
       <Col span={12}>
         <Form.Item label="Address Line 1">
         <Input
-            name="addressline1"
+            name="line1"
             placeholder="Address Line 1"
-            defaultValue={values.addressline1}
+            defaultValue={values.line1}
             onChange={handleChange}
-            value={values.addressline1}
+            value={values.line1}
           />
         </Form.Item>
       </Col>
       <Col span={12}>
       <Form.Item label="Address Line 2">
         <Input
-            name="addressline2"
+            name="line2"
             placeholder="Address Line 2"
-            defaultValue={values.addressline2}
+            defaultValue={values.line2}
             onChange={handleChange}
-            value={values.addressline2}
+            value={values.line2}
           />
         </Form.Item>
       </Col>
@@ -191,11 +191,11 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
       <Col span={12}>
         <Form.Item label="Zip Code">
         <Input
-            name="zipcode"
+            name="zipCode"
             placeholder="Zip Code"
-            defaultValue={values.zipcode}
+            defaultValue={values.zipCode}
             onChange={handleChange}
-            value={values.zipcode}
+            value={values.zipCode}
           />
         </Form.Item>
       </Col>
