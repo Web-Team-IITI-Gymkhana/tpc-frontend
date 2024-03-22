@@ -30,6 +30,6 @@
     "src/store/store.ts",
     "src/components/Students/StudentsTable/StudentTable.tsx",
     "src/middleware.ts"
-  ],
+, "src/components/JAF/JAF.tsx"  ],
   "exclude": ["node_modules"]
 }
