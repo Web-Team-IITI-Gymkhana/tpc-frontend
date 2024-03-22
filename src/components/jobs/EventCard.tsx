@@ -3,8 +3,7 @@ import { MdDelete } from "react-icons/md";
 import { JobDeleteModal } from "./JobDeleteModal";
 export default function EventCard({ ele ,jobId}: any) {
   var date = ele.startDateTime;
-  date = date.substring(0, 10).split('-')
-  date = date[1] + '-' + date[2] + '-' + date[0]
+  
   return (
     <div>
       <div className="card">

@@ -83,7 +83,7 @@ const LoginForm = () => {
                               },
                             )
                             .catch((err) => {
-                              console.log(err);
+                              alert(err)
                               toast.error("Some Error Occured");
                             });
                         }}
