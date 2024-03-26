@@ -1,42 +1,42 @@
-"use client";
-import { useContext } from "react";
-import { ToggleContext } from "@/contextProviders/ToggleProvider";
-import { motion } from "framer-motion";
-import Cookies from "js-cookie";
-import Link from "next/link";
-import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown";
-import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
-import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
-import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
-import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
-import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
+"use client"
+import { useContext } from "react"
+import { ToggleContext } from "@/contextProviders/ToggleProvider"
+import { motion } from "framer-motion"
+import Cookies from "js-cookie"
+import Link from "next/link"
+import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown"
+import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown"
+import { JobDropDown } from "./SideBar/DropDowns/JobDropDown"
+import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown"
+import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown"
+import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown"
 
 interface Framework {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 interface Season {
-  id: string;
-  year: string;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  year: string
+  type: string
+  createdAt: string
+  updatedAt: string
 }
 
 interface Props {
   AllSeasons: {
-    seasons: Season[];
-  };
+    seasons: Season[]
+  }
 }
 
 const Sidebar = ({ AllSeasons }: Props) => {
-  const context = useContext(ToggleContext);
-  const userString = Cookies.get("user");
+  const context = useContext(ToggleContext)
+  const userString = Cookies.get("user")
 
-  const user = userString ? JSON.parse(userString) : null;
-  const isAdmin = user?.userType === "ADMIN";
-  const userRole = user?.userType?.toLowerCase();
+  const user = userString ? JSON.parse(userString) : null
+  const isAdmin = user?.userType === "ADMIN"
+  const userRole = user?.userType?.toLowerCase()
 
   return (
     <motion.div
@@ -53,7 +53,7 @@ const Sidebar = ({ AllSeasons }: Props) => {
         <div
           className="right-0 bg-gray-900 hover:bg-gray-600 text-slate-200 rounded-l-full w-fit pl-2 pr-4"
           onClick={(e) => {
-            context.sidebarToggle();
+            context.sidebarToggle()
           }}
         >
           <motion.div
@@ -86,42 +86,7 @@ const Sidebar = ({ AllSeasons }: Props) => {
         <div>
           <hr />
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw]">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 15 15"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M0.877014 7.49988C0.877014 3.84219 3.84216 0.877045 7.49985 0.877045C11.1575 0.877045 14.1227 3.84219 14.1227 7.49988C14.1227 11.1575 11.1575 14.1227 7.49985 14.1227C3.84216 14.1227 0.877014 11.1575 0.877014 7.49988ZM7.49985 1.82704C4.36683 1.82704 1.82701 4.36686 1.82701 7.49988C1.82701 8.97196 2.38774 10.3131 3.30727 11.3213C4.19074 9.94119 5.73818 9.02499 7.50023 9.02499C9.26206 9.02499 10.8093 9.94097 11.6929 11.3208C12.6121 10.3127 13.1727 8.97172 13.1727 7.49988C13.1727 4.36686 10.6328 1.82704 7.49985 1.82704ZM10.9818 11.9787C10.2839 10.7795 8.9857 9.97499 7.50023 9.97499C6.01458 9.97499 4.71624 10.7797 4.01845 11.9791C4.97952 12.7272 6.18765 13.1727 7.49985 13.1727C8.81227 13.1727 10.0206 12.727 10.9818 11.9787ZM5.14999 6.50487C5.14999 5.207 6.20212 4.15487 7.49999 4.15487C8.79786 4.15487 9.84999 5.207 9.84999 6.50487C9.84999 7.80274 8.79786 8.85487 7.49999 8.85487C6.20212 8.85487 5.14999 7.80274 5.14999 6.50487ZM7.49999 5.10487C6.72679 5.10487 6.09999 5.73167 6.09999 6.50487C6.09999 7.27807 6.72679 7.90487 7.49999 7.90487C8.27319 7.90487 8.89999 7.27807 8.89999 6.50487C8.89999 5.73167 8.27319 5.10487 7.49999 5.10487Z"
-                    fill="currentColor"
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-              </div>
-              <motion.div
-                initial={{ opacity: 1 }}
-                animate={context.isOpen ? "open" : "closed"}
-                transition={{ duration: 0.1 }}
-                variants={{
-                  closed: { opacity: 0 },
-                  open: { opacity: 1 },
-                }}
-                className="w-[13vw]"
-              >
-                Profile
-              </motion.div>
-            </div>
-            {/* <CompanyDropDown userRole={userRole} /> */}
-          </div>
-        </div>
-        {isAdmin && (
-          <div>
-            <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+            <Link href={"/profile"}>
               <div className="flex justify-start gap-[1vw]">
                 <div className="w-[2vw]">
                   <svg
@@ -132,7 +97,7 @@ const Sidebar = ({ AllSeasons }: Props) => {
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M7.07926 0.222253C7.31275 -0.007434 7.6873 -0.007434 7.92079 0.222253L14.6708 6.86227C14.907 7.09465 14.9101 7.47453 14.6778 7.71076C14.4454 7.947 14.0655 7.95012 13.8293 7.71773L13 6.90201V12.5C13 12.7761 12.7762 13 12.5 13H2.50002C2.22388 13 2.00002 12.7761 2.00002 12.5V6.90201L1.17079 7.71773C0.934558 7.95012 0.554672 7.947 0.32229 7.71076C0.0899079 7.47453 0.0930283 7.09465 0.32926 6.86227L7.07926 0.222253ZM7.50002 1.49163L12 5.91831V12H10V8.49999C10 8.22385 9.77617 7.99999 9.50002 7.99999H6.50002C6.22388 7.99999 6.00002 8.22385 6.00002 8.49999V12H3.00002V5.91831L7.50002 1.49163ZM7.00002 12H9.00002V8.99999H7.00002V12Z"
+                      d="M0.877014 7.49988C0.877014 3.84219 3.84216 0.877045 7.49985 0.877045C11.1575 0.877045 14.1227 3.84219 14.1227 7.49988C14.1227 11.1575 11.1575 14.1227 7.49985 14.1227C3.84216 14.1227 0.877014 11.1575 0.877014 7.49988ZM7.49985 1.82704C4.36683 1.82704 1.82701 4.36686 1.82701 7.49988C1.82701 8.97196 2.38774 10.3131 3.30727 11.3213C4.19074 9.94119 5.73818 9.02499 7.50023 9.02499C9.26206 9.02499 10.8093 9.94097 11.6929 11.3208C12.6121 10.3127 13.1727 8.97172 13.1727 7.49988C13.1727 4.36686 10.6328 1.82704 7.49985 1.82704ZM10.9818 11.9787C10.2839 10.7795 8.9857 9.97499 7.50023 9.97499C6.01458 9.97499 4.71624 10.7797 4.01845 11.9791C4.97952 12.7272 6.18765 13.1727 7.49985 13.1727C8.81227 13.1727 10.0206 12.727 10.9818 11.9787ZM5.14999 6.50487C5.14999 5.207 6.20212 4.15487 7.49999 4.15487C8.79786 4.15487 9.84999 5.207 9.84999 6.50487C9.84999 7.80274 8.79786 8.85487 7.49999 8.85487C6.20212 8.85487 5.14999 7.80274 5.14999 6.50487ZM7.49999 5.10487C6.72679 5.10487 6.09999 5.73167 6.09999 6.50487C6.09999 7.27807 6.72679 7.90487 7.49999 7.90487C8.27319 7.90487 8.89999 7.27807 8.89999 6.50487C8.89999 5.73167 8.27319 5.10487 7.49999 5.10487Z"
                       fill="currentColor"
                       fillRule="evenodd"
                       clipRule="evenodd"
@@ -149,9 +114,48 @@ const Sidebar = ({ AllSeasons }: Props) => {
                   }}
                   className="w-[13vw]"
                 >
-                  Home
+                  Profile
                 </motion.div>
               </div>
+            </Link>
+            {/* <CompanyDropDown userRole={userRole} /> */}
+          </div>
+        </div>
+        {isAdmin && (
+          <div>
+            <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+              <Link href="/">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7.07926 0.222253C7.31275 -0.007434 7.6873 -0.007434 7.92079 0.222253L14.6708 6.86227C14.907 7.09465 14.9101 7.47453 14.6778 7.71076C14.4454 7.947 14.0655 7.95012 13.8293 7.71773L13 6.90201V12.5C13 12.7761 12.7762 13 12.5 13H2.50002C2.22388 13 2.00002 12.7761 2.00002 12.5V6.90201L1.17079 7.71773C0.934558 7.95012 0.554672 7.947 0.32229 7.71076C0.0899079 7.47453 0.0930283 7.09465 0.32926 6.86227L7.07926 0.222253ZM7.50002 1.49163L12 5.91831V12H10V8.49999C10 8.22385 9.77617 7.99999 9.50002 7.99999H6.50002C6.22388 7.99999 6.00002 8.22385 6.00002 8.49999V12H3.00002V5.91831L7.50002 1.49163ZM7.00002 12H9.00002V8.99999H7.00002V12Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
+                  >
+                    Home
+                  </motion.div>
+                </div>
+              </Link>
             </div>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
               <Link href="/admin/companies">
@@ -225,142 +229,150 @@ const Sidebar = ({ AllSeasons }: Props) => {
               </div>
             </Link>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <div className="flex justify-start gap-[1vw]">
-                <div className="w-[2vw]">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              <Link href="/admin/students">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5C3.875 6.15288 4.98124 7.54738 6.49373 7.98351C5.2997 8.12901 4.27557 8.55134 3.50407 9.31167C2.52216 10.2794 2.02502 11.72 2.02502 13.5999C2.02502 13.8623 2.23769 14.0749 2.50002 14.0749C2.76236 14.0749 2.97502 13.8623 2.97502 13.5999C2.97502 11.8799 3.42786 10.7206 4.17091 9.9883C4.91536 9.25463 6.02674 8.87499 7.49995 8.87499C8.97317 8.87499 10.0846 9.25463 10.8291 9.98831C11.5721 10.7206 12.025 11.8799 12.025 13.5999C12.025 13.8623 12.2376 14.0749 12.5 14.0749C12.7623 14.075 12.975 13.8623 12.975 13.6C12.975 11.72 12.4778 10.2794 11.4959 9.31166C10.7244 8.55135 9.70025 8.12903 8.50625 7.98352C10.0187 7.5474 11.125 6.15289 11.125 4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.825 4.5C4.825 3.02264 6.02264 1.825 7.5 1.825C8.97736 1.825 10.175 3.02264 10.175 4.5C10.175 5.97736 8.97736 7.175 7.5 7.175C6.02264 7.175 4.825 5.97736 4.825 4.5Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
                   >
-                    <path
-                      d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5C3.875 6.15288 4.98124 7.54738 6.49373 7.98351C5.2997 8.12901 4.27557 8.55134 3.50407 9.31167C2.52216 10.2794 2.02502 11.72 2.02502 13.5999C2.02502 13.8623 2.23769 14.0749 2.50002 14.0749C2.76236 14.0749 2.97502 13.8623 2.97502 13.5999C2.97502 11.8799 3.42786 10.7206 4.17091 9.9883C4.91536 9.25463 6.02674 8.87499 7.49995 8.87499C8.97317 8.87499 10.0846 9.25463 10.8291 9.98831C11.5721 10.7206 12.025 11.8799 12.025 13.5999C12.025 13.8623 12.2376 14.0749 12.5 14.0749C12.7623 14.075 12.975 13.8623 12.975 13.6C12.975 11.72 12.4778 10.2794 11.4959 9.31166C10.7244 8.55135 9.70025 8.12903 8.50625 7.98352C10.0187 7.5474 11.125 6.15289 11.125 4.5C11.125 2.49797 9.50203 0.875 7.5 0.875ZM4.825 4.5C4.825 3.02264 6.02264 1.825 7.5 1.825C8.97736 1.825 10.175 3.02264 10.175 4.5C10.175 5.97736 8.97736 7.175 7.5 7.175C6.02264 7.175 4.825 5.97736 4.825 4.5Z"
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
+                    Students
+                  </motion.div>
                 </div>
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  animate={context.isOpen ? "open" : "closed"}
-                  transition={{ duration: 0.1 }}
-                  variants={{
-                    closed: { opacity: 0 },
-                    open: { opacity: 1 },
-                  }}
-                  className="w-[13vw]"
-                >
-                  Students
-                </motion.div>
-              </div>
+              </Link>
               {/* <StudentDropDown userRole={userRole} /> */}
             </div>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <div className="flex justify-start gap-[1vw]">
-                <div className="w-[2vw]">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              <Link href="/admin/recruiter">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4 2.5C4 2.22386 4.22386 2 4.5 2H10.5C10.7761 2 11 2.22386 11 2.5V12.5C11 12.7761 10.7761 13 10.5 13H4.5C4.22386 13 4 12.7761 4 12.5V2.5ZM4.5 1C3.67157 1 3 1.67157 3 2.5V12.5C3 13.3284 3.67157 14 4.5 14H10.5C11.3284 14 12 13.3284 12 12.5V2.5C12 1.67157 11.3284 1 10.5 1H4.5ZM6 11.65C5.8067 11.65 5.65 11.8067 5.65 12C5.65 12.1933 5.8067 12.35 6 12.35H9C9.1933 12.35 9.35 12.1933 9.35 12C9.35 11.8067 9.1933 11.65 9 11.65H6Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
                   >
-                    <path
-                      d="M4 2.5C4 2.22386 4.22386 2 4.5 2H10.5C10.7761 2 11 2.22386 11 2.5V12.5C11 12.7761 10.7761 13 10.5 13H4.5C4.22386 13 4 12.7761 4 12.5V2.5ZM4.5 1C3.67157 1 3 1.67157 3 2.5V12.5C3 13.3284 3.67157 14 4.5 14H10.5C11.3284 14 12 13.3284 12 12.5V2.5C12 1.67157 11.3284 1 10.5 1H4.5ZM6 11.65C5.8067 11.65 5.65 11.8067 5.65 12C5.65 12.1933 5.8067 12.35 6 12.35H9C9.1933 12.35 9.35 12.1933 9.35 12C9.35 11.8067 9.1933 11.65 9 11.65H6Z"
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
+                    Recruiters
+                  </motion.div>
                 </div>
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  animate={context.isOpen ? "open" : "closed"}
-                  transition={{ duration: 0.1 }}
-                  variants={{
-                    closed: { opacity: 0 },
-                    open: { opacity: 1 },
-                  }}
-                  className="w-[13vw]"
-                >
-                  Recruiters
-                </motion.div>
-              </div>
+              </Link>
               {/* <RecruiterDropDown userRole={userRole} /> */}
             </div>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <div className="flex justify-start gap-[1vw]">
-                <div className="w-[2vw]">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              <Link href="/admin/seasons">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002ZM3.07504 7.50002C3.07504 5.05617 5.05618 3.07502 7.50004 3.07502C9.94388 3.07502 11.925 5.05617 11.925 7.50002C11.925 9.94386 9.94388 11.925 7.50004 11.925C5.05618 11.925 3.07504 9.94386 3.07504 7.50002ZM7.50004 3.92502C5.52562 3.92502 3.92504 5.52561 3.92504 7.50002C3.92504 9.47442 5.52563 11.075 7.50004 11.075C9.47444 11.075 11.075 9.47442 11.075 7.50002C11.075 5.52561 9.47444 3.92502 7.50004 3.92502ZM7.50004 5.25002C6.2574 5.25002 5.25004 6.25739 5.25004 7.50002C5.25004 8.74266 6.2574 9.75002 7.50004 9.75002C8.74267 9.75002 9.75004 8.74266 9.75004 7.50002C9.75004 6.25738 8.74267 5.25002 7.50004 5.25002ZM6.05004 7.50002C6.05004 6.69921 6.69923 6.05002 7.50004 6.05002C8.30084 6.05002 8.95004 6.69921 8.95004 7.50002C8.95004 8.30083 8.30084 8.95002 7.50004 8.95002C6.69923 8.95002 6.05004 8.30083 6.05004 7.50002Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
                   >
-                    <path
-                      d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002ZM3.07504 7.50002C3.07504 5.05617 5.05618 3.07502 7.50004 3.07502C9.94388 3.07502 11.925 5.05617 11.925 7.50002C11.925 9.94386 9.94388 11.925 7.50004 11.925C5.05618 11.925 3.07504 9.94386 3.07504 7.50002ZM7.50004 3.92502C5.52562 3.92502 3.92504 5.52561 3.92504 7.50002C3.92504 9.47442 5.52563 11.075 7.50004 11.075C9.47444 11.075 11.075 9.47442 11.075 7.50002C11.075 5.52561 9.47444 3.92502 7.50004 3.92502ZM7.50004 5.25002C6.2574 5.25002 5.25004 6.25739 5.25004 7.50002C5.25004 8.74266 6.2574 9.75002 7.50004 9.75002C8.74267 9.75002 9.75004 8.74266 9.75004 7.50002C9.75004 6.25738 8.74267 5.25002 7.50004 5.25002ZM6.05004 7.50002C6.05004 6.69921 6.69923 6.05002 7.50004 6.05002C8.30084 6.05002 8.95004 6.69921 8.95004 7.50002C8.95004 8.30083 8.30084 8.95002 7.50004 8.95002C6.69923 8.95002 6.05004 8.30083 6.05004 7.50002Z"
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
+                    Seasons
+                  </motion.div>
                 </div>
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  animate={context.isOpen ? "open" : "closed"}
-                  transition={{ duration: 0.1 }}
-                  variants={{
-                    closed: { opacity: 0 },
-                    open: { opacity: 1 },
-                  }}
-                  className="w-[13vw]"
-                >
-                  Seasons
-                </motion.div>
-              </div>
+              </Link>
               {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
             </div>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <div className="flex justify-start gap-[1vw]">
-                <div className="w-[2vw]">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 15 15"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              <Link href={"/admin/Schedule"}>
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
                   >
-                    <path
-                      d="M4.5 1C4.77614 1 5 1.22386 5 1.5V2H10V1.5C10 1.22386 10.2239 1 10.5 1C10.7761 1 11 1.22386 11 1.5V2H12.5C13.3284 2 14 2.67157 14 3.5V12.5C14 13.3284 13.3284 14 12.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5C1 2.67157 1.67157 2 2.5 2H4V1.5C4 1.22386 4.22386 1 4.5 1ZM10 3V3.5C10 3.77614 10.2239 4 10.5 4C10.7761 4 11 3.77614 11 3.5V3H12.5C12.7761 3 13 3.22386 13 3.5V5H2V3.5C2 3.22386 2.22386 3 2.5 3H4V3.5C4 3.77614 4.22386 4 4.5 4C4.77614 4 5 3.77614 5 3.5V3H10ZM2 6V12.5C2 12.7761 2.22386 13 2.5 13H12.5C12.7761 13 13 12.7761 13 12.5V6H2ZM7 7.5C7 7.22386 7.22386 7 7.5 7C7.77614 7 8 7.22386 8 7.5C8 7.77614 7.77614 8 7.5 8C7.22386 8 7 7.77614 7 7.5ZM9.5 7C9.22386 7 9 7.22386 9 7.5C9 7.77614 9.22386 8 9.5 8C9.77614 8 10 7.77614 10 7.5C10 7.22386 9.77614 7 9.5 7ZM11 7.5C11 7.22386 11.2239 7 11.5 7C11.7761 7 12 7.22386 12 7.5C12 7.77614 11.7761 8 11.5 8C11.2239 8 11 7.77614 11 7.5ZM11.5 9C11.2239 9 11 9.22386 11 9.5C11 9.77614 11.2239 10 11.5 10C11.7761 10 12 9.77614 12 9.5C12 9.22386 11.7761 9 11.5 9ZM9 9.5C9 9.22386 9.22386 9 9.5 9C9.77614 9 10 9.22386 10 9.5C10 9.77614 9.77614 10 9.5 10C9.22386 10 9 9.77614 9 9.5ZM7.5 9C7.22386 9 7 9.22386 7 9.5C7 9.77614 7.22386 10 7.5 10C7.77614 10 8 9.77614 8 9.5C8 9.22386 7.77614 9 7.5 9ZM5 9.5C5 9.22386 5.22386 9 5.5 9C5.77614 9 6 9.22386 6 9.5C6 9.77614 5.77614 10 5.5 10C5.22386 10 5 9.77614 5 9.5ZM3.5 9C3.22386 9 3 9.22386 3 9.5C3 9.77614 3.22386 10 3.5 10C3.77614 10 4 9.77614 4 9.5C4 9.22386 3.77614 9 3.5 9ZM3 11.5C3 11.2239 3.22386 11 3.5 11C3.77614 11 4 11.2239 4 11.5C4 11.7761 3.77614 12 3.5 12C3.22386 12 3 11.7761 3 11.5ZM5.5 11C5.22386 11 5 11.2239 5 11.5C5 11.7761 5.22386 12 5.5 12C5.77614 12 6 11.7761 6 11.5C6 11.2239 5.77614 11 5.5 11ZM7 11.5C7 11.2239 7.22386 11 7.5 11C7.77614 11 8 11.2239 8 11.5C8 11.7761 7.77614 12 7.5 12C7.22386 12 7 11.7761 7 11.5ZM9.5 11C9.22386 11 9 11.2239 9 11.5C9 11.7761 9.22386 12 9.5 12C9.77614 12 10 11.7761 10 11.5C10 11.2239 9.77614 11 9.5 11Z"
-                      fill="currentColor"
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
+                    Schedule
+                  </motion.div>
                 </div>
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  animate={context.isOpen ? "open" : "closed"}
-                  transition={{ duration: 0.1 }}
-                  variants={{
-                    closed: { opacity: 0 },
-                    open: { opacity: 1 },
-                  }}
-                  className="w-[13vw]"
-                >
-                  Schedule
-                </motion.div>
-              </div>
+              </Link>
               {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
             </div>
           </div>
         )}
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar

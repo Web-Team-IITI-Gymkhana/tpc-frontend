@@ -1,10 +1,12 @@
-import React from 'react'
-import JAF from '@/components/JAF/JAF'
+import JAF from "@/components/JAF/JAF"
+import React from "react"
 
-function page() {
+const Page = () => {
   return (
-    <JAF />
+    <>
+      <JAF />
+    </>
   )
 }
 
-export default page
+export default Page
