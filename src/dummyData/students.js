@@ -12,7 +12,7 @@ export const StudentsData = [
     totalPenalty: 1,
     createdAt: "2023-12-15T09:30:20.123Z",
     updatedAt: "2023-12-15T11:45:30.456Z",
-    member: {
+    user: {
       id: "1f73b28b-3d01-42c1-9761-8914b8d534d1",
       email: "john.smith@example.com",
       name: "John Smith",
@@ -35,7 +35,7 @@ export const StudentsData = [
     totalPenalty: 2,
     createdAt: "2023-12-15T10:15:25.321Z",
     updatedAt: "2023-12-15T12:30:35.654Z",
-    member: {
+    user: {
       id: "cc0a0b01-cc3b-40e5-a542-4c7952189615",
       email: "emily.davis@example.com",
       name: "Emily Davis",
@@ -58,7 +58,7 @@ export const StudentsData = [
     totalPenalty: 1,
     createdAt: "2023-12-15T11:00:30.432Z",
     updatedAt: "2023-12-15T13:15:40.765Z",
-    member: {
+    user: {
       id: "1e960b58-8c67-45f8-8a9d-d0a13a58645a",
       email: "alexandra.lee@example.com",
       name: "Alexandra Lee",
@@ -81,7 +81,7 @@ export const StudentsData = [
     totalPenalty: 3,
     createdAt: "2023-12-15T11:45:35.543Z",
     updatedAt: "2023-12-15T14:00:45.876Z",
-    member: {
+    user: {
       id: "2d25f4f2-8b50-42f8-8b3b-7febbf9a6cc7",
       email: "christopher.patel@example.com",
       name: "Christopher Patel",
@@ -104,7 +104,7 @@ export const StudentsData = [
     totalPenalty: 0,
     createdAt: "2023-12-15T12:30:40.987Z",
     updatedAt: "2023-12-15T15:45:50.320Z",
-    member: {
+    user: {
       id: "19e6b2f9-b829-4c58-b307-6d3ff5570df6",
       email: "sophia.johnson@example.com",
       name: "Sophia Johnson",
@@ -127,7 +127,7 @@ export const StudentsData = [
     totalPenalty: 2,
     createdAt: "2023-12-15T13:15:45.543Z",
     updatedAt: "2023-12-15T16:30:55.876Z",
-    member: {
+    user: {
       id: "f7a1c6bc-dde4-46c7-a07b-d034e3e94e8e",
       email: "william.kim@example.com",
       name: "William Kim",
@@ -150,7 +150,7 @@ export const StudentsData = [
     totalPenalty: 1,
     createdAt: "2023-12-15T14:00:40.987Z",
     updatedAt: "2023-12-15T17:15:50.320Z",
-    member: {
+    user: {
       id: "999229a2-2672-42f1-8767-65efc9a4cdaa",
       email: "daniel.brown@example.com",
       name: "Daniel Brown",
@@ -173,7 +173,7 @@ export const StudentsData = [
     totalPenalty: 2,
     createdAt: "2023-12-15T14:45:45.543Z",
     updatedAt: "2023-12-15T18:00:55.876Z",
-    member: {
+    user: {
       id: "326d11f0-196d-4087-8c7f-0d3c6c5c3c85",
       email: "olivia.garcia@example.com",
       name: "Olivia Garcia",
