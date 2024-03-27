@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import { config } from "@/helpers/auth";
 
 const authOptions: NextAuthOptions = {
-  ...config,
+    ...config,
 };
 
 const handler = NextAuth(authOptions);

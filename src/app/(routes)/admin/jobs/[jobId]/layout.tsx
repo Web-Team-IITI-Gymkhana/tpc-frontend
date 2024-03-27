@@ -1,9 +1,9 @@
 interface Props {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 const EachJobsLayout = ({ children }: Props) => {
-  return <div>{children}</div>;
+    return <div>{children}</div>;
 };
 
 export default EachJobsLayout;
