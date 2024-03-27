@@ -60,7 +60,7 @@ const LoginForm = () => {
                             return;
                           }
                           axios
-                            .post("http://tpc.iiti.ac.in/api/v1/auth/login/", {
+                            .post("http://localhost:5000/api/v1/auth/login/", {
                               email: email,
                               role: role?.toUpperCase(),
                             })

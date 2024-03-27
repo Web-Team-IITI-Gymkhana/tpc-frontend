@@ -2,7 +2,7 @@ import { AllCompanies } from "@/dummyData/company";
 import { Jobs } from "@/dummyData/job";
 import { StudentsData } from "@/dummyData/students";
 const url = (NextUrl: string) => {
-  return `http://tpc.iiti.ac.in/api/v1${NextUrl}`;
+  return `http://localhost:5000/api/v1${NextUrl}`;
 };
 
 const redirect = () => {
@@ -30,13 +30,14 @@ export const fetchCompany = async (accessToken: string | undefined) => {
     redirect();
     return;
   }
-  const res = await fetch("http://tpc.iiti.ac.in/api/v1/companies", {
+  const res = await fetch("http://localhost:5000/api/v1/companies", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
   const json = res.json();
   return json;
+  // return AllCompanies
 };
 
 export const fetchEachCompanyDetails = async (
@@ -84,14 +85,15 @@ export const fetchAllJobs = async (
 
   const json = await res.json();
   return json;
+  return Jobs
 };
 
-export const fetchStudentData = async (accessToken: string | undefined) => {
+export const fetchStudentData = async (accessToken: string | undefined,url: string) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  const res = await fetch('http://tpc.iiti.ac.in/api/v1/students',{
+  const res = await fetch(url,{
     headers:{
       Authorization:`Bearer ${accessToken}`
     }
@@ -109,7 +111,7 @@ export const fetchCompanyRecruiters = async (
     return;
   }
   const res = await fetch(
-    `http://tpc.iiti.ac.in/api/v1/companies/${companyId}/recruiters/`,
+    `http://localhost:5000/api/v1/companies/${companyId}/recruiters/`,
     {
       next: {
         tags: ["AllRecruiters"],
@@ -128,7 +130,7 @@ export const fetchJobSalary = async (accessToken:string | undefined,jobId:string
     redirect()
     return ;
   }
-  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/salary/`,{
+  const res = await fetch(`http://localhost:5000/api/v1/jobs/${jobId}/salary/`,{
     headers:{
       Authorization:`Bearer ${accessToken}`
     }
@@ -142,7 +144,7 @@ export const fetchEachJob = async (accessToken:string | undefined,jobId:String |
     redirect()
     return ;
   }
-  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}`,{
+  const res = await fetch(`http://localhost:5000/api/v1/jobs/${jobId}`,{
     headers : {
       Authorization : `Bearer ${accessToken}`
     }
@@ -157,7 +159,7 @@ export const fetchJobEvents = async (accessToken : string | undefined,jobId : St
     redirect();
     return ;
   }
-  const res = await fetch(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events`,{
+  const res = await fetch(`http://localhost:5000/api/v1/jobs/${jobId}/events`,{
     next: {
       tags: ["AllEvents"],
     },

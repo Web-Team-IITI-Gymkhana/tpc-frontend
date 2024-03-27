@@ -158,10 +158,7 @@ export const columns: ColumnDef<Student>[] = [
             style={customStyles}
             contentLabel="Example Modal"
           >
-            <DeleteStudentModal
-              isDeleteModalOpen={isDeleteModalOpen}
-              memberId={[student.memberId]}
-            />
+            
           </Modal>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
