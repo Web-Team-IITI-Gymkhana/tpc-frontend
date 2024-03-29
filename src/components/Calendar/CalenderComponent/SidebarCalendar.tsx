@@ -1,7 +1,6 @@
-import React,{ useContext } from 'react'
+import React from 'react'
 import Labels from './Labels'
-import dayjs from 'dayjs';
-import GlobalContext from '../context/GlobalContext'
+
 
 
 export default function SidebarCalendar() {

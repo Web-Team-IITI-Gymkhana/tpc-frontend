@@ -3,7 +3,6 @@ import { getMonth } from "./CalenderComponent/util";
 import Month from "./CalenderComponent/Month";
 import GlobalContext from "./context/GlobalContext";
 import CalendarHeader from "./CalenderComponent/CalendarHeader";
-import calenderSidebar from "./CalenderComponent/calenderSidebar";
 import EventModal from "./CalenderComponent/EventModal";
 import SidebarCalendar from "./CalenderComponent/SidebarCalendar";
 

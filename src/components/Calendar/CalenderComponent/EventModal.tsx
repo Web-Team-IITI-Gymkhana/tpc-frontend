@@ -15,7 +15,7 @@ export default function EventModal() {
     const[description,setDescription] = useState(selectedEvent ? selectedEvent.description :"");
     const[selectedLabel,setselectedLabel] = useState(selectedEvent ? labelsClasses.find((lbl) => lbl === selectedEvent.label) :labelsClasses[0]);
 
-    function handleSubmit(e){
+    function handleSubmit(e:any){
         e.preventDefault()
         const calendarEvent ={
             title:title,
