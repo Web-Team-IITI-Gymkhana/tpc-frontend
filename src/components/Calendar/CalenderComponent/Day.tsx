@@ -1,9 +1,15 @@
 import React,{useContext, useEffect, useState} from 'react'
 import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
+import { selectedDayEvent } from '../context/GlobalContext';
 
 
 let colours = "bg-green-300 bg-red-300 bg-indigo-300 bg-gray-300 bg-blue-300 bg-purple-300 hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400" 
+
+interface Event{
+  day:any,
+  rowIdx:any,
+}
 
 
 
@@ -13,7 +19,7 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
   useContext(GlobalContext)
 
   useEffect(() => {
-    const events = filteredEvents.filter((evt) => dayjs(evt.day).format("DD-MM-YY")  === day.format("DD-MM-YY"));
+    const events = filteredEvents.filter((evt:Event) => dayjs(evt.day).format("DD-MM-YY")  === day.format("DD-MM-YY"));
     setDayEvents(events)
   },[filteredEvents,day]);
 
@@ -48,7 +54,7 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
         setDaySelected(day);
       }} 
         className='flex-1 cursor-pointer'>
-          {dayEvents.map((evt,idx) => (
+          {dayEvents.map((evt:selectedDayEvent,idx) => (
             <div
             onClick={() => setSelectedEvent(evt)}
             key={idx}
@@ -56,7 +62,6 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
               {evt.title}
             </div>
           ))}
-        {/* <p className='items-center text-gray-400 font-bold text-2xl'>+</p> */}
       </div>
     </div>
   );

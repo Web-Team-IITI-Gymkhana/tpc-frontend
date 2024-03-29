@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import GlobalContext from './GlobalContext'
 import { DispatchCallEventsAction } from './GlobalContext';
 import { updateLabelAction } from './GlobalContext';
+import { selectedDayEvent } from './GlobalContext';
 
 
 
@@ -29,7 +30,7 @@ export default function ContextWrapper(props: { children: React.ReactNode }) {
     const[monthIndex,setMonthIndex] = useState(dayjs().month());
     const[showEventModal,setShowEventModal] = useState(false);
     const [daySelected, setDaySelected] = useState(dayjs());
-    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState<selectedDayEvent | null>(null);
     const[labels,setLabels] = useState<updateLabelAction[]>([])
     const [savedEvents,dispatchCallEvents] = useReducer(savedEventsReducer,[],initEvents);
 
@@ -44,7 +45,8 @@ export default function ContextWrapper(props: { children: React.ReactNode }) {
 
     useEffect(() => {
       setLabels((prevLabels) => {
-        return [...new Set(savedEvents.map((evt:updateLabelAction) => evt.label))].map((label) =>{
+        return [...new Set(savedEvents.map((evt:updateLabelAction) => evt.label))].map((label:any) =>
+        {
           const currentLabel = prevLabels.find(lbl => lbl.label === label)
           return {
             label,
@@ -65,7 +67,7 @@ export default function ContextWrapper(props: { children: React.ReactNode }) {
     },[showEventModal])
 
     function updateLabel(newLabel:updateLabelAction){
-      setLabels(labels.map((lbl:updateLabelAction) => lbl.label === newLabel.label ? newLabel : lbl))
+      setLabels(labels.map((lbl) => lbl.label === newLabel.label ? newLabel : lbl))
     }
 
 

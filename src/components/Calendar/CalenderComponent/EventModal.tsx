@@ -15,13 +15,13 @@ export default function EventModal() {
     const[description,setDescription] = useState(selectedEvent ? selectedEvent.description :"");
     const[selectedLabel,setselectedLabel] = useState(selectedEvent ? labelsClasses.find((lbl) => lbl === selectedEvent.label) :labelsClasses[0]);
 
-    function handleSubmit(e:any){
+    function handleSubmit(e:React.MouseEvent<HTMLButtonElement>){
         e.preventDefault()
         const calendarEvent ={
             title:title,
             description:description,
             label: selectedLabel,
-            day: daySelected.valueOf(),
+            day: daySelected? daySelected.valueOf():null,
             id: selectedEvent ? selectedEvent.id : Date.now(),
         }
         if(selectedEvent){
@@ -75,7 +75,7 @@ export default function EventModal() {
                    <span className="material-icons-outlined text-gray-400">
                     schedule
                     </span>
-                    <p>{daySelected.format("dddd,MMMM DD")}</p> 
+                    {daySelected && <p>{daySelected.format("dddd, MMMM DD")}</p>} 
                     <span className="material-icons-outlined text-gray-400">
                     segment
                     </span>
