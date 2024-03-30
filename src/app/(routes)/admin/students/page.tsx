@@ -4,15 +4,15 @@ import Cookies from "js-cookie";
 import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 
-const jsonData = [
+const dto = [
     {
         id: "string",
         userId: "string",
         programId: "string",
-        rollNo: "string",
+        rollNo: "number",
         category: "string",
         gender: "MALE",
-        cpi: 0,
+        cpi: "number",
         user: {
             name: "string",
             email: "string",
@@ -21,12 +21,12 @@ const jsonData = [
         program: {
             course: "string",
             branch: "string",
-            year: "string",
+            year: "number",
         },
     },
 ];
 
-const dynamicColumns = generateColumns(jsonData[0]);
+const dynamicColumns = generateColumns(dto[0]);
 
 const StudentPage = async () => {
     const AllStudents = await fetchStudentData(Cookies.get("accessToken"));
@@ -34,12 +34,16 @@ const StudentPage = async () => {
         <div className="m-10">
             <h1 className="text-center font-bold text-3xl my-5 py-5">Students</h1>
             <div>
-                <TableComponent
-                    isAddButton={true}
-                    AddButtonText={"Add Students"}
-                    data={AllStudents}
-                    columns={dynamicColumns}
-                />
+                {AllStudents && (
+                    <TableComponent
+                        isAddButton={true}
+                        AddButtonText={"Add Students"}
+                        data={AllStudents}
+                        columns={dynamicColumns}
+                        dto={dto}
+                    />
+                )}
+
             </div>
         </div>
     );

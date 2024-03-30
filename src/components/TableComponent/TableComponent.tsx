@@ -2,9 +2,8 @@
 import * as React from "react";
 import { useState } from "react";
 import Modal from "react-modal";
-import qs from "qs";
-import axios from "axios";
-import { toast } from "react-hot-toast";
+import { fetchStudentData } from "@/helpers/api";
+import Cookies from "js-cookie";
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -47,7 +46,7 @@ interface FilterOption {
     operator: "eq" | "lt" | "gt";
 }
 
-export default function TableComponent({ data, columns, AddButtonText, isAddButton }: any) {
+export default function TableComponent({ data, columns, AddButtonText, isAddButton, dto }: any) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [sortingOrder, setSortingOrder] = React.useState<{
         [key: string]: "asc" | "desc";
@@ -109,7 +108,7 @@ export default function TableComponent({ data, columns, AddButtonText, isAddButt
         },
     });
 
-    let filterOutput = mapFiltersToJsonOutput(filters);
+    let filterOutput = mapFiltersToJsonOutput(filters, dto);
 
     return (
         <div className="w-full">
@@ -141,11 +140,20 @@ export default function TableComponent({ data, columns, AddButtonText, isAddButt
                             onClick={() => {
                                 handleSubmit(filterOutput, setTableData);
                             }}
-                            className="rounded-md bg-indigo-500 hover:bg-indigo-600 text-white"
+                            className="rounded-md mx-2 bg-indigo-500 hover:bg-indigo-600 text-white"
                         >
                             Submit Filters
                         </Button>
-
+                        <Button
+                            onClick={async () => {
+                                setFilters([]);
+                                const AllStudents = await fetchStudentData(Cookies.get("accessToken"));
+                                setTableData(AllStudents);
+                            }}
+                            className="rounded-md mx-2 bg-red-500 hover:bg-red-600 text-white"
+                        >
+                            Clear Filters
+                        </Button>
                         <DropdownMenuContent align="end" className="bg-white shadow-lg">
                             {table
                                 .getAllColumns()
@@ -313,11 +321,10 @@ export default function TableComponent({ data, columns, AddButtonText, isAddButt
                                                             setSorting,
                                                         )
                                                     }
-                                                    className={`ml-2 ${
-                                                        sortingOrder[columnId] === "asc"
-                                                            ? "text-green-500"
-                                                            : "text-gray-400"
-                                                    }`}
+                                                    className={`ml-2 ${sortingOrder[columnId] === "asc"
+                                                        ? "text-green-500"
+                                                        : "text-gray-400"
+                                                        }`}
                                                 >
                                                     <ArrowUpDown size={16} />
                                                 </button>
@@ -330,7 +337,7 @@ export default function TableComponent({ data, columns, AddButtonText, isAddButt
                     </TableHeader>
 
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
@@ -363,8 +370,8 @@ export default function TableComponent({ data, columns, AddButtonText, isAddButt
             <div className="flex items-center justify-between space-x-2 py-4 text-gray-800">
                 <div className="flex items-center">
                     <div className="flex-1 text-sm text-gray-600 items-center">
-                        {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length}{" "}
-                        row(s) selected.
+                        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                        {table.getFilteredRowModel().rows?.length || 0} row(s) selected.
                     </div>
                     <div>
                         <Button

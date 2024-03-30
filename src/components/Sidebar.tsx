@@ -30,7 +30,7 @@ interface Props {
     };
 }
 
-const Sidebar = ({ AllSeasons }: Props) => {
+const Sidebar = () => {
     const context = useContext(ToggleContext);
     const userString = Cookies.get("user");
 

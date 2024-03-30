@@ -73,6 +73,7 @@ export const fetchStudentData = async (accessToken: string | undefined) => {
         return;
     }
     const res = await fetch(url("/students"), {
+        next: { tags: ['AllStudents'] },
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },

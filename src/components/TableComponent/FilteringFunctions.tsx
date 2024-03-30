@@ -18,6 +18,7 @@ export const handleOperatorChange = (columnId: string, operator: "eq" | "lt" | "
 
 export const handleSubmit = async (filterOutput: any, setTableData: any) => {
     const queryObject = filterOutput;
+    console.log(queryObject)
     const encodedQueryString = qs.stringify(queryObject, {
         encodeValuesOnly: true,
         encode: false,

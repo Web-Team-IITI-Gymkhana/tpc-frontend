@@ -34,12 +34,15 @@ const StudentPage = async () => {
         <div className="m-10">
             <h1 className="text-center font-bold text-3xl my-5 py-5">Students</h1>
             <div>
-                <TableComponent
-                    isAddButton={true}
-                    AddButtonText={"Add Students"}
-                    data={AllStudents}
-                    columns={dynamicColumns}
-                />
+            {AllStudents && (
+                    <TableComponent
+                        isAddButton={true}
+                        AddButtonText={"Add Students"}
+                        data={AllStudents}
+                        columns={dynamicColumns}
+                        
+                    />
+                )}
             </div>
         </div>
     );
