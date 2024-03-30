@@ -4,6 +4,8 @@ import { Separator } from "../ui/separator";
 import { fetchJobSalary } from "@/helpers/api";
 import { cookies } from "next/headers";
 import { useState } from 'react';
+import JobModal from "./JobModal";
+import {JobDetails} from "@/dummyData/jobdetails"
 interface Event {
   id: string;
   name: string;
@@ -108,7 +110,7 @@ const JobCard = ({ jobItem, salary }: Props) => {
   };
 
   return (
-    <div className="" onClick={handleViewDetails} style={{ cursor: 'pointer' }}>      
+    <div className="">      
       <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
           Goldman Sachs
@@ -116,33 +118,19 @@ const JobCard = ({ jobItem, salary }: Props) => {
         <div className="my-4">
           <Separator />
         </div>
-        <div className="text-xs">
+        <div className="text-sm">
           {salary?.salary}
         </div>
-        <div className="flex justify-between text-xs">
-          <div className="text-xs my-2">
+        <div className="flex justify-between text-sm">
+          <div className="text-sm my-2">
             3 Months
           </div>
-          <div className="text-xs my-2">
+          <div className="text-sm my-2">
             Eligibility CPI: {jobItem.eligibilityCpi}
           </div>
         </div>
-        <div className="flex justify-between text-xs">
-          <button 
-            disabled={!selectedResume}
-            className={`my-1 p-2 text-white font-semibold cursor-pointer rounded-md ${selectedResume ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'}`} 
-          >
-            Apply
-          </button>
-          <div className="bg-gray-20 my-1 p-2 rounded-md">
-            <select value={selectedResume || ''} onChange={handleResumeChange}>
-              <option value="" disabled>Select Resume</option>
-              <option value="resume1">Resume 1</option>
-              <option value="resume2">Resume 2</option>
-              {/* Add more options as needed */}
-            </select>
-          </div>
-          <Link href={`/admin/jobs/${jobItem.id}`} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
+        <div className="text-sm">
+          <Link href={""} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" onClick={handleViewDetails}>
             View Details {'>'}
           </Link>
         </div>
@@ -156,7 +144,22 @@ const JobCard = ({ jobItem, salary }: Props) => {
             </div>
             <p className="text-sm my-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda modi architecto molestiae quidem, eos aspernatur, officia, laboriosam maiores enim dignissimos impedit iure aliquid officiis voluptatibus! Neque modi eius vero ea quas maiores deleniti natus. Labore veritatis aspernatur aperiam cum iste nisi, possimus vel odio accusamus, recusandae qui suscipit. Impedit, quibusdam!</p>
             <p className="text-sm my-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda modi architecto molestiae quidem, eos aspernatur, officia, laboriosam maiores enim dignissimos impedit iure aliquid officiis voluptatibus! Neque modi eius vero ea quas maiores deleniti natus. Labore veritatis aspernatur aperiam cum iste nisi, possimus vel odio accusamus, recusandae qui suscipit. Impedit, quibusdam!</p>
-          </div>
+            <div className="flex justify-between">
+              <button 
+                disabled={!selectedResume}
+                className={`my-1 p-2 text-white font-semibold cursor-pointer rounded-md ${selectedResume ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'}`} 
+              >
+                Apply
+              </button>
+              <div className="bg-gray-20 my-1 p-2 rounded-md">
+                <select value={selectedResume || ''} onChange={handleResumeChange}>
+                  <option value="" disabled>Select Resume</option>
+                  <option value="resume1">Resume 1</option>
+                  <option value="resume2">Resume 2</option>
+                </select>
+              </div>
+            </div>
+          </div>          
         )}
       </div>
     </div>
