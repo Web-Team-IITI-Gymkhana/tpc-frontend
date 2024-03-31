@@ -4,18 +4,18 @@ import React from "react";
 interface Props {}
 
 const StudentPage = ({
-    params,
+  params,
 }: {
-    params: {
-        studentId: String;
-    };
+  params: {
+    studentId: String;
+  };
 }) => {
-    return (
-        <div>
-            <h1>Student Page</h1>
-            <p>Student ID: {params.studentId}</p>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Student Page</h1>
+      <p>Student ID: {params.studentId}</p>
+    </div>
+  );
 };
 
 export default StudentPage;

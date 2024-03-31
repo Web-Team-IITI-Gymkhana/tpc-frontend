@@ -2,7 +2,7 @@ import React from "react";
 import JAF from "@/components/JAF/JAF";
 
 function page() {
-    return <JAF />;
+  return <JAF />;
 }
 
 export default page;

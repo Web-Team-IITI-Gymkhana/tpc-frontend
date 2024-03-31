@@ -3,7 +3,7 @@ import React from "react";
 import LoginForm from "@/components/loginForms/loginForm";
 
 const LoginPage = async () => {
-    return <LoginForm />;
+  return <LoginForm />;
 };
 
 export default LoginPage;

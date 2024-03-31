@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 interface Props {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const AddCompanyLayout = ({ children }: Props) => {
-    return <div className="mx-2 my-4 px-2 py-4 rounded-md bg-white">{children}</div>;
+  return (
+    <div className="mx-2 my-4 px-2 py-4 rounded-md bg-white">{children}</div>
+  );
 };
 
 export default AddCompanyLayout;

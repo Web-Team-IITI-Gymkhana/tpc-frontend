@@ -13,11 +13,15 @@ import React from "react";
 import { useSession } from "next-auth/react";
 
 const Home = () => {
-    // const session = await getServerSession(config);
+  // const session = await getServerSession(config);
 
-    const { data: session, status } = useSession();
-    console.log("session", session?.user);
+  const { data: session, status } = useSession();
+  console.log("session", session?.user);
 
-    return <main className="flex h-full flex-col items-center justify-between p-24">Home page</main>;
+  return (
+    <main className="flex h-full flex-col items-center justify-between p-24">
+      Home page
+    </main>
+  );
 };
 export default Home;
