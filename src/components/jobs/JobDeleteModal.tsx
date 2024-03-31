@@ -1,5 +1,5 @@
-'use client'
-import { Button } from "@/components/ui/button"
+"use client";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,30 +8,34 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import submit from "../action"
-import Cookies from "js-cookie"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useState } from "react"
+} from "@/components/ui/dialog";
+import submit from "../action";
+import Cookies from "js-cookie";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import { MdDelete } from "react-icons/md";
-import axios from "axios"
-import toast from "react-hot-toast"
+import axios from "axios";
+import toast from "react-hot-toast";
 interface Props {
-  jobId: string,
-  eventId: string,
+  jobId: string;
+  eventId: string;
 }
 
 export function JobDeleteModal({ jobId, eventId }: Props) {
-  const [answer, setanswer] = useState<string | null>(null)
-  const [loading,setloading] = useState<boolean>(false)
-  const [open,setopen] = useState<boolean>(false)
+  const [answer, setanswer] = useState<string | null>(null);
+  const [loading, setloading] = useState<boolean>(false);
+  const [open, setopen] = useState<boolean>(false);
   return (
     <Dialog open={open}>
       <DialogTrigger asChild>
-        <div onClick={()=>{
-          setopen(true)
-        }}><MdDelete className="text-white" /></div>
+        <div
+          onClick={() => {
+            setopen(true);
+          }}
+        >
+          <MdDelete className="text-white" />
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -42,7 +46,6 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid grid-cols-4 items-center gap-4 justify-center !w-full">
-
             <Input
               onChange={(e) => {
                 if (e.target.value != "Delete") {
@@ -55,36 +58,46 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
                 setanswer(e.target.value);
               }}
               id="name"
-
               className="col-span-3 text-black !w-full"
             />
           </div>
-
         </div>
         <DialogFooter>
-          <Button disabled={loading} type="submit" onClick={async () => {
-            if(answer != "Delete"){
-              toast.error('Input Not Matching')
-              return ;
-            }
-            setloading(true)
-            await axios.delete(`http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events/${eventId}`,{
-              headers: {
-                Authorization: `Bearer ${Cookies.get('accessToken')}`
+          <Button
+            disabled={loading}
+            type="submit"
+            onClick={async () => {
+              if (answer != "Delete") {
+                toast.error("Input Not Matching");
+                return;
               }
-            }).then((response) => {
-              submit('AllEvents');
-              setloading(false)
-              setopen(false)
-              toast.success('Event Deleted')
-            }).catch((err)=>{
-              console.log(err)
-              setopen(false)
-              toast.error('Error Deleting Event')
-            })
-          }}>{loading?"Deleting...":"Delete Now"}</Button>
+              setloading(true);
+              await axios
+                .delete(
+                  `http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events/${eventId}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${Cookies.get("accessToken")}`,
+                    },
+                  },
+                )
+                .then((response) => {
+                  submit("AllEvents");
+                  setloading(false);
+                  setopen(false);
+                  toast.success("Event Deleted");
+                })
+                .catch((err) => {
+                  console.log(err);
+                  setopen(false);
+                  toast.error("Error Deleting Event");
+                });
+            }}
+          >
+            {loading ? "Deleting..." : "Delete Now"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
