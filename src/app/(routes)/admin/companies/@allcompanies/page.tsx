@@ -12,15 +12,12 @@ interface Props {}
 interface company {
   id: string;
   name: string;
-  metadata: object;
-  createdAt: string;
-  updatedAt: string;
 }
 
 const CompanyPage = async () => {
   const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
 
-  if (Companies.companies.length === 0) {
+  if (Companies?.length === 0) {
     return (
       <h1 className="text-center text-black text-3xl font-bold flex justify-center items-center w-full h-screen">
         No Comapanies Currently Registered
@@ -53,7 +50,7 @@ const CompanyPage = async () => {
 
           <ScrollArea className="h-72 w-full rounded-md border-t-2">
             <div className="p-4">
-              {Companies?.companies.map((Company: company, index: number) => {
+              {Companies?.map((Company: company, index: number) => {
                 return (
                   <>
                     <div

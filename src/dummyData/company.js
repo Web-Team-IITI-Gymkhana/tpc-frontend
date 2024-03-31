@@ -2,9 +2,6 @@ export const AllCompanies = [
   {
     id: "1c4f5c6d-4a12-4f89-8be9-2f53a0f93f18",
     name: "Tech Innovators Ltd.",
-    jafs: [],
-    ppoOffers: [],
-    recruiters: [],
   },
   {
     id: "82ecb37f-03ac-49a1-a5f1-8f3a7e79b7f6",
