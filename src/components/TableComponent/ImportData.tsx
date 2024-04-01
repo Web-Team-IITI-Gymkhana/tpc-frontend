@@ -47,7 +47,7 @@ const ImportData = () => {
       }));
 
       console.log(formattedData);
-      await axios.post("http://localhost:5000/api/v1/students/", formattedData);
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/students`, formattedData);
       console.log("Students added successfully!");
     } catch (err) {
       setError(

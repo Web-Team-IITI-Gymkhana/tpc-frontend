@@ -74,7 +74,7 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
               setloading(true);
               await axios
                 .delete(
-                  `http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events/${eventId}`,
+                  `${process.env.NEXT_PUBLIC_BACKEND_URL}/jobs/${jobId}/events/${eventId}`,
                   {
                     headers: {
                       Authorization: `Bearer ${Cookies.get("accessToken")}`,

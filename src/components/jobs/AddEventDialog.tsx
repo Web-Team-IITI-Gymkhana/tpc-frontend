@@ -88,7 +88,7 @@ export function AddEventDialog({ jobId }: Props) {
                 setloading(true);
                 await axios
                   .post(
-                    `http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events`,
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/v1/jobs/${jobId}/events`,
                     { type: type, roundNumber: round, startDateTime: date },
                     {
                       headers: {

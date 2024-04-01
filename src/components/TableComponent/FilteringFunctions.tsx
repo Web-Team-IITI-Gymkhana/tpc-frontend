@@ -39,7 +39,7 @@ export const handleSubmit = async (filterOutput: any, setTableData: any) => {
     encode: false,
   });
 
-  const url = `http://localhost:5000/api/v1/students?${encodedQueryString}`;
+  const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/students?${encodedQueryString}`;
   console.log(url);
 
   try {

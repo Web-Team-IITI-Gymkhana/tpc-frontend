@@ -54,7 +54,8 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
   const programsOptions: SelectProps["options"] = [];
 
   useEffect(() => {
-    axios.get("http://10.250.9.45:3000/api/v1/jaf").then((res) => {
+    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jaf`).then((res) => {
+      console.log(res.data)
       res.data.testTypes.map((it: any) => {
         testTypeOptions.push({ value: it, label: it });
       });
@@ -96,7 +97,7 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
               categories: salary.categories ? salary.categories : [], //dropdown from backend
               minCPI: salary.minCPI ? salary.minCPI : 0, //number
               tenthMarks: salary.tenthMarks ? salary.tenthMarks : 0, //number
-              twelvethMarks: salary.twelvethMarks ? salary.twelvethMarks : 0, //number
+              twelthMarks: salary.twelthMarks ? salary.twelthMarks : 0, //number
             },
             baseSalary: salary.baseSalary ? salary.baseSalary : 0,
             totalCTC: salary.totalCTC ? salary.totalCTC : 0,
@@ -477,10 +478,10 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      label="Twelveth Marks"
-                      name={[field.name, "twelvethMarks"]}
+                      label="Twelth Marks"
+                      name={[field.name, "twelthMarks"]}
                     >
-                      <Input placeholder="Twelveth Marks" />
+                      <Input placeholder="Twelth Marks" />
                     </Form.Item>
                   </Col>
                 </Row>

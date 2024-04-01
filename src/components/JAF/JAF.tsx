@@ -107,8 +107,8 @@ function JAF() {
                 skills: values.skills,
                 location: values.location,
                 noOfVacancies: values.noOfVacancies,
-                offerLetterReleaseDate: values.offerLetterReleaseDate, //date
-                joiningDate: values.joiningDate, //date
+                offerLetterReleaseDate: new Date(values.offerLetterReleaseDate), //date
+                joiningDate: new Date(values.joiningDate), //date
                 duration: values.duration,
                 selectionProcedure: {
                   selectionMode: values.selectionMode, //dropdown - online/offline
@@ -147,60 +147,61 @@ function JAF() {
             };
             console.log(submitValues);
             axios
-              .post("http://10.250.9.45:3000/api/v1/jaf", {
-                seasonId: values.seasonId,
-                company: {
-                  name: values.compName,
-                  website: values.website,
-                  domains: values.domains,
-                  category: values.category,
-                  address: {
-                    line1: values.line1,
-                    line2: values.line2,
-                    city: values.city,
-                    state: values.state,
-                    zipCode: values.zipCode,
-                    country: values.country,
-                  },
-                  size: values.size,
-                  yearOfEstablishment: values.yearOfEstablishment,
-                  annualTurnover: values.annualTurnover,
-                  socialMediaLink: values.socialMediaLink,
-                },
-                recruiter: {
-                  name: values.recName,
-                  designation: values.designation,
-                  email: values.email,
-                  phoneNumber: "+91 " + values.phoneNumber,
-                  landline: values.landline,
-                },
-                job: {
-                  role: values.role,
-                  description: values.description,
-                  //attachment: values.attachment,//file
-                  skills: values.skills,
-                  location: values.location,
-                  noOfVacancies: values.noOfVacancies,
-                  offerLetterReleaseDate: values.offerLetterReleaseDate,
-                  joiningDate: values.joiningDate,
-                  duration: values.duration,
-                  selectionProcedure: {
-                    selectionMode: values.selectionMode,
-                    shortlistFromResume: values.shortlistFromResume,
-                    groupDiscussion: values.groupDiscussion,
-                    tests: values.tests,
-                    interviews: values.interviews,
-                    others: values.others,
-                    requirements: {
-                      numberOfMembers: values.numberOfMembers,
-                      numberOfRooms: values.numberOfRooms,
-                      otherRequirements: values.otherRequirements,
+              .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jaf`, {
+                job:{
+                  seasonId: values.seasonId,
+                  companyDetailsFilled: {
+                    name: values.compName,
+                    website: values.website,
+                    domains: values.domains,
+                    category: values.category,
+                    address: {
+                      line1: values.line1,
+                      line2: values.line2,
+                      city: values.city,
+                      state: values.state,
+                      zipCode: values.zipCode,
+                      country: values.country,
                     },
+                    size: values.size,
+                    yearOfEstablishment: values.yearOfEstablishment,
+                    annualTurnover: values.annualTurnover,
+                    socialMediaLink: values.socialMediaLink,
+                  },
+                  recruiterDetailsFilled: {
+                    name: values.recName,
+                    designation: values.designation,
+                    email: values.email,
+                    contact: "+91 " + values.phoneNumber,
+                    landline: values.landline,
+                  },                  
+                    role: values.role,
+                    others: values.jobOthers,
+                    selectionProcedure: {
+                      selectionMode: values.selectionMode,
+                      shortlistFromResume: values.shortlistFromResume,
+                      groupDiscussion: values.groupDiscussion,
+                      tests: values.tests,
+                      interviews: values.interviews,
+                      requirements: {
+                        numberOfMembers: values.numberOfMembers,
+                        numberOfRooms: values.numberOfRooms,
+                        otherRequirements: values.otherRequirements,
+                      },
+                      others: values.others,
+                    },
+                    description: values.description,
+                    //attachment: values.attachment,//file
+                    skills: values.skills,
+                    location: values.location,
+                    noOfVacancies: values.noOfVacancies,
+                    offerLetterReleaseDate: new Date(values.offerLetterReleaseDate),
+                    joiningDate: new Date(values.joiningDate),
+                    duration: values.duration,
                   },
                   salaries: values.salaries,
-                  others: values.jobOthers,
-                },
-              })
+                }
+              )
               .then((res) => {
                 console.log(res);
               })

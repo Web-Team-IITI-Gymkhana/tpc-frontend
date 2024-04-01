@@ -1,9 +1,7 @@
 const redirect = () => {};
 
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 const url = (NextUrl: string) => {
-  return `${baseUrl}/api/v1${NextUrl}`;
+  return `${process.env.NEXT_PUBLIC_BACKEND_URL}/${NextUrl}`;
 };
 
 export const fetchAllSeasons = async (accessToken: string | undefined) => {
@@ -11,13 +9,16 @@ export const fetchAllSeasons = async (accessToken: string | undefined) => {
     redirect();
     return;
   }
-  const res = await fetch(url("/seasons"), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const json = await res.json();
-  return json;
+  // const res = await fetch(url("/seasons"), {
+  //   headers: {
+  //     Authorization: `Bearer ${accessToken}`,
+  //   },
+  // });
+  // const json = await res.json();
+  // return json;
+
+  return [{"year": 2021, "type": "INTERN"}, {"year": 2022, "type": "PLACEMENT"}];
+
 };
 
 export const fetchCompany = async (accessToken: string | undefined) => {
@@ -72,7 +73,7 @@ export const fetchStudentData = async (accessToken: string | undefined) => {
     redirect();
     return;
   }
-  const res = await fetch(url("/students"), {
+  const res = await fetch(url("students"), {
     next: { tags: ["AllStudents"] },
     headers: {
       Authorization: `Bearer ${accessToken}`,

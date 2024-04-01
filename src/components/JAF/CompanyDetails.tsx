@@ -15,7 +15,8 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
   let countryOptions: any = [];
   const options: SelectProps["options"] = [];
   useEffect(() => {
-    axios.get("http://10.250.9.45:3000/api/v1/jaf").then((res) => {
+    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jaf`).then((res) => {
+      console.log(res.data)
       res.data.domains.map((domain: any) => {
         options.push({ value: domain, label: domain });
       });
