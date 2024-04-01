@@ -38,8 +38,8 @@ import {
 } from "@/components/ui/table";
 
 interface Student {
- id:string;
- userId:string;
+  id: string;
+  userId: string;
   user: {
     id: string;
     email: string;
@@ -49,9 +49,9 @@ interface Student {
     createdAt: string;
     updatedAt: string;
   };
-  companyId:string;
-  createdAt:string;
-  updatedAt:string;
+  companyId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const customStyles = {
@@ -84,7 +84,9 @@ export const columns: ColumnDef<Student>[] = [
   {
     accessorKey: "user.name",
     header: "Name",
-    cell: ({ row }) => <div className="lowercase">{row.original.user.name}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.original.user.name}</div>
+    ),
   },
   {
     accessorKey: "user.email",
@@ -110,8 +112,7 @@ export const columns: ColumnDef<Student>[] = [
             onRequestClose={() => (isDeleteModalOpen = false)}
             style={customStyles}
             contentLabel="Example Modal"
-          >
-          </Modal>
+          ></Modal>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
@@ -121,7 +122,6 @@ export const columns: ColumnDef<Student>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem>View Profile</DropdownMenuItem>
-            
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -178,13 +178,7 @@ export default function RecruitersTable({ data }: any) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-start">
-        
-
-        
-
-        
-      </div>
+      <div className="flex items-center justify-start"></div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -236,7 +230,6 @@ export default function RecruitersTable({ data }: any) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4 ">
-        
         <div className="space-x-2">
           <Button
             onClick={() => table.previousPage()}

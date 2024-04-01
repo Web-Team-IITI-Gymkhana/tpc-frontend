@@ -116,12 +116,14 @@ export const columns: ColumnDef<Student>[] = [
   {
     accessorKey: "user.name",
     header: "Name",
-    cell: ({ row }) => <div className="lowercase">{row.original.user.name}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.original.user.name}</div>
+    ),
   },
   {
     accessorKey: "rollNo",
     header: "Roll Number",
-    cell: ({ row }) => <div>{row.getValue('rollNo')}</div>,
+    cell: ({ row }) => <div>{row.getValue("rollNo")}</div>,
   },
   {
     accessorKey: "category",
@@ -157,12 +159,7 @@ export const columns: ColumnDef<Student>[] = [
             onRequestClose={() => (isDeleteModalOpen = false)}
             style={customStyles}
             contentLabel="Example Modal"
-          >
-            <DeleteStudentModal
-              isDeleteModalOpen={isDeleteModalOpen}
-              memberId={[student.memberId]}
-            />
-          </Modal>
+          ></Modal>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
