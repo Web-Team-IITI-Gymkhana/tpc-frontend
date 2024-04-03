@@ -33,16 +33,15 @@ const RootLayout = async ({ children, auth }: Props) => {
       <body className={className}>
         <ToggleProvider>
           <div className="flex flex-col">
-            <nav className="shadow-xl bg-gray-900">
+            {/* <nav className="shadow-xl bg-gray-900">
               <div className="max-w-7xl mx-auto px-2 sm:px-4 flex justify-between items-center h-[8vh]">
                 <div className="flex-shrink-0 flex items-center">
                   <Link href="/" className="text-white font-bold text-2xl">
                     <div className="hidden sm:block mx-2">TPC</div>
                   </Link>
                 </div>
-                <NavButtonGroup />
               </div>
-            </nav>
+            </nav> */}
             {/* Page Content */}
             <Toaster />
 

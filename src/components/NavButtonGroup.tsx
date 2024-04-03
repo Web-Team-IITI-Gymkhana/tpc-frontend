@@ -24,7 +24,7 @@ const NavLink = ({ href }: LinkProps) => {
   return (
     <Link href={href}>
       <button
-        className="bg-gray-900
+        className="bg-gray-800
               text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-all duration-300"
       >
         Login
@@ -35,10 +35,11 @@ const NavLink = ({ href }: LinkProps) => {
 
 const NavButtonGroup = () => {
   return (
-    <div className="ml-2 sm:ml-6">
-      <div className="flex space-x-4">
+    <div className="lg:ml-12 sm:ml-7">
+      <div className="flex-col">
         <NavLink href="/login" />
-        <button className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-all duration-300">
+        <br />
+        <button className="bg-gray-800 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-all duration-300">
           <div className="hidden sm:block">Logout</div>
           <div className="block sm:hidden">
             <svg
