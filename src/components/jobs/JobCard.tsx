@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 import { useState } from 'react';
 import JobModal from "./JobModal";
 import {JobDetails} from "@/dummyData/jobdetails"
+import { Button } from "@/components/ui/button";
+import { Pointer } from "lucide-react";
 interface Event {
   id: string;
   name: string;
@@ -96,7 +98,7 @@ interface Props {
   }
 }
 
-const JobCard = ({ jobItem, salary }: Props) => {
+const JobCard = ({ jobItem, salary }: Props) => {  
   // const salary = await fetchJobSalary(cookies()?.get('accessToken')?.value, jobItem.id)
   // console.log(salary)
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
@@ -118,39 +120,106 @@ const JobCard = ({ jobItem, salary }: Props) => {
         <div className="my-4">
           <Separator />
         </div>
-        <div className="text-sm">
-          {salary?.salary}
-        </div>
-        <div className="flex justify-between text-sm">
-          <div className="text-sm my-2">
-            3 Months
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2" onClick={handleViewDetails} style={{cursor: "pointer"}}>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Role</div>{" "}
+            <div>{jobItem.role}</div>
           </div>
-          <div className="text-sm my-2">
-            Eligibility CPI: {jobItem.eligibilityCpi}
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Duration</div>{" "}
+            <div>3 Months</div>
           </div>
-        </div>
-        <div className="text-sm">
-          <Link href={""} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" onClick={handleViewDetails}>
-            View Details {'>'}
-          </Link>
-        </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Stipend</div>{" "}
+            <div>{salary?.salary}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Apply By</div>{" "}
+            <div>1st Jan 2024</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Eligibility CPI</div>{" "}
+            <div>7.5</div>
+          </div>
+        </div>        
         {showDescription && (
           <div className="mt-4">
             <div className="my-4">
               <Separator />
             </div>
-            <div className="my-4">
-              <h2>{jobItem.role}</h2>
+            <div>
+              <div className="flex justify-between">
+                <h1 className="text-lg font-semibold">About The Work</h1>
+                <div className="text-sm my-3">
+                  <Link href={"http://localhost:3000/student/jobs/a8f241b5-042e-4ea2-a4c8-d05845f5510a"} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
+                    View Details {'>'}
+                  </Link>
+                </div>
+              </div>
+              <ul className="list-disc mx-10">
+                <li>
+                  Build an application in Flutter and connect REST APIs to provide a
+                  seamless experience to users
+                </li>
+                <li>
+                  Take ownership of the application and work alongside backend and
+                  database engineers to deliver tasks based on timeline
+                </li>
+                <li>Work with 3rd party services to integrate in app</li>
+                <li>
+                  Attend daily standup calls to discuss team updates and next tasks
+                </li>
+              </ul>
             </div>
-            <p className="text-sm my-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda modi architecto molestiae quidem, eos aspernatur, officia, laboriosam maiores enim dignissimos impedit iure aliquid officiis voluptatibus! Neque modi eius vero ea quas maiores deleniti natus. Labore veritatis aspernatur aperiam cum iste nisi, possimus vel odio accusamus, recusandae qui suscipit. Impedit, quibusdam!</p>
-            <p className="text-sm my-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda modi architecto molestiae quidem, eos aspernatur, officia, laboriosam maiores enim dignissimos impedit iure aliquid officiis voluptatibus! Neque modi eius vero ea quas maiores deleniti natus. Labore veritatis aspernatur aperiam cum iste nisi, possimus vel odio accusamus, recusandae qui suscipit. Impedit, quibusdam!</p>
-            <div className="flex justify-between">
-              <button 
-                disabled={!selectedResume}
-                className={`my-1 p-2 text-white font-semibold cursor-pointer rounded-md ${selectedResume ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-300'}`} 
-              >
+
+            <div>
+              <h1 className="text-lg font-semibold my-2">Skill(s) Required</h1>
+              <div className="flex flex-wrap !text-md">
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  Algorithms
+                </div>
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  Android
+                </div>
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  Data Structures
+                </div>
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  Firebase
+                </div>
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  iOS
+                </div>
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  Flutter
+                </div>
+                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
+                  REST API
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h1 className="text-lg font-semibold my-2">Who can apply</h1>
+              <ul className="list-disc mx-10">
+                <li> are available for the work from home job/internship</li>
+                <li>
+                  can work from 8:00 pm - 2:00 am Indian Standard Time (as the company
+                  is based outside of India & their local work timings are 9:30 am -
+                  3:30 pm Eastern Standard Time)
+                </li>
+                <li>
+                  can start the work from home job/internship between 4th Jan24 and
+                  8th Feb24
+                </li>
+                <li> are available for duration of 3 months</li>
+                <li> have relevant skills and interests</li>
+              </ul>
+            </div>            
+            <div className="flex justify-between my-3">
+              <Button disabled={!selectedResume}>
                 Apply
-              </button>
+              </Button>
               <div className="bg-gray-20 my-1 p-2 rounded-md">
                 <select value={selectedResume || ''} onChange={handleResumeChange}>
                   <option value="" disabled>Select Resume</option>
