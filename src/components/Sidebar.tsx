@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import Cookies from "js-cookie";
@@ -9,7 +9,15 @@ import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
 import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
 import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
 import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
-import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
+import { Button } from "@nextui-org/button";
+import { Key, ChevronDown } from "lucide-react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem,
+} from "@nextui-org/dropdown";
 
 interface Framework {
   value: string;
@@ -33,10 +41,20 @@ interface Props {
 const Sidebar = ({ AllSeasons }: Props) => {
   const context = useContext(ToggleContext);
   const userString = Cookies.get("user");
-
   const user = userString ? JSON.parse(userString) : null;
+
   const isAdmin = user?.userType === "ADMIN";
-  const userRole = user?.userType?.toLowerCase();
+  // const userRole=user?.userType?.toLowerCase();
+  const [userRole,setUserRole] = useState(user?.userType?.toLowerCase());
+
+  const [profile, setProfile] = useState("STUDENT");
+  const handleProfileChange = (keyy: string) => {
+    setProfile(keyy);
+    // user.userType=keyy.toLowerCase();
+    // setUserRole(user.userType);
+    console.log(user);
+  };
+  
 
   return (
     <motion.div
@@ -84,6 +102,107 @@ const Sidebar = ({ AllSeasons }: Props) => {
       </div>
       <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
         <div>
+          {/* ////////////////////////////////////////////// */}
+          <Dropdown className="text-white">
+            <DropdownTrigger>
+              <Button
+                variant="bordered"
+                className="py-[0.5vw]  rounded-lg mb-[1vw] text-yellow-500 pl-[0.5vw]"
+                // startContent={<ChevronDown />}
+              >
+                <span className="fixed top-[85.5vh] left-[1vw]">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                <motion.span
+                  initial={{ opacity: 1 }}
+                  animate={context.isOpen ? "open" : "closed"}
+                  transition={{ duration: 0.1 }}
+                  variants={{
+                    closed: { opacity: 0 },
+                    open: { opacity: 1 },
+                  }}
+                >
+                  
+                  <span className="flex gap-1 flex-wrap ml-[1.5vw]">
+                    
+                    <span> 
+                      
+                      Change 
+                    </span>
+                    <span>
+                      Role :
+                    </span> 
+                    
+                    <span>
+                      {profile}
+                    </span>
+                  </span>
+                 
+                </motion.span>
+                
+                <motion.span
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { translateX: 0 },
+                  open: { translateX: '-100%' },
+                }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 48 48"
+                    id="Dropdown"
+                  >
+                    <path
+                      d="m14 20 10 10 10-10z"
+                      fill="#b5a608"
+                      className="color000000 svgShape"
+                    ></path>
+                    <path fill="none" d="M0 0h48v48H0z"></path>
+                  </svg>
+                </motion.span>
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              style={{'backgroundColor':'#1F2937', 'borderWidth':'1px'}}
+              className="rounded-lg p-2 border-slate-700"
+              aria-label="Action event example"
+              onAction={(key) => handleProfileChange(key.toString())}
+            >
+              <DropdownItem
+                key="TPC MANAGER"
+                className="hover:bg-slate-700 rounded-lg"
+              >
+                TPC MANAGER
+              </DropdownItem>
+              <DropdownItem
+                key="RECRUITER"
+                className="hover:bg-slate-700 rounded-lg"
+              >
+                RECRUITER
+              </DropdownItem>
+              <DropdownItem
+                key="ADMIN"
+                className="hover:bg-slate-700 rounded-lg"
+              >
+                ADMIN
+              </DropdownItem>
+              <DropdownItem
+                key="FACULTY"
+                className="hover:bg-slate-700 rounded-lg"
+              >
+                FACULTY
+              </DropdownItem>
+              <DropdownItem
+                key="STUDENT"
+                className="hover:bg-slate-700 rounded-lg"
+              >
+                STUDENT
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          {/* ////////////////////////////////////////////// */}
           <hr />
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1vw]">
