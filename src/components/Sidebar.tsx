@@ -83,7 +83,7 @@ const Sidebar = () => {
           </motion.div>
         </div>
       </div>
-      <div className="flex-shrink-0 flex items-center">
+      <div className="flex-shrink-0 flex items-center justify-center">
         <Link href="/" className="text-white font-bold text-2xl">
           <div className="sm:block mx-2">TPC</div>
         </Link>
