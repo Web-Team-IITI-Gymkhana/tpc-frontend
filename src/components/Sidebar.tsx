@@ -4,6 +4,7 @@ import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import NavButtonGroup from "@/components/NavButtonGroup";
 import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown";
 import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
 import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
@@ -47,7 +48,7 @@ const Sidebar = () => {
         closed: { width: "6vw", opacity: 1 },
         open: { width: "18vw", opacity: 1 },
       }}
-      className="z-40 overflow-hidden bg-gray-800 pt-3 flex flex-col h-[92vh]"
+      className="z-40 overflow-hidden bg-gray-800 pt-3 flex flex-col h-screen"
     >
       <div className="flex flex-row-reverse">
         <div
@@ -81,6 +82,11 @@ const Sidebar = () => {
             </svg>
           </motion.div>
         </div>
+      </div>
+      <div className="flex-shrink-0 flex items-center justify-center">
+        <Link href="/" className="text-white font-bold text-2xl">
+          <div className="sm:block mx-2">TPC</div>
+        </Link>
       </div>
       <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
         <div>
@@ -118,6 +124,8 @@ const Sidebar = () => {
             </div>
             {/* <CompanyDropDown userRole={userRole} /> */}
           </div>
+          <hr />
+          <NavButtonGroup />
         </div>
         {isAdmin && (
           <div>
