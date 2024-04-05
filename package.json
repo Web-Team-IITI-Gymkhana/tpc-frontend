@@ -59,9 +59,9 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
-    "@types/node": "20.12.4",
+    "@types/node": "latest",
     "@types/papaparse": "^5.3.10",
-    "@types/react": "18.2.74",
+    "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/react-modal": "^3.16.3",
     "autoprefixer": "latest",
@@ -69,6 +69,6 @@
     "eslint-config-next": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",
-    "typescript": "5.4.4"
+    "typescript": "latest"
   }
 }
