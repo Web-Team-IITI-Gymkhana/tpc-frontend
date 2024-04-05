@@ -14,14 +14,17 @@ import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
 
 interface Props {
-  memberId: string[];
+  memberId: any;
   isDeleteModalOpen: boolean;
+  setisDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function DeleteStudentModal({
   memberId,
   isDeleteModalOpen,
+  setisDeleteModal,
 }: Props) {
+  console.log("memberId", memberId);
   const [answer, setanswer] = React.useState<string | null>(null);
   const { toast } = useToast();
   return (
@@ -59,7 +62,7 @@ export default function DeleteStudentModal({
         <Button
           variant="outline"
           onClick={() => {
-            isDeleteModalOpen = false;
+            setisDeleteModal(false);
           }}
         >
           Close

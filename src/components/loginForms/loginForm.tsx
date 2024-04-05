@@ -60,7 +60,7 @@ const LoginForm = () => {
                             return;
                           }
                           axios
-                            .post("http://tpc.iiti.ac.in/api/v1/auth/login/", {
+                            .post("http://localhost:5000/api/v1/auth/login/", {
                               email: email,
                               role: role?.toUpperCase(),
                             })
@@ -69,7 +69,9 @@ const LoginForm = () => {
                                 Cookies.set(
                                   "accessToken",
                                   response.data.accessToken,
-                                  { expires: 365 },
+                                  {
+                                    expires: 365,
+                                  },
                                 );
                                 Cookies.set(
                                   "user",
@@ -83,7 +85,7 @@ const LoginForm = () => {
                               },
                             )
                             .catch((err) => {
-                              alert(err)
+                              alert(err);
                               toast.error("Some Error Occured");
                             });
                         }}

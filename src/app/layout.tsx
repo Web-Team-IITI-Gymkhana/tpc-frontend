@@ -10,8 +10,6 @@ import NavButtonGroup from "@/components/NavButtonGroup";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
 import { Toaster } from "react-hot-toast";
 import { Providers } from "@/store/provider";
-import { cookies } from "next/headers";
-import { fetchAllSeasons } from "@/helpers/api";
 import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,16 +26,14 @@ interface Props {
 
 const RootLayout = async ({ children, auth }: Props) => {
   const className = inter.className;
-  const AllSeasons = await fetchAllSeasons(
-    cookies()?.get("accessToken")?.value,
-  );
-  console.log(AllSeasons);
+  // const AllSeasons = await fetchAllSeasons(cookies()?.get("accessToken")?.value);
+  // console.log(AllSeasons);
   return (
     <html lang="en">
       <body className={className}>
         <ToggleProvider>
           <div className="flex flex-col">
-            <nav className="shadow-xl bg-gray-900">
+            {/* <nav className="shadow-xl bg-gray-900">
               <div className="max-w-7xl mx-auto px-2 sm:px-4 flex justify-between items-center h-[8vh]">
                 <div className="flex-shrink-0 flex items-center">
                   <Link href="/" className="text-white font-bold text-2xl">
@@ -46,7 +42,7 @@ const RootLayout = async ({ children, auth }: Props) => {
                 </div>
                 <NavButtonGroup />
               </div>
-            </nav>
+            </nav> */}
             {/* Page Content */}
             <Toaster />
 
@@ -54,14 +50,10 @@ const RootLayout = async ({ children, auth }: Props) => {
               <div className="flex-auto flex h-[92vh] ">
                 {/* sidebar and main content share this space */}
                 <Suspense fallback={<>Loading...</>}>
-                  <Sidebar AllSeasons={AllSeasons} />
+                  <Sidebar />
                 </Suspense>
                 <MainContent>
-                  <Providers>
-                    
-                      {children}
-                    
-                  </Providers>
+                  <Providers>{children}</Providers>
                 </MainContent>
               </div>
               {auth}
