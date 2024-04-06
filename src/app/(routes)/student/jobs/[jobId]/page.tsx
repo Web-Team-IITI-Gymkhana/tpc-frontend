@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import JobCard from "@/components/jobs/JobCard";
 import { Jobs } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
@@ -12,11 +12,129 @@ import {
   TableHead,
   TableRow,
   TableCell,
-  TableCaption,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
 interface Props {}
+
+interface Job {
+  id: string;
+  seasonId: string;
+  recruiterId: string;
+  companyId: string;
+  role: string;
+  active: boolean;
+  currentStatus: string;
+  companyDetailsFilled: {
+    name: string;
+    size: number;
+    address: {
+      city: string;
+      line1: string;
+      line2: string;
+      state: string;
+      country: string;
+      zipCode: string;
+    };
+    domains: string[];
+    category: string;
+    yearOfEstablishment: string;
+  };
+  recruiterDetailsFilled: {
+    name: string;
+    email: string;
+    contact: string;
+    landline: string | null;
+    designation: string;
+  };
+  selectionProcedure: {
+    tests: {
+      type: string;
+      duration: number;
+    }[];
+    interviews: {
+      type: string;
+      duration: number;
+    }[];
+    requirements: Record<string, unknown>; // Update the type as per actual requirements
+    selectionMode: string;
+    groupDiscussion: boolean;
+    shortlistFromResume: boolean;
+  };
+  attachment: string;
+  skills: string;
+  location: string;
+  noOfVacancies: number;
+  offerLetterReleaseDate: string;
+  joiningDate: string;
+  duration: number;
+  season: {
+    id: string;
+    year: string;
+    type: string;
+  };
+  company: {
+    id: string;
+    name: string;
+  };
+  recruiter: {
+    id: string;
+    userId: string;
+    companyId: string;
+    designation: string;
+    landline: string | null;
+  };
+  salaries: {
+    id: string;
+    jobId: string;
+    salaryPeriod: string;
+    others: string | null;
+    criteria: {
+      minCPI: number;
+      genders: string[];
+      programs: string[];
+      categories: string[];
+      tenthMarks: number;
+      twelthMarks: number;
+      facultyApprovals: string[];
+    };
+    baseSalary: number;
+    totalCTC: number;
+    takeHomeSalary: number;
+    grossSalary: number;
+    otherCompensations: number;
+  }[];
+  jobCoordinators: {
+    id: string;
+    tpcMemberId: string;
+    role: string;
+    tpcMember: {
+      id: string;
+      department: string;
+      userId: string;
+      role: string;
+      user: {
+        id: string;
+        email: string;
+        name: string;
+        contact: string;
+      };
+    };
+  }[];
+}
+
+function formatNumber(num: number): string {
+  if (num >= 1000000000) {
+      return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+  }
+  if (num >= 1000000) {
+      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  }
+  if (num >= 1000) {
+      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return num.toString();
+}
 
 const recruiters = [
   { name: 'John Doe', designation: 'HR Manager', email: 'john.doe@example.com', phoneNumber: '123-456-7890' },
@@ -35,18 +153,33 @@ const faculty = [
   { name: 'Alex Smith', designation: 'Assistant Professor', email: 'alex.smith@example.com', phoneNumber: '987-654-3210' },
 ];
 
-const jobPage = ({
-  params,
-}: {
-  params: {
-    jobId: String;
-  };
-}) => {
+const JobPage = ({ params }: { params: { jobId: string } }) => {
+
+  const [jobData, setJobData] = useState<Job | null>(null);
+
+  useEffect(() => {
+    const fetchJobData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/jobs/${params.jobId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch job data');
+        }
+        const data = await response.json();
+        console.log(data);
+        setJobData(data);
+      } catch (error) {
+        console.error('Error fetching job data:', error);
+      }
+    };
+
+    fetchJobData();
+  }, [params.jobId]);
+
   return (
     <div className="m-10 bg-white p-5 border-2 rounded-xl">
-        <div className="font-semibold text-xl">Goldman Sachs</div>
+        <div className="font-semibold text-xl">{jobData?.companyDetailsFilled.name}</div>
         <div className="text-gray-600 font-medium text-sm my-1">
-          {"Bangalore Sahakarnagar 560092 (India,Karnataka)"}
+          {jobData?.companyDetailsFilled.address.city}, {jobData?.companyDetailsFilled.address.state}, {jobData?.companyDetailsFilled.address.country}
         </div>
         <div className="my-4">
             <Separator />
@@ -58,26 +191,30 @@ const jobPage = ({
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Domain</div>{" "}
-            <div>Finance</div>
+            <div>
+              {jobData?.companyDetailsFilled.domains.length === 0
+                ? "Not Available"
+                : jobData?.companyDetailsFilled.domains[0]}
+            </div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Category</div>{" "}
-            <div>MNC</div>
+            <div>{jobData?.companyDetailsFilled.category}</div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Company Size</div>{" "}
-            <div>45K+</div>
+            <div>{formatNumber(jobData?.companyDetailsFilled.size ?? 0)}</div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Established</div>{" "}
-            <div>1869</div>
+            <div>{jobData?.companyDetailsFilled.yearOfEstablishment}</div>
           </div>
         </div>
         <div className="my-4">
             <Separator />
         </div>
-        <h1 className="text-lg font-semibold my-2">Recruiters</h1>
-        <Table>
+        <h1 className="text-lg font-semibold my-2">Recruiter</h1>
+        <Table className="overflow-hidden">
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
@@ -87,14 +224,12 @@ const jobPage = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recruiters.map((recruiter, index) => (
-              <TableRow key={index}>
-                <TableCell>{recruiter.name}</TableCell>
-                <TableCell>{recruiter.designation}</TableCell>
-                <TableCell>{recruiter.email}</TableCell>
-                <TableCell>{recruiter.phoneNumber}</TableCell>
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableCell>{jobData?.recruiterDetailsFilled.name}</TableCell>
+              <TableCell>{jobData?.recruiterDetailsFilled.designation}</TableCell>
+              <TableCell>{jobData?.recruiterDetailsFilled.email}</TableCell>
+              <TableCell>{jobData?.recruiterDetailsFilled.contact}</TableCell>
+            </TableRow>
           </TableBody>
           <TableFooter>
           </TableFooter>
@@ -103,22 +238,24 @@ const jobPage = ({
             <Separator />
         </div>
         <h1 className="text-lg font-semibold my-2">Job Coordinators</h1>
-        <Table>
+        <Table className="overflow-hidden">
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Designation</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Department</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Mobile Number</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {jobCoordinators.map((jobCoordinator, index) => (
+            {jobData?.jobCoordinators.map((coordinator, index) => (
               <TableRow key={index}>
-                <TableCell>{jobCoordinator.name}</TableCell>
-                <TableCell>{jobCoordinator.designation}</TableCell>
-                <TableCell>{jobCoordinator.email}</TableCell>
-                <TableCell>{jobCoordinator.phoneNumber}</TableCell>
+                <TableCell>{coordinator.tpcMember.user.name}</TableCell>
+                <TableCell>{coordinator.role}</TableCell>
+                <TableCell>{coordinator.tpcMember.department}</TableCell>
+                <TableCell>{coordinator.tpcMember.user.email}</TableCell>
+                <TableCell>{coordinator.tpcMember.user.contact}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -129,7 +266,7 @@ const jobPage = ({
             <Separator />
         </div>
         <h1 className="text-lg font-semibold my-2">Faculty Approval Requests</h1>
-        <Table style={{ overflowY: 'hidden' }}>
+        <Table className="overflow-hidden">
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
@@ -158,7 +295,7 @@ const jobPage = ({
           <div className="flex justify-between">
             <div>
               <Button>
-                <a href={""} target="_blank" rel="noopener noreferrer">Salary</a>
+                <a href={"http://localhost:3000/student/jobs/salary/a8f241b5-042e-4ea2-a4c8-d05845f5510a"} target="_blank" rel="noopener noreferrer">Salary</a>
               </Button>
             </div>
             <div>
@@ -172,4 +309,4 @@ const jobPage = ({
   );
 };
 
-export default jobPage;
+export default JobPage;

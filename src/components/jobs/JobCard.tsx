@@ -4,10 +4,18 @@ import { Separator } from "../ui/separator";
 import { fetchJobSalary } from "@/helpers/api";
 import { cookies } from "next/headers";
 import { useState } from 'react';
-import JobModal from "./JobModal";
 import {JobDetails} from "@/dummyData/jobdetails"
 import { Button } from "@/components/ui/button";
 import { Pointer } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 interface Event {
   id: string;
   name: string;
@@ -64,34 +72,17 @@ interface Props {
     recruiterId: string;
     companyId: string;
     role: string;
-    metadata: string;
-    docs: string;
-    publicAccess: boolean;
-    eligibilityCpi: number;
-    status: string;
-    events: {
+    active: boolean;
+    currentStatus: string;
+    season: {
+      id: string;
+      year: string;
+      type: string;
+    };
+    company: {
       id: string;
       name: string;
-      date: string;
-    }[];
-    tpcCoordinators: {
-      id: string;
-      name: string;
-    }[];
-    facultyCoordinatorApprovals: {
-      id: string;
-      facultyId: string;
-      approvalStatus: string;
-    }[];
-    onCampusOffers: {
-      id: string;
-      name: string;
-      offerStatus: string;
-    }[];
-    rolesOffered: {
-      id: string;
-      roleName: string;
-    }[];
+    };
   };
   salary: null |  {
     salary: string,
@@ -104,8 +95,8 @@ const JobCard = ({ jobItem, salary }: Props) => {
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [showDescription, setShowDescription] = useState<boolean>(false);
 
-  const handleResumeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedResume(event.target.value);
+  const handleResumeChange = (value: string) => {
+    setSelectedResume(value);
   };
   const handleViewDetails = () => {
     setShowDescription(!showDescription);
@@ -115,7 +106,7 @@ const JobCard = ({ jobItem, salary }: Props) => {
     <div className="">      
       <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
-          Goldman Sachs
+          {jobItem.company.name}
         </div>
         <div className="my-4">
           <Separator />
@@ -151,7 +142,7 @@ const JobCard = ({ jobItem, salary }: Props) => {
               <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">About The Work</h1>
                 <div className="text-sm my-3">
-                  <Link href={"http://localhost:3000/student/jobs/a8f241b5-042e-4ea2-a4c8-d05845f5510a"} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
+                  <Link href={`http://localhost:3000/student/jobs/${jobItem.id}`} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
                     View Details {'>'}
                   </Link>
                 </div>
@@ -220,13 +211,17 @@ const JobCard = ({ jobItem, salary }: Props) => {
               <Button disabled={!selectedResume}>
                 Apply
               </Button>
-              <div className="bg-gray-20 my-1 p-2 rounded-md">
-                <select value={selectedResume || ''} onChange={handleResumeChange}>
-                  <option value="" disabled>Select Resume</option>
-                  <option value="resume1">Resume 1</option>
-                  <option value="resume2">Resume 2</option>
-                </select>
-              </div>
+              <Select value={selectedResume || ''} onValueChange={handleResumeChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a Resume" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="Resume 1">Resume 1</SelectItem>
+                    <SelectItem value="Resume 2">Resume 2</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>          
         )}
