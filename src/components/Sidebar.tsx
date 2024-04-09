@@ -32,6 +32,7 @@ interface Props {
 }
 
 const Sidebar = () => {
+  // To Fix
   const context = useContext(ToggleContext);
   const userString = Cookies.get("user");
 
