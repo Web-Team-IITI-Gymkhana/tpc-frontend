@@ -14,6 +14,40 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { fetchEachJob } from "@/helpers/api";
+import HorizontalTimeline from "@/components/HorizontalTimeline";
+
+const testData = [
+  {
+    date: "2 June",
+    title: "Event One",
+    description: "It will be as simple as occidental in fact it will be Occidental Cambridge friend",
+    bgColor: "bg-soft-success",
+    textColor: "text-success",
+  },
+  {
+    date: "5 June",
+    title: "Event Two",
+    description: "Everyone realizes why a new common language one could refuse translators.",
+    bgColor: "bg-soft-primary",
+    textColor: "text-success",
+  },
+  {
+    date: "7 June",
+    title: "Event Three",
+    description: "If several languages coalesce the grammar of the resulting simple and regular",
+    bgColor: "bg-soft-primary",
+    textColor: "text-success",
+  },
+  {
+    date: "8 June",
+    title: "Event Four",
+    description: "Languages only differ in their pronunciation and their most common words.",
+    bgColor: "bg-soft-primary",
+    textColor: "text-primary",
+  },
+];
+
 
 interface Props {}
 
@@ -136,18 +170,6 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
-const recruiters = [
-  { name: 'John Doe', designation: 'HR Manager', email: 'john.doe@example.com', phoneNumber: '123-456-7890' },
-  { name: 'Jane Smith', designation: 'Recruiter', email: 'jane.smith@example.com', phoneNumber: '987-654-3210' },
-  { name: 'Alice Johnson', designation: 'Senior Recruiter', email: 'alice.johnson@example.com', phoneNumber: '456-789-0123' },
-];
-
-const jobCoordinators = [
-  { name: 'Michael Brown', designation: 'TPC Manager', email: 'michael.brown@example.com', phoneNumber: '111-222-3333' },
-  { name: 'Sarah Adams', designation: 'TPC Manager', email: 'sarah.adams@example.com', phoneNumber: '444-555-6666' },
-  { name: 'David Clark', designation: 'TPC Coordinator', email: 'david.clark@example.com', phoneNumber: '777-888-9999' },
-];
-
 const faculty = [
   { name: 'Emily Johnson', designation: 'Professor', email: 'emily.johnson@example.com', phoneNumber: '123-456-7890' },
   { name: 'Alex Smith', designation: 'Assistant Professor', email: 'alex.smith@example.com', phoneNumber: '987-654-3210' },
@@ -173,6 +195,8 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
     };
 
     fetchJobData();
+    // setJobData(fetchEachJob(params.jobId))
+
   }, [params.jobId]);
 
   return (
@@ -288,7 +312,11 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
           <TableFooter>
           </TableFooter>
         </Table>
-        <div className="my-4">
+        <div className="my-7">
+            <Separator />
+        </div>
+        <HorizontalTimeline events={testData} />
+        <div className="my-7">
             <Separator />
         </div>
         <div>
