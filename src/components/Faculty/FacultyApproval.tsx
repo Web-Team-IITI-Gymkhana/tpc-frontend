@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Separator } from "../ui/separator";
 import TextArea from "antd/es/input/TextArea";
 import { Button, buttonVariants } from "../ui/button";
+import { motion } from "framer-motion";
 import {
   Dialog,
   DialogOverlay,
@@ -123,14 +124,25 @@ const RejectButton: React.FC<ButtonProps> = ({ children }) => {
 
 export default function JAFCard({ company, jaf, children }: Props) {
   let [showDetail, updateShowDetail] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  function onClick() {
-    updateShowDetail(!showDetail);
-  }
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const contentVariants = {
+    open: { display: "block" },
+    closed: { display: "none" },
+  };
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
-    <div className="w-full px-4 md:px-8 py-6 border-2 border-gray-200 bg-white rounded-2xl hover:border-blue-200">
-      <div onClick={onClick} className="hover:cursor-pointer">
+    <div className="w-full px-4 md:px-8 pt-6 pb-1 border-2 border-gray-200 bg-white rounded-2xl hover:border-blue-200">
+      <div onClick={handleClick} className="hover:cursor-pointer">
         <h2 className="text-lg sm:text-xl text-gray-900 font-bold title-font mb-2">
           {company.name}
         </h2>
@@ -159,45 +171,51 @@ export default function JAFCard({ company, jaf, children }: Props) {
         </div>
       </div>
 
-      {showDetail && (
-        <div className="my-4 mx-1">
-          <h3 className="font-semibold text-base">About the Offer</h3>
-          <div className="my-1">
-            <ul className="list-disc ml-8">
-              <li>Minimun CPI: {jaf.eligibilityCpi}</li>
-              <li>Course: BTech</li>
-            </ul>
-          </div>
-          <Separator />
-          <h4 className="font-semibold text-base my-3">Write Feedback</h4>
-          <TextArea
-            placeholder="Write Your Feedback Here"
-            autoFocus={true}
-            name="feedback"
-            rows={4}
-            className="mb-3"
-          />
-          <Dialog>
-            <DialogTrigger>
-              <AcceptButton />
-            </DialogTrigger>
-            <DialogContent className="text-black">
-              Are you sure to Accept the Request?
-              <AcceptButton />
-            </DialogContent>
-          </Dialog>
-          <Dialog>
-            <DialogTrigger>
-              <RejectButton />
-            </DialogTrigger>
-            <DialogContent className="text-black">
-              Are you sure to Reject the Request?
-              <RejectButton />
-            </DialogContent>
-          </Dialog>
-          {children}
+      <motion.div
+        className="my-4 mx-1 overflow-hidden"
+        initial={{ height: 0 }}
+        variants={{
+          open: { height: "auto" },
+          close: { height: 0 },
+        }}
+        animate={isOpen ? "open" : "closed"}
+        transition={{ duration: 0.3 }}
+      >
+        <h3 className="font-semibold text-base">About the Offer</h3>
+        <div className="my-1">
+          <ul className="list-disc ml-8">
+            <li>Minimun CPI: {jaf.eligibilityCpi}</li>
+            <li>Course: BTech</li>
+          </ul>
         </div>
-      )}
+        <h4 className="font-semibold text-base my-3">Write Feedback</h4>
+        <TextArea
+          placeholder="Write Your Feedback Here"
+          autoFocus={true}
+          name="feedback"
+          rows={4}
+          className="mb-3"
+        />
+        <Dialog>
+          <DialogTrigger>
+            {isClient ? <AcceptButton /> : <div>none</div>}
+          </DialogTrigger>
+          <DialogContent className="text-black">
+            Are you sure to Accept the Request?
+            {isClient ? <AcceptButton /> : <div>none</div>}
+          </DialogContent>
+        </Dialog>
+        <Dialog>
+          <DialogTrigger>
+            {isClient ? <RejectButton /> : <div>none</div>}
+          </DialogTrigger>
+          <DialogContent className="text-black">
+            Are you sure to Reject the Request?
+            {isClient ? <RejectButton /> : <div>none</div>}
+          </DialogContent>
+        </Dialog>
+        {children}
+      </motion.div>
     </div>
   );
 }
