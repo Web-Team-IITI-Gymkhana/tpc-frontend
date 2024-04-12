@@ -2,6 +2,7 @@
 import { useContext } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
+import { useMediaQuery } from "react-responsive";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
@@ -32,6 +33,8 @@ interface Props {
 }
 
 const Sidebar = () => {
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
+
   const context = useContext(ToggleContext);
   const userString = Cookies.get("user");
 
@@ -41,44 +44,64 @@ const Sidebar = () => {
 
   return (
     <motion.div
-      initial={{ width: context.isOpen ? "18vw" : "6vw", opacity: 1 }}
+      initial={{
+        position: isSmallScreen ? "absolute" : "static",
+        width: context.isOpen ? "18vw" : "6vw",
+        visibility: "inherit",
+      }}
       animate={context.isOpen ? "open" : "closed"}
       transition={{ duration: 0.2 }}
       variants={{
-        closed: { width: "6vw", opacity: 1 },
-        open: { width: "18vw", opacity: 1 },
+        closed: {
+          width: isSmallScreen ? "1rem" : "6vw",
+          visibility: isSmallScreen ? "hidden" : "visible",
+        },
+        open: {
+          width: isSmallScreen ? "100vw" : "18vw",
+          visibility: "visible",
+        },
       }}
       className="z-40 overflow-hidden bg-gray-800 pt-3 flex flex-col h-screen"
     >
-      <div className="flex flex-row-reverse">
+      <div className="relative">
         <div
-          className="right-0 bg-gray-900 hover:bg-gray-600 text-slate-200 rounded-l-full w-fit pl-2 pr-4"
+          className="flex items-center align-middle absolute right-0 z-50 h-screen"
           onClick={(e) => {
             context.sidebarToggle();
           }}
         >
           <motion.div
-            initial={{ rotateY: 180 }}
+            initial={{ rotateY: 0 }}
             animate={context.isOpen ? "open" : "closed"}
             transition={{ duration: 0.2 }}
             variants={{
-              closed: { rotateY: 180 },
-              open: { rotateY: 0 },
+              closed: { rotateY: 0 },
+              open: { rotateY: 180 },
             }}
+            className={
+              !context.isOpen && isSmallScreen
+                ? "visible bg-gray-200 py-2 rounded-lg opacity-50 hover:opacity-100"
+                : "visible bg-gray-800 py-2 rounded-lg opacity-50 hover:opacity-100"
+            }
           >
             <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
+              fill={!context.isOpen && isSmallScreen ? "#000000" : "#ffffff"}
+              height="1rem"
+              width="1rem"
+              version="1.1"
+              id="Layer_1"
               xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 330 330"
+              xmlSpace="preserve"
             >
               <path
-                d="M6.85355 3.85355C7.04882 3.65829 7.04882 3.34171 6.85355 3.14645C6.65829 2.95118 6.34171 2.95118 6.14645 3.14645L2.14645 7.14645C1.95118 7.34171 1.95118 7.65829 2.14645 7.85355L6.14645 11.8536C6.34171 12.0488 6.65829 12.0488 6.85355 11.8536C7.04882 11.6583 7.04882 11.3417 6.85355 11.1464L3.20711 7.5L6.85355 3.85355ZM12.8536 3.85355C13.0488 3.65829 13.0488 3.34171 12.8536 3.14645C12.6583 2.95118 12.3417 2.95118 12.1464 3.14645L8.14645 7.14645C7.95118 7.34171 7.95118 7.65829 8.14645 7.85355L12.1464 11.8536C12.3417 12.0488 12.6583 12.0488 12.8536 11.8536C13.0488 11.6583 13.0488 11.3417 12.8536 11.1464L9.20711 7.5L12.8536 3.85355Z"
-                fill="currentColor"
-                fillRule="evenodd"
-                clipRule="evenodd"
-              ></path>
+                id="XMLID_222_"
+                d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001
+	c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213
+	C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606
+	C255,161.018,253.42,157.202,250.606,154.389z"
+              />
             </svg>
           </motion.div>
         </div>
@@ -92,8 +115,8 @@ const Sidebar = () => {
         <div>
           <hr />
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw]">
+            <div className="flex justify-start gap-[1rem]">
+              <div className="w-[2rem]">
                 <svg
                   width="20"
                   height="20"
@@ -117,7 +140,7 @@ const Sidebar = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw]"
+                className="w-[7rem]"
               >
                 Profile
               </motion.div>
