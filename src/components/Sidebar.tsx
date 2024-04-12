@@ -53,12 +53,10 @@ const Sidebar = () => {
       transition={{ duration: 0.2 }}
       variants={{
         closed: {
-          position: "static",
           width: isSmallScreen ? "1rem" : "6vw",
           visibility: isSmallScreen ? "hidden" : "visible",
         },
         open: {
-          position: isSmallScreen ? "absolute" : "static",
           width: isSmallScreen ? "100vw" : "18vw",
           visibility: "visible",
         },
