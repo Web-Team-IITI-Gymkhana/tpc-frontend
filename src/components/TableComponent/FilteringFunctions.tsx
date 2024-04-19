@@ -39,6 +39,6 @@ export const handleSubmit = (filterOutput: any,setFilteredTableData:any) => {
     encode: false,
   });
   const url = `${window.location.href}/${encodedQueryString}`;
-  
+  console.log(url)
   window.open(url, '_blank');
 };
