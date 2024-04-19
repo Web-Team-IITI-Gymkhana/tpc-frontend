@@ -38,7 +38,7 @@ export const handleSubmit = (filterOutput: any,setFilteredTableData:any) => {
     encodeValuesOnly: true,
     encode: false,
   });
-  const url = `/admin/students/${encodedQueryString}`;
+  const url = `${window.location.href}/${encodedQueryString}`;
   
   window.open(url, '_blank');
 };
