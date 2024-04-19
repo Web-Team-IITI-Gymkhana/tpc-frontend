@@ -67,12 +67,13 @@ export const fetchAllJobs = async (
   return json;
 };
 
-export const fetchStudentData = async (accessToken: string | undefined) => {
+export const fetchStudentData = async (accessToken: string | undefined,filter:string | undefined) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  const res = await fetch(url("/students"), {
+  console.log('filter',filter)
+  const res = await fetch(filter?url(`/students?${filter}`):url("/students"), {
     next: { tags: ["AllStudents"] },
     headers: {
       Authorization: `Bearer ${accessToken}`,
