@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { useState } from 'react';
 import {JobDetails} from "@/dummyData/jobdetails"
 import { Button } from "@/components/ui/button";
-import { Pointer } from "lucide-react";
+// import { Pointer } from "lucide-react";
 import {
   Select,
   SelectContent,

@@ -1,191 +1,388 @@
 export const Jobs = [
   {
-    id: "a8f241b5-042e-4ea2-a4c8-d05845f5510a",
-    seasonId: "e407f960-5c61-4e32-8432-4a532bc41d18",
-    recruiterId: "d932a879-3441-4e31-b8b9-6aef3652f049",
-    companyId: "fe8566b1-c3c3-4b23-a5db-9a41d548e3c9",
-    role: "Software Engineer",
-    metadata: "Additional metadata about the job",
-    docs: "Link to job-related documents",
-    publicAccess: true,
-    eligibilityCpi: 7.5,
-    status: "Open",
-    events: [
-      {
-        id: "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-        name: "Placement Drive",
-        date: "2023-08-15",
+    "id": "1",
+    "seasonId": "123",
+    "recruiterId": "456",
+    "companyId": "789",
+    "role": "Software Engineer",
+    "active": true,
+    "currentStatus": "Open",
+    "companyDetailsFilled": {
+      "name": "ABC Company",
+      "size": 100,
+      "address": {
+        "city": "New York",
+        "line1": "123 Main St",
+        "line2": "",
+        "state": "NY",
+        "country": "USA",
+        "zipCode": "10001"
       },
+      "domains": ["Technology", "Software"],
+      "category": "IT",
+      "yearOfEstablishment": "2000"
+    },
+    "recruiterDetailsFilled": {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "contact": "+1234567890",
+      "landline": null,
+      "designation": "HR Manager"
+    },
+    "selectionProcedure": {
+      "tests": [{"type": "Technical", "duration": 60}],
+      "interviews": [{"type": "Technical", "duration": 30}],
+      "requirements": {},
+      "selectionMode": "Online",
+      "groupDiscussion": false,
+      "shortlistFromResume": true
+    },
+    "attachment": "example.pdf",
+    "skills": "JavaScript, React, Node.js",
+    "location": "New York",
+    "noOfVacancies": 5,
+    "offerLetterReleaseDate": "2024-06-01",
+    "joiningDate": "2024-07-01",
+    "duration": 12,
+    "season": {"id": "123", "year": "2024", "type": "Summer"},
+    "company": {"id": "789", "name": "ABC Company"},
+    "recruiter": {"id": "456", "userId": "789", "companyId": "123", "designation": "HR Manager", "landline": null},
+    "salaries": [
       {
-        id: "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-        name: "Technical Interview",
-        date: "2023-08-20",
-      },
+        "id": "1",
+        "jobId": "1",
+        "salaryPeriod": "Monthly",
+        "others": null,
+        "criteria": {"minCPI": 7.5, "genders": ["Male"], "programs": ["Computer Science"], "categories": ["General"], "tenthMarks": 85, "twelthMarks": 90, "facultyApprovals": ["Approved"]},
+        "baseSalary": 5000,
+        "totalCTC": 60000,
+        "takeHomeSalary": 4500,
+        "grossSalary": 5500,
+        "otherCompensations": 500
+      }
     ],
-    tpcCoordinators: [
+    "jobCoordinators": [
       {
-        id: "0d4314ae-439b-4c32-8441-30c45f11ecf3",
-        name: "Coordinator Name 1",
-      },
-      {
-        id: "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-        name: "Coordinator Name 2",
-      },
-    ],
-    facultyCoordinatorApprovals: [
-      {
-        id: "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-        facultyId: "f5e72eeb-3010-45a8-86f1-df6fcb10c14b",
-        approvalStatus: "Approved",
-      },
-    ],
-    onCampusOffers: [
-      {
-        id: "2f42b29d-c929-4388-88ac-82f36e0e21e5",
-        name: "John Doe",
-        offerStatus: "Accepted",
-      },
-      {
-        id: "ae29da67-b11e-41d5-9a85-35b8c171d9c9",
-        name: "Jane Smith",
-        offerStatus: "Pending",
-      },
-    ],
-    rolesOffered: [
-      {
-        id: "8d7ed2b9-52a3-4cbb-8e85-18827156d9a2",
-        roleName: "Software Engineer",
-      },
-      {
-        id: "fe3f784a-5ea7-4b7e-92bf-6e893c52c3a5",
-        roleName: "Data Scientist",
-      },
-    ],
+        "id": "1",
+        "tpcMemberId": "1",
+        "role": "Coordinator",
+        "tpcMember": {
+          "id": "1",
+          "department": "Computer Science",
+          "userId": "123",
+          "role": "Professor",
+          "user": {"id": "123", "email": "prof@example.com", "name": "Dr. Smith", "contact": "+9876543210"}
+        }
+      }
+    ]
   },
   {
-    id: "b987dc42-4f66-4e54-bb47-8b05157d1a23",
-    seasonId: "e407f960-5c61-4e32-8432-4a532bc41d18",
-    recruiterId: "d932a879-3441-4e31-b8b9-6aef3652f049",
-    companyId: "fe8566b1-c3c3-4b23-a5db-9a41d548e3c9",
-    role: "Data Scientist",
-    metadata: "Additional metadata about the job",
-    docs: "Link to job-related documents",
-    publicAccess: true,
-    eligibilityCpi: 8.0,
-    status: "Closed",
-    events: [
-      {
-        id: "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-        name: "Placement Drive",
-        date: "2023-08-15",
+    "id": "2",
+    "seasonId": "456",
+    "recruiterId": "789",
+    "companyId": "123",
+    "role": "Data Scientist",
+    "active": true,
+    "currentStatus": "Open",
+    "companyDetailsFilled": {
+      "name": "XYZ Corporation",
+      "size": 200,
+      "address": {
+        "city": "San Francisco",
+        "line1": "456 Elm St",
+        "line2": "",
+        "state": "CA",
+        "country": "USA",
+        "zipCode": "94103"
       },
+      "domains": ["Data Science", "Machine Learning"],
+      "category": "Technology",
+      "yearOfEstablishment": "2010"
+    },
+    "recruiterDetailsFilled": {
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "contact": "+9876543210",
+      "landline": null,
+      "designation": "HR Manager"
+    },
+    "selectionProcedure": {
+      "tests": [{"type": "Technical", "duration": 60}],
+      "interviews": [{"type": "Technical", "duration": 30}],
+      "requirements": {},
+      "selectionMode": "Online",
+      "groupDiscussion": false,
+      "shortlistFromResume": true
+    },
+    "attachment": "example.pdf",
+    "skills": "Python, TensorFlow, SQL",
+    "location": "San Francisco",
+    "noOfVacancies": 3,
+    "offerLetterReleaseDate": "2024-07-01",
+    "joiningDate": "2024-08-01",
+    "duration": 12,
+    "season": {"id": "456", "year": "2024", "type": "Summer"},
+    "company": {"id": "123", "name": "XYZ Corporation"},
+    "recruiter": {"id": "789", "userId": "456", "companyId": "789", "designation": "HR Manager", "landline": null},
+    "salaries": [
       {
-        id: "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-        name: "Technical Interview",
-        date: "2023-08-20",
-      },
+        "id": "2",
+        "jobId": "2",
+        "salaryPeriod": "Monthly",
+        "others": null,
+        "criteria": {"minCPI": 8, "genders": ["Female"], "programs": ["Statistics"], "categories": ["General"], "tenthMarks": 90, "twelthMarks": 95, "facultyApprovals": ["Approved"]},
+        "baseSalary": 6000,
+        "totalCTC": 72000,
+        "takeHomeSalary": 5000,
+        "grossSalary": 6000,
+        "otherCompensations": 1000
+      }
     ],
-    tpcCoordinators: [
+    "jobCoordinators": [
       {
-        id: "0d4314ae-439b-4c32-8441-30c45f11ecf3",
-        name: "Coordinator Name 1",
-      },
-      {
-        id: "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-        name: "Coordinator Name 2",
-      },
-    ],
-    facultyCoordinatorApprovals: [
-      {
-        id: "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-        facultyId: "f5e72eeb-3010-45a8-86f1-df6fcb10c14b",
-        approvalStatus: "Approved",
-      },
-    ],
-    onCampusOffers: [
-      {
-        id: "2f42b29d-c929-4388-88ac-82f36e0e21e5",
-        name: "John Doe",
-        offerStatus: "Rejected",
-      },
-      {
-        id: "ae29da67-b11e-41d5-9a85-35b8c171d9c9",
-        name: "Jane Smith",
-        offerStatus: "Accepted",
-      },
-    ],
-    rolesOffered: [
-      {
-        id: "8d7ed2b9-52a3-4cbb-8e85-18827156d9a2",
-        roleName: "Data Scientist",
-      },
-      {
-        id: "fe3f784a-5ea7-4b7e-92bf-6e893c52c3a5",
-        roleName: "Software Engineer",
-      },
-    ],
+        "id": "2",
+        "tpcMemberId": "2",
+        "role": "Coordinator",
+        "tpcMember": {
+          "id": "2",
+          "department": "Data Science",
+          "userId": "456",
+          "role": "Professor",
+          "user": {"id": "456", "email": "prof@example.com", "name": "Dr. Johnson", "contact": "+1234567890"}
+        }
+      }
+    ]
   },
   {
-    id: "c3e5a7d8-53b2-4f71-bfce-3b5928019d04",
-    seasonId: "e407f960-5c61-4e32-8432-4a532bc41d18",
-    recruiterId: "d932a879-3441-4e31-b8b9-6aef3652f049",
-    companyId: "fe8566b1-c3c3-4b23-a5db-9a41d548e3c9",
-    role: "Product Manager",
-    metadata: "Additional metadata about the job",
-    docs: "Link to job-related documents",
-    publicAccess: true,
-    eligibilityCpi: 8.5,
-    status: "Open",
-    events: [
-      {
-        id: "bf24a256-c8c4-4c42-b2d7-6c6fc0ec3f11",
-        name: "Placement Drive",
-        date: "2023-08-15",
+    "id": "3",
+    "seasonId": "789",
+    "recruiterId": "123",
+    "companyId": "456",
+    "role": "Product Manager",
+    "active": true,
+    "currentStatus": "Open",
+    "companyDetailsFilled": {
+      "name": "PQR Enterprises",
+      "size": 150,
+      "address": {
+        "city": "Seattle",
+        "line1": "789 Oak St",
+        "line2": "",
+        "state": "WA",
+        "country": "USA",
+        "zipCode": "98101"
       },
+      "domains": ["Product Management", "Business"],
+      "category": "Business",
+      "yearOfEstablishment": "2015"
+    },
+    "recruiterDetailsFilled": {
+      "name": "Alice Johnson",
+      "email": "alice.johnson@example.com",
+      "contact": "+1234567890",
+      "landline": null,
+      "designation": "HR Manager"
+    },
+    "selectionProcedure": {
+      "tests": [{"type": "Technical", "duration": 60}],
+      "interviews": [{"type": "Technical", "duration": 30}],
+      "requirements": {},
+      "selectionMode": "Online",
+      "groupDiscussion": false,
+      "shortlistFromResume": true
+    },
+    "attachment": "example.pdf",
+    "skills": "Product Management, Marketing",
+    "location": "Seattle",
+    "noOfVacancies": 2,
+    "offerLetterReleaseDate": "2024-08-01",
+    "joiningDate": "2024-09-01",
+    "duration": 12,
+    "season": {"id": "789", "year": "2024", "type": "Summer"},
+    "company": {"id": "456", "name": "PQR Enterprises"},
+    "recruiter": {"id": "123", "userId": "123", "companyId": "456", "designation": "HR Manager", "landline": null},
+    "salaries": [
       {
-        id: "b5de2c4b-55c3-4c36-8b3d-55e73c7a4e89",
-        name: "Technical Interview",
-        date: "2023-08-20",
-      },
+        "id": "3",
+        "jobId": "3",
+        "salaryPeriod": "Monthly",
+        "others": null,
+        "criteria": {"minCPI": 8, "genders": ["Male", "Female"], "programs": ["Business Administration"], "categories": ["General"], "tenthMarks": 90, "twelthMarks": 95, "facultyApprovals": ["Approved"]},
+        "baseSalary": 7000,
+        "totalCTC": 84000,
+        "takeHomeSalary": 6000,
+        "grossSalary": 7000,
+        "otherCompensations": 1000
+      }
     ],
-    tpcCoordinators: [
+    "jobCoordinators": [
       {
-        id: "0d4314ae-439b-4c32-8441-30c45f11ecf3",
-        name: "Coordinator Name 1",
-      },
-      {
-        id: "3b5a2905-7225-4a5e-9ea3-6f331b0c4ed8",
-        name: "Coordinator Name 2",
-      },
-    ],
-    facultyCoordinatorApprovals: [
-      {
-        id: "7c1eeb4f-14e7-4f96-8b22-b623482c2dd7",
-        facultyId: "f5e72eeb-3010-45a8-86f1-df6fcb10c14b",
-        approvalStatus: "Approved",
-      },
-    ],
-    onCampusOffers: [
-      {
-        id: "2f42b29d-c929-4388-88ac-82f36e0e21e5",
-        name: "John Doe",
-        offerStatus: "Accepted",
-      },
-      {
-        id: "ae29da67-b11e-41d5-9a85-35b8c171d9c9",
-        name: "Jane Smith",
-        offerStatus: "Pending",
-      },
-    ],
-    rolesOffered: [
-      {
-        id: "8d7ed2b9-52a3-4cbb-8e85-18827156d9a2",
-        roleName: "Product Manager",
-      },
-      {
-        id: "fe3f784a-5ea7-4b7e-92bf-6e893c52c3a5",
-        roleName: "Software Engineer",
-      },
-    ],
+        "id": "3",
+        "tpcMemberId": "3",
+        "role": "Coordinator",
+        "tpcMember": {
+          "id": "3",
+          "department": "Business",
+          "userId": "789",
+          "role": "Professor",
+          "user": {"id": "789", "email": "prof@example.com", "name": "Dr. Williams", "contact": "+9876543210"}
+        }
+      }
+    ]
   },
-];
+  {
+    "id": "4",
+    "seasonId": "123",
+    "recruiterId": "456",
+    "companyId": "789",
+    "role": "Marketing Specialist",
+    "active": true,
+    "currentStatus": "Open",
+    "companyDetailsFilled": {
+      "name": "MNO Group",
+      "size": 75,
+      "address": {
+        "city": "Chicago",
+        "line1": "456 Oak St",
+        "line2": "",
+        "state": "IL",
+        "country": "USA",
+        "zipCode": "60601"
+      },
+      "domains": ["Marketing", "Advertising"],
+      "category": "Marketing",
+      "yearOfEstablishment": "2012"
+    },
+    "recruiterDetailsFilled": {
+      "name": "Emma Brown",
+      "email": "emma.brown@example.com",
+      "contact": "+1234567890",
+      "landline": null,
+      "designation": "HR Manager"
+    },
+    "selectionProcedure": {
+      "tests": [{"type": "Technical", "duration": 60}],
+      "interviews": [{"type": "Technical", "duration": 30}],
+      "requirements": {},
+      "selectionMode": "Online",
+      "groupDiscussion": false,
+      "shortlistFromResume": true
+    },
+    "attachment": "example.pdf",
+    "skills": "Marketing, Social Media",
+    "location": "Chicago",
+    "noOfVacancies": 4,
+    "offerLetterReleaseDate": "2024-09-01",
+    "joiningDate": "2024-10-01",
+    "duration": 12,
+    "season": {"id": "123", "year": "2024", "type": "Summer"},
+    "company": {"id": "789", "name": "MNO Group"},
+    "recruiter": {"id": "456", "userId": "789", "companyId": "123", "designation": "HR Manager", "landline": null},
+    "salaries": [
+      {
+        "id": "4",
+        "jobId": "4",
+        "salaryPeriod": "Monthly",
+        "others": null,
+        "criteria": {"minCPI": 7, "genders": ["Male", "Female"], "programs": ["Marketing"], "categories": ["General"], "tenthMarks": 80, "twelthMarks": 85, "facultyApprovals": ["Approved"]},
+        "baseSalary": 5500,
+        "totalCTC": 66000,
+        "takeHomeSalary": 5000,
+        "grossSalary": 5500,
+        "otherCompensations": 500
+      }
+    ],
+    "jobCoordinators": [
+      {
+        "id": "4",
+        "tpcMemberId": "4",
+        "role": "Coordinator",
+        "tpcMember": {
+          "id": "4",
+          "department": "Marketing",
+          "userId": "123",
+          "role": "Professor",
+          "user": {"id": "123", "email": "prof@example.com", "name": "Dr. Martinez", "contact": "+9876543210"}
+        }
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "seasonId": "456",
+    "recruiterId": "789",
+    "companyId": "123",
+    "role": "Financial Analyst",
+    "active": true,
+    "currentStatus": "Open",
+    "companyDetailsFilled": {
+      "name": "DEF Financials",
+      "size": 150,
+      "address": {
+        "city": "Los Angeles",
+        "line1": "789 Maple St",
+        "line2": "",
+        "state": "CA",
+        "country": "USA",
+        "zipCode": "90001"
+      },
+      "domains": ["Finance", "Investments"],
+      "category": "Finance",
+      "yearOfEstablishment": "2010"
+    },
+    "recruiterDetailsFilled": {
+      "name": "Mark Johnson",
+      "email": "mark.johnson@example.com",
+      "contact": "+1234567890",
+      "landline": null,
+      "designation": "HR Manager"
+    },
+    "selectionProcedure": {
+      "tests": [{"type": "Technical", "duration": 60}],
+      "interviews": [{"type": "Technical", "duration": 30}],
+      "requirements": {},
+      "selectionMode": "Online",
+      "groupDiscussion": false,
+      "shortlistFromResume": true
+    },
+    "attachment": "example.pdf",
+    "skills": "Financial Analysis, Accounting",
+    "location": "Los Angeles",
+    "noOfVacancies": 3,
+    "offerLetterReleaseDate": "2024-07-01",
+    "joiningDate": "2024-08-01",
+    "duration": 12,
+    "season": {"id": "456", "year": "2024", "type": "Summer"},
+    "company": {"id": "123", "name": "DEF Financials"},
+    "recruiter": {"id": "789", "userId": "456", "companyId": "789", "designation": "HR Manager", "landline": null},
+    "salaries": [
+      {
+        "id": "5",
+        "jobId": "5",
+        "salaryPeriod": "Monthly",
+        "others": null,
+        "criteria": {"minCPI": 8, "genders": ["Male", "Female"], "programs": ["Finance"], "categories": ["General"], "tenthMarks": 85, "twelthMarks": 90, "facultyApprovals": ["Approved"]},
+        "baseSalary": 6000,
+        "totalCTC": 72000,
+        "takeHomeSalary": 5000,
+        "grossSalary": 6000,
+        "otherCompensations": 1000
+      }
+    ],
+    "jobCoordinators": [
+      {
+        "id": "5",
+        "tpcMemberId": "5",
+        "role": "Coordinator",
+        "tpcMember": {
+          "id": "5",
+          "department": "Finance",
+          "userId": "789",
+          "role": "Professor",
+          "user": {"id": "789", "email": "prof@example.com", "name": "Dr. Lee", "contact": "+9876543210"}
+        }
+      }
+    ]
+  }
+]
+

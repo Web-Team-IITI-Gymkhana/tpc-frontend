@@ -196,8 +196,10 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
 
     fetchJobData();
     // setJobData(fetchEachJob(params.jobId))
+    // setJobData(Jobs[0]);
 
   }, [params.jobId]);
+
 
   return (
     <div className="m-10 bg-white p-5 border-2 rounded-xl">

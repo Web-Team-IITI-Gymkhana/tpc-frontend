@@ -49,6 +49,7 @@ const StudentPage = ({
     };
 
     fetchJobs();
+    // setJobs(Jobs);
   }, []);
 
   return (
