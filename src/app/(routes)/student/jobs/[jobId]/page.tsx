@@ -18,34 +18,17 @@ import { fetchEachJob } from "@/helpers/api";
 import HorizontalTimeline from "@/components/HorizontalTimeline";
 
 const testData = [
-  {
-    date: "2 June",
-    title: "Event One",
-    description: "It will be as simple as occidental in fact it will be Occidental Cambridge friend",
-    bgColor: "bg-soft-success",
-    textColor: "text-success",
-  },
-  {
-    date: "5 June",
-    title: "Event Two",
-    description: "Everyone realizes why a new common language one could refuse translators.",
-    bgColor: "bg-soft-primary",
-    textColor: "text-success",
-  },
-  {
-    date: "7 June",
-    title: "Event Three",
-    description: "If several languages coalesce the grammar of the resulting simple and regular",
-    bgColor: "bg-soft-primary",
-    textColor: "text-success",
-  },
-  {
-    date: "8 June",
-    title: "Event Four",
-    description: "Languages only differ in their pronunciation and their most common words.",
-    bgColor: "bg-soft-primary",
-    textColor: "text-primary",
-  },
+  { date: "16/01/2017", status:"older-event" },
+  { date: "28/02/2017", status:"older-event" },
+  { date: "20/04/2017", status:"older-event" },
+  { date: "20/05/2017", status:"older-event" },
+  { date: "09/07/2017", status:"selected" },
+  { date: "30/08/2017", status:"" },
+  // { date: "15/09/2017", status:"" },
+  // { date: "01/11/2017", status:"" },
+  // { date: "10/12/2017", status:"" },
+  // { date: "19/01/2018", status:"" },
+  // { date: "03/03/2018", status:"" }
 ];
 
 

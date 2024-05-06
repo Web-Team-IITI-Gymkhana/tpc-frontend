@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import styles from "@/styles/Timeline.css";
 
 interface Event {
   date: string;
-  title: string;
-  description: string;
-  bgColor: string;
-  textColor: string;
+  status:string;
+  // title: string;
+  // description: string;
+  // bgColor: string;
+  // textColor: string;
 }
 
 interface Props {
@@ -433,6 +434,29 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
   }
   `;
 
+  let selectedIndex = -1;
+  let fillingLineWidth
+  let mul=0;
+  const len=720;
+  const [a,seta] = useState<string|null>("");
+  useEffect(()=>{  
+      // Find the index of the selected event
+      for (let i = 0; i < events.length; i++) {
+        if (events[i].status === "selected") {
+          selectedIndex = i;
+          break;
+        }
+      }
+      
+      // Calculate the width of the filling line
+      fillingLineWidth = selectedIndex !== -1 ? `${(selectedIndex + 1) * (180 / events.length)}px` : "0";
+      mul= selectedIndex * (720/events.length)
+      mul+=38;
+      mul/=len;
+      seta('scaleX('+mul+')');
+      
+  })
+
   return (
     <>
       <style jsx>{styles}</style>
@@ -444,21 +468,17 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
                 <div className={`cd-horizontal-timeline loaded`}>
                   <div className="timeline">
                     <div className="events-wrapper">
-                      <div className="events" style={{width: "1800px"}}>
+                      <div className="events" style={{ width: `720px` }}>
                         <ol>
-                          <li><a href="#0" data-date="16/01/2017" className="older-event" style={{left: "120px"}}>16 Jan</a></li>
-                          <li><a href="#0" data-date="28/02/2017" style={{left: "300px"}} className="older-event">28 Feb</a></li>
-                          <li><a href="#0" data-date="20/04/2017" style={{left: "480px"}} className="selected">20 Mar</a></li>
-                          <li><a href="#0" data-date="20/05/2017" style={{left: "600px"}}>20 May</a></li>
-                          <li><a href="#0" data-date="09/07/2017" style={{left: "780px"}}>09 Jul</a></li>
-                          <li><a href="#0" data-date="30/08/2017" style={{left: "960px"}}>30 Aug</a></li>
-                          <li><a href="#0" data-date="15/09/2017" style={{left: "1020px"}}>15 Sep</a></li>
-                          <li><a href="#0" data-date="01/11/2017" style={{left: "1200px"}}>01 Nov</a></li>
-                          <li><a href="#0" data-date="10/12/2017" style={{left: "1380px"}}>10 Dec</a></li>
-                          <li><a href="#0" data-date="19/01/2018" style={{left: "1500px"}}>29 Jan</a></li>
-                          <li><a href="#0" data-date="03/03/2018" style={{left: "1680px"}}>3 Mar</a></li>
+                          {events.map((event, index) => (
+                            <li key={index}>
+                              <a href="#0" data-date={event.date} className={event.status} style={{ left: `${index * (720/events.length)}px` }}>
+                                {event.date}
+                              </a>
+                            </li>
+                          ))}
                         </ol>
-                        <span className="filling-line" aria-hidden="true"style={{transform: "scaleX(0.281506)"}}></span>
+                        <span className="filling-line" aria-hidden="true" style={{ transform: `${a}` }}></span>
                       </div>
                     </div>
                     <ul className="cd-timeline-navigation">
