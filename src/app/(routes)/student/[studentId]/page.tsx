@@ -27,6 +27,18 @@ interface Job {
 const salaryData = {
   salary: "Rs 40LPA",
 };
+const resumes = [
+  {
+    id:"1",
+    filepath: "Resume 1",
+    verified: true,
+  },
+  {
+    id:"2",
+    filepath: "Resume 2",
+    verified: false,
+  },
+];
 
 const StudentPage = ({
   params,
@@ -59,7 +71,7 @@ const StudentPage = ({
       </div>
       {jobs.map((job) => (
         <div key={job.id} className="my-3">
-          <JobCard jobItem={job} salary={salaryData}/>
+          <JobCard jobItem={job} salary={salaryData} resumes={resumes}/>
         </div>
       ))}
     </div>
