@@ -45,15 +45,19 @@ const Sidebar = () => {
   const user = userString ? JSON.parse(userString) : null;
 
   const isAdmin = user?.userType === "ADMIN";
-  // const userRole=user?.userType?.toLowerCase();
-  const [userRole,setUserRole] = useState(user?.userType?.toLowerCase());
+  const userRole=user?.userType?.toLowerCase();
+  // const [userRole,setUserRole] = useState(user?.userType?.toLowerCase());
 
   const [profile, setProfile] = useState("STUDENT");
   const handleProfileChange = (keyy: string) => {
     setProfile(keyy);
     // user.userType=keyy.toLowerCase();
     // setUserRole(user.userType);
-    console.log(user);
+    if(user){
+      user.userType=keyy;
+      console.log(user);
+    }
+    
   };
   
 
@@ -90,6 +94,7 @@ const Sidebar = () => {
               viewBox="0 0 15 15"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              
             >
               <path
                 d="M6.85355 3.85355C7.04882 3.65829 7.04882 3.34171 6.85355 3.14645C6.65829 2.95118 6.34171 2.95118 6.14645 3.14645L2.14645 7.14645C1.95118 7.34171 1.95118 7.65829 2.14645 7.85355L6.14645 11.8536C6.34171 12.0488 6.65829 12.0488 6.85355 11.8536C7.04882 11.6583 7.04882 11.3417 6.85355 11.1464L3.20711 7.5L6.85355 3.85355ZM12.8536 3.85355C13.0488 3.65829 13.0488 3.34171 12.8536 3.14645C12.6583 2.95118 12.3417 2.95118 12.1464 3.14645L8.14645 7.14645C7.95118 7.34171 7.95118 7.65829 8.14645 7.85355L12.1464 11.8536C12.3417 12.0488 12.6583 12.0488 12.8536 11.8536C13.0488 11.6583 13.0488 11.3417 12.8536 11.1464L9.20711 7.5L12.8536 3.85355Z"
@@ -129,10 +134,9 @@ const Sidebar = () => {
                   }}
                 >
                   
-                  <span className="flex gap-1 flex-wrap ml-[1.5vw]">
+                  <span className="md:flex hidden gap-1 flex-wrap text-sm xl:text-base lg:ml-[2vw] ml-[2.5vw]">
                     
                     <span> 
-                      
                       Change 
                     </span>
                     <span>
@@ -155,24 +159,13 @@ const Sidebar = () => {
                   open: { translateX: '-100%' },
                 }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 48 48"
-                    id="Dropdown"
-                  >
-                    <path
-                      d="m14 20 10 10 10-10z"
-                      fill="#b5a608"
-                      className="color000000 svgShape"
-                    ></path>
-                    <path fill="none" d="M0 0h48v48H0z"></path>
-                  </svg>
+                  
                 </motion.span>
               </Button>
             </DropdownTrigger>
             <DropdownMenu
               style={{'backgroundColor':'#1F2937', 'borderWidth':'1px'}}
-              className="rounded-lg p-2 border-slate-700"
+              className="rounded-lg p-2 border-slate-700 text-sm xl:text-base"
               aria-label="Action event example"
               onAction={(key) => handleProfileChange(key.toString())}
             >
