@@ -1,12 +1,9 @@
-import Loading from "@/components/common/loading";
-import { Suspense } from "react";
-
 interface Props {
   children: React.ReactNode;
 }
 
-const AdminJobsLayout = ({ children }: Props) => {
-  return <Suspense fallback={<Loading />}>{children}</Suspense>;
+const AdminJobLayout = ({ children }: Props) => {
+  return <div className="mx-2 my-4 rounded-md bg-white">{children}</div>;
 };
 
-export default AdminJobsLayout;
+export default AdminJobLayout;

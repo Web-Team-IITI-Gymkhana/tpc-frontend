@@ -4,7 +4,7 @@ export default function generateColumns(jsonData: any) {
   function generateColumnsRecursive(data: any, prefix = "") {
     Object.entries(data).forEach(([key, value]) => {
       const header = prefix ? `${prefix}_${key}` : key;
-
+      console.log('prefix',prefix)
       if (typeof value === "object" && value !== null) {
         generateColumnsRecursive(value, header);
       } else {
