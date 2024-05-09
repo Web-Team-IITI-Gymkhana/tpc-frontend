@@ -328,8 +328,6 @@ const JafCard = ({ JAF }: Props) => {
                     </TableRow>
                 ))}
             </TableBody>
-            <TableFooter>
-            </TableFooter>
             </Table>
 
             <div className="my-4">
@@ -367,28 +365,26 @@ const JafCard = ({ JAF }: Props) => {
                         </div>
                     </div>
                     <h2 className="text-md font-semibold mt-4 mx-2">Criteria</h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 text-sm mx-4">
-                        <div>
-                            <div className="text-gray-500 font-semibold my-2">Minimu CPI</div>{" "}
-                            <div>{salary.criteria.minCPI}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 font-semibold my-2">Tenth Marks</div>{" "}
-                            <div>{salary.criteria.tenthMarks}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 font-semibold my-2">Twelth Marks</div>{" "}
-                            <div>{salary.criteria.twelthMarks}</div>
-                        </div>
-                    </div>
-                    <h2 className="text-md font-semibold mt-4 mx-2">Programs</h2>
-                    <div className="flex flex-wrap !text-md">
-                        {salary.criteria.programs.map((program,index)=>(
-                            <div key={index} className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                                {program}
-                            </div>
-                        ))}
-                    </div>
+                    <Table className="overflow-hidden">
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Program</TableHead>
+                                <TableHead>Minimum CPI</TableHead>
+                                <TableHead>Tenth Marks</TableHead>
+                                <TableHead>Twelth Marks</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {salary.criteria.programs.map((program, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{program}</TableCell>
+                                    <TableCell>{salary.criteria.minCPI}</TableCell>
+                                    <TableCell>{salary.criteria.tenthMarks}</TableCell>
+                                    <TableCell>{salary.criteria.twelthMarks}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                     <h2 className="text-md font-semibold mt-4 mx-2">Genders</h2>
                     <div className="flex flex-wrap !text-md">
                         {salary.criteria.genders.map((gender,index)=>(
