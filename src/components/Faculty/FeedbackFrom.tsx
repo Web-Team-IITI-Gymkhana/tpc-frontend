@@ -140,14 +140,16 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
         </DialogTrigger>
         <DialogContent className="text-black">
           Are you sure to Accept the Request?
-          {isClient ? (
-            <AcceptButton
-              rows={checkedRows}
-              remarks={feedbackText}
-            ></AcceptButton>
-          ) : (
-            <div>none</div>
-          )}
+          <DialogClose>
+            {isClient ? (
+              <AcceptButton
+                rows={checkedRows}
+                remarks={feedbackText}
+              ></AcceptButton>
+            ) : (
+              <div>none</div>
+            )}
+          </DialogClose>
         </DialogContent>
       </Dialog>
       <Dialog>
@@ -156,11 +158,13 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
         </DialogTrigger>
         <DialogContent className="text-black">
           Are you sure to Reject the Request?
-          {isClient ? (
-            <RejectButton rows={checkedRows}></RejectButton>
-          ) : (
-            <div>none</div>
-          )}
+          <DialogClose>
+            {isClient ? (
+              <RejectButton rows={checkedRows}></RejectButton>
+            ) : (
+              <div>none</div>
+            )}
+          </DialogClose>
         </DialogContent>
       </Dialog>
     </>

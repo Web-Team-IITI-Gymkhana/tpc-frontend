@@ -157,10 +157,10 @@ export const fetchApprovals = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  // if (!accessToken || accessToken === undefined) {
-  //   redirect();
-  //   return;
-  // }
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
   const res = await fetch(
     filter ? url(`/faculty-approval?${filter}`) : url("/faculty-approval"),
     {
