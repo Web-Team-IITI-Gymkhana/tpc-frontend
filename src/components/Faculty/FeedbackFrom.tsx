@@ -61,8 +61,8 @@ const AcceptButton: React.FC<ButtonProps> = ({
         <path
           fill="none"
           stroke="#fff"
-          stroke-miterlimit="10"
-          stroke-width="3"
+          strokeMiterlimit="10"
+          strokeWidth="3"
           d="M11 20.053L16.964 26.018 30.385 12.598"
         ></path>
       </svg>
@@ -127,7 +127,6 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
       <h4 className="font-semibold text-base my-3">Write Feedback</h4>
       <TextArea
         placeholder="Write Your Feedback Here"
-        autoFocus={true}
         name="feedback"
         rows={4}
         className="mb-3"
@@ -137,12 +136,15 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
       />
       <Dialog>
         <DialogTrigger>
-          {isClient ? <AcceptButton /> : <div>none</div>}
+          {isClient ? <AcceptButton></AcceptButton> : <div>none</div>}
         </DialogTrigger>
         <DialogContent className="text-black">
           Are you sure to Accept the Request?
           {isClient ? (
-            <AcceptButton rows={checkedRows} remarks={feedbackText} />
+            <AcceptButton
+              rows={checkedRows}
+              remarks={feedbackText}
+            ></AcceptButton>
           ) : (
             <div>none</div>
           )}
@@ -150,11 +152,15 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
       </Dialog>
       <Dialog>
         <DialogTrigger>
-          {isClient ? <RejectButton /> : <div>none</div>}
+          {isClient ? <RejectButton></RejectButton> : <div>none</div>}
         </DialogTrigger>
         <DialogContent className="text-black">
           Are you sure to Reject the Request?
-          {isClient ? <RejectButton rows={checkedRows} /> : <div>none</div>}
+          {isClient ? (
+            <RejectButton rows={checkedRows}></RejectButton>
+          ) : (
+            <div>none</div>
+          )}
         </DialogContent>
       </Dialog>
     </>

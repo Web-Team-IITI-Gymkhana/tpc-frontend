@@ -143,115 +143,126 @@ export default function TableComponent({
         />
       </Modal>
       <div className="flex flex-col items-center py-4 bg-white rounded-lg">
-        <div className="flex items-center justify-between w-full mb-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="ml-auto mx-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
-              >
-                <span className="text-gray-800">Filters</span>{" "}
-                <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
-              </Button>
-            </DropdownMenuTrigger>
-            <Button
-              onClick={() => {
-                handleSubmit(filterOutput, setTableData);
-              }}
-              className="rounded-md mx-2 bg-indigo-500 hover:bg-indigo-600 text-white"
-            >
-              Submit Filters
-            </Button>
-            <Button
-              onClick={async () => {
-                setFilters([]);
-                // const AllStudents = await fetchStudentData(
-                //   Cookies.get("accessToken"),
-                //   undefined
-                // );
-                // setTableData(AllStudents);
-              }}
-              className="rounded-md mx-2 bg-red-500 hover:bg-red-600 text-white"
-            >
-              Clear Filters
-            </Button>
-            <DropdownMenuContent align="end" className="bg-white shadow-lg">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize text-gray-800 hover:bg-gray-100"
-                      checked={!!filters.find((x) => x.columnId === column.id)}
-                      onCheckedChange={(value) => {
-                        handleFilterChange(column.id, "", filters, setFilters);
-                      }}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="ml-auto bg-gray-200 hover:bg-gray-300 text-gray-800"
-              >
-                <span className="text-gray-800">Columns</span>{" "}
-                <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white shadow-lg">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize text-gray-800 hover:bg-gray-100"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="ml-auto mx-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
-              >
-                <span className="text-gray-800">Actions</span>{" "}
-                <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white shadow-lg">
-              <ImportData />
-              <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
-              <ExportData data={tableData} />
-              <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
+        <div className="flex md:flex-row flex-col gap-4 items-center justify-between w-full mb-4">
+          <div className="md:ml-4 flex flex-row justify-between flex-wrap md:flex-nowrap">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="md:ml-auto ml-4 md:mb-0 mr-2 mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                >
+                  <span className="text-gray-800">Filters</span>{" "}
+                  <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
+                </Button>
+              </DropdownMenuTrigger>
               <Button
                 onClick={() => {
-                  copyIDsToClipboard(table);
+                  handleSubmit(filterOutput, setTableData);
                 }}
-                className="w-full rounded-md bg-indigo-500 hover:bg-indigo-600 text-white"
+                className="rounded-md mx-2 mb-4 md:mb-0 bg-indigo-500 hover:bg-indigo-600 text-white"
               >
-                Copy IDs to Clipboard
+                Submit Filters
               </Button>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <Button
+                onClick={async () => {
+                  setFilters([]);
+                  // const AllStudents = await fetchStudentData(
+                  //   Cookies.get("accessToken"),
+                  //   undefined
+                  // );
+                  // setTableData(AllStudents);
+                }}
+                className="rounded-md ml-4 md:mx-2 bg-red-500 hover:bg-red-600 text-white"
+              >
+                Clear Filters
+              </Button>
+              <DropdownMenuContent align="end" className="bg-white shadow-lg">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize text-gray-800 hover:bg-gray-100"
+                        checked={
+                          !!filters.find((x) => x.columnId === column.id)
+                        }
+                        onCheckedChange={(value) => {
+                          handleFilterChange(
+                            column.id,
+                            "",
+                            filters,
+                            setFilters
+                          );
+                        }}
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div className="flex flex-row justify-between flex-wrap w-full">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="md:ml-auto ml-4 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                >
+                  <span className="text-gray-800">Columns</span>{" "}
+                  <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white shadow-lg">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize text-gray-800 hover:bg-gray-100"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="mx-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                >
+                  <span className="text-gray-800">Actions</span>{" "}
+                  <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white shadow-lg">
+                <ImportData />
+                <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
+                <ExportData data={tableData} />
+                <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
+                <Button
+                  onClick={() => {
+                    copyIDsToClipboard(table);
+                  }}
+                  className="w-full rounded-md bg-indigo-500 hover:bg-indigo-600 text-white"
+                >
+                  Copy IDs to Clipboard
+                </Button>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           {isAddButton && (
             <Button
@@ -409,14 +420,14 @@ export default function TableComponent({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4 text-gray-800">
+      <div className="flex items-center flex-col md:flex-row justify-between space-x-2 py-4 text-gray-800">
         <div className="flex items-center">
           <div className="flex-1 text-sm text-gray-600 items-center">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows?.length || 0} row(s) selected.
           </div>
         </div>
-        <div>
+        <div className="order-3 md:order-2">
           {isFeedbackForm && <FeedbackForm checkedRows={checkedRows} />}
           {!isFeedbackForm && (
             <Button
@@ -429,7 +440,7 @@ export default function TableComponent({
             </Button>
           )}
         </div>
-        <div className="space-x-2">
+        <div className="space-x-2 order-2 md:order-3">
           <Button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}

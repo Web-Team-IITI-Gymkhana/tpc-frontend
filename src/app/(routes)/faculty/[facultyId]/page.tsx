@@ -45,7 +45,7 @@ const FacultyPage = () => {
     fetchData();
   }, []);
   return (
-    <div className="m-10">
+    <div className="md:m-12 m-2">
       <h1 className="text-center font-bold text-3xl my-5 py-5">Approvals</h1>
       <div>
         {data && (
