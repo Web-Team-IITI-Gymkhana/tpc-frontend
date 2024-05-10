@@ -41,8 +41,8 @@ const Sidebar = () => {
   const user = userString ? JSON.parse(userString) : null;
   const isAdmin = user?.userType === "ADMIN";
   // const isAdmin = true;
-  // const isRecruiter = user?.userType === "RECRUITER"
-  const isRecruiter = true;
+  const isRecruiter = user?.userType === "RECRUITER"
+  // const isRecruiter = true;
   const userRole = user?.userType?.toLowerCase();
 
   return (
