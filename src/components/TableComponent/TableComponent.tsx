@@ -46,6 +46,7 @@ import { handleFilterChange, handleOperatorChange } from "./FilteringFunctions";
 import { handleColumnHeaderClick } from "./OrderingFunctions";
 import { handleSubmit } from "./FilteringFunctions";
 import { customStyles } from "./CustomModelStyles";
+import FeedbackForm from "../Faculty/FeedbackFrom";
 
 interface FilterOption {
   columnId: string;
@@ -59,13 +60,14 @@ export default function TableComponent({
   AddButtonText,
   isAddButton,
   dto,
+  isFeedbackForm,
 }: any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [sortingOrder, setSortingOrder] = React.useState<{
     [key: string]: "asc" | "desc";
   }>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -91,7 +93,7 @@ export default function TableComponent({
           setCheckedRows((prevCheckedRows) =>
             !!value
               ? [...prevCheckedRows, row.original]
-              : prevCheckedRows.filter((r) => r !== row.original),
+              : prevCheckedRows.filter((r) => r !== row.original)
           );
         }}
         aria-label="Select row"
@@ -163,11 +165,11 @@ export default function TableComponent({
             <Button
               onClick={async () => {
                 setFilters([]);
-                const AllStudents = await fetchStudentData(
-                  Cookies.get("accessToken"),
-                  undefined
-                );
-                setTableData(AllStudents);
+                // const AllStudents = await fetchStudentData(
+                //   Cookies.get("accessToken"),
+                //   undefined
+                // );
+                // setTableData(AllStudents);
               }}
               className="rounded-md mx-2 bg-red-500 hover:bg-red-600 text-white"
             >
@@ -275,7 +277,7 @@ export default function TableComponent({
                   const updatedFilters = filters.map((existingFilter) =>
                     existingFilter.columnId === columnId
                       ? { ...existingFilter, value: event.target.value }
-                      : existingFilter,
+                      : existingFilter
                   );
                   setFilters(updatedFilters);
                 }}
@@ -344,7 +346,7 @@ export default function TableComponent({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                         {/* Sorting Button */}
                         <button
@@ -354,7 +356,7 @@ export default function TableComponent({
                               sortingOrder,
                               filterOutput,
                               setSortingOrder,
-                              setSorting,
+                              setSorting
                             )
                           }
                           className={`ml-2 ${
@@ -388,7 +390,7 @@ export default function TableComponent({
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -413,16 +415,19 @@ export default function TableComponent({
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows?.length || 0} row(s) selected.
           </div>
-          <div>
+        </div>
+        <div>
+          {isFeedbackForm && <FeedbackForm checkedRows={checkedRows} />}
+          {!isFeedbackForm && (
             <Button
               onClick={() => {
                 setisDeleteModal(true);
               }}
               className="ml-3 rounded-md bg-red-500 hover:bg-red-600 text-white"
             >
-              Delete Selected Students
+              Remove Selected Students
             </Button>
-          </div>
+          )}
         </div>
         <div className="space-x-2">
           <Button

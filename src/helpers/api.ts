@@ -1,6 +1,7 @@
-const redirect = () => { };
+const redirect = () => {};
 import { SampleJobData } from "@/dummyData/job";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
@@ -34,12 +35,15 @@ export const fetchCompany = async (accessToken: string | undefined) => {
   return json;
 };
 
-export const fetchAllJobs = async (accessToken: string | undefined,filter: string | undefined) => {
+export const fetchAllJobs = async (
+  accessToken: string | undefined,
+  filter: string | undefined
+) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  console.log('filter', filter)
+  console.log("filter", filter);
   const res = await fetch(filter ? url(`/jobs?${filter}`) : url("/jobs"), {
     next: { tags: ["AllJobs"] },
     headers: {
@@ -51,25 +55,31 @@ export const fetchAllJobs = async (accessToken: string | undefined,filter: strin
   // return SampleJobData
 };
 
-export const fetchStudentData = async (accessToken: string | undefined, filter: string | undefined) => {
+export const fetchStudentData = async (
+  accessToken: string | undefined,
+  filter: string | undefined
+) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  console.log('filter', filter)
-  const res = await fetch(filter ? url(`/students?${filter}`) : url("/students"), {
-    next: { tags: ["AllStudents"] },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  console.log("filter", filter);
+  const res = await fetch(
+    filter ? url(`/students?${filter}`) : url("/students"),
+    {
+      next: { tags: ["AllStudents"] },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
   const json = await res.json();
   return json;
 };
 
 export const fetchCompanyRecruiters = async (
   accessToken: string | undefined,
-  companyId: string | undefined,
+  companyId: string | undefined
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -89,7 +99,7 @@ export const fetchCompanyRecruiters = async (
 
 export const fetchJobSalary = async (
   accessToken: string | undefined,
-  jobId: string | undefined,
+  jobId: string | undefined
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -106,7 +116,7 @@ export const fetchJobSalary = async (
 
 export const fetchEachJob = async (
   accessToken: string | undefined,
-  jobId: any,
+  jobId: any
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -124,7 +134,7 @@ export const fetchEachJob = async (
 
 export const fetchJobEvents = async (
   accessToken: string | undefined,
-  jobId: any,
+  jobId: any
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -142,3 +152,37 @@ export const fetchJobEvents = async (
   const json = await res.json();
   return json;
 };
+
+export const fetchApprovals = async (
+  accessToken: string | undefined,
+  filter: string | undefined
+) => {
+  // if (!accessToken || accessToken === undefined) {
+  //   redirect();
+  //   return;
+  // }
+  const res = await fetch(
+    filter ? url(`/faculty-approval?${filter}`) : url("/faculty-approval"),
+    {
+      next: { tags: ["AllApprovals"] },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  const json = await res.json();
+  return json;
+};
+
+export async function updateApproval(data: any[]) {
+  fetch(url("/faculty-approval"), {
+    method: "PATCH",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      console.log(response.status);
+      return response.json();
+    })
+    .then((data) => console.log(data));
+}
