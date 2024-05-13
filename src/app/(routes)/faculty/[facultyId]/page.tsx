@@ -8,17 +8,20 @@ import { useState, useEffect } from "react";
 const dto = [
   {
     id: "string",
-    faculty: {
-      id: "string",
-      // user: {
-      //   id: "string",
-      //   email: "string",
-      //   name: "string",
-      //   contact: "string",
-      // },
-      department: "string",
+    job: {
+      role: "string",
+      company: {
+        name: "string",
+      },
+      season: {
+        type: "string",
+        year: "string",
+      },
     },
-    salaryId: "string",
+    salary: {
+      period: "string",
+      ctc: "string",
+    },
     status: "string",
     remarks: "string",
   },
