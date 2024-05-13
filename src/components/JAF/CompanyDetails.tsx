@@ -8,6 +8,7 @@ type StepProps = {
   values: FormikValues;
   handleChange: FormikHandlers["handleChange"];
 };
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
   const [domains, setDomains] = useState<SelectProps["options"]>([]);
@@ -15,7 +16,7 @@ const CompanyDetails = ({ errors, values, handleChange }: StepProps) => {
   let countryOptions: any = [];
   const options: SelectProps["options"] = [];
   useEffect(() => {
-    axios.get("http://10.250.9.45:3000/api/v1/jaf").then((res) => {
+    axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
       res.data.domains.map((domain: any) => {
         options.push({ value: domain, label: domain });
       });
