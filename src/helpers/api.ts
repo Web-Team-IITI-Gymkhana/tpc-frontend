@@ -162,7 +162,9 @@ export const fetchApprovals = async (
     return;
   }
   const res = await fetch(
-    filter ? url(`/faculty-approval?${filter}`) : url("/faculty-approval"),
+    filter
+      ? url(`/faculty-view/approvals?${filter}`)
+      : url("/faculty-view/approvals"),
     {
       next: { tags: ["AllApprovals"] },
       headers: {
@@ -174,15 +176,20 @@ export const fetchApprovals = async (
   return json;
 };
 
-export async function updateApproval(data: any[]) {
-  fetch(url("/faculty-approval"), {
+export async function updateApproval(
+  accessToken: string | undefined,
+  data: any[]
+) {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  fetch(url("/faculty-view/approvals"), {
     method: "PATCH",
     headers: { "Content-type": "application/json" },
     body: JSON.stringify(data),
-  })
-    .then((response) => {
-      console.log(response.status);
-      return response.json();
-    })
-    .then((data) => console.log(data));
+  }).then((response) => {
+    console.log(response.status);
+    return response.json();
+  });
 }
