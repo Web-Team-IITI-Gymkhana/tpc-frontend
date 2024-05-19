@@ -31,22 +31,14 @@ export const handleOperatorChange = (
   );
 };
 
-export const handleSubmit = async (filterOutput: any, setTableData: any) => {
+export const handleSubmit = (filterOutput: any,setFilteredTableData:any) => {
   const queryObject = filterOutput;
   console.log(queryObject);
   const encodedQueryString = qs.stringify(queryObject, {
     encodeValuesOnly: true,
     encode: false,
   });
-
-  const url = `http://localhost:5000/api/v1/students?${encodedQueryString}`;
-  console.log(url);
-
-  try {
-    const response = await axios.get(url);
-    console.log(response.data);
-    setTableData(response.data);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
+  const url = `${window.location.href}/${encodedQueryString}`;
+  console.log(url)
+  window.open(url, '_blank');
 };
