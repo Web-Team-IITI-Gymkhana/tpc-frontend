@@ -1,7 +1,8 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
+import { useMediaQuery } from "react-responsive";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
@@ -32,53 +33,78 @@ interface Props {
 }
 
 const Sidebar = () => {
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
+
   const context = useContext(ToggleContext);
   const userString = Cookies.get("user");
 
   const user = userString ? JSON.parse(userString) : null;
   const isAdmin = user?.userType === "ADMIN";
+  // const isAdmin = true;
+  const isRecruiter = user?.userType === "RECRUITER"
+  // const isRecruiter = true;
   const userRole = user?.userType?.toLowerCase();
 
   return (
     <motion.div
-      initial={{ width: context.isOpen ? "18vw" : "6vw", opacity: 1 }}
+      initial={{
+        position: isSmallScreen ? "absolute" : "static",
+        width: context.isOpen ? "18vw" : "6vw",
+        visibility: "inherit",
+      }}
       animate={context.isOpen ? "open" : "closed"}
       transition={{ duration: 0.2 }}
       variants={{
-        closed: { width: "6vw", opacity: 1 },
-        open: { width: "18vw", opacity: 1 },
+        closed: {
+          width: isSmallScreen ? "1rem" : "6vw",
+          visibility: isSmallScreen ? "hidden" : "visible",
+        },
+        open: {
+          width: isSmallScreen ? "100vw" : "18vw",
+          visibility: "visible",
+        },
       }}
       className="z-40 overflow-hidden bg-gray-800 pt-3 flex flex-col h-screen"
     >
-      <div className="flex flex-row-reverse">
+      <div className="relative">
         <div
-          className="right-0 bg-gray-900 hover:bg-gray-600 text-slate-200 rounded-l-full w-fit pl-2 pr-4"
+          className="flex items-center align-middle absolute right-0 z-50 h-screen"
           onClick={(e) => {
             context.sidebarToggle();
           }}
         >
           <motion.div
-            initial={{ rotateY: 180 }}
+            initial={{ rotateY: 0 }}
             animate={context.isOpen ? "open" : "closed"}
             transition={{ duration: 0.2 }}
             variants={{
-              closed: { rotateY: 180 },
-              open: { rotateY: 0 },
+              closed: { rotateY: 0 },
+              open: { rotateY: 180 },
             }}
+            className={
+              !context.isOpen && isSmallScreen
+                ? "visible bg-gray-200 py-2 rounded-lg opacity-50 hover:opacity-100"
+                : "visible bg-gray-800 py-2 rounded-lg opacity-50 hover:opacity-100"
+            }
           >
             <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
+              fill={!context.isOpen && isSmallScreen ? "#000000" : "#ffffff"}
+              height="1rem"
+              width="1rem"
+              version="1.1"
+              id="Layer_1"
               xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 330 330"
+              xmlSpace="preserve"
             >
               <path
-                d="M6.85355 3.85355C7.04882 3.65829 7.04882 3.34171 6.85355 3.14645C6.65829 2.95118 6.34171 2.95118 6.14645 3.14645L2.14645 7.14645C1.95118 7.34171 1.95118 7.65829 2.14645 7.85355L6.14645 11.8536C6.34171 12.0488 6.65829 12.0488 6.85355 11.8536C7.04882 11.6583 7.04882 11.3417 6.85355 11.1464L3.20711 7.5L6.85355 3.85355ZM12.8536 3.85355C13.0488 3.65829 13.0488 3.34171 12.8536 3.14645C12.6583 2.95118 12.3417 2.95118 12.1464 3.14645L8.14645 7.14645C7.95118 7.34171 7.95118 7.65829 8.14645 7.85355L12.1464 11.8536C12.3417 12.0488 12.6583 12.0488 12.8536 11.8536C13.0488 11.6583 13.0488 11.3417 12.8536 11.1464L9.20711 7.5L12.8536 3.85355Z"
-                fill="currentColor"
-                fillRule="evenodd"
-                clipRule="evenodd"
-              ></path>
+                id="XMLID_222_"
+                d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001
+	c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213
+	C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606
+	C255,161.018,253.42,157.202,250.606,154.389z"
+              />
             </svg>
           </motion.div>
         </div>
@@ -92,8 +118,8 @@ const Sidebar = () => {
         <div>
           <hr />
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw]">
+            <div className="flex justify-start gap-[1rem]">
+              <div className="w-[2rem]">
                 <svg
                   width="20"
                   height="20"
@@ -117,7 +143,7 @@ const Sidebar = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw]"
+                className="w-[7rem]"
               >
                 Profile
               </motion.div>
@@ -371,6 +397,112 @@ const Sidebar = () => {
               </div>
               {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
             </div>
+          </div>
+        )}
+        {isRecruiter&& (
+          <div>
+            <Link href="/">
+              <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7.07926 0.222253C7.31275 -0.007434 7.6873 -0.007434 7.92079 0.222253L14.6708 6.86227C14.907 7.09465 14.9101 7.47453 14.6778 7.71076C14.4454 7.947 14.0655 7.95012 13.8293 7.71773L13 6.90201V12.5C13 12.7761 12.7762 13 12.5 13H2.50002C2.22388 13 2.00002 12.7761 2.00002 12.5V6.90201L1.17079 7.71773C0.934558 7.95012 0.554672 7.947 0.32229 7.71076C0.0899079 7.47453 0.0930283 7.09465 0.32926 6.86227L7.07926 0.222253ZM7.50002 1.49163L12 5.91831V12H10V8.49999C10 8.22385 9.77617 7.99999 9.50002 7.99999H6.50002C6.22388 7.99999 6.00002 8.22385 6.00002 8.49999V12H3.00002V5.91831L7.50002 1.49163ZM7.00002 12H9.00002V8.99999H7.00002V12Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
+                  >
+                    Home
+                  </motion.div>
+                </div>
+              </div>
+            </Link>
+            <Link href="/recruiter/jaf/1">
+              <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                  <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.2 1H4.17741H4.1774C3.86936 0.999988 3.60368 0.999978 3.38609 1.02067C3.15576 1.04257 2.92825 1.09113 2.71625 1.22104C2.51442 1.34472 2.34473 1.51442 2.22104 1.71625C2.09113 1.92825 2.04257 2.15576 2.02067 2.38609C1.99998 2.60367 1.99999 2.86935 2 3.17738V3.1774V3.2V11.8V11.8226V11.8226C1.99999 12.1307 1.99998 12.3963 2.02067 12.6139C2.04257 12.8442 2.09113 13.0717 2.22104 13.2837C2.34473 13.4856 2.51442 13.6553 2.71625 13.779C2.92825 13.9089 3.15576 13.9574 3.38609 13.9793C3.60368 14 3.86937 14 4.17741 14H4.2H10.8H10.8226C11.1306 14 11.3963 14 11.6139 13.9793C11.8442 13.9574 12.0717 13.9089 12.2837 13.779C12.4856 13.6553 12.6553 13.4856 12.779 13.2837C12.9089 13.0717 12.9574 12.8442 12.9793 12.6139C13 12.3963 13 12.1306 13 11.8226V11.8V3.2V3.17741C13 2.86936 13 2.60368 12.9793 2.38609C12.9574 2.15576 12.9089 1.92825 12.779 1.71625C12.6553 1.51442 12.4856 1.34472 12.2837 1.22104C12.0717 1.09113 11.8442 1.04257 11.6139 1.02067C11.3963 0.999978 11.1306 0.999988 10.8226 1H10.8H4.2ZM3.23875 2.07368C3.26722 2.05623 3.32362 2.03112 3.48075 2.01618C3.64532 2.00053 3.86298 2 4.2 2H10.8C11.137 2 11.3547 2.00053 11.5193 2.01618C11.6764 2.03112 11.7328 2.05623 11.7613 2.07368C11.8285 2.11491 11.8851 2.17147 11.9263 2.23875C11.9438 2.26722 11.9689 2.32362 11.9838 2.48075C11.9995 2.64532 12 2.86298 12 3.2V11.8C12 12.137 11.9995 12.3547 11.9838 12.5193C11.9689 12.6764 11.9438 12.7328 11.9263 12.7613C11.8851 12.8285 11.8285 12.8851 11.7613 12.9263C11.7328 12.9438 11.6764 12.9689 11.5193 12.9838C11.3547 12.9995 11.137 13 10.8 13H4.2C3.86298 13 3.64532 12.9995 3.48075 12.9838C3.32362 12.9689 3.26722 12.9438 3.23875 12.9263C3.17147 12.8851 3.11491 12.8285 3.07368 12.7613C3.05624 12.7328 3.03112 12.6764 3.01618 12.5193C3.00053 12.3547 3 12.137 3 11.8V3.2C3 2.86298 3.00053 2.64532 3.01618 2.48075C3.03112 2.32362 3.05624 2.26722 3.07368 2.23875C3.11491 2.17147 3.17147 2.11491 3.23875 2.07368ZM5 10C4.72386 10 4.5 10.2239 4.5 10.5C4.5 10.7761 4.72386 11 5 11H8C8.27614 11 8.5 10.7761 8.5 10.5C8.5 10.2239 8.27614 10 8 10H5ZM4.5 7.5C4.5 7.22386 4.72386 7 5 7H10C10.2761 7 10.5 7.22386 10.5 7.5C10.5 7.77614 10.2761 8 10 8H5C4.72386 8 4.5 7.77614 4.5 7.5ZM5 4C4.72386 4 4.5 4.22386 4.5 4.5C4.5 4.77614 4.72386 5 5 5H10C10.2761 5 10.5 4.77614 10.5 4.5C10.5 4.22386 10.2761 4 10 4H5Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
+                  >
+                    JAF
+                  </motion.div>
+                </div>
+              </div>
+            </Link>
+            <Link href="/recruiter/prevjaf/1">
+              <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+                <div className="flex justify-start gap-[1vw]">
+                  <div className="w-[2vw]">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.2 1H4.17741H4.1774C3.86936 0.999988 3.60368 0.999978 3.38609 1.02067C3.15576 1.04257 2.92825 1.09113 2.71625 1.22104C2.51442 1.34472 2.34473 1.51442 2.22104 1.71625C2.09113 1.92825 2.04257 2.15576 2.02067 2.38609C1.99998 2.60367 1.99999 2.86935 2 3.17738V3.1774V3.2V11.8V11.8226V11.8226C1.99999 12.1307 1.99998 12.3963 2.02067 12.6139C2.04257 12.8442 2.09113 13.0717 2.22104 13.2837C2.34473 13.4856 2.51442 13.6553 2.71625 13.779C2.92825 13.9089 3.15576 13.9574 3.38609 13.9793C3.60368 14 3.86937 14 4.17741 14H4.2H10.8H10.8226C11.1306 14 11.3963 14 11.6139 13.9793C11.8442 13.9574 12.0717 13.9089 12.2837 13.779C12.4856 13.6553 12.6553 13.4856 12.779 13.2837C12.9089 13.0717 12.9574 12.8442 12.9793 12.6139C13 12.3963 13 12.1306 13 11.8226V11.8V3.2V3.17741C13 2.86936 13 2.60368 12.9793 2.38609C12.9574 2.15576 12.9089 1.92825 12.779 1.71625C12.6553 1.51442 12.4856 1.34472 12.2837 1.22104C12.0717 1.09113 11.8442 1.04257 11.6139 1.02067C11.3963 0.999978 11.1306 0.999988 10.8226 1H10.8H4.2ZM3.23875 2.07368C3.26722 2.05623 3.32362 2.03112 3.48075 2.01618C3.64532 2.00053 3.86298 2 4.2 2H10.8C11.137 2 11.3547 2.00053 11.5193 2.01618C11.6764 2.03112 11.7328 2.05623 11.7613 2.07368C11.8285 2.11491 11.8851 2.17147 11.9263 2.23875C11.9438 2.26722 11.9689 2.32362 11.9838 2.48075C11.9995 2.64532 12 2.86298 12 3.2V11.8C12 12.137 11.9995 12.3547 11.9838 12.5193C11.9689 12.6764 11.9438 12.7328 11.9263 12.7613C11.8851 12.8285 11.8285 12.8851 11.7613 12.9263C11.7328 12.9438 11.6764 12.9689 11.5193 12.9838C11.3547 12.9995 11.137 13 10.8 13H4.2C3.86298 13 3.64532 12.9995 3.48075 12.9838C3.32362 12.9689 3.26722 12.9438 3.23875 12.9263C3.17147 12.8851 3.11491 12.8285 3.07368 12.7613C3.05624 12.7328 3.03112 12.6764 3.01618 12.5193C3.00053 12.3547 3 12.137 3 11.8V3.2C3 2.86298 3.00053 2.64532 3.01618 2.48075C3.03112 2.32362 3.05624 2.26722 3.07368 2.23875C3.11491 2.17147 3.17147 2.11491 3.23875 2.07368ZM5 10C4.72386 10 4.5 10.2239 4.5 10.5C4.5 10.7761 4.72386 11 5 11H8C8.27614 11 8.5 10.7761 8.5 10.5C8.5 10.2239 8.27614 10 8 10H5ZM4.5 7.5C4.5 7.22386 4.72386 7 5 7H10C10.2761 7 10.5 7.22386 10.5 7.5C10.5 7.77614 10.2761 8 10 8H5C4.72386 8 4.5 7.77614 4.5 7.5ZM5 4C4.72386 4 4.5 4.22386 4.5 4.5C4.5 4.77614 4.72386 5 5 5H10C10.2761 5 10.5 4.77614 10.5 4.5C10.5 4.22386 10.2761 4 10 4H5Z"
+                        fill="currentColor"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className="w-[13vw]"
+                  >
+                    Previous JAFs
+                  </motion.div>
+                </div>
+              </div>
+            </Link>
           </div>
         )}
       </div>
