@@ -1,5 +1,5 @@
-const redirect = () => {};
-
+const redirect = () => { };
+import { SampleJobData } from "@/dummyData/job";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const url = (NextUrl: string) => {
@@ -34,45 +34,30 @@ export const fetchCompany = async (accessToken: string | undefined) => {
   return json;
 };
 
-export const fetchAllJobs = async (
-  accessToken: string | undefined,
-  seasonId: string | null | undefined,
-  recruiterId: string | null | undefined,
-  companyId: string | null | undefined,
-  role: string | null | undefined,
-  active: boolean | null | undefined,
-) => {
+export const fetchAllJobs = async (accessToken: string | undefined,filter: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  let apiUrl = url("/jobs?");
-  if (companyId) apiUrl += `companyId=${companyId}&`;
-  if (seasonId) apiUrl += `seasonId=${seasonId}&`;
-  if (recruiterId) apiUrl += `recruiterId=${recruiterId}&`;
-  if (role) apiUrl += `role=${role}&`;
-  if (active !== null) apiUrl += `active=${active}&`;
-  apiUrl = apiUrl.replace(/&$/, "");
-  console.log(apiUrl);
-  const res = await fetch(apiUrl, {
-    next: {
-      tags: ["AllJobs"],
-    },
+  console.log('filter', filter)
+  const res = await fetch(filter ? url(`/jobs?${filter}`) : url("/jobs"), {
+    next: { tags: ["AllJobs"] },
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-
   const json = await res.json();
   return json;
+  // return SampleJobData
 };
 
-export const fetchStudentData = async (accessToken: string | undefined) => {
+export const fetchStudentData = async (accessToken: string | undefined, filter: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  const res = await fetch(url("/students"), {
+  console.log('filter', filter)
+  const res = await fetch(filter ? url(`/students?${filter}`) : url("/students"), {
     next: { tags: ["AllStudents"] },
     headers: {
       Authorization: `Bearer ${accessToken}`,

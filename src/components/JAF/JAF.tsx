@@ -11,6 +11,8 @@ import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
 import axios from "axios";
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const { Step } = Steps;
 
 function JAF() {
@@ -147,7 +149,7 @@ function JAF() {
             };
             console.log(submitValues);
             axios
-              .post("http://10.250.9.45:3000/api/v1/jaf", {
+              .post(`${baseUrl}/api/v1/jaf`, {
                 seasonId: values.seasonId,
                 company: {
                   name: values.compName,
@@ -285,11 +287,11 @@ function JAF() {
                     {currentStepIndex === 3 ? "Finish" : "Next"}
                   </Button>
                 </Row>
-                <Row>
+                {/* <Row>
                   <Col>
                     <pre>{JSON.stringify(finalValues, null, 2)}</pre>
                   </Col>
-                </Row>
+                </Row> */}
               </Space>
             );
           }}

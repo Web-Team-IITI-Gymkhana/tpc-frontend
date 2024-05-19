@@ -165,6 +165,7 @@ export default function TableComponent({
                 setFilters([]);
                 const AllStudents = await fetchStudentData(
                   Cookies.get("accessToken"),
+                  undefined
                 );
                 setTableData(AllStudents);
               }}
