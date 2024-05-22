@@ -9,7 +9,7 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { Jobs } from '@/dummyData/job';
+import { SampleJobData } from '@/dummyData/job';
 interface Props {}
 interface Salary {
   id: string;

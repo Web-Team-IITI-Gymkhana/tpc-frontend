@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import JobCard from "@/components/jobs/JobCard";
-import { Jobs } from "@/dummyData/job";
+import { SampleJobData } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import {

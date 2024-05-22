@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
