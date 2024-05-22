@@ -12,8 +12,14 @@ import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
 import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
 import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
 import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import AdminDashboard from './SideBar/Roles/admin';
 import StudentDashboard from "./SideBar/Roles/student";
 interface Framework {
@@ -148,18 +154,32 @@ const Sidebar = () => {
       </div>
       <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
         <div>
-          {/* // */}
+          {/* /
+          
+
+          <DropdownMenu>
+  <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem>Profile</DropdownMenuItem>
+    <DropdownMenuItem>Billing</DropdownMenuItem>
+    <DropdownMenuItem>Team</DropdownMenuItem>
+    <DropdownMenuItem>Subscription</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+          
+          
+          / */}
        {user?.role &&
         <div className="hover:bg-gray-900 text-white rounded-md my-[1vh] py-[1vh] px-[1vw]">
           <DropdownMenu>
-
             <DropdownMenuTrigger className="outline-none text-white">
-            <div className={`flex justify-start gap-[0.5rem]`}>
+            <div className={`flex justify-start gap-[0.5rem] items-center `}>
               <div className="w-[2rem]">
                 <svg
                   width="20"
                   height="20"
-                  viewBox="0 0 22 22"
+                  viewBox="0 0 20 20"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -181,29 +201,29 @@ const Sidebar = () => {
                 }}
                 className={`${context.isOpen?"visible":"hidden"} w-[9rem]`}
               >
-                Role: {user?.role}
+                ROLE : {user?.role}
               </motion.div>
             </div> 
             </DropdownMenuTrigger>
-
-            <DropdownMenuContent>
-               <DropdownMenuItem onSelect={()=>{handleRoleChange("ADMIN")}}>
+            <DropdownMenuContent className="bg-white">
+               <DropdownMenuItem className="hover:bg-slate-200 cursor-pointer" onSelect={()=>{handleRoleChange("ADMIN")}}>
                 TPC Admin {role==="ADMIN" && <span className=" text-green-500">&nbsp; &#9679;</span>}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={()=>{handleRoleChange("RECRUITER")}}>
+              <DropdownMenuItem className="hover:bg-slate-200 cursor-pointer" onSelect={()=>{handleRoleChange("RECRUITER")}}>
                 Recruiter {role==="RECRUITER" && <span className=" text-green-500">&nbsp; &#9679;</span>}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={()=>{handleRoleChange("MANAGER")}}>
+              <DropdownMenuItem className="hover:bg-slate-200 cursor-pointer" onSelect={()=>{handleRoleChange("MANAGER")}}>
                 TPC Manager {role==="MANAGER" && <span className=" text-green-500">&nbsp; &#9679;</span>}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={()=>{handleRoleChange("FACULTY")}}>
+              <DropdownMenuItem className="hover:bg-slate-200 cursor-pointer" onSelect={()=>{handleRoleChange("FACULTY")}}>
                 Faculty {role==="FACULTY" && <span className=" text-green-500">&nbsp; &#9679;</span>}
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={()=>{handleRoleChange("STUDENT")}}>
+              <DropdownMenuItem className="hover:bg-slate-200 cursor-pointer" onSelect={()=>{handleRoleChange("STUDENT")}}>
                 Student {role==="STUDENT" && <span className=" text-green-500">&nbsp; &#9679;</span>}
               </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        
             {/* <CompanyDropDown userRole={userRole} /> */}
           </div>}
 

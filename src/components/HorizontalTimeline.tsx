@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 // import styles from "@/styles/Timeline.css";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { Separator } from "./ui/separator";
 
 interface Event {
   date: string;
   status:string;
-  // title: string;
+  title: string;
   // description: string;
   // bgColor: string;
   // textColor: string;
@@ -472,9 +478,22 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
                         <ol>
                           {events.map((event, index) => (
                             <li key={index}>
+                              <HoverCard>
+                                <HoverCardTrigger>
                               <a href="#0" data-date={event.date} className={event.status} style={{ left: `${index * (720/events.length)}px` }}>
-                                {event.date}
+                                
+                                
+                                {event.title}
+                                
+
                               </a>
+                                </HoverCardTrigger>
+                                <HoverCardContent className="bg-white w-[10vw] px-4 py-5" style={{ marginLeft: `${index * (505/events.length)}%` }} >
+                                  {event.date}
+                                  <Separator className="my-2"/>
+                                  {event.status}
+                                </HoverCardContent>
+                               </HoverCard>
                             </li>
                           ))}
                         </ol>

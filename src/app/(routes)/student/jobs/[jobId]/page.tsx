@@ -18,12 +18,12 @@ import { fetchEachJob } from "@/helpers/api";
 import HorizontalTimeline from "@/components/HorizontalTimeline";
 
 const testData = [
-  { date: "16/01/2017", status:"older-event" },
-  { date: "28/02/2017", status:"older-event" },
-  { date: "20/04/2017", status:"older-event" },
-  { date: "20/05/2017", status:"older-event" },
-  { date: "09/07/2017", status:"selected" },
-  { date: "30/08/2017", status:"" },
+  { date: "16/01/2017", status:"older-event" , title:"Lorem"},
+  { date: "28/02/2017", status:"older-event" , title:"Lorem"},
+  { date: "20/04/2017", status:"older-event" , title:"Lorem"},
+  { date: "20/05/2017", status:"older-event" , title:"Lorem"},
+  { date: "09/07/2017", status:"selected" , title:"Lorem"},
+  { date: "30/08/2017", status:"newer-event" , title:"Lorem"},
   // { date: "15/09/2017", status:"" },
   // { date: "01/11/2017", status:"" },
   // { date: "10/12/2017", status:"" },
