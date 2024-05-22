@@ -1,4 +1,5 @@
-export const Jobs = [
+
+export const SampleJobData = [
   {
     "id": "1",
     "seasonId": "123",
@@ -385,4 +386,3 @@ export const Jobs = [
     ]
   }
 ]
-

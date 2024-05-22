@@ -29,7 +29,7 @@ const dto = [
 const dynamicColumns = generateColumns(dto[0]);
 
 const StudentPage = async () => {
-  const AllStudents = await fetchStudentData(Cookies.get("accessToken"));
+  const AllStudents = await fetchStudentData(Cookies.get("accessToken"),undefined);
   return (
     <div className="m-10">
       <h1 className="text-center font-bold text-3xl my-5 py-5">Students</h1>

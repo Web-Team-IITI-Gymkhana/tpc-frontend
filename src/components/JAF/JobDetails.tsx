@@ -53,8 +53,10 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
   let interviewTypeOptions: any = [];
   const programsOptions: SelectProps["options"] = [];
 
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   useEffect(() => {
-    axios.get("http://10.250.9.45:3000/api/v1/jaf").then((res) => {
+    axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
       res.data.testTypes.map((it: any) => {
         testTypeOptions.push({ value: it, label: it });
       });
