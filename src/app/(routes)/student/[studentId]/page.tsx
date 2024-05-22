@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import JobCard from "@/components/jobs/JobCard";
 import { Jobs } from "@/dummyData/job";
+import InterviewExperiences from "@/app/(routes)/student/interviewExperiences/page";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface Props {}
 
@@ -23,6 +26,7 @@ interface Job {
     name: string;
   };
 }
+
 
 const salaryData = {
   salary: "Rs 40LPA",

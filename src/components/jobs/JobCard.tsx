@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { useState } from 'react';
 import {JobDetails} from "@/dummyData/jobdetails"
 import { Button } from "@/components/ui/button";
+
 // import { Pointer } from "lucide-react";
 import {
   Select,
@@ -16,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { StudentDropDown } from "../SideBar/DropDowns/StudentDropDown";
 interface Event {
   id: string;
   name: string;
@@ -97,6 +99,7 @@ interface Props {
 const JobCard = ({ jobItem, salary, resumes }: Props) => {  
   // const salary = await fetchJobSalary(cookies()?.get('accessToken')?.value, jobItem.id)
   // console.log(salary)
+
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [showDescription, setShowDescription] = useState<boolean>(false);
 
@@ -108,7 +111,7 @@ const JobCard = ({ jobItem, salary, resumes }: Props) => {
   };
 
   return (
-    <div className="">      
+    <div className="">     
       <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
           {jobItem.company.name}
