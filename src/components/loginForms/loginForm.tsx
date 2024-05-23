@@ -80,9 +80,17 @@ const LoginForm = () => {
                                   ),
                                   { expires: 365 },
                                 );
+                                Cookies.set(
+                                  "role",
+                                  role?role.toUpperCase():"",
+                                  {
+                                    expires: 365,
+                                  },
+                                )
                                 toast.success("logged in");
                                 window.location.href = "/";
                               },
+                              
                             )
                             .catch((err) => {
                               alert(err);

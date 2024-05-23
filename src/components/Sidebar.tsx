@@ -53,7 +53,8 @@ const Sidebar = () => {
   // const isRecruiter = true;
   const userRole=user?.userType?.toLowerCase();
   // const [userRole,setUserRole] = useState(user?.userType?.toLowerCase());
-
+const role = Cookies.get("role");
+console.log(role);
   const [profile, setProfile] = useState("STUDENT");
   const handleProfileChange = (keyy: string) => {
     setProfile(keyy);
@@ -63,6 +64,7 @@ const Sidebar = () => {
       user.userType=keyy;
       console.log(user);
     }
+
     
   };
   
@@ -176,7 +178,7 @@ const Sidebar = () => {
                  
                 </motion.span>
                 
-                <motion.span
+                {/* <motion.span
                 initial={{ opacity: 1 }}
                 animate={context.isOpen ? "open" : "closed"}
                 transition={{ duration: 0.1 }}
@@ -186,7 +188,7 @@ const Sidebar = () => {
                 }}
                 >
                   
-                </motion.span>
+                </motion.span> */}
               </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -272,7 +274,7 @@ const Sidebar = () => {
 
 
 
-        {isAdmin && (
+        {role==="ADMIN" && (
           <div>
             <Link href="/">
               <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
