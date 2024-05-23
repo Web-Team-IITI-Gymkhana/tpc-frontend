@@ -172,7 +172,7 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
     border-color: #313740;
   }
   .cd-horizontal-timeline .events a.selected {
-    pointer-events: none;
+    // pointer-events: none;
   }
   .cd-horizontal-timeline .events a.selected::after {
     background-color: #313740;
@@ -474,8 +474,8 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
                 <div className={`cd-horizontal-timeline loaded`}>
                   <div className="timeline">
                     <div className="events-wrapper">
-                      <div className="events" style={{ width: `720px` }}>
-                        <ol>
+                      <div className="events" style={{ width: "720px" }}>
+                      <ol>
                           {events.map((event, index) => (
                             <li key={index}>
                               <HoverCard>
@@ -488,7 +488,7 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
 
                               </a>
                                 </HoverCardTrigger>
-                                <HoverCardContent className="bg-white w-[10vw] px-4 py-5" style={{ marginLeft: `${index * (505/events.length)}%` }} >
+                                <HoverCardContent className="bg-white w-[10vw] px-4 py-5 z-10 " style={{ marginLeft: `${index * (505/events.length)}%` }} >
                                   {event.date}
                                   <Separator className="my-2"/>
                                   {event.status}
@@ -497,7 +497,8 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
                             </li>
                           ))}
                         </ol>
-                        <span className="filling-line" aria-hidden="true" style={{ transform: `${a}` }}></span>
+
+                        <span className="filling-line" aria-hidden="true" style={{ transform:` ${a}` }}></span>
                       </div>
                     </div>
                     <ul className="cd-timeline-navigation">
@@ -516,3 +517,6 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
 };
 
 export default HorizontalTimeline;
+
+
+
