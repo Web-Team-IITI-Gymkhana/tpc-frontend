@@ -1,6 +1,8 @@
-
+//this includes the login and logout buttons of the navbar
+//it is a dropdown menu that appears when the user clicks on the user icon
+//dropdown menu is a part of the navbar and opens on the right side of the navbar
 "use client";
-import Cookies from "js-cookie";
+
 import React, { useContext } from "react";
 import Link, { LinkProps } from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,9 +13,7 @@ const NavLink = ({ href }: LinkProps) => {
   const path = usePathname();
   const context = useContext(ToggleContext);
   const isActive = path === href;
-  const isLoggedIn = Cookies.get('accessToken') !== undefined;
-
-  if (isActive || isLoggedIn) {
+  if (isActive) {
     return (
       <div className="bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
         <div className="flex justify-start gap-[1vw]">
@@ -43,7 +43,7 @@ const NavLink = ({ href }: LinkProps) => {
             }}
             className="w-[13vw]"
           >
-            {isLoggedIn ? 'Logout' : 'Login'}
+            Login
           </motion.div>
         </div>
       </div>
@@ -90,52 +90,44 @@ const NavLink = ({ href }: LinkProps) => {
 
 const NavButtonGroup = () => {
   const context = useContext(ToggleContext);
-  const isLoggedIn = Cookies.get('accessToken') !== undefined;
 
   return (
-    <div className="text-white">
+    <div className="">
       <div className="flex flex-col">
-        {!isLoggedIn && <NavLink href="/login" />}
-        {isLoggedIn && (
-          <div className="hover:bg-gray-900 rounded-md mb-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1rem]">
-              <div className="w-[2rem]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="#fff"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-              </div>
-              <motion.div
-                initial={{ opacity: 1 }}
-                animate={context.isOpen ? "open" : "closed"}
-                transition={{ duration: 0.1 }}
-                variants={{
-                  closed: { opacity: 0 },
-                  open: { opacity: 1 },
-                }}
-                className="w-[13vw] cursor-pointer"
-                onClick={() => {
-                  Cookies.remove("accessToken");
-                  Cookies.remove("user");
-                  window.location.href = "/login";
-                }}
+        <NavLink href="/login" />
+        <div className="hover:bg-gray-900 rounded-md mb-[1vh] py-[1vh] px-[1vw]">
+          <div className="flex justify-start gap-[1rem]">
+            <div className="w-[2rem]">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="#fff"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                Logout
-              </motion.div>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
             </div>
+            <motion.div
+              initial={{ opacity: 1 }}
+              animate={context.isOpen ? "open" : "closed"}
+              transition={{ duration: 0.1 }}
+              variants={{
+                closed: { opacity: 0 },
+                open: { opacity: 1 },
+              }}
+              className="w-[13vw]"
+            >
+              Logout
+            </motion.div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -115,7 +115,7 @@ const SalaryPage = ({ params }: { params: { salaryId: String } }) => {
     fetchSalaryData();
   }, [params.salaryId]);
 
-  const [isopen, setIsopen] = useState(true);
+  const [isopen, setIsopen] = useState(false);
   const handleViewDetails = () => {
     setIsopen(!isopen);
   };
