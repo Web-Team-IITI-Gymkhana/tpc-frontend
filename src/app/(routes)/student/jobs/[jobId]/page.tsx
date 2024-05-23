@@ -300,7 +300,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
         <div className="my-7">
             <Separator />
         </div>
-        <HorizontalTimeline events={testData} />
+        <HorizontalTimeline eventsData={testData} />
         <div className="my-7">
             <Separator />
         </div>
