@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
@@ -12,16 +12,10 @@ import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
 import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
 import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
 import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
+import RecruiterDashboard from "./SideBar/Roles/recruiter";
+
 interface Framework {
   value: string;
   label: string;
@@ -46,50 +40,15 @@ const Sidebar = () => {
 
   const context = useContext(ToggleContext);
   const userString = Cookies.get("user");
-  // const user = userString ? JSON.parse(userString) : null;
-  // const isAdmin = user?.role === "ADMIN";
-  // // const isAdmin = true;
-  // const isStudent = user?.role === "STUDENT";
-  const studentId = 2;
 
-  // const [role,setRole] = useState(user?.role);
-
-  /// -------------------
-  const [user, setUser] = useState(userString ? JSON.parse(userString) : null);
-  const [role, setRole] = useState(user?.role);
-
-  useEffect(() => {
-    // Get the user cookie when the component mounts
-    const userString = Cookies.get('user');
-    if (userString) {
-      const user = JSON.parse(userString);
-      setUser(user);
-      setRole(user.role);
-    }
-  }, []);
-
-  const handleRoleChange = (newRole: string) => {
-    const updatedUser = { ...user, role: newRole };
-    setUser(updatedUser);
-    setRole(newRole);
-    Cookies.set('user', JSON.stringify(updatedUser), { expires: 365 });
-  };
-
-  const isStudent = (user?.role === 'STUDENT')?true:false;
-  const isAdmin = (user?.role === 'ADMIN')?true:false;
-
-
-  // const [isMounted, setIsMounted] = useState(false);
-
-  // useEffect(() => {
-  //   setIsMounted(true);
-  // }, []);
-
-  // if (!isMounted) {
-  //   return null;
-  // }
-
-  // --------------------------
+  const user = userString ? JSON.parse(userString) : null;
+  const isAdmin = user?.userType === "ADMIN";
+  // const isAdmin = true;
+  const isRecruiter = user?.userType === "RECRUITER"
+  // const isRecruiter = true;
+  const isStudent = user?.userType === "STUDENT"
+  // const isStudent = true;
+  const userRole = user?.userType?.toLowerCase();
 
   return (
     <motion.div
@@ -162,110 +121,8 @@ const Sidebar = () => {
       </div>
       <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
         <div>
-          {
-          user?.role  && (
-            <div className="hover:bg-gray-900 text-white rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="outline-none text-white">
-                  <div
-                    className={`flex justify-start gap-[0.5rem] items-center `}
-                  >
-                    <div className="w-[2rem]">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M12 15.5C11.88 15.5 11.76 15.46 11.66 15.38L5.66 9.38C5.47 9.19 5.47 8.84 5.66 8.66C5.85 8.47 6.2 8.47 6.38 8.66L12 14.28L17.62 8.66C17.81 8.47 18.16 8.47 18.34 8.66C18.53 8.84 18.53 9.19 18.34 9.38L12.34 15.38C12.24 15.46 12.12 15.5 12 15.5Z"
-                          fill="currentColor"
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                    <motion.div
-                      initial={{ opacity: 1 }}
-                      animate={context.isOpen ? "open" : "closed"}
-                      transition={{ duration: 0.1 }}
-                      variants={{
-                        closed: { opacity: 0 },
-                        open: { opacity: 1 },
-                      }}
-                      className={`${
-                        context.isOpen ? "visible" : "hidden"
-                      } w-[9rem]`}
-                    >
-                      ROLE : {user?.role}
-                    </motion.div>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white">
-                  <DropdownMenuItem
-                    className="hover:bg-slate-200 cursor-pointer"
-                    onSelect={() => {
-                      handleRoleChange("ADMIN");
-                    }}
-                  >
-                    TPC Admin{" "}
-                    {role === "ADMIN" && (
-                      <span className=" text-green-500">&nbsp; &#9679;</span>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="hover:bg-slate-200 cursor-pointer"
-                    onSelect={() => {
-                      handleRoleChange("RECRUITER");
-                    }}
-                  >
-                    Recruiter{" "}
-                    {role === "RECRUITER" && (
-                      <span className=" text-green-500">&nbsp; &#9679;</span>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="hover:bg-slate-200 cursor-pointer"
-                    onSelect={() => {
-                      handleRoleChange("MANAGER");
-                    }}
-                  >
-                    TPC Manager{" "}
-                    {role === "MANAGER" && (
-                      <span className=" text-green-500">&nbsp; &#9679;</span>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="hover:bg-slate-200 cursor-pointer"
-                    onSelect={() => {
-                      handleRoleChange("FACULTY");
-                    }}
-                  >
-                    Faculty{" "}
-                    {role === "FACULTY" && (
-                      <span className=" text-green-500">&nbsp; &#9679;</span>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="hover:bg-slate-200 cursor-pointer"
-                    onSelect={() => {
-                      handleRoleChange("STUDENT");
-                    }}
-                  >
-                    Student{" "}
-                    {role === "STUDENT" && (
-                      <span className=" text-green-500">&nbsp; &#9679;</span>
-                    )}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* <CompanyDropDown userRole={userRole} /> */}
-            </div>
-          )}
-
-          <div className="hover:bg-gray-900 text-white rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <hr />
+          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1rem]">
               <div className="w-[2rem]">
                 <svg
@@ -301,12 +158,15 @@ const Sidebar = () => {
           <hr />
           <NavButtonGroup />
         </div>
-
-        {/* Admin dashboard */}
-
-        {isAdmin && <AdminDashboard />}
-
-        {isStudent && <StudentDashboard />}
+        {isAdmin && (
+          <AdminDashboard/>
+        )}
+        {isStudent && (
+          <StudentDashboard/>
+        )}
+        {isRecruiter&& (
+          <RecruiterDashboard/>
+        )}
       </div>
     </motion.div>
   );

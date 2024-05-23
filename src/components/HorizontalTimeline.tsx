@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 // import styles from "@/styles/Timeline.css";
 import {
@@ -26,8 +27,6 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
     body{
       background:#eee;
   }
-
-
 
   .cd-horizontal-timeline ol, .cd-horizontal-timeline ul {
     list-style: none;
