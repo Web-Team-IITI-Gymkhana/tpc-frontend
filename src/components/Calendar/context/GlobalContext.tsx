@@ -1,5 +1,5 @@
 import React from "react";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export interface DispatchCallEventsAction {
     type: string;
@@ -16,6 +16,9 @@ export interface selectedDayEvent{
     description:string,
     label:string,
     id:string;
+    day: number | null;
+    timeFrom: string;
+    timeTo: string;
 }
 
   
@@ -23,6 +26,12 @@ export interface selectedDayEvent{
 const GlobalContext = React.createContext({
     monthIndex:0,
     setMonthIndex:(index:number) => {},
+    weekOffset:0,
+    setWeekOffset:(index:number) => {},
+    dateOffset:0,
+    setDateOffset:(index:number) => {},
+    Current_view:'' ,
+    SetCurrent_view:(view:string) => {} ,
     showEventModal:false,
     setShowEventModal:(setBool:boolean) => {},
     daySelected: null as Dayjs | null,
@@ -35,6 +44,10 @@ const GlobalContext = React.createContext({
     labels: [] as updateLabelAction[],
     updateLabel: (action: updateLabelAction) => {},
     filteredEvents:[],
+    timeFrom: null as string|null,
+    setTimeFrom: (time:string) => {},
+    timeTo: null as string|null,
+    setTimeTo: (time:string) => {},
 })
 
 export default GlobalContext;

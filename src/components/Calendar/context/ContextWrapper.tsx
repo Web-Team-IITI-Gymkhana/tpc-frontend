@@ -28,11 +28,16 @@ function initEvents(){
 
 export default function ContextWrapper(props: { children: React.ReactNode }) {
     const[monthIndex,setMonthIndex] = useState(dayjs().month());
+    const[weekOffset,setWeekOffset] = useState(0);
+    const[dateOffset,setDateOffset]=useState(0);
+    const[Current_view,SetCurrent_view] = useState<string>("Month")
     const[showEventModal,setShowEventModal] = useState(false);
     const [daySelected, setDaySelected] = useState(dayjs());
     const [selectedEvent, setSelectedEvent] = useState<selectedDayEvent | null>(null);
     const[labels,setLabels] = useState<updateLabelAction[]>([])
     const [savedEvents,dispatchCallEvents] = useReducer(savedEventsReducer,[],initEvents);
+    const [timeFrom, setTimeFrom] = useState<string|null>(selectedEvent ? selectedEvent.timeFrom : "from");
+    const [timeTo, setTimeTo] = useState<string|null>(selectedEvent ? selectedEvent.timeTo : "to");
 
     const filteredEvents = useMemo(() => {
       return savedEvents.filter((evt:any) => 
@@ -76,6 +81,12 @@ export default function ContextWrapper(props: { children: React.ReactNode }) {
      value={{
        monthIndex, 
        setMonthIndex, 
+       weekOffset,
+       setWeekOffset,
+       dateOffset,
+       setDateOffset,
+       Current_view,
+       SetCurrent_view,
        showEventModal,
        setShowEventModal,
        daySelected,
@@ -88,6 +99,10 @@ export default function ContextWrapper(props: { children: React.ReactNode }) {
        setLabels,
        updateLabel,
        filteredEvents,
+       timeFrom,
+       setTimeFrom,
+       timeTo,
+       setTimeTo,
 
        }} >
         {props.children}

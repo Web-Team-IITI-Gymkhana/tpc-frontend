@@ -3,9 +3,6 @@ import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
 import { selectedDayEvent } from '../context/GlobalContext';
 
-
-let colours = "bg-green-300 bg-red-300 bg-indigo-300 bg-gray-300 bg-blue-300 bg-purple-300 hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400" 
-
 interface Event{
   day:any,
   rowIdx:any,
@@ -29,6 +26,7 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
     :'';
   }
   function getCurrentMonth(){
+    
     return parseInt(day.format("MM"),10) === monthIndex+1
     ? ''
     :'opacity-50';
@@ -41,18 +39,25 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
 
 
   return (
-    <div className='border border-gray-300 flex flex-col'>
+    <div 
+    className='border border-gray-300 flex flex-col'>
       <header className='flex flex-col items-center'>
         {rowIdx ===0 && (<p className='text-sm mt-1 '>{day.format('ddd').toUpperCase()}</p>)}
           
-          <p className={`text-sm p-1 my-1 font-semibold text-center ${getCurrentDay()} ${getCurrentMonth()}`}>
+          <p 
+          onClick={() => {
+            setShowEventModal(true);
+            setDaySelected(day);
+          }}
+          className={`text-sm p-1 my-1 font-semibold text-center hover:cursor-pointer hover:bg-slate-300 hover:rounded-full hover:text-black ${getCurrentDay()} ${getCurrentMonth()}`}>
             {parseInt(day.format('DD'),10) === 1 ? day.format('MMM DD') :day.format('DD') }
           </p>
       </header>
-      <div onClick={() => {
-        setShowEventModal(true);
-        setDaySelected(day);
-      }} 
+      <div 
+        onClick={() => {
+          setShowEventModal(true);
+          setDaySelected(day);
+        }} 
         className='flex-1 cursor-pointer'>
           {dayEvents.map((evt:selectedDayEvent,idx) => (
             <div
@@ -63,6 +68,7 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
             </div>
           ))}
       </div>
+      
     </div>
   );
 }
