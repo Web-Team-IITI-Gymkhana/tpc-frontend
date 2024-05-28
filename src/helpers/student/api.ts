@@ -44,6 +44,20 @@ export const GetOnCampusOffers = async (accessToken: string | undefined) => {
     return json;
 };
 
+export const GetOffCampusOffers = async (accessToken: string | undefined) => {
+    if (!accessToken || accessToken === undefined) {
+      redirect();
+      return;
+    }
+    const res = await fetch(url("/student-view/offers/off-campus"), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const json = await res.json();
+    return json;
+};
+
 export const GetResumes = async (accessToken: string | undefined) => {
     if (!accessToken || accessToken === undefined) {
       redirect();

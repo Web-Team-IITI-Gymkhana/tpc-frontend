@@ -26,6 +26,25 @@ export interface OnCampusOffers {
     };
 }
 
+export interface OffCampusOffer {
+    id: string;
+    salary: number;
+    salaryPeriod: string;
+    metadata: string;
+    role: string;
+    status: string;
+    company: {
+      id: string;
+      name: string;
+      category: string;
+    };
+    season: {
+      id: string;
+      year: string;
+      type: string;
+    };
+}
+
 export interface Resume {
     id: string;
     filepath: string;
