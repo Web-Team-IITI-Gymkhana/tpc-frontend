@@ -17,9 +17,6 @@ import HorizontalTimeline from "@/components/HorizontalTimeline";
 import { Job, CustomEvent, EventData } from "@/helpers/student/types";
 import { GetJobById } from "@/helpers/student/api";
 
-
-interface Props {}
-
 function transformEvents(events: CustomEvent[]): EventData[] {
   // Get the current date
   const currentDate = new Date();

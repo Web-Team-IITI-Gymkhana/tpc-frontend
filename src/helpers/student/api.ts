@@ -71,3 +71,24 @@ export const GetResumes = async (accessToken: string | undefined) => {
     const json = await res.json();
     return json;
 };
+
+export const ApplyJob = async (accessToken: string | undefined, salaryId: string, resumeId: string) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  
+  const res = await fetch(url("/student-view/salaries"), {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify([{ salaryId, resumeId }]),
+  });
+
+  const status = res.status;
+  const json = await res.json();
+  
+  return { status, payload: json };
+};

@@ -9,7 +9,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 const LoginForm = () => {
   const [email, setemail] = useState<String | null>(null);
-  const [role, setrole] = useState<String | null>("STUDENT");
+  const [role, setrole] = useState<String | null>(null);
   const router = useRouter();
   return (
     <>

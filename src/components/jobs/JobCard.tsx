@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
 import { fetchJobSalary } from "@/helpers/api";
-import { cookies } from "next/headers";
 import { useState, useEffect } from 'react';
 import {JobDetails} from "@/dummyData/jobdetails"
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
-import { GetSalaryById } from "@/helpers/student/api";
+import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
+import Cookies from "js-cookie";
+import toast, { Toaster } from "react-hot-toast";
 interface Props {
   jobItem: OnCampusOffers;
   salaryId: string;
@@ -45,6 +46,17 @@ const JobCard = ({ jobItem, salaryId, resumes }: Props) => {
   const handleViewDetails = () => {
     setShowDescription(!showDescription);
   };
+
+  const handleApply = async () => {
+    console.log("handle Apply");
+    const data = await ApplyJob(Cookies.get("accessToken"),salaryId,selectedResume);
+    if(data.status===201){
+      toast.success("Applied Successfully");
+    }
+    else{
+      toast.error("Cannot Apply");
+    }
+  }
 
   const roundOff = (n: number) => {
     return Math.round((n + Number.EPSILON) * 100) / 100;
@@ -173,7 +185,7 @@ const JobCard = ({ jobItem, salaryId, resumes }: Props) => {
               </ul>
             </div>            
             <div className="flex justify-between my-3">
-              <Button disabled={!selectedResume}>
+              <Button disabled={!selectedResume} onClick={handleApply}>
                 Apply
               </Button>
               <Select value={selectedResume || ''} onValueChange={handleResumeChange}>
@@ -183,7 +195,7 @@ const JobCard = ({ jobItem, salaryId, resumes }: Props) => {
                 <SelectContent>
                   <SelectGroup>
                     {resumes && resumes.map((resume) => (
-                      <SelectItem key={resume.id} value={resume.filepath}>
+                      <SelectItem key={resume.id} value={resume.id}>
                         {resume.verified ? (
                           <span style={{ display: 'flex', alignItems: 'center' }}>
                             {resume.filepath} 
