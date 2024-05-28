@@ -5,16 +5,16 @@ const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
 
-export const GetSalariesArrayByJobId = async (jobId: string) => {
+export const GetJobById = async (jobId: string) => {
     try {
         const res = await fetch(url(`/jobs/${jobId}`));
         if (!res.ok) {
-        throw new Error("Failed to fetch salary data");
+        throw new Error("Failed to fetch Job data");
         }
         const data = await res.json();
         return data;
     } catch (error) {
-        console.error("Error fetching salary data:", error);
+        console.error("Error fetching Job data:", error);
     }
 };
 export const GetSalaryById = async (salaryId: string) => {

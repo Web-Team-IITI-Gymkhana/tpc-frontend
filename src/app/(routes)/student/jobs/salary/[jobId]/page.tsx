@@ -12,7 +12,7 @@ import {
 import { SampleJobData } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
 import SalaryCard from "@/components/jobs/SalaryCard";
-import { GetSalariesArrayByJobId } from "@/helpers/student/api";
+import { GetJobById } from "@/helpers/student/api";
 
 interface Props {}
 interface Salary {
@@ -37,7 +37,7 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
 
   useEffect(() => {
     const fetchSalaryData = async () => {
-      const data = await GetSalariesArrayByJobId(params.jobId);
+      const data = await GetJobById(params.jobId);
       setSalaryData(data.salaries);
     };
 

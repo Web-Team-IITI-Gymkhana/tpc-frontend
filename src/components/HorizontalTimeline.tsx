@@ -535,7 +535,7 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
                                 </HoverCardTrigger>
                                 <HoverCardContent
                                   className="bg-white w-[10vw] px-4 py-5"
-                                  style={{ marginLeft: `${index==0?(270/eventsData.length):(index)* (550 / eventsData.length)}%` }}
+                                  style={{ marginLeft: `${index==0?(index * (720 / eventsData.length)):(index)* (550 / eventsData.length)}%` }}
                                 >
                                   {event.date}
                                   <Separator className="my-2" />

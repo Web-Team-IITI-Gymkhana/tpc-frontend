@@ -46,8 +46,8 @@ const Sidebar = () => {
   // const isAdmin = true;
   const isRecruiter = user?.userType === "RECRUITER"
   // const isRecruiter = true;
-  const isStudent = user?.userType === "STUDENT"
-  // const isStudent = true;
+  // const isStudent = user?.userType === "STUDENT"
+  const isStudent = true;
   const userRole = user?.userType?.toLowerCase();
 
   return (
