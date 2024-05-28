@@ -12,6 +12,7 @@ import {
 import { SampleJobData } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
 import SalaryCard from "@/components/jobs/SalaryCard";
+import { GetSalariesArrayByJobId } from "@/helpers/student/api";
 
 interface Props {}
 interface Salary {
@@ -31,24 +32,13 @@ interface Salary {
   otherCompensations: number;
 }
 
-const SalaryPage = ({ params }: { params: { jobId: String } }) => {
+const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   const [salaryData, setSalaryData] = useState<Salary[]>([]);
 
   useEffect(() => {
     const fetchSalaryData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/v1/jobs/${params.jobId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch salary data");
-        }
-        const data = await response.json();
-        console.log(data);
-        setSalaryData(data.salaries);
-      } catch (error) {
-        console.error("Error fetching salary data:", error);
-      }
+      const data = await GetSalariesArrayByJobId(params.jobId);
+      setSalaryData(data.salaries);
     };
 
     fetchSalaryData();

@@ -5,44 +5,11 @@ import { SampleJobData } from "@/dummyData/job";
 import InterviewExperiences from "@/app/(routes)/student/interviewExperiences/page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Cookies from "js-cookie";
+import { GetOnCampusOffers, GetResumes } from "@/helpers/student/api";
+import { OnCampusOffers, Resume } from "@/helpers/student/types";
 
 interface Props {}
-
-interface Job {
-  id: string;
-  seasonId: string;
-  recruiterId: string;
-  companyId: string;
-  role: string;
-  active: boolean;
-  currentStatus: string;
-  season: {
-    id: string;
-    year: string;
-    type: string;
-  };
-  company: {
-    id: string;
-    name: string;
-  };
-}
-
-
-const salaryData = {
-  salary: "Rs 40LPA",
-};
-const resumes = [
-  {
-    id:"1",
-    filepath: "Resume 1",
-    verified: true,
-  },
-  {
-    id:"2",
-    filepath: "Resume 2",
-    verified: false,
-  },
-];
 
 const StudentPage = ({
   params,
@@ -52,16 +19,17 @@ const StudentPage = ({
   };
 }) => {
 
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);
+  const [resumes, setResumes] = useState<Resume[]>([])
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const response = await fetch("http://localhost:5000/api/v1/jobs");
-        if (!response.ok) {
-          throw new Error("Failed to fetch jobs");
-        }
-        const data = await response.json();
-        setJobs(data);
+      const oco = await GetOnCampusOffers(Cookies.get("accessToken"));
+      setOnCampusOffers(oco);
+
+      const res = await GetResumes(Cookies.get("accessToken"));
+      setResumes(res);
+
     };
 
     fetchJobs();
@@ -73,11 +41,15 @@ const StudentPage = ({
       <div className="my-3 mx-5 font-bold text-xl">
         <h1>Apply</h1>
       </div>
-      {jobs.map((job) => (
-        <div key={job.id} className="my-3">
-          <JobCard jobItem={job} salary={salaryData} resumes={resumes}/>
+      {onCampusOffers.length===0? (
+        <div>
+          No Jobs
         </div>
-      ))}
+      ): (onCampusOffers.map((job)=>(
+        <div key={job.id} className="my-3">
+          <JobCard jobItem={job} salaryId={job.salary.id} resumes={resumes}/>
+        </div>
+      )))}
     </div>
   );
 };

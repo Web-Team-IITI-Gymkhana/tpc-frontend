@@ -11,86 +11,8 @@ import {
 } from "@/components/ui/table";
 import { SampleJobData } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
-
-interface Props {}
-interface Salary {
-  id: string;
-  baseSalary: number;
-  totalCTC: number;
-  takeHomeSalary: number;
-  grossSalary: number;
-  otherCompensations: number;
-  salaryPeriod: string;
-  job: {
-    id: string;
-    role: string;
-    company: {
-      id: string;
-      name: string;
-    };
-    season: {
-      id: string;
-      year: string;
-      type: string; // Assuming "INTERN" is a possible value, you might want to use a union type if there are more types.
-    };
-    salaries: {
-      id: string;
-      totalCTC: number;
-      salaryPeriod: string;
-      genders: string[]; // Assuming "MALE" is a possible value, you might want to use a union type if there are more genders.
-      programs: string[];
-      facultyApprovals: string[];
-      categories: string[]; // Assuming "GENERAL" is a possible value, you might want to use a union type if there are more categories.
-      minCPI: number;
-      tenthMarks: number;
-      twelthMarks: number;
-    }[];
-  };
-  others: string;
-  genders: string[]; // Assuming "MALE" is a possible value, you might want to use a union type if there are more genders.
-  programs: string[];
-  facultyApprovals: string[];
-  categories: string[]; // Assuming "GENERAL" is a possible value, you might want to use a union type if there are more categories.
-  minCPI: number;
-  tenthMarks: number;
-  twelthMarks: number;
-  facultyApprovalRequests: {
-    id: string;
-    status: string; // Assuming "APPROVED" is a possible value, you might want to use a union type if there are more statuses.
-    remarks: string;
-    faculty: {
-      id: string;
-      department: string; // Assuming "Astronomy, Astrophysics and Space Engineering" is a possible value, you might want to use a union type if there are more departments.
-      user: {
-        id: string;
-        name: string;
-        email: string;
-        contact: string;
-      };
-    };
-  }[];
-  onCampusOffers: {
-    id: string;
-    status: string;
-    student: {
-      id: string;
-      rollNo: string;
-      user: {
-        id: string;
-        name: string;
-        email: string;
-        contact: string;
-      };
-      program: {
-        id: string;
-        branch: string;
-        course: string;
-        year: string;
-        department: string;
-      };
-    };
-  }[];
-}
+import { Salary } from "@/helpers/student/types";
+import { GetSalaryById } from "@/helpers/student/api";
 
 interface Props{
     salaryId: string;
@@ -101,19 +23,8 @@ export default function SalaryCard({salaryId}: Props) {
 
     useEffect(() => {
       const fetchSalaryData = async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:5000/api/v1/salaries/${salaryId}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch salary data");
-          }
-          const data = await response.json();
-          console.log(data);
-          setSalaryData(data);
-        } catch (error) {
-          console.error("Error fetching salary data:", error);
-        }
+        const data = await GetSalaryById(salaryId);
+        setSalaryData(data);
       };
   
       fetchSalaryData();
@@ -128,16 +39,26 @@ export default function SalaryCard({salaryId}: Props) {
       return Math.round((n + Number.EPSILON) * 100) / 100;
     };
   
-    const INR = (n: number) => {
-      if (n < 100000) return `₹${n}`;
-      if (n < 10000000)
-        return `₹${roundOff((n + Number.EPSILON) / 100000)} Lakhs`;
-      else return `₹${roundOff((n + Number.EPSILON) / 10000000)} Crores`;
-    };
+    function formatNumber(num: number): string {
+      if (num >= 1e7) {
+        // Convert to Crores
+        const crores = num / 1e7;
+        return `₹${crores.toFixed(2)} Crores`;
+      } else if (num >= 1e5) {
+        // Convert to Lakhs
+        const lakhs = num / 1e5;
+        return `₹${lakhs.toFixed(2)} Lakhs`;
+      } else {
+        return `₹${num.toString()}`;
+      }
+    }
   
     return (
       <div id="main-container" className="">        
-        <div className="bg-white text-black p-5 rounded-xl">
+        {salaryData===null? (
+          <div>No Data</div>
+        ): (
+          <div className="bg-white text-black p-5 rounded-xl">
           <div
             className="font-semibold text-md"
             onClick={handleViewDetails}
@@ -146,7 +67,7 @@ export default function SalaryCard({salaryId}: Props) {
             {salaryData?.job.company.name}
             <div className="">
               <div className="text-gray-500 font-semibold my-2 text-sm">
-                CTC Offered: {INR(salaryData?.totalCTC)}
+                CTC Offered: {formatNumber(salaryData?.totalCTC)}
               </div>
             </div>
           </div>
@@ -166,27 +87,27 @@ export default function SalaryCard({salaryId}: Props) {
             </div>
             <div className="md:ml-2 lg:ml-6">
               <div className="text-gray-500 font-semibold my-2">Base Salary</div>
-              <div>{INR(salaryData?.baseSalary)}</div>
+              <div>{formatNumber(salaryData?.baseSalary)}</div>
             </div>
             <div className="">
               <div className="text-gray-500 font-semibold my-2">CTC</div>{" "}
-              <div>{INR(salaryData?.totalCTC)}</div>
+              <div>{formatNumber(salaryData?.totalCTC)}</div>
             </div>
             <div className="">
               <div className="text-gray-500 font-semibold my-2">
                 Take Home Salary
               </div>{" "}
-              <div>{INR(salaryData?.takeHomeSalary)}</div>
+              <div>{formatNumber(salaryData?.takeHomeSalary)}</div>
             </div>
             <div className="">
               <div className="text-gray-500 font-semibold my-2">Gross Salary</div>{" "}
-              <div>{INR(salaryData?.grossSalary)}</div>
+              <div>{formatNumber(salaryData?.grossSalary)}</div>
             </div>
             <div className="">
               <div className="text-gray-500 font-semibold my-2">
                 Other Compensations
               </div>{" "}
-              <div>{INR(salaryData?.otherCompensations)}</div>
+              <div>{formatNumber(salaryData?.otherCompensations)}</div>
             </div>
             <div className="">
               <div className="text-gray-500 font-semibold my-2">Period</div>{" "}
@@ -280,6 +201,7 @@ export default function SalaryCard({salaryId}: Props) {
             </>
           )}
         </div>
+        )}
       </div>
     );
 }

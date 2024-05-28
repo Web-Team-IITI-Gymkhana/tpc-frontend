@@ -3,11 +3,9 @@ import Link from "next/link";
 import { Separator } from "../ui/separator";
 import { fetchJobSalary } from "@/helpers/api";
 import { cookies } from "next/headers";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {JobDetails} from "@/dummyData/jobdetails"
 import { Button } from "@/components/ui/button";
-
-// import { Pointer } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -17,89 +15,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { StudentDropDown } from "../SideBar/DropDowns/StudentDropDown";
-interface Event {
-  id: string;
-  name: string;
-  date: string;
-}
-
-interface Coordinator {
-  id: string;
-  name: string;
-}
-
-interface FacultyCoordinatorApproval {
-  id: string;
-  facultyId: string;
-  approvalStatus: string;
-}
-
-interface OnCampusOffer {
-  id: string;
-  name: string;
-  offerStatus: string;
-}
-
-interface RoleOffered {
-  id: string;
-  roleName: string;
-}
-
-// interface Props {
-//   jobItem: {
-//     id: string,
-//     seasonId: string,
-//     "companyId": string,
-//     "role": string,
-//     "recruiterId": string,
-//     "active": boolean,
-//     "eligibility": any,
-//     "currentStatusId": string,
-//     "metadata": any,
-//     "createdAt": string,
-//     "updatedAt": string
-//   };
-//   salary: null |  {
-//     salary: string,
-//     salaryPeriod: string,
-//     metadata: any,
-//     constraints: any
-//   }
-// }
+import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
+import { GetSalaryById } from "@/helpers/student/api";
 interface Props {
-  jobItem: {
-    id: string;
-    seasonId: string;
-    recruiterId: string;
-    companyId: string;
-    role: string;
-    active: boolean;
-    currentStatus: string;
-    season: {
-      id: string;
-      year: string;
-      type: string;
-    };
-    company: {
-      id: string;
-      name: string;
-    };
-  };
-  salary: null |  {
-    salary: string,
-  }
-  resumes: null | {
-    id: string;
-    filepath: string;
-    verified: boolean;
-  }[];
+  jobItem: OnCampusOffers;
+  salaryId: string;
+  resumes: Resume[];
 }
 
-const JobCard = ({ jobItem, salary, resumes }: Props) => {  
-  // const salary = await fetchJobSalary(cookies()?.get('accessToken')?.value, jobItem.id)
-  // console.log(salary)
+const JobCard = ({ jobItem, salaryId, resumes }: Props) => {
+  const [salary, setSalary] = useState<Salary|null>(null);
 
+  useEffect(() => {
+    const fetchSalary = async () => {
+      const data = await GetSalaryById(salaryId);
+      setSalary(data);
+      console.log(data);
+    };
+
+    fetchSalary();
+    // setJobs(Jobs);
+  }, [salaryId]);
   const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [showDescription, setShowDescription] = useState<boolean>(false);
 
@@ -110,11 +46,32 @@ const JobCard = ({ jobItem, salary, resumes }: Props) => {
     setShowDescription(!showDescription);
   };
 
+  const roundOff = (n: number) => {
+    return Math.round((n + Number.EPSILON) * 100) / 100;
+  };
+
+  function formatNumber(num: number): string {
+    if (num >= 1e7) {
+      // Convert to Crores
+      const crores = num / 1e7;
+      return `₹${crores.toFixed(2)} Crores`;
+    } else if (num >= 1e5) {
+      // Convert to Lakhs
+      const lakhs = num / 1e5;
+      return `₹${lakhs.toFixed(2)} Lakhs`;
+    } else {
+      return `₹${num.toString()}`;
+    }
+  }
+
   return (
     <div className="">     
-      <div className="rounded-xl bg-white text-black p-5">
+      {salary===null? (
+        <div>No Data</div>
+      ): (
+        <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
-          {jobItem.company.name}
+          {jobItem.salary.job.company.name}
         </div>
         <div className="my-4">
           <Separator />
@@ -122,23 +79,23 @@ const JobCard = ({ jobItem, salary, resumes }: Props) => {
         <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2" onClick={handleViewDetails} style={{cursor: "pointer"}}>
           <div>
             <div className="text-gray-500 font-semibold my-2">Role</div>{" "}
-            <div>{jobItem.role}</div>
+            <div>{jobItem.salary.job.role}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Duration</div>{" "}
-            <div>3 Months</div>
+            <div className="text-gray-500 font-semibold my-2">Period</div>{" "}
+            <div>{salary.salaryPeriod}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Stipend</div>{" "}
-            <div>{salary?.salary}</div>
+            <div className="text-gray-500 font-semibold my-2">CTC</div>{" "}
+            <div>{formatNumber(salary.totalCTC)}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Apply By</div>{" "}
-            <div>1st Jan 2024</div>
+            <div className="text-gray-500 font-semibold my-2">Base Salary</div>{" "}
+            <div>{formatNumber(salary.baseSalary)}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Eligibility CPI</div>{" "}
-            <div>7.5</div>
+            <div className="text-gray-500 font-semibold my-2">Minimum CPI</div>{" "}
+            <div>{roundOff(salary.minCPI)}</div>
           </div>
         </div>        
         {showDescription && (
@@ -150,7 +107,7 @@ const JobCard = ({ jobItem, salary, resumes }: Props) => {
               <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">About The Work</h1>
                 <div className="text-sm my-3">
-                  <Link href={`http://localhost:3000/student/jobs/${jobItem.id}`} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
+                  <Link href={`http://localhost:3000/student/jobs/${jobItem.salary.job.id}`} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
                     View Details {'>'}
                   </Link>
                 </div>
@@ -245,6 +202,7 @@ const JobCard = ({ jobItem, salary, resumes }: Props) => {
           </div>          
         )}
       </div>
+      )}
     </div>
   );
 };
