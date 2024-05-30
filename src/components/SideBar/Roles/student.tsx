@@ -10,29 +10,6 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 
 const StudentDashboard = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-  function getStudentIdFromCookie(): string | null {
-    // Get the 'user' cookie
-    const userCookie = Cookies.get('user');
-    
-    if (userCookie) {
-      try {
-        // Parse the JSON string to an object
-        const userObject = JSON.parse(userCookie);
-        
-        // Access the studentId property
-        return userObject.studentId;
-      } catch (error) {
-        console.error('Error parsing user cookie:', error);
-        return null;
-      }
-    }
-    
-    // Return null if the cookie doesn't exist or an error occurred
-    return null;
-  }
-  
-  // Example usage
-  const studentId = getStudentIdFromCookie();
 
   const context = useContext(ToggleContext);
   return (
@@ -73,7 +50,7 @@ const StudentDashboard = () => {
               </div>
             </Link>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <Link href={`/student/resumes/${studentId}`}>
+              <Link href={`/student/resumes`}>
                 <div className="flex justify-start gap-[1vw]">
                   <div className="w-[2vw]">
                     <svg
@@ -107,7 +84,7 @@ const StudentDashboard = () => {
               </Link>
               {/* <CompanyDropDown userRole={userRole} /> */}
             </div>
-            <Link href={`/student/${studentId}`}>
+            <Link href={`/student/onCampus`}>
               <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
                 <div className="no-wrap flex justify-start gap-[1vw]">
                   <div className="w-[2vw]">
@@ -142,7 +119,7 @@ const StudentDashboard = () => {
                 {/* <JobDropDown userRole={userRole} /> */}
               </div>
             </Link>
-            <Link href={`/student/offCampus/${studentId}`}>
+            <Link href={`/student/offCampus`}>
               <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
                 <div className="flex justify-start gap-[1vw]">
                   <div className="w-[2vw]">

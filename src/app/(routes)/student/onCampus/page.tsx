@@ -11,13 +11,7 @@ import { OnCampusOffers, Resume } from "@/helpers/student/types";
 
 interface Props {}
 
-const StudentPage = ({
-  params,
-}: {
-  params: {
-    studentId: String;
-  };
-}) => {
+const StudentPage = () => {
 
   const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);
   const [resumes, setResumes] = useState<Resume[]>([])

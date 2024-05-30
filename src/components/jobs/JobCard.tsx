@@ -48,7 +48,6 @@ const JobCard = ({ jobItem, salaryId, resumes }: Props) => {
   };
 
   const handleApply = async () => {
-    console.log("handle Apply");
     const data = await ApplyJob(Cookies.get("accessToken"),salaryId,selectedResume);
     if(data.status===201){
       toast.success("Applied Successfully");

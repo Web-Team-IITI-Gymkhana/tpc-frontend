@@ -3,17 +3,11 @@ import React from "react";
 
 interface Props {}
 
-const ResumePage = ({
-  params,
-}: {
-  params: {
-    studentId: String;
-  };
-}) => {
+const ResumePage = () => {
   return (
     <div>
       <h1>Resume Page</h1>
-      <p>Student ID: {params.studentId}</p>
+      <p>Student ID</p>
     </div>
   );
 };

@@ -42,7 +42,7 @@ const InterviewExperiencesPage = () => {
             >
                 {interviewExpData.map((e,i)=>(
                     
-                        <AccordionItem value={String(i+1)} 
+                        <AccordionItem key={i} value={String(i+1)} 
                             className="py-6 px-4 bg-white my-3 rounded-xl hover:drop-shadow-[0_0px_10px_rgba(0,0,0,0.25)] ">
                             <AccordionTrigger
                                 className="font-semibold px-1 flex"

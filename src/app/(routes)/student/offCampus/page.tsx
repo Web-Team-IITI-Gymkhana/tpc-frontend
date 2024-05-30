@@ -7,13 +7,7 @@ import Cookies from "js-cookie";
 
 interface Props {}
 
-const OffCampusPage = ({
-  params,
-}: {
-  params: {
-    studentId: String;
-  };
-}) => {
+const OffCampusPage = () => {
 
   const [offCampusOffers, setOffCampusOffers] = useState<OffCampusOffer[]>([]);
 
