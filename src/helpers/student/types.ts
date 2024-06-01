@@ -265,3 +265,40 @@ export interface EventData {
     status: string;
     title: string;
 }
+
+export interface StudentDataType {
+  id: string;
+  rollNo: string;
+  category: string;
+  gender: string;
+  cpi: number;
+  tenthMarks: number;
+  twelthMarks: number;
+  user: {
+      id: string;
+      email: string;
+      name: string;
+      contact: string;
+  };
+  program: {
+      id: string;
+      course: string;
+      branch: string;
+      department: string;
+      year: string;
+  };
+  penalties: {
+      id: string;
+      penalty: number;
+      reason: string;
+  }[];
+  registrations: {
+      id: string;
+      registered: boolean;
+      season: {
+          id: string;
+          year: string;
+          type: string;
+      };
+  }[];
+}
