@@ -29,7 +29,7 @@ const ProfilePage = () => {
         setStudentData(data);
 
         if(data){
-            const total = data.penalties.reduce((sum, penalty) => sum + penalty.penalty, 0);
+            const total = data.penalties.reduce((sum: number, penalty) => sum + penalty.penalty, 0);
             setTotalPenalty(total);
         }
     }

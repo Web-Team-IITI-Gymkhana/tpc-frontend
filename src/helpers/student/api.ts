@@ -107,3 +107,48 @@ export const ApplyJob = async (accessToken: string | undefined, salaryId: string
   
   return { status, payload: json };
 };
+
+export const uploadResume = async (formData: FormData, accessToken: string) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+
+  const response = await fetch(url('/student-view'), {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  const status = response.status;
+  
+  return status;
+};
+
+export const deleteResume = async (filename: string, accessToken: string) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+
+  const response = await fetch(url(`/student-view?filename=${filename}`), {
+    method: 'DELETE',
+    headers: {
+      'accept': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  return response.status;
+};
