@@ -493,7 +493,7 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
       // Calculate the width of the filling line
       fillingLineWidth = selectedIndex !== -1 ? `${(selectedIndex + 1) * (180 / eventsData.length)}px` : "0";
       mul= selectedIndex * (720/eventsData.length)
-      mul+=38;
+      mul+=39;
       mul/=len;
       seta('scaleX('+mul+')');
       
@@ -537,7 +537,7 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
                                   className="bg-white w-[10vw] px-4 py-5"
                                   style={{ marginLeft: `${index==0?(index * (720 / eventsData.length)):(index)* (550 / eventsData.length)}%` }}
                                 >
-                                  {event.date}
+                                  {event.title}
                                   <Separator className="my-2" />
                                   {event.status}
                                 </HoverCardContent>

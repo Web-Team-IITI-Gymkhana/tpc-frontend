@@ -14,10 +14,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { fetchEachJob } from "@/helpers/api";
 import HorizontalTimeline from "@/components/HorizontalTimeline";
-import { Job, CustomEvent, EventData } from "@/helpers/student/types";
+import { Job, CustomEvent, EventData, CalenderEvent } from "@/helpers/student/types";
 import { GetJobById } from "@/helpers/student/api";
 
 function transformEvents(events: CustomEvent[]): EventData[] {
+  
   // Get the current date
   const currentDate = new Date();
 
@@ -54,6 +55,23 @@ function transformEvents(events: CustomEvent[]): EventData[] {
   return result;
 }
 
+const transformEventsCalender = (jobData: Job): CalenderEvent[] => {
+  return jobData.events.map(event => ({
+    day: new Date(event.startDateTime).setHours(0, 0, 0, 0), // startDate at midnight
+    description: event.metadata,
+    id: event.id,
+    label: "red", // assuming a fixed label as the original data doesn't provide this
+    timeFrom: event.startDateTime,
+    timeTo: event.endDateTime,
+    title: jobData.companyDetailsFilled.name,
+  }));
+};
+
+const storeCalenderEvents = (jobData: Job) => {
+  const transformedEvents = transformEventsCalender(jobData);
+  localStorage.setItem('savedEvents', JSON.stringify(transformedEvents));
+};
+
 function formatNumber(num: number): string {
   if (num >= 1000000000) {
       return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
@@ -80,6 +98,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
     const fetchJobData = async () => {
       const data = await GetJobById(params.jobId);
       setJobData(data);
+      storeCalenderEvents(data);
     };
 
     fetchJobData();
@@ -195,7 +214,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
                 </div>
                 <div>
                     <Button>
-                      <a href={""} target="_blank" rel="noopener noreferrer">Events</a>
+                      <a href={"/events"} target="_blank" rel="noopener noreferrer">Events</a>
                     </Button>
                 </div>
               </div>

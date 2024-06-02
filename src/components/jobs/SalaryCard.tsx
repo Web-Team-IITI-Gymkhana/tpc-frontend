@@ -48,6 +48,10 @@ export default function SalaryCard({salaryId}: Props) {
         // Convert to Lakhs
         const lakhs = num / 1e5;
         return `₹${lakhs.toFixed(2)} Lakhs`;
+      } else if (num >= 1e3) {
+        // Convert to Lakhs
+        const lakhs = num / 1e3;
+        return `₹${lakhs.toFixed(2)}K`;
       } else {
         return `₹${num.toString()}`;
       }
@@ -143,28 +147,36 @@ export default function SalaryCard({salaryId}: Props) {
               <div id="gender" className="my-4 mb-8">
                 <div className="font-semibold text-md mx-2 my-2">Gender</div>
                 <div className="flex flex-wrap !text-sm">
-                  {salaryData?.genders.map((g, i) => (
-                    <div
-                      key={i}
-                      className="border px-4 py-2 bg-gray-100 text-gray-600 font-medium rounded-full mx-2"
-                    >
-                      {g}
-                    </div>
-                  ))}
+                  {salaryData.genders?.length > 0 && (
+                    <>
+                      {salaryData?.genders.map((g, i) => (
+                        <div
+                          key={i}
+                          className="border px-4 py-2 bg-gray-100 text-gray-600 font-medium rounded-full mx-2"
+                        >
+                          {g}
+                        </div>
+                      ))}
+                    </>
+                  )}
                 </div>
               </div>
   
               <div id="categories" className="my-4 mb-8">
                 <div className="font-semibold text-md mx-2 my-3">Categories</div>
                 <div className="flex flex-wrap !text-sm">
-                  {salaryData?.categories.map((c, i) => (
-                    <div
-                      key={i}
-                      className="border px-4 py-1 bg-gray-100 text-gray-600 font-medium rounded-full mx-2"
-                    >
-                      {c}
-                    </div>
-                  ))}
+                {salaryData.categories?.length > 0 && (
+                  <>
+                    {salaryData?.categories.map((c, i) => (
+                      <div
+                        key={i}
+                        className="border px-4 py-1 bg-gray-100 text-gray-600 font-medium rounded-full mx-2"
+                      >
+                        {c}
+                      </div>
+                    ))}
+                  </>
+                )}
                 </div>
               </div>
   

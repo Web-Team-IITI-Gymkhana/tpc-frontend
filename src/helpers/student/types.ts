@@ -266,6 +266,16 @@ export interface EventData {
     title: string;
 }
 
+export interface CalenderEvent {
+  day: number;
+  description: string;
+  id: string;
+  label: string;
+  timeFrom: string;
+  timeTo: string;
+  title: string;
+}
+
 export interface StudentDataType {
   id: string;
   rollNo: string;
