@@ -124,7 +124,7 @@ const JAFPage = ({
   return (
     <>
       {jafs.map((jaf,index) => (
-        <div className="my-3">
+        <div className="my-3" key={index}>
           <JafCard JAF={jaf}/>
         </div>
       ))}
