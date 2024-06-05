@@ -17,6 +17,10 @@ export let time_list = generateTimeList();
 
 console.log(time_list)
 
+let colors = "border-green-400 border-red-400 border-indigo-400 border-gray-400 border-blue-400 border-purple-400"
+let hover_colors = "hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400"
+let text_colors = "text-green-400 text--red-400 text-indigo-400 text-gray-400 text-blue-300 text-purple-400"
+
 
 interface Event{
   day:any,
@@ -75,7 +79,7 @@ export default function WeekDay({ day }: { day: any }) {
                   <div
                     onClick={() => setSelectedEvent(evt)}
                     key={idx}
-                    className={`bg-${evt.label}-300 border border-gray-600 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                    className={`border border-${evt.label}-400 border-2 hover:bg-${evt.label}-400 hover:text-white cursor-pointer p-1 mx-2 text-${evt.label}-400 text-xs rounded mb-1 truncate`}
                   >
                     {evt.title}
                   </div>

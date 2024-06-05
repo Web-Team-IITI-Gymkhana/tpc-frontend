@@ -2,7 +2,8 @@ import React, { useContext, useState, MouseEvent,useEffect } from 'react';
 import GlobalContext from '../context/GlobalContext';
 import { time_list } from './WeekDay';
 
-const labelsClasses: string[] = ["green", "red", "indigo", "gray", "blue", "purple"];
+const labelsClasses = ["green", "red", "indigo", "gray", "blue", "purple"];
+let colors = "bg-green-500 bg-red-500 bg-indigo-500 bg-gray-500 bg-blue-500 bg-purple-500"
 
 interface CalendarEvent {
     title: string;

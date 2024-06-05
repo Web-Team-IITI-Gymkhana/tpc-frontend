@@ -8,6 +8,8 @@ interface Event{
   rowIdx:any,
 }
 
+let colors = "bg-green-300 bg-red-300 bg-indigo-300 bg-gray-300 bg-blue-300 bg-purple-300"
+let hover_colors = "hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400"
 
 
 export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
@@ -63,7 +65,7 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
             <div
             onClick={() => setSelectedEvent(evt)}
             key={idx}
-            className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-sm rounded mb-1 truncate`}>
+            className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 ${getCurrentMonth()} event_block cursor-pointer p-1 mx-2 text-gray-600 text-sm rounded mb-1 truncate`}>
               {evt.title}
             </div>
           ))}
