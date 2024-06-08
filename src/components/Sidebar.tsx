@@ -15,6 +15,7 @@ import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
+import { getCookies, setCookie, deleteCookie, getCookie } from 'cookies-next';
 
 interface Framework {
   value: string;
@@ -46,9 +47,40 @@ const Sidebar = () => {
   // const isAdmin = true;
   const isRecruiter = user?.userType === "RECRUITER"
   // const isRecruiter = true;
-  const isStudent = user?.userType === "STUDENT"
+  let isStudent = user?.userType === "STUDENT"
   // const isStudent = true;
   const userRole = user?.userType?.toLowerCase();
+
+  isStudent = true;
+  useEffect(()=>{
+
+    if(isStudent){
+    setCookie('isStudent',true);
+    setCookie('isRecruiter',false);
+    setCookie('isAdmin',false);
+    setCookie('isRecruiter',false);
+    setCookie('isFaculty',false);
+  }
+  else if(isAdmin){
+    setCookie('isStudent',false);
+    setCookie('isRecruiter',false);
+    setCookie('isAdmin',true);
+    setCookie('isRecruiter',false);
+    setCookie('isFaculty',false);
+  }
+  else if(isRecruiter){
+    setCookie('isStudent',false);
+    setCookie('isRecruiter',false);
+    setCookie('isAdmin',false);
+    setCookie('isRecruiter',true);
+    setCookie('isFaculty',false);
+  }
+
+  },[isAdmin,isRecruiter,isStudent]);
+
+
+
+
 
   return (
     <motion.div
