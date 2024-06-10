@@ -21,7 +21,7 @@ function savedEventsReducer(state:any,{type,payload}:DispatchCallEventsAction){
 }
 
 function initEvents(){
-  const storageEvents = localStorage.getItem('savedEvents')
+  const storageEvents = typeof window!="undefined"?localStorage.getItem('savedEvents'):null
   const parsedEvents = storageEvents ? JSON.parse(storageEvents) : []
   return parsedEvents
 }
