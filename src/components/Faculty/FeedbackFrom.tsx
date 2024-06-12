@@ -139,57 +139,67 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
         placeholder="Write Your Feedback Here"
         name="feedback"
         rows={4}
-        className="mb-3"
+        className="mb-3 w-full"
         id="feedback"
         value={feedbackText}
         onChange={(e) => setFeedbackText(e.target.value)}
       />
-      <Dialog>
-        <DialogTrigger>
-          {isClient ? (
-            <AcceptButton finalButton={false}></AcceptButton>
-          ) : (
-            <div>none</div>
-          )}
-        </DialogTrigger>
-        <DialogContent className="text-black">
-          Are you sure to Accept the Request?
-          <DialogClose>
-            {isClient ? (
-              <AcceptButton
-                rows={checkedRows}
-                remarks={feedbackText}
-                finalButton
-              ></AcceptButton>
-            ) : (
-              <div>none</div>
-            )}
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
-      <Dialog>
-        <DialogTrigger>
-          {isClient ? (
-            <RejectButton finalButton={false}></RejectButton>
-          ) : (
-            <div>none</div>
-          )}
-        </DialogTrigger>
-        <DialogContent className="text-black">
-          Are you sure to Reject the Request?
-          <DialogClose>
-            {isClient ? (
-              <RejectButton
-                rows={checkedRows}
-                remarks={feedbackText}
-                finalButton
-              ></RejectButton>
-            ) : (
-              <div>none</div>
-            )}
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
+      <div className="flex flex-row">
+        <Dialog>
+          <DialogTrigger asChild>
+            <div>
+              {isClient ? (
+                <AcceptButton finalButton={false} />
+              ) : (
+                <div>none</div>
+              )}
+            </div>
+          </DialogTrigger>
+          <DialogContent className="text-black">
+            Are you sure to Accept the Request?
+            <DialogClose asChild>
+              <div>
+                {isClient ? (
+                  <AcceptButton
+                    rows={checkedRows}
+                    remarks={feedbackText}
+                    finalButton
+                  />
+                ) : (
+                  <div>none</div>
+                )}
+              </div>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
+        <Dialog>
+          <DialogTrigger asChild>
+            <div>
+              {isClient ? (
+                <RejectButton finalButton={false} />
+              ) : (
+                <div>none</div>
+              )}
+            </div>
+          </DialogTrigger>
+          <DialogContent className="text-black">
+            Are you sure to Reject the Request?
+            <DialogClose asChild>
+              <div>
+                {isClient ? (
+                  <RejectButton
+                    rows={checkedRows}
+                    remarks={feedbackText}
+                    finalButton
+                  />
+                ) : (
+                  <div>none</div>
+                )}
+              </div>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
+      </div>
     </>
   );
 };

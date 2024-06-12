@@ -427,7 +427,7 @@ export default function TableComponent({
             {table.getFilteredRowModel().rows?.length || 0} row(s) selected.
           </div>
         </div>
-        <div className="order-3 md:order-2">
+        <div className="order-3 md:order-2 relative flex flex-1 flex-col">
           {isFeedbackForm && <FeedbackForm checkedRows={checkedRows} />}
           {!isFeedbackForm && (
             <Button
