@@ -12,32 +12,39 @@ import TextArea from "antd/es/input/TextArea";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { updateApproval } from "@/helpers/api";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface ButtonProps {
   children?: React.ReactNode;
   rows?: any[];
   remarks?: string;
+  finalButton: boolean;
 }
 
-const updateApprovalPATCH = (rows: any[], remarks: string, status: string) => {
-  var allAppArray = [];
+const UpdateApprovalPATCH = (rows: any[], remarks: string, status: string) => {
+  var allAppArray: any[] = [];
   for (var i = 0; i < rows.length; i++) {
     allAppArray.push({ id: rows[i].id, remarks, status });
   }
-  updateApproval(allAppArray);
+  updateApproval(Cookies.get("accessToken"), allAppArray);
+  window.location.reload();
 };
 
 const AcceptButton: React.FC<ButtonProps> = ({
   rows = [],
   children,
   remarks = "",
+  finalButton,
 }) => {
   return (
     <Button
       variant={"default"}
       className="bg-sky-600 mx-4 hover:bg-blue-600"
       onClick={() => {
-        updateApprovalPATCH(rows, remarks, "APPROVED");
+        if (finalButton) {
+          UpdateApprovalPATCH(rows, remarks, "APPROVED");
+        }
       }}
     >
       Approve
@@ -74,13 +81,16 @@ const RejectButton: React.FC<ButtonProps> = ({
   rows = [],
   children,
   remarks = "",
+  finalButton,
 }) => {
   return (
     <Button
       variant={"destructive"}
       className="bg-red-500 hover:bg-red-400"
       onClick={() => {
-        updateApprovalPATCH(rows, remarks, "REJECTED");
+        if (finalButton) {
+          UpdateApprovalPATCH(rows, remarks, "REJECTED");
+        }
       }}
     >
       Reject
@@ -136,7 +146,11 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
       />
       <Dialog>
         <DialogTrigger>
-          {isClient ? <AcceptButton></AcceptButton> : <div>none</div>}
+          {isClient ? (
+            <AcceptButton finalButton={false}></AcceptButton>
+          ) : (
+            <div>none</div>
+          )}
         </DialogTrigger>
         <DialogContent className="text-black">
           Are you sure to Accept the Request?
@@ -145,6 +159,7 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
               <AcceptButton
                 rows={checkedRows}
                 remarks={feedbackText}
+                finalButton
               ></AcceptButton>
             ) : (
               <div>none</div>
@@ -154,13 +169,21 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
       </Dialog>
       <Dialog>
         <DialogTrigger>
-          {isClient ? <RejectButton></RejectButton> : <div>none</div>}
+          {isClient ? (
+            <RejectButton finalButton={false}></RejectButton>
+          ) : (
+            <div>none</div>
+          )}
         </DialogTrigger>
         <DialogContent className="text-black">
           Are you sure to Reject the Request?
           <DialogClose>
             {isClient ? (
-              <RejectButton rows={checkedRows}></RejectButton>
+              <RejectButton
+                rows={checkedRows}
+                remarks={feedbackText}
+                finalButton
+              ></RejectButton>
             ) : (
               <div>none</div>
             )}

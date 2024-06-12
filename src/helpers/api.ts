@@ -157,16 +157,15 @@ export const fetchApprovals = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
+  // if (!accessToken || accessToken === undefined) {
+  //   redirect();
+  //   return;
+  // }
   const res = await fetch(
-    filter
-      ? url(`/faculty-view/approvals?${filter}`)
-      : url("/faculty-view/approvals"),
+    filter ? url(`/faculty-approvals?${filter}`) : url("/faculty-approvals"),
     {
       next: { tags: ["AllApprovals"] },
+      cache: "no-store",
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -180,16 +179,19 @@ export async function updateApproval(
   accessToken: string | undefined,
   data: any[]
 ) {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  fetch(url("/faculty-view/approvals"), {
+  // if (!accessToken || accessToken === undefined) {
+  //   redirect();
+  //   return;
+  // }
+  fetch(url("/faculty-approvals"), {
     method: "PATCH",
-    headers: { "Content-type": "application/json" },
+    cache: "no-store",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify(data),
   }).then((response) => {
-    console.log(response.status);
-    return response.json();
+    return response.ok;
   });
 }
