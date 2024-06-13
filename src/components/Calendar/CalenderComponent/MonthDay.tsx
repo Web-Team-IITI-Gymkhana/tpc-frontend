@@ -2,21 +2,26 @@ import React,{useContext, useEffect, useState} from 'react'
 import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
 import { selectedDayEvent } from '../context/GlobalContext';
+import { labelsClasses } from '../context/ContextWrapper';
 
 interface Event{
-  day:any,
+  startDateTime:any,
+  endDateTime:any,
   rowIdx:any,
 }
 
+let colors = "bg-green-300 bg-red-300 bg-indigo-300 bg-gray-300 bg-blue-300 bg-purple-300"
+let hover_colors = "hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400"
 
 
 export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
   const [dayEvents,setDayEvents] = useState([])
-  const{ setShowEventModal , setDaySelected , filteredEvents , setSelectedEvent ,monthIndex }=
+  const{ setShowEventModal , setDaySelected , setSelectedEvent ,monthIndex,filteredEvents }=
   useContext(GlobalContext)
 
+
   useEffect(() => {
-    const events = filteredEvents.filter((evt:Event) => dayjs(evt.day).format("DD-MM-YY")  === day.format("DD-MM-YY"));
+    const events = filteredEvents.filter((evt:Event) => dayjs(evt.startDateTime).format("DD-MM-YY")  === day.format("DD-MM-YY"));
     setDayEvents(events)
   },[filteredEvents,day]);
 
@@ -32,15 +37,14 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
     :'opacity-50';
   }
 
-  useEffect(() => {
-    getCurrentMonth()
-    console.log(day.format("MM"))
-  },[monthIndex]);
+  function displayColor(label:string){
+    return labelsClasses.get(label);
+  }
 
 
   return (
     <div 
-    className='border border-gray-300 flex flex-col'>
+    className='border border-gray-300 flex flex-col max-h-40'>
       <header className='flex flex-col items-center'>
         {rowIdx ===0 && (<p className='text-sm mt-1 '>{day.format('ddd').toUpperCase()}</p>)}
           
@@ -58,13 +62,13 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
           setShowEventModal(true);
           setDaySelected(day);
         }} 
-        className='flex-1 cursor-pointer'>
+        className='flex-1 cursor-pointer overflow-y-auto'>
           {dayEvents.map((evt:selectedDayEvent,idx) => (
             <div
             onClick={() => setSelectedEvent(evt)}
             key={idx}
-            className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-sm rounded mb-1 truncate`}>
-              {evt.title}
+            className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 ${getCurrentMonth()} event_block cursor-pointer p-1 mx-2 text-gray-600 text-sm rounded mb-1 truncate`}>
+              {evt.job.company.name}
             </div>
           ))}
       </div>

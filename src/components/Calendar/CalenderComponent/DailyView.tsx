@@ -3,11 +3,18 @@ import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
 import { time_list } from './WeekDay';
 import { selectedDayEvent } from '../context/GlobalContext';
+import { labelsClasses } from './EventModal';
 
-interface Event {
-  day: any;
-  rowIdx: any;
+interface Event{
+  startDateTime:any,
+  endDateTime:any,
+  rowIdx:any,
 }
+
+let colors = "border-green-400 border-red-400 border-indigo-400 border-gray-400 border-blue-400 border-purple-400"
+let hover_colors = "hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400"
+let text_colors = "text-green-400 text--red-400 text-indigo-400 text-gray-400 text-blue-300 text-purple-400"
+
 
 export default function DailyView({ date }: { date: any }) {
   const [dayEvents, setDayEvents] = useState([]);
@@ -15,16 +22,16 @@ export default function DailyView({ date }: { date: any }) {
     useContext(GlobalContext);
 
   useEffect(() => {
-    const events = filteredEvents.filter((evt: Event) => dayjs(evt.day).format("DD-MM-YY") === date.format("DD-MM-YY"));
+    const events = filteredEvents.filter((evt: Event) => dayjs(evt.startDateTime).format("DD-MM-YY") === date.format("DD-MM-YY"));
     setDayEvents(events);
   }, [filteredEvents, date]);
 
   function getCurrentDate() {
-    return date.format("DD-MM-YY") === dayjs().format("DD-MM-YY") ? 'bg-blue-700 text-white rounded-full ' : '';
+    return date.format("DD-MM-YY") === dayjs().format("DD-MM-YY") ? 'text-white bg-blue-700 rounded-full ' : '';
   }
 
   function getCurrentDay() {
-    return date.format("DD-MM-YY") === dayjs().format("DD-MM-YY") ? 'text-blue-600' : '';
+    return date.format("DD-MM-YY") === dayjs().format("DD-MM-YY") ? 'text-blue-700' : '';
   }
 
   function handleTimeSelected(time: string, i: number) {
@@ -35,6 +42,9 @@ export default function DailyView({ date }: { date: any }) {
       setTimeFrom(time_list[i]);
       setTimeTo(time_list[i + 1]);
     }
+  }
+  function displayColor(label:string){
+    return labelsClasses.get(label);
   }
 
   function getCurrentTimeIndicatorPosition() {
@@ -70,7 +80,7 @@ export default function DailyView({ date }: { date: any }) {
       <div className='flex flex-col items-start ml-12'>
         <p className={`text-xs pl-1 text-gray-600 ${getCurrentDay()}`}>{date.format('ddd').toUpperCase()}</p>
         <div className='flex item-center justify-center'>
-          <p className={`text-2xl p-1 ${getCurrentDate()}`}>{date.date()}</p>
+          <p className={`text-2xl p-1 ${getCurrentDate()}`}>{date.format('DD')}</p>
         </div>
       </div>
       <span className='flex flex-col h-10 overflow-y-auto ml-10'>
@@ -81,13 +91,14 @@ export default function DailyView({ date }: { date: any }) {
           }}
           className='flex-1 cursor-pointer'>
           {dayEvents.map((evt: selectedDayEvent, idx) => (
-            (evt.timeFrom === "From" || evt.timeTo === "to") && (
+            (dayjs(evt.startDateTime).format('hh:00 A') === "From" || dayjs(evt.startDateTime).format('hh:00 A') === "to") && (
               <div
                 onClick={() => setSelectedEvent(evt)}
                 key={idx}
-                className={`bg-${evt.label}-300 w-40 border border-gray-600 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                // className={`border border-${evt.label}-400 border-2 hover:bg-${evt.label}-400 hover:text-white w-40 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                className={` border-green-400 border-2 hover:bg-green-400 hover:text-white w-40 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
               >
-                {evt.title}
+                {evt.job.company.name}
               </div>
             )
           ))}
@@ -122,13 +133,14 @@ export default function DailyView({ date }: { date: any }) {
               className='h-14 w-full border border-gray-300'>
               <div className='flex-1 cursor-pointer pt-1 overflow-y-auto'>
                 {dayEvents.map((evt: selectedDayEvent, idx) => (
-                  (evt.timeFrom === time) && (
+                  (dayjs(evt.startDateTime).format('hh:00 A')=== time) && (
                     <div
                       key={idx}
-                      className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                      // className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                      className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
                       onClick={() => setSelectedEvent(evt)}
                     >
-                      {evt.title}
+                      {evt.job.company.name}
                     </div>
                   )
                 ))}
