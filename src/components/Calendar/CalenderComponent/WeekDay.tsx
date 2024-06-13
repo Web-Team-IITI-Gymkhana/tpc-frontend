@@ -2,6 +2,7 @@ import React,{useContext, useEffect, useState} from 'react'
 import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
 import { selectedDayEvent } from '../context/GlobalContext';
+import { labelsClasses } from './EventModal';
 
 const generateTimeList = () => {
   const times = [];
@@ -15,7 +16,6 @@ const generateTimeList = () => {
 
 export let time_list = generateTimeList();
 
-console.log(time_list)
 
 let colors = "border-green-400 border-red-400 border-indigo-400 border-gray-400 border-blue-400 border-purple-400"
 let hover_colors = "hover:bg-green-400 hover:bg-red-400 hover:bg-indigo-400 hover:bg-gray-400 hover:bg-blue-400 hover:bg-purple-400"
@@ -23,17 +23,19 @@ let text_colors = "text-green-400 text--red-400 text-indigo-400 text-gray-400 te
 
 
 interface Event{
-  day:any,
+  startDateTime:any,
+  endDateTime:any,
   rowIdx:any,
 }
 
 export default function WeekDay({ day }: { day: any }) {
   const [dayEvents,setDayEvents] = useState([])
-  const{ setShowEventModal , setDaySelected , filteredEvents , setSelectedEvent , setTimeFrom,setTimeTo }=
+  const{ setShowEventModal , setDaySelected , filteredEvents, setSelectedEvent , setTimeFrom,setTimeTo }=
   useContext(GlobalContext)
+  
 
   useEffect(() => {
-    const events = filteredEvents.filter((evt:Event) => dayjs(evt.day).format("DD-MM-YY")  === day.format("DD-MM-YY"));
+    const events = filteredEvents.filter((evt:Event) => dayjs(evt.startDateTime).format("DD-MM-YY")  === day.format("DD-MM-YY"));
     setDayEvents(events)
   },[filteredEvents,day]);
 
@@ -51,6 +53,9 @@ export default function WeekDay({ day }: { day: any }) {
         setTimeTo(time_list[i+1]);
     }
 }
+  function displayColor(label:string){
+    return labelsClasses.get(label);
+  }
 
   return (
     <div>
@@ -75,13 +80,13 @@ export default function WeekDay({ day }: { day: any }) {
             }} 
             className='flex-1 cursor-pointer'>
               {dayEvents.map((evt: selectedDayEvent, idx) => (
-                (evt.timeFrom === "from" || evt.timeTo === "to") && (
+                (dayjs(evt.startDateTime).format('hh:00 A') === "from" || dayjs(evt.endDateTime).format('hh:00 A') === "to") && (
                   <div
                     onClick={() => setSelectedEvent(evt)}
                     key={idx}
-                    className={`border border-${evt.label}-400 border-2 hover:bg-${evt.label}-400 hover:text-white cursor-pointer p-1 mx-2 text-${evt.label}-400 text-xs rounded mb-1 truncate`}
+                    className={`border-green-400 border-2 hover:bg-green-400 hover:text-white cursor-pointer p-1 mx-2 text-green-400 text-xs rounded mb-1 truncate`}
                   >
-                    {evt.title}
+                    {evt.job.company.name}
                   </div>
                 )
               ))}
@@ -110,13 +115,13 @@ export default function WeekDay({ day }: { day: any }) {
     >
       <div className='flex-1 cursor-pointer pt-1 overflow-y-auto'>
         {dayEvents.map((evt: selectedDayEvent, idx) => (
-          (evt.timeFrom === time) && (
+          (dayjs(evt.startDateTime).format('hh:00 A') === time) && (
             <div
               key={idx}
-              className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+              className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
               onClick={() => setSelectedEvent(evt)}
             >
-              {evt.title}
+              {evt.job.company.name}
             </div>
           )
         ))}

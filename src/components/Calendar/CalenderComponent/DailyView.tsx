@@ -3,10 +3,12 @@ import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
 import { time_list } from './WeekDay';
 import { selectedDayEvent } from '../context/GlobalContext';
+import { labelsClasses } from './EventModal';
 
-interface Event {
-  day: any;
-  rowIdx: any;
+interface Event{
+  startDateTime:any,
+  endDateTime:any,
+  rowIdx:any,
 }
 
 let colors = "border-green-400 border-red-400 border-indigo-400 border-gray-400 border-blue-400 border-purple-400"
@@ -20,7 +22,7 @@ export default function DailyView({ date }: { date: any }) {
     useContext(GlobalContext);
 
   useEffect(() => {
-    const events = filteredEvents.filter((evt: Event) => dayjs(evt.day).format("DD-MM-YY") === date.format("DD-MM-YY"));
+    const events = filteredEvents.filter((evt: Event) => dayjs(evt.startDateTime).format("DD-MM-YY") === date.format("DD-MM-YY"));
     setDayEvents(events);
   }, [filteredEvents, date]);
 
@@ -40,6 +42,9 @@ export default function DailyView({ date }: { date: any }) {
       setTimeFrom(time_list[i]);
       setTimeTo(time_list[i + 1]);
     }
+  }
+  function displayColor(label:string){
+    return labelsClasses.get(label);
   }
 
   function getCurrentTimeIndicatorPosition() {
@@ -86,13 +91,14 @@ export default function DailyView({ date }: { date: any }) {
           }}
           className='flex-1 cursor-pointer'>
           {dayEvents.map((evt: selectedDayEvent, idx) => (
-            (evt.timeFrom === "From" || evt.timeTo === "to") && (
+            (dayjs(evt.startDateTime).format('hh:00 A') === "From" || dayjs(evt.startDateTime).format('hh:00 A') === "to") && (
               <div
                 onClick={() => setSelectedEvent(evt)}
                 key={idx}
-                className={`border border-${evt.label}-400 border-2 hover:bg-${evt.label}-400 hover:text-white w-40 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                // className={`border border-${evt.label}-400 border-2 hover:bg-${evt.label}-400 hover:text-white w-40 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                className={` border-green-400 border-2 hover:bg-green-400 hover:text-white w-40 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
               >
-                {evt.title}
+                {evt.job.company.name}
               </div>
             )
           ))}
@@ -127,13 +133,14 @@ export default function DailyView({ date }: { date: any }) {
               className='h-14 w-full border border-gray-300'>
               <div className='flex-1 cursor-pointer pt-1 overflow-y-auto'>
                 {dayEvents.map((evt: selectedDayEvent, idx) => (
-                  (evt.timeFrom === time) && (
+                  (dayjs(evt.startDateTime).format('hh:00 A')=== time) && (
                     <div
                       key={idx}
-                      className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                      // className={`bg-${evt.label}-300 hover:bg-${evt.label}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
+                      className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
                       onClick={() => setSelectedEvent(evt)}
                     >
-                      {evt.title}
+                      {evt.job.company.name}
                     </div>
                   )
                 ))}

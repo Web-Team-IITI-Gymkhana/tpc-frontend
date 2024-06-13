@@ -11,14 +11,30 @@ export interface updateLabelAction {
     checked: boolean;
   }
 
+export interface Job {
+  id: string;
+  role: string;
+  company: {
+      id: string;
+      name: string;
+  };
+  season: {
+      id: string;
+      type: string;
+      year:number;
+  };
+}
+
 export interface selectedDayEvent{
-    title:string,
-    description:string,
-    label:string,
-    id:string;
-    day: number | null;
-    timeFrom: string;
-    timeTo: string;
+    id:string,
+    startDateTime:Date,
+    endDateTime:Date,
+    metadata:string,
+    roundNumber:number,
+    type:string,
+    visibleToRecruiter:boolean,
+    job:Job
+
 }
 
   
@@ -48,6 +64,9 @@ const GlobalContext = React.createContext({
     setTimeFrom: (time:string) => {},
     timeTo: null as string|null,
     setTimeTo: (time:string) => {},
+    addEvent: (event: selectedDayEvent) => {},
+    updateEvent: (event: selectedDayEvent) => {},
+    deleteEvent: (eventId: string) => {},
 })
 
 export default GlobalContext;

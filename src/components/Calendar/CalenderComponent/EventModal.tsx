@@ -1,30 +1,90 @@
 import React, { useContext, useState, MouseEvent,useEffect } from 'react';
 import GlobalContext from '../context/GlobalContext';
 import { time_list } from './WeekDay';
+import dayjs from 'dayjs';
+import { selectedDayEvent } from '../context/GlobalContext';
 
-const labelsClasses = ["green", "red", "indigo", "gray", "blue", "purple"];
-let colors = "bg-green-500 bg-red-500 bg-indigo-500 bg-gray-500 bg-blue-500 bg-purple-500"
-
-interface CalendarEvent {
-    title: string;
-    description: string;
-    label: string;
-    day: number | null;
-    timeFrom: string;
-    timeTo: string;
-    id: string | number;
-}
+export const labelsClasses = new Map([
+    ["INTERVIEW", "green"], 
+    ["PPT", "red"], 
+    ["TEST", "indigo"], 
+    ["COMPLETED", "blue"], 
+    ["APPLICATION", "purple"]
+]);
+const colors = ["bg-green-300", "bg-red-300", "bg-indigo-300", "bg-gray-300", "bg-blue-300", "bg-purple-300"];
+const colorsHeader = ["bg-green-100", "bg-red-100", "bg-indigo-100", "bg-gray-100", "bg-blue-100", "bg-purple-100"];
 
 export default function EventModal() {
-    const { setShowEventModal, daySelected, dispatchCallEvents, selectedEvent,timeFrom,timeTo,setTimeFrom,setTimeTo } = useContext(GlobalContext);
+    const { setShowEventModal, daySelected, selectedEvent,addEvent,updateEvent,deleteEvent} = useContext(GlobalContext);
 
-    const [title, setTitle] = useState<string>(selectedEvent ? selectedEvent.title : "");
-    const [description, setDescription] = useState<string>(selectedEvent ? selectedEvent.description : "");
-    const [selectedLabel, setSelectedLabel] = useState<string>(selectedEvent ? labelsClasses.find(lbl => lbl === selectedEvent.label) || labelsClasses[0] : labelsClasses[0]);
+    const [title, setTitle] = useState<string>(selectedEvent ? selectedEvent.job.company.name : "");
+    const [description, setDescription] = useState<string>(selectedEvent ? selectedEvent.metadata : "");
+    const [selectedLabel, setSelectedLabel] = useState<[string, string]>(selectedEvent ? [selectedEvent.type, labelsClasses.get(selectedEvent.type) || ""] : ["", ""]);    
+    // const [selectedLabel, setSelectedLabel] = useState<string>(selectedEvent ? labelsClasses.find(lbl => lbl === selectedEvent.type) || labelsClasses[0] : labelsClasses[0]);
     const [timeSelector, setTimeSelector] = useState<boolean>(false);
     const [showTimeList, setShowTimeList] = useState<{ from: boolean, to: boolean }>({ from: false, to: false });
+    const [timeFrom,setTimeFrom] = useState(selectedEvent ? dayjs(selectedEvent.startDateTime).format('hh:00 A') : "from")
+    const [timeTo,setTimeTo] = useState(selectedEvent ? dayjs(selectedEvent.endDateTime).format('hh:00 A') : "to")
+    const [checked,setChecked] = useState(selectedEvent ? selectedEvent.visibleToRecruiter : false)
+    // const [type,setType] = useState(selectedEvent ? selectedEvent.type : "")
+    const [companyName,setCompanyName] = useState(selectedEvent ? selectedEvent.job.company.name : "")
+    const [role,setRole] = useState(selectedEvent ? selectedEvent.job.role : "")
+    const [recruitmentType,setRecruitmentType] = useState(selectedEvent ? selectedEvent.job.season.type : "")
+    const [roundNumber,setRoundNumber] = useState(selectedEvent ? selectedEvent.roundNumber : 1)
+    const[IsOpen,setIsOpen] = useState<boolean>(false)
 
-   
+    function displayColor(label:string){
+        return labelsClasses.get(label);
+      }
+
+    function convertToDateTime(timeString, dayjsObject) {
+        const timeRegex = /(\d{1,2}):(\d{2})\s*(AM|PM)/i;
+        const match = timeString.match(timeRegex);
+    
+        if (!match) {
+            throw new Error('Invalid time format');
+        }
+    
+        let hour = parseInt(match[1], 10);
+        const minute = parseInt(match[2], 10);
+        const period = match[3].toUpperCase();
+    
+        if (period === 'PM' && hour !== 12) {
+            hour += 12;
+        } else if (period === 'AM' && hour === 12) {
+            hour = 0;
+        }
+    
+        const year = dayjsObject.year();
+        const month = dayjsObject.month(); 
+        const day = dayjsObject.date();
+    
+        const dateObject = new Date(year, month, day, hour, minute);
+        return dateObject;
+    }
+    function generateUUID() {
+        let uuid = '', i, random;
+        
+        for (i = 0; i < 36; i++) {
+            if (i === 8 || i === 13 || i === 18 || i === 23) {
+                uuid += '-';
+            } else {
+                random = Math.random() * 16 | 0;
+                if (i === 14) {
+                    uuid += '4';
+                } else if (i === 19) {
+                    uuid += (random & 0x3 | 0x8).toString(16);
+                } else {
+                    uuid += random.toString(16);
+                }
+            }
+        }
+        return uuid;
+    }
+
+    
+    
+
 
     function handleTimeChange(time: string, type: 'from' | 'to') {
         if (type === 'from') {
@@ -37,19 +97,33 @@ export default function EventModal() {
 
     function handleSubmit(e: MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        const calendarEvent: CalendarEvent = {
-            title,
-            description,
-            label: selectedLabel,
-            day: daySelected ? daySelected.valueOf() : null,
-            timeFrom:  timeFrom !== null ? timeFrom : "",
-            timeTo:  timeTo !== null ? timeTo : "",
-            id: selectedEvent ? selectedEvent.id : Date.now(),
+        const calendarEvent: selectedDayEvent = {
+            id:generateUUID(),
+            startDateTime: timeFrom =="from"? null : convertToDateTime(timeFrom, daySelected),
+            endDateTime:timeTo == "to" ? null : convertToDateTime(timeTo, daySelected),
+            metadata:description,
+            roundNumber:roundNumber,
+            type:selectedLabel[0],
+            visibleToRecruiter:checked,
+            job:{
+                company:{
+                    id:generateUUID(),
+                    name:companyName,
+                },
+                id:generateUUID(),
+                role:role,
+                season:{
+                    id:generateUUID(),
+                    type:recruitmentType,
+                    year:daySelected.year(),
+                },
+
+            }
         };
         if (selectedEvent) {
-            dispatchCallEvents({ type: 'update', payload: calendarEvent });
+            updateEvent(calendarEvent)
         } else {
-            dispatchCallEvents({ type: 'push', payload: calendarEvent });
+            addEvent(calendarEvent)
         }
         setShowEventModal(false);
     }
@@ -61,8 +135,10 @@ export default function EventModal() {
 
     return (
         <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center z-50">
-            <form className="bg-white rounded-lg shadow-2xl w-1/4">
-                <header className="bg-gray-100 px-4 py-2 flex justify-between items-center">
+            <form className="bg-white rounded-lg shadow-2xl w-1/4  ">
+                <header 
+                className={`bg-${displayColor(selectedLabel[0])}-100 px-4 py-2 flex justify-between items-center`}
+                >
                     <span className="material-icons-outlined text-gray-400">
                         drag_handle
                     </span>
@@ -70,7 +146,7 @@ export default function EventModal() {
                         {selectedEvent && (
                             <span
                                 onClick={() => {
-                                    dispatchCallEvents({ type: "delete", payload: selectedEvent });
+                                    deleteEvent(selectedEvent.id);
                                     setShowEventModal(false);
                                 }}
                                 className="material-icons-outlined text-gray-400 cursor-pointer hover:text-red-500 hover:bg-red-200 rounded-full p-2">
@@ -90,6 +166,9 @@ export default function EventModal() {
                 </header>
                 <div className="p-3">
                     <div className="grid grid-cols-7 items-end gap-y-4">
+                        <span className="material-icons-outlined col-start-1 col-span-1 text-gray-400">
+                            title
+                        </span>
                         <input
                             type="text"
                             name="title"
@@ -169,23 +248,99 @@ export default function EventModal() {
                             onChange={(e) => setDescription(e.target.value)}
                         />
                         <span className="material-icons-outlined col-start-1 col-span-1 text-gray-400">
-                            bookmark_border
+                            visibility
                         </span>
-                        <div className="flex gap-x-2 col-start-2 col-span-6">
-                            {labelsClasses.map((labelClass, i) => (
-                                <span
-                                    key={i}
-                                    onClick={() => setSelectedLabel(labelClass)}
-                                    className={`bg-${labelClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
-                                >
-                                    {selectedLabel === labelClass && (
-                                        <span className="material-icons-outlined text-white text-sm" style={{ fontSize: '18px' }}>
-                                            check
-                                        </span>
-                                    )}
-                                </span>
-                            ))}
+                        <label className='items-center mt-3 flex flex-row col-start-2 col-span-6'>
+                            <input 
+                            type='checkbox' 
+                            checked={checked} 
+                            onChange={() => setChecked(!checked)}
+                            className={`form-checkbox h-5 w-5 rounded focus:ring-0 cursor-pointer`} />
+                            <p className='ml-2 text-gray-700 font-semibold'>Visible To Recruiter</p>
+                        </label>
+                        <span className="material-icons-outlined col-start-1 col-span-1 text-gray-400">
+                            label
+                        </span>
+                        <div className="relative w-full col-start-2 col-span-6">
+                        <input
+                            type="text"
+                            name="type"
+                            placeholder="Add type"
+                            value={selectedLabel[0]}
+                            required
+                            className="col-start-2 col-span-6 pt-3 border-0 text-gray-600 font-medium pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                            // onChange={(e) => setType(e.target.value)}
+                            onClick={() => setIsOpen(!IsOpen)}
+                        />
+                        {IsOpen && 
+                            <span className='absolute left-0 mt-2 bg-white rounded py-2 w-full border border-gray-200 shadow-lg'>
+                                {Array.from(labelsClasses.entries()).map(([label, color], idx) => (
+                                    <p 
+                                        onClick={() => {
+                                            setSelectedLabel([label, color]);
+                                            setIsOpen(!IsOpen);
+                                        }}
+                                        key={idx}
+                                        className='py-2 pl-2 text-left hover:bg-gray-100 cursor-pointer'
+                                    >
+                                        {label}
+                                    </p>
+                                ))}
+                            </span>
+                        }
+                    </div>
+                        
+
+                        <span className="material-icons-outlined col-start-1 col-span-1 text-gray-400">
+                            work
+                        </span>
+                        <div className='col-start-2 col-span-1 font-medium'>
+                            Type :
                         </div>
+                        <input
+                            type="text"
+                            name="job_type"
+                            placeholder=""
+                            value={recruitmentType}
+                            className="col-start-3 col-span-5 pt-3 border-0 text-gray-600 font-medium pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                            onChange={(e) => setRecruitmentType(e.target.value)}
+                        />
+                        
+                        
+
+                        <div className='col-start-2 col-span-2 font-medium'>
+                            Company :
+                        </div>
+                        <input
+                            type="text"
+                            name="company_name"
+                            placeholder=""
+                            value={companyName}
+                            className="col-start-4 col-span-4 pt-3 border-0 text-gray-600 font-medium pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                            onChange={(e) => setCompanyName(e.target.value)}
+                        />
+                        <div className='col-start-2 col-span-1 font-medium'>
+                            Role :
+                        </div>
+                        <input
+                            type="text"
+                            name="role"
+                            placeholder=""
+                            value={role}
+                            className="col-start-3 col-span-5 pt-3 border-0 text-gray-600 font-medium pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                            onChange={(e) => setRole(e.target.value)}
+                        />
+                        <div className='col-start-2 col-span-2 font-medium'>
+                            Round :
+                        </div>
+                        <input
+                            type="number"
+                            name="round_number"
+                            placeholder=""
+                            value={roundNumber}
+                            className="col-start-4 -ml-10 col-span-1 text-center pt-3 border-0 text-gray-600 font-medium pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                            onChange={(e) => setRoundNumber(e.target.valueAsNumber)}
+                        />
                     </div>
                 </div>
                 <footer className="flex justify-end border-t p-3 mt-5">
