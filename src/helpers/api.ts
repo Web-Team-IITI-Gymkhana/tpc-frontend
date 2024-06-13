@@ -157,10 +157,10 @@ export const fetchApprovals = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  // if (!accessToken || accessToken === undefined) {
-  //   redirect();
-  //   return;
-  // }
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
   const res = await fetch(
     filter ? url(`/faculty-approvals?${filter}`) : url("/faculty-approvals"),
     {
@@ -179,10 +179,10 @@ export async function updateApproval(
   accessToken: string | undefined,
   data: any[]
 ) {
-  // if (!accessToken || accessToken === undefined) {
-  //   redirect();
-  //   return;
-  // }
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
   fetch(url("/faculty-approvals"), {
     method: "PATCH",
     cache: "no-store",
