@@ -336,7 +336,7 @@ const JafCard = ({ JAF }: Props) => {
 
             <h1 className="text-lg font-semibold my-2">Salaries</h1>
             {JAF.salaries.map((salary, index) => (
-                <div className="my-4 border-2">
+                <div key={index} className="my-4 border-2">
                     <h2 className="text-md font-semibold mt-4 mx-2">Salary Distribution</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-6 text-sm mx-4">
                         <div>
