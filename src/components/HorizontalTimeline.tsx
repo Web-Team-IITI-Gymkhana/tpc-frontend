@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 // import styles from "@/styles/Timeline.css";
 import {
@@ -17,17 +19,14 @@ interface Event {
 }
 
 interface Props {
-  events: Event[];
+  eventsData: Event[];
 }
 
-const HorizontalTimeline: React.FC<Props> = ({ events }) => {
+const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
   const styles = `
     body{
-      margin-top:20px;
       background:#eee;
   }
-
-
 
   .cd-horizontal-timeline ol, .cd-horizontal-timeline ul {
     list-style: none;
@@ -438,6 +437,43 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
       margin-left: -1.5px;
       background-color: #eeeeee;
   }
+  .event-trigger {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
+    text-align: center;
+    font-size: 1rem;
+    padding-bottom: 15px;
+    cursor: pointer;
+    transform: translateZ(0);
+  }
+  
+  .event-trigger .event-marker {
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    border: 2px solid #dfdfdf;
+    background-color: #f8f8f8;
+    transform: translateX(-50%);
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  .no-touch .event-trigger:hover .event-marker {
+    background-color: #313740;
+    border-color: #313740;
+  }
+  
+  .event-trigger.selected .event-marker {
+    background-color: #313740;
+    border-color: #313740;
+  }
+  
+  .event-trigger.older-event .event-marker {
+    border-color: #313740;
+  }
   `;
 
   let selectedIndex = -1;
@@ -447,17 +483,17 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
   const [a,seta] = useState<string|null>("");
   useEffect(()=>{  
       // Find the index of the selected event
-      for (let i = 0; i < events.length; i++) {
-        if (events[i].status === "selected") {
+      for (let i = 0; i < eventsData.length; i++) {
+        if (eventsData[i].status === "selected") {
           selectedIndex = i;
           break;
         }
       }
       
       // Calculate the width of the filling line
-      fillingLineWidth = selectedIndex !== -1 ? `${(selectedIndex + 1) * (180 / events.length)}px` : "0";
-      mul= selectedIndex * (720/events.length)
-      mul+=38;
+      fillingLineWidth = selectedIndex !== -1 ? `${(selectedIndex + 1) * (180 / eventsData.length)}px` : "0";
+      mul= selectedIndex * (720/eventsData.length)
+      mul+=39;
       mul/=len;
       seta('scaleX('+mul+')');
       
@@ -471,29 +507,41 @@ const HorizontalTimeline: React.FC<Props> = ({ events }) => {
           <div className="col-lg-12">
             <div className="card">
               <div className="body">
-                <div className={`cd-horizontal-timeline loaded`}>
+                <div className={"cd-horizontal-timeline loaded"}>
                   <div className="timeline">
                     <div className="events-wrapper">
-                      <div className="events" style={{ width: `720px` }}>
+                      <div className="events" style={{ width: "720px" }}>
                         <ol>
-                          {events.map((event, index) => (
+                          {eventsData.map((event, index) => (
                             <li key={index}>
                               <HoverCard>
                                 <HoverCardTrigger>
-                              <a href="#0" data-date={event.date} className={event.status} style={{ left: `${index * (720/events.length)}px` }}>
-                                
-                                
-                                {event.title}
-                                
-
-                              </a>
+                                  <div
+                                    data-date={event.date}
+                                    className={`event-trigger ${event.status}`}
+                                    style={{
+                                      left: `${index * (720 / eventsData.length)}px`,
+                                      position: 'absolute',
+                                      bottom: '0',
+                                      textAlign: 'center',
+                                      fontSize: '1rem',
+                                      paddingBottom: '15px',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    {event.date}
+                                    <span className="event-marker"></span>
+                                  </div>
                                 </HoverCardTrigger>
-                                <HoverCardContent className="bg-white w-[10vw] px-4 py-5" style={{ marginLeft: `${index * (505/events.length)}%` }} >
-                                  {event.date}
-                                  <Separator className="my-2"/>
+                                <HoverCardContent
+                                  className="bg-white w-[10vw] px-4 py-5"
+                                  style={{ marginLeft: `${index==0?(index * (720 / eventsData.length)):(index)* (550 / eventsData.length)}%` }}
+                                >
+                                  {event.title}
+                                  <Separator className="my-2" />
                                   {event.status}
                                 </HoverCardContent>
-                               </HoverCard>
+                              </HoverCard>
                             </li>
                           ))}
                         </ol>

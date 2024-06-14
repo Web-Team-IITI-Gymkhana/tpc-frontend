@@ -12,8 +12,6 @@ const StudentDashboard = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
-  
-  const studentId=2;
   return (
     <>
       <div className="text-white">
@@ -52,7 +50,7 @@ const StudentDashboard = () => {
               </div>
             </Link>
             <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <Link href={`/student/resumes/${studentId}`}>
+              <Link href={`/student/resumes`}>
                 <div className="flex justify-start gap-[1vw]">
                   <div className="w-[2vw]">
                     <svg
@@ -86,7 +84,7 @@ const StudentDashboard = () => {
               </Link>
               {/* <CompanyDropDown userRole={userRole} /> */}
             </div>
-            <Link href={`/student/onCampus/${studentId}`}>
+            <Link href={`/student/onCampus`}>
               <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
                 <div className="no-wrap flex justify-start gap-[1vw]">
                   <div className="w-[2vw]">
@@ -121,7 +119,7 @@ const StudentDashboard = () => {
                 {/* <JobDropDown userRole={userRole} /> */}
               </div>
             </Link>
-            <Link href={`/student/offCampus/${studentId}`}>
+            <Link href={`/student/offCampus`}>
               <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
                 <div className="flex justify-start gap-[1vw]">
                   <div className="w-[2vw]">
