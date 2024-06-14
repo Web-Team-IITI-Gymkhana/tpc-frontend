@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
@@ -15,7 +15,6 @@ import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
-import { getCookies, setCookie, deleteCookie, getCookie } from 'cookies-next';
 
 interface Framework {
   value: string;
@@ -40,47 +39,17 @@ const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
-  const userString = Cookies.get("user");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
+  const [isStudent, setIsStudent] = useState<boolean>(false);
 
-  const user = userString ? JSON.parse(userString) : null;
-  const isAdmin = user?.userType === "ADMIN";
-  // const isAdmin = true;
-  const isRecruiter = user?.userType === "RECRUITER"
-  // const isRecruiter = true;
-  let isStudent = user?.userType === "STUDENT"
-  // const isStudent = true;
-  const userRole = user?.userType?.toLowerCase();
-
-  isStudent = true;
   useEffect(()=>{
-
-    if(isStudent){
-    setCookie('isStudent',true);
-    setCookie('isRecruiter',false);
-    setCookie('isAdmin',false);
-    setCookie('isRecruiter',false);
-    setCookie('isFaculty',false);
-  }
-  else if(isAdmin){
-    setCookie('isStudent',false);
-    setCookie('isRecruiter',false);
-    setCookie('isAdmin',true);
-    setCookie('isRecruiter',false);
-    setCookie('isFaculty',false);
-  }
-  else if(isRecruiter){
-    setCookie('isStudent',false);
-    setCookie('isRecruiter',false);
-    setCookie('isAdmin',false);
-    setCookie('isRecruiter',true);
-    setCookie('isFaculty',false);
-  }
-
-  },[isAdmin,isRecruiter,isStudent]);
-
-
-
-
+    const userString = Cookies.get("user");
+    const user = userString ? JSON.parse(userString) : null;
+    setIsAdmin(user?.role === "ADMIN")
+    setIsRecruiter(user?.role === "RECRUITER")
+    setIsStudent(user?.role === "STUDENT")
+  }, [])
 
   return (
     <motion.div

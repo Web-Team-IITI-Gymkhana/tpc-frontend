@@ -1,27 +1,22 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/admin/company", "/admin/students", "/admin/job"];
-// const adminRoutes = ['/admin/companies', '/admin/JAF', '/admin/jobs', '/admin/students'];
-// const studentRoutes = ['/student/jobs', '/student/offCampus', '/student/onCampus', '/student/interviewExperiences', '/student/profile', '/student/resumes'];
-// const recruiterRoutes = ['/recruiter/jaf', '/recruiter/prevjaf'];
+const adminRoutes = ["/admin/company", "/admin/students", "/admin/job"];
+const studentRoutes = ['/student/jobs', '/student/offCampus', '/student/onCampus', '/student/interviewExperiences', '/student/profile', '/student/resumes'];
+const recruiterRoutes = ['/recruiter/jaf', '/recruiter/prevjaf'];
 
 export function middleware(request: NextRequest) {
-  // const isStudent = request.cookies.get("isStudent");
-  const isStudent = true;
-  // const isAdmin = request.cookies.get('isAdmin');
-  const isAdmin = false;
-  // const isRecruiter = request.cookies.get("isRecruiter");
-  const isRecruiter = false;
-
-  if (isAdmin && (request.url.includes('/recruiter') || request.url.includes('/student'))) {
-    return NextResponse.redirect("http://localhost:3000/login/");
+  const userCookie = request.cookies.get("user");
+  const user = userCookie ? JSON.parse(userCookie.value) : null;;
+  
+  if (user?.role !== "ADMIN" && adminRoutes.includes(request.nextUrl.pathname) ) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-  else if (isStudent && (request.url.includes('/recruiter') || request.url.includes('/admin'))) {
-    return NextResponse.redirect("http://localhost:3000/login/");
+  if (user?.role !== "STUDENT" && studentRoutes.includes(request.nextUrl.pathname) ) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-  else if (isRecruiter && (request.url.includes('/student') || request.url.includes('/admin'))) {
-    return NextResponse.redirect("http://localhost:3000/login/");
+  if (user?.role !== "RECRUITER" && recruiterRoutes.includes(request.nextUrl.pathname) && request.url.includes("/recruiter") ) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();
