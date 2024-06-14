@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
@@ -12,10 +12,29 @@ import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
 import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
 import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
 import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
-import AdminDashboard from "./SideBar/Roles/admin";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import AdminDashboard from './SideBar/Roles/admin';
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
 
+interface User {
+  id: string;
+  email: string;
+  role: string;
+  studentId: string;
+  iat: number;
+  exp: number;
+  aud: string;
+  iss: string;
+  sub: string;
+}
 interface Framework {
   value: string;
   label: string;
@@ -39,16 +58,32 @@ const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
-  const userString = Cookies.get("user");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
+  const [isStudent, setIsStudent] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string>("");
 
-  const user = userString ? JSON.parse(userString) : null;
-  const isAdmin = user?.userType === "ADMIN";
-  // const isAdmin = true;
-  const isRecruiter = user?.userType === "RECRUITER"
-  // const isRecruiter = true;
-  const isStudent = user?.userType === "STUDENT"
-  // const isStudent = true;
-  const userRole = user?.userType?.toLowerCase();
+  useEffect(() => {
+    const userString = Cookies.get("user");
+    const user = userString ? JSON.parse(userString) : null;
+    if (user) {
+      setUser(user);
+      setRole(user.role);
+      setIsAdmin(user.role === "ADMIN");
+      setIsRecruiter(user.role === "RECRUITER");
+      setIsStudent(user.role === "STUDENT");
+    }
+  }, []);
+
+  const handleRoleChange = (newRole: string) => {
+    if (user) {
+      const updatedUser = { ...user, role: newRole };
+      setUser(updatedUser);
+      setRole(newRole);
+      Cookies.set('user', JSON.stringify(updatedUser), { expires: 365 });
+    }
+  };
 
   return (
     <motion.div
@@ -121,8 +156,87 @@ const Sidebar = () => {
       </div>
       <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
         <div>
-          <hr />
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          {user?.role && (
+            <div className="hover:bg-gray-900 text-white rounded-md my-[1vh] py-[1vh] px-[1vw]">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="outline-none text-white">
+                  <div className={`flex justify-start gap-[0.5rem] items-center `}>
+                    <div className="w-[2rem]">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M12 15.5C11.88 15.5 11.76 15.46 11.66 15.38L5.66 9.38C5.47 9.19 5.47 8.84 5.66 8.66C5.85 8.47 6.2 8.47 6.38 8.66L12 14.28L17.62 8.66C17.81 8.47 18.16 8.47 18.34 8.66C18.53 8.84 18.53 9.19 18.34 9.38L12.34 15.38C12.24 15.46 12.12 15.5 12 15.5Z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <motion.div
+                      initial={{ opacity: 1 }}
+                      animate={context.isOpen ? "open" : "closed"}
+                      transition={{ duration: 0.1 }}
+                      variants={{
+                        closed: { opacity: 0 },
+                        open: { opacity: 1 },
+                      }}
+                      className={`${context.isOpen ? "visible" : "hidden"} w-[9rem]`}
+                    >
+                      ROLE : {user?.role}
+                    </motion.div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="">
+                  <DropdownMenuItem
+                    className="hover:bg-slate-200 cursor-pointer"
+                    onSelect={() => {
+                      handleRoleChange("ADMIN");
+                    }}
+                  >
+                    TPC Admin {role === "ADMIN" && <span className=" text-green-500">&nbsp; &#9679;</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="hover:bg-slate-200 cursor-pointer"
+                    onSelect={() => {
+                      handleRoleChange("RECRUITER");
+                    }}
+                  >
+                    Recruiter {role === "RECRUITER" && <span className=" text-green-500">&nbsp; &#9679;</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="hover:bg-slate-200 cursor-pointer"
+                    onSelect={() => {
+                      handleRoleChange("MANAGER");
+                    }}
+                  >
+                    TPC Manager {role === "MANAGER" && <span className=" text-green-500">&nbsp; &#9679;</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="hover:bg-slate-200 cursor-pointer"
+                    onSelect={() => {
+                      handleRoleChange("FACULTY");
+                    }}
+                  >
+                    Faculty {role === "FACULTY" && <span className=" text-green-500">&nbsp; &#9679;</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="hover:bg-slate-200 cursor-pointer"
+                    onSelect={() => {
+                      handleRoleChange("STUDENT");
+                    }}
+                  >
+                    Student {role === "STUDENT" && <span className=" text-green-500">&nbsp; &#9679;</span>}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+          <div className="hover:bg-gray-900 text-white rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1rem]">
               <div className="w-[2rem]">
                 <svg
@@ -153,20 +267,13 @@ const Sidebar = () => {
                 Profile
               </motion.div>
             </div>
-            {/* <CompanyDropDown userRole={userRole} /> */}
           </div>
           <hr />
           <NavButtonGroup />
         </div>
-        {isAdmin && (
-          <AdminDashboard/>
-        )}
-        {isStudent && (
-          <StudentDashboard/>
-        )}
-        {isRecruiter&& (
-          <RecruiterDashboard/>
-        )}
+        {isAdmin && <AdminDashboard />}
+        {isStudent && <StudentDashboard />}
+        {isRecruiter && <RecruiterDashboard />}
       </div>
     </motion.div>
   );
