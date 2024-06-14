@@ -17,6 +17,18 @@ export const GetJobById = async (jobId: string) => {
         console.error("Error fetching Job data:", error);
     }
 };
+export const GetJobs = async () => {
+    try {
+        const res = await fetch(url(`/jobs`));
+        if (!res.ok) {
+        throw new Error("Failed to fetch Job data");
+        }
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching Job data:", error);
+    }
+};
 export const GetSalaryById = async (salaryId: string) => {
     try {
         const res = await fetch(url(`/salaries/${salaryId}`));

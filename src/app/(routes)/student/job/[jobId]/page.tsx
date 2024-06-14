@@ -209,7 +209,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
               <div className="flex justify-between">
                 <div>
                   <Button>
-                    <a href={`/student/jobs/salary/${params.jobId}`} target="_blank" rel="noopener noreferrer">Salary</a>
+                    <a href={`/student/job/salary/${params.jobId}`} target="_blank" rel="noopener noreferrer">Salary</a>
                   </Button>
                 </div>
                 <div>

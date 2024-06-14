@@ -69,36 +69,36 @@ export interface Salary {
         season: {
         id: string;
         year: string;
-        type: string; // Assuming "INTERN" is a possible value, you might want to use a union type if there are more types.
+        type: string;
         };
         salaries: {
         id: string;
         totalCTC: number;
         salaryPeriod: string;
-        genders: string[]; // Assuming "MALE" is a possible value, you might want to use a union type if there are more genders.
+        genders: string[];
         programs: string[];
         facultyApprovals: string[];
-        categories: string[]; // Assuming "GENERAL" is a possible value, you might want to use a union type if there are more categories.
+        categories: string[];
         minCPI: number;
         tenthMarks: number;
         twelthMarks: number;
         }[];
     };
     others: string;
-    genders: string[]; // Assuming "MALE" is a possible value, you might want to use a union type if there are more genders.
+    genders: string[];
     programs: string[];
     facultyApprovals: string[];
-    categories: string[]; // Assuming "GENERAL" is a possible value, you might want to use a union type if there are more categories.
+    categories: string[];
     minCPI: number;
     tenthMarks: number;
     twelthMarks: number;
     facultyApprovalRequests: {
         id: string;
-        status: string; // Assuming "APPROVED" is a possible value, you might want to use a union type if there are more statuses.
+        status: string;
         remarks: string;
         faculty: {
         id: string;
-        department: string; // Assuming "Astronomy, Astrophysics and Space Engineering" is a possible value, you might want to use a union type if there are more departments.
+        department: string;
         user: {
             id: string;
             name: string;
@@ -128,6 +128,33 @@ export interface Salary {
         };
         };
     }[];
+}
+
+export interface Jobs {
+  id: string;
+  role: string;
+  active: boolean;
+  currentStatus: string;
+  location: string;
+  season: {
+    id: string;
+    year: string;
+    type: string;
+  };
+  company: {
+    id: string;
+    name: string;
+  };
+  recruiter: {
+    id: string;
+    designation: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      contact: string;
+    };
+  };
 }
 
 export interface Job {

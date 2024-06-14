@@ -14,30 +14,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Salary, Resume, Jobs } from "@/helpers/student/types";
+import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
 import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
 import Cookies from "js-cookie";
 import toast, { Toaster } from "react-hot-toast";
-const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
-
-const url = (NextUrl: string) => {
-  return `${baseUrl}${NextUrl}`;
-};
 interface Props {
-  jobItem: Jobs;
+  jobItem: OnCampusOffers;
+  salaryId: string;
 }
 
-const JobCard = ({ jobItem }: Props) => {
+const OnCampusCard = ({ jobItem, salaryId }: Props) => {
+  const [salary, setSalary] = useState<Salary|null>(null);
+
+  useEffect(() => {
+    const fetchSalary = async () => {
+      const data = await GetSalaryById(salaryId);
+      setSalary(data);
+      console.log(data);
+    };
+
+    fetchSalary();
+    // setJobs(Jobs);
+  }, [salaryId]);
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const handleViewDetails = () => {
     setShowDescription(!showDescription);
   };
 
+  const roundOff = (n: number) => {
+    return Math.round((n + Number.EPSILON) * 100) / 100;
+  };
+
+  function formatNumber(num: number): string {
+    if (num >= 1e7) {
+      const crores = num / 1e7;
+      return `₹${crores.toFixed(2)} Crores`;
+    } else if (num >= 1e5) {
+      const lakhs = num / 1e5;
+      return `₹${lakhs.toFixed(2)} Lakhs`;
+    } else {
+      return `₹${num.toString()}`;
+    }
+  }
+
   return (
-    <div className="">
-      <div className="rounded-xl bg-white text-black p-5">
+    <div className="">     
+      {salary===null? (
+        <div>No Data</div>
+      ): (
+        <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
-          {jobItem.company.name}
+          {jobItem.salary.job.company.name}
         </div>
         <div className="my-4">
           <Separator />
@@ -45,23 +72,23 @@ const JobCard = ({ jobItem }: Props) => {
         <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2" onClick={handleViewDetails} style={{cursor: "pointer"}}>
           <div>
             <div className="text-gray-500 font-semibold my-2">Role</div>{" "}
-            <div>{jobItem.role}</div>
+            <div>{jobItem.salary.job.role}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Current Status</div>{" "}
-            <div>{jobItem.currentStatus}</div>
+            <div className="text-gray-500 font-semibold my-2">Period</div>{" "}
+            <div>{salary.salaryPeriod}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Location</div>{" "}
-            <div>{jobItem.location}</div>
+            <div className="text-gray-500 font-semibold my-2">CTC</div>{" "}
+            <div>{formatNumber(salary.totalCTC)}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Season</div>{" "}
-            <div>{jobItem.season.type} {jobItem.season.year}</div>
+            <div className="text-gray-500 font-semibold my-2">Base Salary</div>{" "}
+            <div>{formatNumber(salary.baseSalary)}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Recruiter</div>{" "}
-            <div>{jobItem.recruiter.user.name}</div>
+            <div className="text-gray-500 font-semibold my-2">Minimum CPI</div>{" "}
+            <div>{roundOff(salary.minCPI)}</div>
           </div>
         </div>        
         {showDescription && (
@@ -73,7 +100,7 @@ const JobCard = ({ jobItem }: Props) => {
               <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">About The Work</h1>
                 <div className="text-sm my-3">
-                  <Link href={url(`/student/job/${jobItem.id}`)} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
+                  <Link href={`http://localhost:3000/student/jobs/${jobItem.salary.job.id}`} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
                     View Details {'>'}
                   </Link>
                 </div>
@@ -137,17 +164,13 @@ const JobCard = ({ jobItem }: Props) => {
                 <li> are available for duration of 3 months</li>
                 <li> have relevant skills and interests</li>
               </ul>
-            </div>            
-            <div className="flex justify-between my-3">
-              <Button>
-                <Link href={`/student/job/salary/${jobItem.id}`}>Salaries</Link>                
-              </Button>
             </div>
           </div>          
         )}
       </div>
+      )}
     </div>
   );
 };
 
-export default JobCard;
+export default OnCampusCard;
