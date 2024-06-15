@@ -2,7 +2,7 @@ const redirect = () => { };
 import { SampleJobData } from "@/dummyData/job";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const url = (NextUrl: string) => {
+export const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
 

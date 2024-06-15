@@ -10,6 +10,7 @@ import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
 
+
 interface Framework {
   value: string;
   label: string;
@@ -45,10 +46,6 @@ useEffect(()=>{
     setIsRecruiter(user?.role === "RECRUITER")
     setIsStudent(user?.role === "STUDENT")
   }, [])
-
-  if (!isLoaded) {
-    return null; // or you can render a loading spinner
-  }
   return (
     <motion.div
       initial={{
