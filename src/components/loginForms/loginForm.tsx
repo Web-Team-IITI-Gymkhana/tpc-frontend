@@ -1,6 +1,6 @@
 //this will be used to create the login page.
 "use client";
-
+import { url } from "@/helpers/api";
 import React, { useState } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
@@ -60,7 +60,7 @@ const LoginForm = () => {
                             return;
                           }
                           axios
-                            .post("http://localhost:5000/api/v1/auth/login/", {
+                            .post(url("/auth/login/"), {
                               email: email,
                               role: role?.toUpperCase(),
                             })
