@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect,useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
@@ -9,41 +9,15 @@ import NavButtonGroup from "@/components/NavButtonGroup";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
-
-interface Framework {
-  value: string;
-  label: string;
-}
-
-interface Season {
-  id: string;
-  year: string;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Props {
-  AllSeasons: {
-    seasons: Season[];
-  };
-}
-
+import { jwtDecode } from "jwt-decode";
 const Sidebar = () => {
-  
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-
   const context = useContext(ToggleContext);
-  const userString = Cookies.get("user");
-
-  const user = userString ? JSON.parse(userString) : null;
+  const accessToken = Cookies.get("accessToken");
+  const user = accessToken ? jwtDecode(accessToken) as { role: string  } : null 
   const isAdmin = user?.role === "ADMIN";
-
-  // const isAdmin = true;
-  const isRecruiter = user?.role === "RECRUITER"
-  // const isRecruiter = true;
-  const isStudent = user?.role === "STUDENT"
-  // const isStudent = true;
+  const isRecruiter = user?.role === "RECRUITER";
+  const isStudent = user?.role === "STUDENT";
   const userRole = user?.role?.toLowerCase();
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -52,7 +26,7 @@ const Sidebar = () => {
   }, []);
 
   if (!isLoaded) {
-    return null; // or you can render a loading spinner
+    return null; 
   }
   return (
     <motion.div
