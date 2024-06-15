@@ -1,22 +1,8 @@
 import React from "react";
-import Link from "next/link";
 import { Separator } from "../ui/separator";
-import { fetchJobSalary } from "@/helpers/api";
-import { cookies } from "next/headers";
 import { useState, useEffect } from 'react';
-import {JobDetails} from "@/dummyData/jobdetails"
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { OffCampusOffer } from "@/helpers/student/types";
-import { GetSalaryById } from "@/helpers/student/api";
 interface Props {
   jobItem: OffCampusOffer;
 }

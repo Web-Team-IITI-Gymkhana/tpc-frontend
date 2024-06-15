@@ -4,15 +4,14 @@ import {
   Table,
   TableHeader,
   TableBody,
-  TableFooter,
   TableHead,
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { SampleJobData } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
 import { Salary } from "@/helpers/student/types";
 import { GetSalaryById } from "@/helpers/student/api";
+import Cookies from "js-cookie";
 
 interface Props{
     salaryId: string;
@@ -23,7 +22,7 @@ export default function SalaryCard({salaryId}: Props) {
 
     useEffect(() => {
       const fetchSalaryData = async () => {
-        const data = await GetSalaryById(salaryId);
+        const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
         setSalaryData(data);
       };
   
