@@ -43,7 +43,6 @@ export const fetchAllJobs = async (
     redirect();
     return;
   }
-  console.log("filter", filter);
   const res = await fetch(filter ? url(`/jobs?${filter}`) : url("/jobs"), {
     next: { tags: ["AllJobs"] },
     headers: {
@@ -63,7 +62,6 @@ export const fetchStudentData = async (
     redirect();
     return;
   }
-  console.log("filter", filter);
   const res = await fetch(
     filter ? url(`/students?${filter}`) : url("/students"),
     {
@@ -152,46 +150,3 @@ export const fetchJobEvents = async (
   const json = await res.json();
   return json;
 };
-
-export const fetchApprovals = async (
-  accessToken: string | undefined,
-  filter: string | undefined
-) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(
-    filter ? url(`/faculty-approvals?${filter}`) : url("/faculty-approvals"),
-    {
-      next: { tags: ["AllApprovals"] },
-      cache: "no-store",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-  const json = await res.json();
-  return json;
-};
-
-export async function updateApproval(
-  accessToken: string | undefined,
-  data: any[]
-) {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  fetch(url("/faculty-approvals"), {
-    method: "PATCH",
-    cache: "no-store",
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(data),
-  }).then((response) => {
-    return response.ok;
-  });
-}

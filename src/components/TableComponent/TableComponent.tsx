@@ -166,11 +166,6 @@ export default function TableComponent({
               <Button
                 onClick={async () => {
                   setFilters([]);
-                  // const AllStudents = await fetchStudentData(
-                  //   Cookies.get("accessToken"),
-                  //   undefined
-                  // );
-                  // setTableData(AllStudents);
                 }}
                 className="rounded-md ml-4 md:mx-2 bg-red-500 hover:bg-red-600 text-white"
               >

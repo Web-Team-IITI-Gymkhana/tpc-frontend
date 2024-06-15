@@ -1,41 +1,34 @@
 "use client";
-import { fetchApprovals, updateApproval } from "@/helpers/api";
+import { fetchApprovals, updateApproval } from "@/helpers/faculty/api";
 import Cookies from "js-cookie";
 import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useState, useEffect } from "react";
-import loadingImg from "@/components/Faculty/Spinner@1x-1.0s-200px-200px (1).svg";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 const dto = [
   {
-    // id: "string",
     status: "string",
     remarks: "string",
     faculty: {
-      // id: "string",
       department: "string",
       user: {
-        // id: "string",
         email: "string",
         name: "string",
         contact: "string",
       },
     },
     salary: {
-      // id: "string",
       salaryPeriod: "string",
       totalCTC: "number",
       job: {
-        // id: "string",
         role: "string",
         joiningDate: "string",
         season: {
-          // id: "string",
           year: "string",
           type: "string",
         },
         company: {
-          // id: "string",
           name: "string",
         },
       },
@@ -52,7 +45,10 @@ const FacultyPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = await fetchApprovals(undefined, undefined);
+        const jsonData = await fetchApprovals(
+          Cookies.get("accessToken"),
+          undefined
+        );
         setData(jsonData);
       } catch (error) {
         console.error("Error fetching data:", error);
