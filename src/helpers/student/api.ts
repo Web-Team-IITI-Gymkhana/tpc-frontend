@@ -5,9 +5,14 @@ const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
 
-export const GetJobById = async (jobId: string) => {
+export const GetJobById = async (jobId: string, accessToken:string) => {
     try {
-        const res = await fetch(url(`/jobs/${jobId}`));
+        const res = await fetch(url(`/jobs/${jobId}`),{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
         if (!res.ok) {
         throw new Error("Failed to fetch Job data");
         }
@@ -17,9 +22,14 @@ export const GetJobById = async (jobId: string) => {
         console.error("Error fetching Job data:", error);
     }
 };
-export const GetSalaryById = async (salaryId: string) => {
+export const GetSalaryById = async (salaryId: string,accessToken: string) => {
     try {
-        const res = await fetch(url(`/salaries/${salaryId}`));
+        const res = await fetch(url(`/salaries/${salaryId}`), {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            }
+        });
         if (!res.ok) {
         throw new Error("Failed to fetch salary data");
         }
