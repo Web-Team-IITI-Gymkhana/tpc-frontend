@@ -1,18 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import { SampleJobData } from "@/dummyData/job";
-import { Separator } from "@/components/ui/separator";
 import SalaryCard from "@/components/jobs/SalaryCard";
 import { GetJobById } from "@/helpers/student/api";
+import Cookies from "js-cookie";
 
 interface Props {}
 interface Salary {
@@ -37,7 +27,7 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
 
   useEffect(() => {
     const fetchSalaryData = async () => {
-      const data = await GetJobById(params.jobId);
+      const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
       setSalaryData(data.salaries);
     };
 
