@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect,useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
@@ -9,6 +9,7 @@ import NavButtonGroup from "@/components/NavButtonGroup";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
+
 
 interface Framework {
   value: string;
@@ -34,26 +35,17 @@ const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
-  const userString = Cookies.get("user");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
+  const [isStudent, setIsStudent] = useState<boolean>(false);
 
-  const user = userString ? JSON.parse(userString) : null;
-  const isAdmin = user?.role === "ADMIN";
-
-  // const isAdmin = true;
-  const isRecruiter = user?.role === "RECRUITER"
-  // const isRecruiter = true;
-  const isStudent = user?.role === "STUDENT"
-  // const isStudent = true;
-  const userRole = user?.role?.toLowerCase();
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
-  if (!isLoaded) {
-    return null; // or you can render a loading spinner
-  }
+useEffect(()=>{
+    const userString = Cookies.get("user");
+    const user = userString ? JSON.parse(userString) : null;
+    setIsAdmin(user?.role === "ADMIN")
+    setIsRecruiter(user?.role === "RECRUITER")
+    setIsStudent(user?.role === "STUDENT")
+  }, [])
   return (
     <motion.div
       initial={{
