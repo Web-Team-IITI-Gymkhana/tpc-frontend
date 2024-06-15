@@ -6,12 +6,6 @@ import { useMediaQuery } from "react-responsive";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
-import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown";
-import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
-import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
-import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
-import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
-import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
@@ -36,6 +30,7 @@ interface Props {
 }
 
 const Sidebar = () => {
+  
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
@@ -43,7 +38,7 @@ const Sidebar = () => {
   const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
   const [isStudent, setIsStudent] = useState<boolean>(false);
 
-  useEffect(()=>{
+useEffect(()=>{
     const userString = Cookies.get("user");
     const user = userString ? JSON.parse(userString) : null;
     setIsAdmin(user?.role === "ADMIN")
@@ -51,6 +46,9 @@ const Sidebar = () => {
     setIsStudent(user?.role === "STUDENT")
   }, [])
 
+  if (!isLoaded) {
+    return null; // or you can render a loading spinner
+  }
   return (
     <motion.div
       initial={{
