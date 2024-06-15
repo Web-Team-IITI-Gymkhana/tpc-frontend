@@ -29,7 +29,7 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
 
   useEffect(() => {
     const fetchSalaryData = async () => {
-      const data = await GetJobById(params.jobId);
+      const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
       setSalaryData(data.salaries);
 
       const res = await GetResumes(Cookies.get("accessToken"));

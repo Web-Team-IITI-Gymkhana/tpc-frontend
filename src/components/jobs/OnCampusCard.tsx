@@ -16,10 +16,11 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
     const fetchSalary = async () => {
       const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
       setSalary(data);
-      console.log(data);
     };
 
-    fetchSalary();
+    if(salaryId !== null && salaryId !==undefined){
+      fetchSalary();
+    }
     // setJobs(Jobs);
   }, [salaryId]);
 
@@ -37,7 +38,7 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
 
   return (
     <div className="">     
-      {salary===null? (
+      {salary===null || salary===undefined? (
         <div>No Data</div>
       ): (
         <div className="rounded-xl bg-white text-black p-5">

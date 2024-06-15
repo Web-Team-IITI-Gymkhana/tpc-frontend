@@ -12,7 +12,7 @@ const StudentPage = () => {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const data = await GetJobs();
+      const data = await GetJobs(Cookies.get("accessToken"));
       setJobs(data);
 
       const res = await GetResumes(Cookies.get("accessToken"));

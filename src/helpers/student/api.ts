@@ -5,29 +5,45 @@ const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
 
-export const GetJobById = async (jobId: string) => {
-    try {
-        const res = await fetch(url(`/jobs/${jobId}`));
-        if (!res.ok) {
-        throw new Error("Failed to fetch Job data");
-        }
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching Job data:", error);
-    }
+export const GetJobById = async (jobId: string, accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  try {
+    const res = await fetch(url(`/student-view/job/${jobId}`), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+      if (!res.ok) {
+      throw new Error("Failed to fetch Job data");
+      }
+      const data = await res.json();
+      return data;
+  } catch (error) {
+      console.error("Error fetching Job data:", error);
+  }
 };
-export const GetJobs = async () => {
-    try {
-        const res = await fetch(url(`/jobs`));
-        if (!res.ok) {
-        throw new Error("Failed to fetch Job data");
-        }
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching Job data:", error);
-    }
+export const GetJobs = async (accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  try {
+    const res = await fetch(url(`/student-view/jobs`), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+      if (!res.ok) {
+      throw new Error("Failed to fetch Job data");
+      }
+      const data = await res.json();
+      return data;
+  } catch (error) {
+      console.error("Error fetching Job data:", error);
+  }
 };
 export const GetSalaryById = async (salaryId: string, accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
