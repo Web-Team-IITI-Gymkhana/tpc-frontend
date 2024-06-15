@@ -4,19 +4,16 @@ import {
   Table,
   TableHeader,
   TableBody,
-  TableFooter,
   TableHead,
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { SampleJobData } from "@/dummyData/job";
 import { Separator } from "@/components/ui/separator";
 import { Resume, Salary } from "@/helpers/student/types";
 import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
 import { Button } from "../ui/button";
-import Link from "next/link";
 import Cookies from "js-cookie";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface Props{
@@ -57,21 +54,14 @@ export default function SalaryCard({salaryId, resumes}: Props) {
       setIsopen(!isopen);
     };
   
-    const roundOff = (n: number) => {
-      return Math.round((n + Number.EPSILON) * 100) / 100;
-    };
-  
     function formatNumber(num: number): string {
       if (num >= 1e7) {
-        // Convert to Crores
         const crores = num / 1e7;
         return `₹${crores.toFixed(2)} Crores`;
       } else if (num >= 1e5) {
-        // Convert to Lakhs
         const lakhs = num / 1e5;
         return `₹${lakhs.toFixed(2)} Lakhs`;
       } else if (num >= 1e3) {
-        // Convert to Lakhs
         const lakhs = num / 1e3;
         return `₹${lakhs.toFixed(2)}K`;
       } else {
@@ -158,14 +148,31 @@ export default function SalaryCard({salaryId, resumes}: Props) {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell>{roundOff(salaryData?.minCPI)}</TableCell>
-                      <TableCell>{roundOff(salaryData?.tenthMarks)} %</TableCell>
-                      <TableCell>{roundOff(salaryData?.twelthMarks)} %</TableCell>
+                      <TableCell>{salaryData?.minCPI.toFixed(2)}</TableCell>
+                      <TableCell>{(salaryData?.tenthMarks*10).toFixed(2)} %</TableCell>
+                      <TableCell>{(salaryData?.twelthMarks*10).toFixed(2)} %</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
               </div>
   
+              <div id="programs" className="my-4 mb-8">
+                <div className="font-semibold text-md mx-2 my-2">Programs</div>
+                <div className="flex flex-wrap !text-sm">
+                  {salaryData.programs?.length > 0 && (
+                    <>
+                      {salaryData?.programs.map((g, i) => (
+                        <div
+                          key={i}
+                          className="border px-4 py-2 bg-gray-100 text-gray-600 font-medium rounded-full mx-2 my-2"
+                        >
+                          {g}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
               <div id="gender" className="my-4 mb-8">
                 <div className="font-semibold text-md mx-2 my-2">Gender</div>
                 <div className="flex flex-wrap !text-sm">

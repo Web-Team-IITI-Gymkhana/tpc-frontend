@@ -27,7 +27,7 @@ const StudentPage = () => {
   return (
     <div>
       <div className="my-3 mx-5 font-bold text-xl">
-        <h1>Offers</h1>
+        <h1>On Campus Offers</h1>
       </div>
       {onCampusOffers.length===0? (
         <div>
