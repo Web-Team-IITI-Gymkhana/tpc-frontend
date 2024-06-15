@@ -17,7 +17,7 @@ import {
 import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
 import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
 import Cookies from "js-cookie";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 interface Props {
   jobItem: OnCampusOffers;
   salaryId: string;
@@ -29,7 +29,7 @@ const JobCard = ({ jobItem, salaryId, resumes }: Props) => {
 
   useEffect(() => {
     const fetchSalary = async () => {
-      const data = await GetSalaryById(salaryId);
+      const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
       setSalary(data);
       console.log(data);
     };

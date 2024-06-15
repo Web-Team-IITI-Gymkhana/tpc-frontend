@@ -1,46 +1,38 @@
 "use client";
 import { fetchStudentData } from "@/helpers/api";
 import Cookies from "js-cookie";
-import TableComponent from "@/components/TableComponent/TableComponent";
-import generateColumns from "@/components/TableComponent/ColumnMapping";
+import Table from "@/components/NewTableComponent/Table";
+import type {DTO} from '@/dto/StudentDto'
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+  type MRT_Row,
+  createMRTColumnHelper,
+} from 'material-react-table';
+import generateColumns from "@/components/NewTableComponent/ColumnMapping";
+import { jsondto } from "@/dto/StudentDto";
 
-const dto = [
-  {
-    id: "string",
-    userId: "string",
-    programId: "string",
-    rollNo: "number",
-    category: "string",
-    gender: "MALE",
-    cpi: "number",
-    user: {
-      name: "string",
-      email: "string",
-      contact: "string",
-    },
-    program: {
-      course: "string",
-      branch: "string",
-      year: "number",
-    },
-  },
-];
 
-const dynamicColumns = generateColumns(dto[0]);
+const hiddenColumns = ['userId', 'programId', 'id'];
+
 
 const StudentPage = async () => {
-  const AllStudents = await fetchStudentData(Cookies.get("accessToken"),undefined);
+  const columnHelper = createMRTColumnHelper<DTO>();
+  const columns = generateColumns(jsondto)
+  console.log(columns)
+  const AllStudents = await fetchStudentData(Cookies.get("accessToken"),null);
+  const visibleColumns = columns.filter(
+    (column:any) => !hiddenColumns.includes(column?.accessorKey)
+  );
+  
   return (
     <div className="m-10">
       <h1 className="text-center font-bold text-3xl my-5 py-5">Students</h1>
       <div>
         {AllStudents && (
-          <TableComponent
-            isAddButton={true}
-            AddButtonText={"Add Students"}
+          <Table
             data={AllStudents}
-            columns={dynamicColumns}
-            dto={dto}
+            columns={visibleColumns}
           />
         )}
       </div>
