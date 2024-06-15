@@ -3,6 +3,7 @@ import { Separator } from "../ui/separator";
 import { useState, useEffect } from 'react';
 import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
 import { GetSalaryById } from "@/helpers/student/api";
+import Cookies from "js-cookie";
 interface Props {
   jobItem: OnCampusOffers;
   salaryId: string;
@@ -13,7 +14,7 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
 
   useEffect(() => {
     const fetchSalary = async () => {
-      const data = await GetSalaryById(salaryId);
+      const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
       setSalary(data);
       console.log(data);
     };

@@ -29,17 +29,26 @@ export const GetJobs = async () => {
         console.error("Error fetching Job data:", error);
     }
 };
-export const GetSalaryById = async (salaryId: string) => {
-    try {
-        const res = await fetch(url(`/salaries/${salaryId}`));
-        if (!res.ok) {
-        throw new Error("Failed to fetch salary data");
-        }
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching salary data:", error);
-    }
+export const GetSalaryById = async (salaryId: string, accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+
+  try {
+    const res = await fetch(url(`/student-view/salaries/${salaryId}`), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+      if (!res.ok) {
+      throw new Error("Failed to fetch salary data");
+      }
+      const data = await res.json();
+      return data;
+  } catch (error) {
+      console.error("Error fetching salary data:", error);
+  }
 };
 
 export const GetOnCampusOffers = async (accessToken: string | undefined) => {
