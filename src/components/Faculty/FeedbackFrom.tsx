@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { updateApproval } from "@/helpers//faculty/api";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import tick from "@/../public/tick.svg";
 import cross from "@/../public/cross.svg";
 

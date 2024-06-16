@@ -49,3 +49,59 @@ export async function updateApproval(
     return response.ok;
   });
 }
+
+export interface ProfileFC {
+  id: "string";
+  department: "string";
+  user: {
+    id: "string";
+    name: "string";
+    email: "string";
+    contact: "string";
+  };
+}
+
+export const fetchProfile = async (accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(url(`/faculty-view/faculty`), {
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json: ProfileFC = await res.json();
+  return json;
+};
+
+export interface updateProfileFC {
+  id: string;
+  user: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+}
+
+export const patchProfile = async (
+  accessToken: string | undefined,
+  changes: updateProfileFC
+) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(url(`/faculty-view/faculty`), {
+    method: "PATCH",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(changes),
+  });
+  console.log(JSON.stringify(changes));
+  console.log(res.json());
+  return res.ok;
+};
