@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { uploadResume } from "@/helpers/student/api";
 import toast, { Toaster } from "react-hot-toast";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -31,15 +32,11 @@ const url = (NextUrl: string) => {
 const ResumePage = () => {
 
   const [resumeData, setResumeData] = useState<Resume[]>([]);
-  const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const fetchResumes = async () => {
     const data = await GetResumes(Cookies.get("accessToken"));
     setResumeData(data);
-  }
-
-  const handleUploadForm = () => {
-    setShowUploadForm(true);
   }
 
   const [file, setFile] = useState<File | null>(null);
@@ -67,6 +64,7 @@ const ResumePage = () => {
       toast.success("Uploaded Successfully");
       fetchResumes();
       setFile(null);
+      setDialogOpen(false)
     }
     else{
       toast.error("Error uploading file")
@@ -136,19 +134,45 @@ const ResumePage = () => {
         <div className="my-4">
             <Separator />
         </div>
-        <Button onClick={handleUploadForm}>Add Resume</Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setDialogOpen(true)}>Add Resume</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Upload Resume</DialogTitle>
+              <DialogDescription>
+                Select and upload your resume file.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit}>
+              <div className="grid w-full max-w-sm items-center gap-1.5 my-2">
+                <Label className="text-black" htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  className="cursor-pointer text-black"
+                  type="text"
+                  required
+                />
+              </div>
+              <div className="grid w-full max-w-sm items-center gap-1.5">
+                <Label className="text-black" htmlFor="resume">Resume</Label>
+                <Input
+                  id="resume"
+                  className="cursor-pointer text-black"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+              </div>
+              <DialogFooter>
+                <Button className="my-4" type="submit" >
+                  Add
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
-      {showUploadForm && (
-        <div className="rounded-xl bg-white text-black p-5 my-3">
-          <form onSubmit={handleSubmit}>
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="resume">Resume</Label>
-              <Input id="resume" className="cursor-pointer" type="file" onChange={handleFileChange} />
-            </div>
-            <Button className="my-4" type="submit">Add</Button>
-          </form>
-        </div>
-      )}
     </>
   );
 };
