@@ -5,31 +5,23 @@ import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useState, useEffect } from "react";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
+import { number } from "yup";
 
 const dto = [
   {
     status: "string",
     remarks: "string",
-    faculty: {
-      department: "string",
-      user: {
-        email: "string",
-        name: "string",
-        contact: "string",
-      },
-    },
     salary: {
       salaryPeriod: "string",
       totalCTC: "number",
       job: {
         role: "string",
-        joiningDate: "string",
+        company: {
+          name: "string",
+        },
         season: {
           year: "string",
           type: "string",
-        },
-        company: {
-          name: "string",
         },
       },
     },
