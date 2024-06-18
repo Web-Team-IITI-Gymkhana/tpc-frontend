@@ -7,6 +7,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import GoogleLogin from "./googleLogin";
+
 const LoginForm = () => {
   const [email, setemail] = useState<String | null>(null);
   const [role, setrole] = useState<String | null>("STUDENT");
@@ -51,7 +53,7 @@ const LoginForm = () => {
                   </div>
 
                   <div className="md:col-span-5 text-right">
-                    <div className=" items-center flex justify-center">
+                    <div className="items-center flex justify-center flex-col">
                       <button
                         className="bg-blue-500 my-5 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => {
@@ -71,18 +73,18 @@ const LoginForm = () => {
                                   response.data.accessToken,
                                   {
                                     expires: 365,
-                                  },
+                                  }
                                 );
                                 Cookies.set(
                                   "user",
                                   JSON.stringify(
-                                    jwtDecode(response.data.accessToken),
+                                    jwtDecode(response.data.accessToken)
                                   ),
-                                  { expires: 365 },
+                                  { expires: 365 }
                                 );
                                 toast.success("logged in");
                                 window.location.href = "/";
-                              },
+                              }
                             )
                             .catch((err) => {
                               alert(err);
@@ -92,6 +94,7 @@ const LoginForm = () => {
                       >
                         Request Access
                       </button>
+                      <GoogleLogin />
                     </div>
                   </div>
                 </div>
