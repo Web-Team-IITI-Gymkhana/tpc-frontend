@@ -16,7 +16,9 @@ export const fetchApprovals = async (
     return;
   }
   const res = await fetch(
-    filter ? url(`/faculty-approvals?${filter}`) : url("/faculty-approvals"),
+    filter
+      ? url(`/faculty-view/approvals?${filter}`)
+      : url("/faculty-view/approvals"),
     {
       next: { tags: ["AllApprovals"] },
       cache: "no-store",
@@ -31,13 +33,17 @@ export const fetchApprovals = async (
 
 export async function updateApproval(
   accessToken: string | undefined,
-  data: any[]
+  data: {
+    id: string;
+    remarks: string;
+    status: string;
+  }
 ) {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  fetch(url("/faculty-approvals"), {
+  fetch(url("/faculty-view/approval-status"), {
     method: "PATCH",
     cache: "no-store",
     headers: {

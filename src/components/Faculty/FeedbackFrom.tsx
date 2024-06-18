@@ -24,11 +24,13 @@ interface ButtonProps {
 }
 
 const UpdateApprovalPATCH = (rows: any[], remarks: string, status: string) => {
-  var allAppArray: any[] = [];
   for (var i = 0; i < rows.length; i++) {
-    allAppArray.push({ id: rows[i].id, remarks, status });
+    updateApproval(Cookies.get("accessToken"), {
+      id: rows[i].id,
+      remarks: remarks,
+      status: status,
+    });
   }
-  updateApproval(Cookies.get("accessToken"), allAppArray);
   window.location.reload();
 };
 
@@ -41,7 +43,7 @@ const AcceptButton: React.FC<ButtonProps> = ({
   return (
     <Button
       variant={"default"}
-      className="bg-sky-600 mx-4 hover:bg-blue-600"
+      className={`bg-sky-600 mx-4 hover:bg-blue-600 ${finalButton && "w-full"}`}
       onClick={() => {
         if (finalButton) {
           UpdateApprovalPATCH(rows, remarks, "APPROVED");
@@ -63,7 +65,7 @@ const RejectButton: React.FC<ButtonProps> = ({
   return (
     <Button
       variant={"destructive"}
-      className="bg-red-500 hover:bg-red-400"
+      className={`bg-red-500 hover:bg-red-400 ${finalButton && "w-full"}`}
       onClick={() => {
         if (finalButton) {
           UpdateApprovalPATCH(rows, remarks, "REJECTED");
@@ -115,7 +117,7 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
           <DialogContent className="text-black">
             Are you sure to Accept the Request?
             <DialogClose asChild>
-              <div>
+              <div className="flex justify-center">
                 {isClient ? (
                   <AcceptButton
                     rows={checkedRows}
@@ -131,7 +133,7 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
-            <div>
+            <div className="flex justify-center">
               {isClient ? (
                 <RejectButton finalButton={false} />
               ) : (
