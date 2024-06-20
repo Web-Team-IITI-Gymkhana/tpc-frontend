@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { Resume } from "@/helpers/student/types";
-import { GetResumes, deleteResume } from "@/helpers/student/api";
+import { GetResumes, OpenResume, deleteResume } from "@/helpers/student/api";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { uploadResume } from "@/helpers/student/api";
@@ -46,6 +46,10 @@ const ResumePage = () => {
       setFile(event.target.files[0]);
     }
   };
+
+  const handleOpenResume = async (filename: string) => {
+    OpenResume(Cookies.get("accessToken"), filename);
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -118,9 +122,9 @@ const ResumePage = () => {
                     <TableRow key={index}>
                         <TableCell>{index+1}</TableCell>
                         <TableCell>
-                          <Link className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" target="_blank" href={url(`/resumes/file/${item.filepath}`)}>
+                          <div className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" onClick={()=>handleOpenResume(item.filepath)}>
                             {item.filepath}
-                          </Link>
+                          </div>
                         </TableCell>
                         <TableCell>{item.verified? "Verified": "Not Verified"}</TableCell>
                         <TableCell>

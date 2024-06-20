@@ -16,9 +16,6 @@ export const GetJobById = async (jobId: string, accessToken: string | undefined)
         Authorization: `Bearer ${accessToken}`,
       },
     });
-      if (!res.ok) {
-      throw new Error("Failed to fetch Job data");
-      }
       const data = await res.json();
       return data;
   } catch (error) {
@@ -36,9 +33,6 @@ export const GetJobs = async (accessToken: string | undefined) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-      if (!res.ok) {
-      throw new Error("Failed to fetch Job data");
-      }
       const data = await res.json();
       return data;
   } catch (error) {
@@ -57,9 +51,6 @@ export const GetSalaryById = async (salaryId: string, accessToken: string | unde
         Authorization: `Bearer ${accessToken}`,
       },
     });
-      if (!res.ok) {
-      throw new Error("Failed to fetch salary data");
-      }
       const data = await res.json();
       return data;
   } catch (error) {
@@ -107,6 +98,23 @@ export const GetResumes = async (accessToken: string | undefined) => {
     });
     const json = await res.json();
     return json;
+};
+
+export const OpenResume = async (accessToken: string | undefined, filename: string) => {
+    if (!accessToken || accessToken === undefined) {
+      redirect();
+      return;
+    }
+    fetch(url(`/student-view/resume/${filename}`), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }).then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+    })
+    .catch(error => console.error('Error:', error));
 };
 
 
@@ -160,10 +168,6 @@ export const uploadResume = async (formData: FormData, accessToken: string) => {
     body: formData
   });
 
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-
   const status = response.status;
   
   return status;
@@ -182,10 +186,6 @@ export const deleteResume = async (filename: string, accessToken: string) => {
       'Authorization': `Bearer ${accessToken}`
     },
   });
-
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
 
   return response.status;
 };
