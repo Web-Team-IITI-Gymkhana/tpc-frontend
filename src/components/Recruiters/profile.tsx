@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import profileImg from "@/../public/profile-icon.svg";
-import { ProfileFC, updateProfileFC } from "@/helpers/faculty/api";
+import { ProfileFC, updateProfileFC } from "@/helpers/recruiter/api";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -9,28 +9,39 @@ import {
   DialogTitle,
   DialogContent,
 } from "../ui/dialog";
-import { patchProfile } from "@/helpers/faculty/api";
+import { patchProfile } from "@/helpers/recruiter/api";
 import Cookies from "js-cookie";
 
 const EditForm = (params: { profile: ProfileFC }) => {
-  const [email, updateEmail] = useState<string>(params.profile.user.email);
-  const [contact, updateContact] = useState<string>(
-    params.profile.user.contact
+  const { profile } = params;
+  const [email, updateEmail] = useState<string>(
+    profile.user.email ? profile.user.email : ""
   );
-  const [name, updateName] = useState<string>(params.profile.user.name);
+  const [contact, updateContact] = useState<string>(
+    profile.user.contact ? profile.user.contact : ""
+  );
+  const [name, updateName] = useState<string>(
+    profile.user.name ? profile.user.name : ""
+  );
+  const [designation, setDesignation] = useState<string>(
+    profile.designation ? profile.designation : ""
+  );
+  const [landline, setlandline] = useState<string>(
+    profile.landline ? profile.landline : ""
+  );
 
   const updateProfile = () => {
     const data: updateProfileFC = {
-      id: params.profile.id,
+      designation: designation,
+      landline: landline,
       user: {
         name: name,
         email: email,
         contact: contact,
       },
     };
-
     const triggerUpdate = async () => {
-      await patchProfile(Cookies.get("accessToken"), data);
+      const res = await patchProfile(Cookies.get("accessToken"), data);
       window.location.reload();
     };
     triggerUpdate();
@@ -51,8 +62,26 @@ const EditForm = (params: { profile: ProfileFC }) => {
           />
         </div>
         <div>
-          <span className="font-semibold">Department: </span>
-          {params.profile.department}
+          <span className="font-semibold">Designation: </span>
+          <input
+            className="rounded"
+            type="text"
+            value={designation}
+            onChange={(e) => {
+              setDesignation(e.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <span className="font-semibold">Landline: </span>
+          <input
+            className="rounded"
+            type="text"
+            value={landline}
+            onChange={(e) => {
+              setlandline(e.target.value);
+            }}
+          />
         </div>
         <div className="flex gap-8 mb-2">
           <span className="font-semibold">Email: </span>
@@ -91,10 +120,10 @@ const EditForm = (params: { profile: ProfileFC }) => {
   );
 };
 
-const FacultyProfile = (params: { profile: ProfileFC }) => {
+const RecruiterProfile = (params: { profile: ProfileFC }) => {
   return (
     <div>
-      <div className="grid justify-center border-4 border-black rounded-lg px-12 py-8">
+      <div className="grid justify-center border-4 border-black hover:border-gray-800 rounded-lg px-12 py-8">
         <div className="flex justify-between items-center">
           <img src={profileImg.src} width="100px" alt="" />
           <Dialog>
@@ -113,8 +142,12 @@ const FacultyProfile = (params: { profile: ProfileFC }) => {
             {params.profile.user.name}
           </div>
           <div>
-            <span className="font-semibold">Department: </span>
-            {params.profile.department}
+            <span className="font-semibold">Designation: </span>
+            {params.profile.designation}
+          </div>
+          <div>
+            <span className="font-semibold">Landline: </span>
+            {params.profile.landline}
           </div>
           <div>
             <span className="font-semibold">Email: </span>
@@ -130,4 +163,4 @@ const FacultyProfile = (params: { profile: ProfileFC }) => {
   );
 };
 
-export default FacultyProfile;
+export default RecruiterProfile;

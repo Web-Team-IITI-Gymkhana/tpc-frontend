@@ -107,7 +107,5 @@ export const patchProfile = async (
     },
     body: JSON.stringify(changes),
   });
-  console.log(JSON.stringify(changes));
-  console.log(res.json());
   return res.ok;
 };
