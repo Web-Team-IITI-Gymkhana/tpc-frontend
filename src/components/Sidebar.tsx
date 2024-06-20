@@ -10,7 +10,6 @@ import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
 
-
 interface Framework {
   value: string;
   label: string;
@@ -31,21 +30,24 @@ interface Props {
 }
 
 const Sidebar = () => {
-  
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
   const [isStudent, setIsStudent] = useState<boolean>(false);
+  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
 
-useEffect(()=>{
+  useEffect(() => {
     const userString = Cookies.get("user");
     const user = userString ? JSON.parse(userString) : null;
-    setIsAdmin(user?.role === "ADMIN")
-    setIsRecruiter(user?.role === "RECRUITER")
-    setIsStudent(user?.role === "STUDENT")
-  }, [])
+    if (user) {
+      setLoggedIn(true);
+    }
+    setIsAdmin(user?.role === "ADMIN");
+    setIsRecruiter(user?.role === "RECRUITER");
+    setIsStudent(user?.role === "STUDENT");
+  }, []);
   return (
     <motion.div
       initial={{
@@ -152,17 +154,11 @@ useEffect(()=>{
             {/* <CompanyDropDown userRole={userRole} /> */}
           </div>
           <hr />
-          <NavButtonGroup />
+          <NavButtonGroup loggedIn={isLoggedIn} />
         </div>
-        {isAdmin && (
-          <AdminDashboard/>
-        )}
-        {isStudent && (
-          <StudentDashboard/>
-        )}
-        {isRecruiter&& (
-          <RecruiterDashboard/>
-        )}
+        {isAdmin && <AdminDashboard />}
+        {isStudent && <StudentDashboard />}
+        {isRecruiter && <RecruiterDashboard />}
       </div>
     </motion.div>
   );

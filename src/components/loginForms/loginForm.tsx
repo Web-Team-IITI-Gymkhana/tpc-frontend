@@ -97,8 +97,10 @@ const LoginForm = () => {
                       >
                         Request Access
                       </button>
-                      <LoginWithEmail email={email} />
-                      <GoogleLogin />
+                      <div className="flex flex-row gap-4">
+                        <LoginWithEmail email={email} />
+                        <GoogleLogin />
+                      </div>
                     </div>
                   </div>
                 </div>
