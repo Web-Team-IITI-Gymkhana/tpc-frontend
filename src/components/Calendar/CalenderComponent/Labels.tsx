@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import GlobalContext from '../context/GlobalContext'
-import { labelsClasses } from './EventModal';
+import { labelsClasses } from '../context/ContextWrapper';
 
 let colors = "text-green-400 text-red-400 text-indigo-400 text-gray-400 text-blue-400 text-purple-400"
 export default function Labels() {

@@ -54,10 +54,12 @@ const filteredEvents = useMemo(() => {
     );
 }, [savedEvents, labels]);
 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/events');
+        const response = await fetch(`${backendUrl}/api/v1/events`);
         const data = await response.json();
         dispatchCallEvents({ type: 'fetch', payload: data });
       } catch (error) {
@@ -65,7 +67,7 @@ const filteredEvents = useMemo(() => {
       }
     }
     fetchEvents();
-  }, []);
+  }, [backendUrl]);
 
 
   useEffect(() => {
@@ -85,48 +87,6 @@ const filteredEvents = useMemo(() => {
 function updateLabel(newLabel) {
   setLabels((prevLabels) => prevLabels.map((lbl) => (lbl.label === newLabel.label ? newLabel : lbl)));
 }
-
-  async function addEvent(event:selectedDayEvent) {
-    try {
-      const response = await fetch('http://localhost:5000/api/v1/events', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(event),
-      });
-      const data = await response.json();
-      dispatchCallEvents({ type: 'push', payload: data });
-    } catch (error) {
-      console.error('Failed to add event:', error);
-    }
-  }
-  async function updateEvent(event) {
-    try {
-      const response = await fetch(`http://localhost:5000/api/v1/events/${event.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(event),
-      });
-      const data = await response.json();
-      dispatchCallEvents({ type: 'update', payload: data });
-    } catch (error) {
-      console.error('Failed to update event:', error);
-    }
-  }
-
-  async function deleteEvent(eventId) {
-    try {
-      await fetch(`http://localhost:5000/api/v1/events/${eventId}`, {
-        method: 'DELETE',
-      });
-      dispatchCallEvents({ type: 'delete', payload: { id: eventId } });
-    } catch (error) {
-      console.error('Failed to delete event:', error);
-    }
-  }
 
   return (
     <GlobalContext.Provider
@@ -155,9 +115,6 @@ function updateLabel(newLabel) {
         setTimeFrom,
         timeTo,
         setTimeTo,
-        addEvent,
-        updateEvent,
-        deleteEvent,
       }}
     >
       {props.children}

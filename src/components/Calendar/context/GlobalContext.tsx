@@ -1,6 +1,5 @@
 import React from "react";
 import dayjs, { Dayjs } from "dayjs";
-
 export interface DispatchCallEventsAction {
     type: string;
     payload: any;
@@ -64,9 +63,6 @@ const GlobalContext = React.createContext({
     setTimeFrom: (time:string) => {},
     timeTo: null as string|null,
     setTimeTo: (time:string) => {},
-    addEvent: (event: selectedDayEvent) => {},
-    updateEvent: (event: selectedDayEvent) => {},
-    deleteEvent: (eventId: string) => {},
 })
 
 export default GlobalContext;

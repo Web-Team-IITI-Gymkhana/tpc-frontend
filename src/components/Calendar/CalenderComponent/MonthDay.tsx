@@ -50,7 +50,6 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
           
           <p 
           onClick={() => {
-            setShowEventModal(true);
             setDaySelected(day);
           }}
           className={`text-sm p-1 my-1 font-semibold text-center hover:cursor-pointer hover:bg-slate-300 hover:rounded-full hover:text-black ${getCurrentDay()} ${getCurrentMonth()}`}>
@@ -59,16 +58,18 @@ export default function Day({day,rowIdx}:{day:any,rowIdx:any}) {
       </header>
       <div 
         onClick={() => {
-          setShowEventModal(true);
           setDaySelected(day);
         }} 
-        className='flex-1 cursor-pointer overflow-y-auto'>
+        className='flex-1 overflow-y-auto'>
           {dayEvents.map((evt:selectedDayEvent,idx) => (
             <div
-            onClick={() => setSelectedEvent(evt)}
+            onClick={() => {
+              setSelectedEvent(evt)
+              setShowEventModal(true)
+            }}
             key={idx}
             className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 ${getCurrentMonth()} event_block cursor-pointer p-1 mx-2 text-gray-600 text-sm rounded mb-1 truncate`}>
-              {evt.job.company.name}
+              {evt.job && evt.job.company && evt.job.company.name ? evt.job.company.name : evt.id}
             </div>
           ))}
       </div>

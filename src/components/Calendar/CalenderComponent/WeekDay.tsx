@@ -2,15 +2,17 @@ import React,{useContext, useEffect, useState} from 'react'
 import dayjs from 'dayjs';
 import GlobalContext from '../context/GlobalContext';
 import { selectedDayEvent } from '../context/GlobalContext';
-import { labelsClasses } from './EventModal';
+import { labelsClasses } from '../context/ContextWrapper';
 
 const generateTimeList = () => {
   const times = [];
+  const format = 'hh:mm A';
+
   for (let hour = 0; hour < 24; hour++) {
-    let period = hour < 12 ? "AM" : "PM";
-    let formattedHour = (hour % 12 === 0 ? 12 : hour % 12).toString().padStart(2, '0');
-    times.push(`${formattedHour}:00 ${period}`);
+    const time = dayjs().hour(hour).minute(0).second(0);
+    times.push(time.format(format));
   }
+
   return times;
 };
 
@@ -72,28 +74,6 @@ export default function WeekDay({ day }: { day: any }) {
         
       </header>
 
-      <span className='flex flex-col h-10 overflow-y-auto'>
-          <div 
-            onClick={() => {
-              setShowEventModal(true);
-              setDaySelected(day);
-            }} 
-            className='flex-1 cursor-pointer'>
-              {dayEvents.map((evt: selectedDayEvent, idx) => (
-                (dayjs(evt.startDateTime).format('hh:00 A') === "from" || dayjs(evt.endDateTime).format('hh:00 A') === "to") && (
-                  <div
-                    onClick={() => setSelectedEvent(evt)}
-                    key={idx}
-                    className={`border-green-400 border-2 hover:bg-green-400 hover:text-white cursor-pointer p-1 mx-2 text-green-400 text-xs rounded mb-1 truncate`}
-                  >
-                    {evt.job.company.name}
-                  </div>
-                )
-              ))}
-
-          </div>
-      </span>
-
       <div className='flex flex-row w-full'>
           {day.format('ddd').toUpperCase() === 'SUN' &&
             <div className='flex flex-col space-y-10 -mt-2'>
@@ -108,7 +88,6 @@ export default function WeekDay({ day }: { day: any }) {
       key={i}
       className='border border-gray-300 h-14 w-full'
       onClick={() => {
-        setShowEventModal(true);
         setDaySelected(day);
         handleTimeSelected(time,i);
       }}
@@ -118,8 +97,11 @@ export default function WeekDay({ day }: { day: any }) {
           (dayjs(evt.startDateTime).format('hh:00 A') === time) && (
             <div
               key={idx}
-              className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 truncate`}
-              onClick={() => setSelectedEvent(evt)}
+              className={`bg-${displayColor(evt.type)}-300 hover:bg-${displayColor(evt.type)}-400 cursor-pointer p-1 mx-2 text-gray-600 text-xs rounded mb-1 `}
+              onClick={() => {
+                setSelectedEvent(evt)
+                setShowEventModal(true)
+              }}
             >
               {evt.job.company.name}
             </div>
