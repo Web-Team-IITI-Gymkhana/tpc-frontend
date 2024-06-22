@@ -83,7 +83,6 @@ export const fetchProfile = async (accessToken: string | undefined) => {
 };
 
 export interface updateProfileFC {
-  id: string;
   user: {
     name: string;
     email: string;
@@ -107,5 +106,6 @@ export const patchProfile = async (
     },
     body: JSON.stringify(changes),
   });
+  console.log(changes);
   return res.ok;
 };

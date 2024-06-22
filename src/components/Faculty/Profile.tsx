@@ -11,6 +11,7 @@ import {
 } from "../ui/dialog";
 import { patchProfile } from "@/helpers/faculty/api";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 const EditForm = (params: { profile: ProfileFC }) => {
   const [email, updateEmail] = useState<string>(params.profile.user.email);
@@ -21,7 +22,6 @@ const EditForm = (params: { profile: ProfileFC }) => {
 
   const updateProfile = () => {
     const data: updateProfileFC = {
-      id: params.profile.id,
       user: {
         name: name,
         email: email,
@@ -30,8 +30,12 @@ const EditForm = (params: { profile: ProfileFC }) => {
     };
 
     const triggerUpdate = async () => {
-      await patchProfile(Cookies.get("accessToken"), data);
-      window.location.reload();
+      const res = await patchProfile(Cookies.get("accessToken"), data);
+      if (res) {
+        window.location.reload();
+      } else {
+        toast.error("Some Error Occured");
+      }
     };
     triggerUpdate();
   };
