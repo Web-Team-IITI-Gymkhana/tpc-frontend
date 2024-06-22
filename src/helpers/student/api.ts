@@ -117,6 +117,37 @@ export const OpenResume = async (accessToken: string | undefined, filename: stri
     .catch(error => console.error('Error:', error));
 };
 
+export const GetInterviewExpiriences = async (accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(url("/student-view/interview-experiences"), {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json = await res.json();
+  return json;
+};
+
+export const OpenInterviewExpirience = async (accessToken: string | undefined, filename: string) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  fetch(url(`/student-view/interview-experiences/${filename}`), {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then(response => response.blob())
+  .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+  })
+  .catch(error => console.error('Error:', error));
+};
+
 
 export const GetStudentData = async (accessToken: string | undefined) => {
     if (!accessToken || accessToken === undefined) {

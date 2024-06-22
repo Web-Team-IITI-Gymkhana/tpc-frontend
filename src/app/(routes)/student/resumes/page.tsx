@@ -11,21 +11,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Cookies from "js-cookie";
-import Link from "next/link";
 import { Resume } from "@/helpers/student/types";
 import { GetResumes, OpenResume, deleteResume } from "@/helpers/student/api";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { uploadResume } from "@/helpers/student/api";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-
-
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-const url = (NextUrl: string) => {
-  return `${baseUrl}/api/v1${NextUrl}`;
-};
 
 // http://localhost:5000/api/v1/resumes/file/0c5dee48-c869-4219-b8c0-80cb6ce0e74d.pdf
 
