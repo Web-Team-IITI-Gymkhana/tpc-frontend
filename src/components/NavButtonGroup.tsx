@@ -94,6 +94,7 @@ const LogoutButton = () => {
 
   const logOut = () => {
     Cookies.remove("user");
+    Cookies.remove("accessToken");
     window.location.reload();
   };
 
