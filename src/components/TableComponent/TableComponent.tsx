@@ -59,6 +59,7 @@ export default function TableComponent({
   columns,
   AddButtonText,
   isAddButton,
+  actionButton = false,
   dto,
   isFeedbackForm,
 }: any) {
@@ -205,7 +206,7 @@ export default function TableComponent({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="md:ml-auto ml-4 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                  className="md:ml-auto ml-4 mr-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
                 >
                   <span className="text-gray-800">Columns</span>{" "}
                   <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
@@ -232,31 +233,33 @@ export default function TableComponent({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="mx-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
-                >
-                  <span className="text-gray-800">Actions</span>{" "}
-                  <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white shadow-lg">
-                <ImportData />
-                <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
-                <ExportData data={tableData} />
-                <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
-                <Button
-                  onClick={() => {
-                    copyIDsToClipboard(table);
-                  }}
-                  className="w-full rounded-md bg-indigo-500 hover:bg-indigo-600 text-white"
-                >
-                  Copy IDs to Clipboard
-                </Button>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {actionButton && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="mr-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                  >
+                    <span className="text-gray-800">Actions</span>{" "}
+                    <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white shadow-lg">
+                  <ImportData />
+                  <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
+                  <ExportData data={tableData} />
+                  <DropdownMenuSeparator className="border-gray-300 mx-2 bg-gray-300 my-2" />
+                  <Button
+                    onClick={() => {
+                      copyIDsToClipboard(table);
+                    }}
+                    className="w-full rounded-md bg-indigo-500 hover:bg-indigo-600 text-white"
+                  >
+                    Copy IDs to Clipboard
+                  </Button>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           {isAddButton && (
