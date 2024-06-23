@@ -13,7 +13,6 @@ import CssIcon from "@mui/icons-material/Css";
 import CodeIcon from "@mui/icons-material/Code";
 import HtmlIcon from "@mui/icons-material/Html";
 import PersonIcon from "@mui/icons-material/Person";
-import { Span } from "next/dist/trace";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -40,6 +39,9 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   }, [params.jobID]);
   return (
     <div className="container my-8">
+      <h1 className="text-3xl mb-8 font-bold mx-auto text-center">
+        Job Details
+      </h1>
       {loading && (
         <img src={loadingImg.src} alt="" className="mx-auto my-auto" />
       )}
@@ -143,7 +145,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   {JobDetail.selectionProcedure.tests.map((p, index) => (
                     <li key={index} className="my-2">
                       {Object.entries(p).map(([key, value]) => (
-                        <span key={index}>
+                        <span key={key}>
                           {key} : {value}
                           <br />
                         </span>
@@ -161,7 +163,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   {JobDetail.selectionProcedure.interviews.map((p, index) => (
                     <li key={index} className="my-2">
                       {Object.entries(p).map(([key, value]) => (
-                        <span key={index}>
+                        <span key={key}>
                           {key} : {value}
                           <br />
                         </span>

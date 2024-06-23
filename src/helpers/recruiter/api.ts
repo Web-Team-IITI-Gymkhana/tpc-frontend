@@ -220,9 +220,42 @@ export const getJobDetail = async (
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-    // body: JSON.stringify({ id: id }),
   });
   const json: JobDetailFC = await res.json();
-  console.log(json);
   return json;
 };
+
+export interface ApplicationFC {
+  id: string;
+  studentId: string;
+  resume: {
+    id: string;
+    filepath: string;
+    verified: boolean;
+  };
+}
+
+export interface EventFC {
+  id: string;
+  roundNumber: number;
+  type: string;
+  metadata: string;
+  startDateTime: string;
+  endDateTime: string;
+  applications?: [ApplicationFC];
+}
+
+export async function getEvent(accessToken: string | undefined, id: string) {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(url(`/recruiter-view/events/${id}`), {
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json: EventFC = await res.json();
+  return json;
+}

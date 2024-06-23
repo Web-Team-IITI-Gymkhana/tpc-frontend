@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 
 const RecruiterDashboard = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
@@ -19,7 +20,7 @@ const RecruiterDashboard = () => {
       <div>
         <Link href="/">
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1vw]">
+            <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <svg
                   width="20"
@@ -44,7 +45,7 @@ const RecruiterDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw]"
+                className="w-[5rem]"
               >
                 Home
               </motion.div>
@@ -53,7 +54,7 @@ const RecruiterDashboard = () => {
         </Link>
         <Link href="/recruiter/jaf/1">
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1vw]">
+            <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <svg
                   width="20"
@@ -78,7 +79,7 @@ const RecruiterDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw]"
+                className="w-[5rem]"
               >
                 JAF
               </motion.div>
@@ -87,7 +88,7 @@ const RecruiterDashboard = () => {
         </Link>
         <Link href="/recruiter/jobs">
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-            <div className="flex justify-start gap-[1vw]">
+            <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <svg
                   width="20"
@@ -112,9 +113,30 @@ const RecruiterDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw]"
+                className="w-[5rem]"
               >
-                Current Jobs
+                All Jobs
+              </motion.div>
+            </div>
+          </div>
+        </Link>
+        <Link href="/recruiter/events">
+          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+            <div className="flex justify-start gap-[2rem]">
+              <div className="w-[2vw]">
+                <EventOutlinedIcon fontSize="small" />
+              </div>
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { opacity: 0 },
+                  open: { opacity: 1 },
+                }}
+                className="w-[5rem]"
+              >
+                Events
               </motion.div>
             </div>
           </div>

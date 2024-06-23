@@ -1,13 +1,15 @@
 "use client";
 import React from "react";
-import { getJobs } from "@/helpers/recruiter/api";
-import { JobsFC } from "@/helpers/recruiter/api";
 import { useState, useEffect } from "react";
+import { JobsFC } from "@/helpers/recruiter/api";
 import Cookies from "js-cookie";
+import { getJobs } from "@/helpers/recruiter/api";
+import toast from "react-hot-toast";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
-const JobPage = () => {
+const EventPage = () => {
   const [data, setData] = useState<JobsFC[]>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -18,7 +20,7 @@ const JobPage = () => {
         const jsonData = await getJobs(Cookies.get("accessToken"));
         setData(jsonData);
       } catch (error) {
-        error("Error Fetching Data");
+        toast.error("Error Fetching Data");
       } finally {
         setLoading(false);
       }
@@ -28,7 +30,7 @@ const JobPage = () => {
   }, []);
   return (
     <div className="container my-8">
-      <h1 className="text-3xl mb-8 font-bold mx-auto text-center">All Jobs</h1>
+      <h1 className="text-3xl mb-8 font-bold mx-auto text-center">Events</h1>
       {loading && (
         <img src={loadingImg.src} alt="" className="mx-auto my-auto" />
       )}
@@ -47,13 +49,7 @@ const JobPage = () => {
                   Current Status
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Season Year
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Season Type
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Company Name
+                  More Details
                 </th>
               </tr>
             </thead>
@@ -62,7 +58,7 @@ const JobPage = () => {
                 <tr
                   key={index}
                   onClick={() => {
-                    router.push(`/recruiter/jobs/${job.id}`);
+                    router.push(`/recruiter/events/${job.id}`);
                   }}
                   className="cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
@@ -76,9 +72,9 @@ const JobPage = () => {
                     {job.active ? "Active" : "Inactive"}
                   </td>
                   <td className="px-6 py-4">{job.currentStatus}</td>
-                  <td className="px-6 py-4">{job.season.type}</td>
-                  <td className="px-6 py-4">{job.season.year}</td>
-                  <td className="px-6 py-4">{job.company.name}</td>
+                  <td className="px-6 py-4">
+                    <Button>View More</Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -89,4 +85,4 @@ const JobPage = () => {
   );
 };
 
-export default JobPage;
+export default EventPage;
