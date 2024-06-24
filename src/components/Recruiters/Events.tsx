@@ -7,6 +7,7 @@ import loadingImg from "@/../public/loadingSpinner.svg";
 import { EventFC, ApplicationFC } from "@/helpers/recruiter/api";
 import { CircularProgress } from "@mui/material";
 import { getResume } from "@/helpers/recruiter/api";
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 export const JobEvents = ({ events }: { events: [EventFC] }) => {
   const [eventId, setEventId] = useState<string>(null);
@@ -100,6 +101,7 @@ export const Applications = ({ eventId }: { eventId: string }) => {
     };
 
     fetchData();
+    console.log(applications);
   }, [eventId]);
 
   return (
@@ -114,13 +116,16 @@ export const Applications = ({ eventId }: { eventId: string }) => {
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">
-                Application ID
+                Roll Number
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Email
               </th>
               <th scope="col" className="px-6 py-3">
                 Resume
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Verified
               </th>
             </tr>
           </thead>
@@ -128,26 +133,25 @@ export const Applications = ({ eventId }: { eventId: string }) => {
             {applications.map((application, index) => (
               <tr
                 key={index}
-                className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
+                onClick={() =>
+                  getResume(
+                    Cookies.get("accessToken"),
+                    application.resume.filepath
+                  )
+                }
+                className={`bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
               >
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {application.id}
+                  {application.student.rollNo}
                 </th>
+                <td className="px-6 py-4">{application.student.user.name}</td>
+                <td className="px-6 py-4">{application.student.user.email}</td>
                 <td className="px-6 py-4">
-                  <a
-                    href={`${getResume(
-                      Cookies.get("accessToken"),
-                      application.resume.filepath
-                    )}`}
-                  >
-                    {application.resume.filepath}
-                  </a>
-                </td>
-                <td className="px-6 py-4">
-                  {application.resume.verified ? "Verified" : "In Process"}
+                  {application.resume.filepath}{" "}
+                  {application.resume.verified && <VerifiedIcon />}
                 </td>
               </tr>
             ))}

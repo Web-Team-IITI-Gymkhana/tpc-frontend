@@ -1,3 +1,6 @@
+// pages/api/fetchPdf.js
+import axios from "axios";
+
 const redirect = () => {};
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -241,7 +244,23 @@ export const getJobDetail = async (
 
 export interface ApplicationFC {
   id: string;
-  studentId: string;
+  student: {
+    id: string;
+    rollNo: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      contact: string;
+    };
+    program: {
+      id: string;
+      branch: string;
+      course: string;
+      year: string;
+      department: string;
+    };
+  };
   resume: {
     id: string;
     filepath: string;
@@ -330,13 +349,24 @@ export async function getJafDetails(accessToken: string | undefined) {
   return json;
 }
 
-export function getResume(accessToken: string | undefined, filename: string) {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  return url(`/recruiter-view/resume/${filename}`);
-}
+export const getResume = (
+  accessToken: string | undefined,
+  filename: string
+) => {
+  const u1 = url(`/recruiter-view/resume/${filename}`);
+  axios
+    .get(u1, {
+      responseType: "blob",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      console.log(response);
+      window.open(URL.createObjectURL(response.data));
+    });
+};
 
 export const patchJobData = async (
   accessToken: string | undefined,
