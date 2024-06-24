@@ -21,8 +21,8 @@ const Profile = ({ params }: { params: { RecruiterId: string } }) => {
   }, []);
 
   return (
-    <div className="h-screen grid justify-center items-center">
-      {loading && <img src={loadingImg.src} />}
+    <div className="h-screen flex justify-center">
+      {loading && <img src={loadingImg.src} width={200} />}
       {data && <RecruiterProfile profile={data} />}
     </div>
   );

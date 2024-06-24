@@ -1,5 +1,3 @@
-import { StepsToken } from "antd/es/steps/style";
-
 const redirect = () => {};
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -18,6 +16,22 @@ export interface ProfileFC {
     email: string;
     name: string;
     contact: string;
+  };
+  company: {
+    name: string;
+    domains: [string];
+    category: string;
+    address: {
+      city: string;
+      line1: string;
+      line2: string;
+      state: string;
+      country: string;
+      zipCode: string;
+    };
+    size: number;
+    yearOfEstablishment: string;
+    socialMediaLink: string;
   };
 }
 
@@ -40,21 +54,21 @@ export interface updateProfileFC {
   designation?: string;
   landline?: string;
   company?: {
-    name: string;
-    website: string;
-    domains: [string];
-    category: string;
-    address: {
+    name?: string;
+    website?: string;
+    domains?: any[];
+    category?: string;
+    address?: {
       line1: string;
       line2: string;
       city: string;
       state: string;
       country: string;
     };
-    size: number;
-    yearOfEstablishment: string;
-    annualTurnover: string;
-    socialMediaLink: string;
+    size?: number;
+    yearOfEstablishment?: string;
+    annualTurnover?: string;
+    socialMediaLink?: string;
   };
   user?: {
     name: string;
@@ -187,24 +201,24 @@ export interface JobDetailFC {
       visibleToRecruiter: true;
     },
   ];
-  salaries: [
-    {
-      id: string;
-      baseSalary: string;
-      takeHomeSalary: number;
-      grossSalary: number;
-      otherCompensations: number;
-      totalCTC: number;
-      salaryPeriod: string;
-      genders: [string];
-      programs: [string];
-      facultyApprovals: [string];
-      categories: [string];
-      minCPI: number;
-      tenthMarks: number;
-      twelthMarks: number;
-    },
-  ];
+  salaries: [SalaryFC];
+}
+
+interface SalaryFC {
+  id: string;
+  baseSalary: string;
+  takeHomeSalary: number;
+  grossSalary: number;
+  otherCompensations: number;
+  totalCTC: number;
+  salaryPeriod: string;
+  genders: [string];
+  programs: [string];
+  facultyApprovals: [string];
+  categories: [string];
+  minCPI: number;
+  tenthMarks: number;
+  twelthMarks: number;
 }
 
 export const getJobDetail = async (
@@ -259,3 +273,172 @@ export async function getEvent(accessToken: string | undefined, id: string) {
   const json: EventFC = await res.json();
   return json;
 }
+
+export async function getDomains(accessToken: string | undefined) {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(url(`/jaf`), {
+    cache: "no-store",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json = await res.json();
+  return json.domains;
+}
+
+export interface JAFdetailsFC {
+  seasons: [
+    {
+      id: string;
+      type: string;
+      year: string;
+    },
+  ];
+  programs: [
+    {
+      id: string;
+      branch: string;
+      course: string;
+      year: string;
+      department: string;
+    },
+  ];
+  genders: [string];
+  categories: [string];
+  testTypes: [string];
+  domains: [string];
+  interviewTypes: [string];
+  countries: [string];
+}
+
+export async function getJafDetails(accessToken: string | undefined) {
+  // if (!accessToken || accessToken === undefined) {
+  //   redirect();
+  //   return;
+  // }
+  const res = await fetch(url(`/jaf`), {
+    cache: "no-store",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json: JAFdetailsFC = await res.json();
+  return json;
+}
+
+export function getResume(accessToken: string | undefined, filename: string) {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  return url(`/recruiter-view/resume/${filename}`);
+}
+
+export const patchJobData = async (
+  accessToken: string | undefined,
+  jobId: string,
+  changes: JobDetailFC
+) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+
+  const patchFormat = {
+    role: "string",
+    noOfVacancies: 0,
+    duration: 0,
+    location: "string",
+    selectionProcedure: {
+      selectionMode: "OFFLINE",
+      shortlistFromResume: true,
+      groupDiscussion: true,
+      tests: [
+        {
+          type: "APTITUDE",
+          duration: 0,
+        },
+      ],
+      interviews: [
+        {
+          type: "HR",
+          duration: 0,
+        },
+      ],
+      requirements: {
+        numberOfMembers: 0,
+        numberOfRooms: 0,
+        otherRequirements: "string",
+      },
+      others: "string",
+    },
+    description: "string",
+    attachment: "string",
+    skills: "string",
+    offerLetterReleaseDate: "2024-06-24T06:42:48.242Z",
+    joiningDate: "2024-06-24T06:42:48.242Z",
+    feedback: "string",
+  };
+
+  const toPatch = {};
+  Object.entries(patchFormat).map(
+    ([key, value]) => (toPatch[key] = changes[key])
+  );
+
+  const res = await fetch(url(`/recruiter-view/jobs/${jobId}`), {
+    method: "PATCH",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(toPatch),
+  });
+  return res.ok;
+};
+
+export const patchSalaryData = async (
+  accessToken: string | undefined,
+  salary: SalaryFC
+) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+
+  const patchFormat = {
+    baseSalary: 0,
+    totalCTC: 0,
+    takeHomeSalary: 0,
+    grossSalary: 0,
+    otherCompensations: 0,
+    genders: [],
+    programs: [],
+    categories: [],
+    salaryPeriod: "",
+    minCPI: 0,
+    tenthMarks: 0,
+    twelthMarks: 0,
+  };
+
+  const toPatch = {};
+  Object.entries(patchFormat).map(
+    ([key, value]) => (toPatch[key] = salary[key])
+  );
+
+  console.log(toPatch);
+
+  const res = await fetch(url(`/recruiter-view/salary/${salary.id}`), {
+    method: "PATCH",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(toPatch),
+  });
+  console.log(res);
+  return res.ok;
+};

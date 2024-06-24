@@ -113,7 +113,7 @@ const RecruiterDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[5rem]"
+                className="w-[5rem] text-nowrap"
               >
                 All Jobs
               </motion.div>
