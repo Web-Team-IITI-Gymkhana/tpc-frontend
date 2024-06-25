@@ -1,87 +1,81 @@
 "use client";
-import React, { useState } from "react";
-import { Separator } from "../../../../components/ui/separator";
+import React, { useEffect, useState  } from "react";
 import {
-    Accordion,
-    AccordionItem,
-    AccordionTrigger,
-    AccordionContent,
-} from '@radix-ui/react-accordion';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
-import {interviewExpData} from "../../../../dummyData/Interviews";
+    Table,
+    TableHeader,
+    TableBody,
+    TableHead,
+    TableRow,
+    TableCell,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import Cookies from "js-cookie";
+import { InterviewExperience } from "@/helpers/student/types";
+import { GetInterviewExpiriences, OpenInterviewExpirience } from "@/helpers/student/api";
 
-// interface Props {
-//     interviewExpData: InterviewExperience[];
-// }
+// http://localhost:5000/api/v1/resumes/file/0c5dee48-c869-4219-b8c0-80cb6ce0e74d.pdf
+
+const InterviewExpiriencePage = () => {
+
+  const [interviewExpirienceData, setInterviewExpirienceData] = useState<InterviewExperience[]>([]);
+
+  const fetchInterviewExpiriences = async () => {
+    const data = await GetInterviewExpiriences(Cookies.get("accessToken"));
+    setInterviewExpirienceData(data);
+  }
+
+  const handleOpenInterviewExpirience = async (filename: string) => {
+    OpenInterviewExpirience(Cookies.get("accessToken"), filename);
+  }
 
 
+  useEffect(()=>{  
 
-interface InterviewExperience {
-    ques: string;
-    ans: string;
-    student_name: string;
-    difficulty:string,
-    tags:Array<string>;
-}
+    if(interviewExpirienceData.length===0){
+      fetchInterviewExpiriences();
+    }
+  })
 
-const InterviewExperiencesPage = () => {
-    const [open, setOpen] = useState<boolean>(false);
-    return (
-        <div>
-            <div>
-                <h1 className="text-xl font-bold px-3 py-5">Interview Experiences</h1>
-            </div>
-            <Separator/>
-            <div>
-            <Accordion
-                className=""
-                type="single"
-                defaultValue="1"
-                collapsible
-
-            >
-                {interviewExpData.map((e,i)=>(
-                    
-                        <AccordionItem key={i} value={String(i+1)} 
-                            className="py-6 px-4 bg-white my-3 rounded-xl hover:drop-shadow-[0_0px_10px_rgba(0,0,0,0.25)] ">
-                            <AccordionTrigger
-                                className="font-semibold px-1 flex"
-                            >
-                                    {e.ques}
-                                    <ChevronDownIcon className="ml-3 mt-0.5"/>
-                                
-                                
-                            </AccordionTrigger>
-                            
-                            <AccordionContent
-                                className="px-1 pt-4"
-                            >
-                                <Separator className="mb-3"/>
-                                {e.ans}
-                                <br/>
-                                <div className="flex gap-3">
-                                    <div className=" bg-slate-400 text-white mt-3 font-semibold px-2 py-1 border rounded-3xl inline-block text-xs ">
-                                        By {e.student_name}
-                                    </div>
-                                    <div className=" text-slate-500 mt-3 font-semibold px-2 py-1 border rounded-3xl inline-block border-slate-500 text-xs ">
-                                        {e.difficulty}
-                                    </div>
-                                    <div className=" text-slate-500 mt-3 font-semibold px-2 py-1 border rounded-3xl inline-block border-slate-500 text-xs ">
-                                        {e.tags[0]}
-                                    </div>
-                                    <div className=" text-slate-500 mt-3 font-semibold px-2 py-1 border rounded-3xl inline-block border-slate-500 text-xs ">
-                                        {e.tags[1]}
-                                    </div>
-                                </div>
-                                </AccordionContent>
-                        </AccordionItem>
-                    
-                ))}
-            </Accordion>
-            </div>
-           
+  return (
+    <>
+      <div className="rounded-xl bg-white text-black p-5">
+        <div className="font-bold text-lg">
+            Interview Expiriences
         </div>
-    )
-}
+        <div className="my-4">
+          <Separator />
+        </div>
+        {interviewExpirienceData.length===0? (
+          <div>No Interview Expiriences</div>
+        ): (
+          <Table className="overflow-hidden">
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Sr.</TableHead>
+                    <TableHead>Company</TableHead>
+                    <TableHead>Student</TableHead>
+                    <TableHead>Season</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {interviewExpirienceData.map((item,index)=>(
+                    <TableRow key={index}>
+                        <TableCell>{index+1}</TableCell>
+                        <TableCell>{item.company.name}</TableCell>
+                        <TableCell>
+                          <div className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" onClick={()=>handleOpenInterviewExpirience(item.filename)}>
+                            {item.studentName}
+                          </div>
+                        </TableCell>
+                        <TableCell>{item.season.type} {item.season.year}</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+        )}
+      </div>
+    </>
+  );
+};
 
-export default InterviewExperiencesPage;
+export default InterviewExpiriencePage;

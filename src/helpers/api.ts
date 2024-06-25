@@ -7,6 +7,18 @@ export const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
 
+export const PasswordlessLogin = async (accessToken: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(url("/auth/passwordless/verify"), {
+    method: 'POST',
+    body: JSON.stringify({ token: accessToken }),
+  });
+  return res.status;
+};
+
 export const fetchAllSeasons = async (accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
