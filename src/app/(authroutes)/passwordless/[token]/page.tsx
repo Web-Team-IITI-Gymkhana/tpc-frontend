@@ -1,6 +1,6 @@
 "use client";
 import { PasswordlessLogin } from "@/helpers/api";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
