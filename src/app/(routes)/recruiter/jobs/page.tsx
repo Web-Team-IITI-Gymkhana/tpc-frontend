@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { getJobs } from "@/helpers/recruiter/api";
-import { JobsFC } from "@/helpers/recruiter/api";
+import { JobsFC } from "@/helpers/recruiter/types";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import loadingImg from "@/../public/loadingSpinner.svg";

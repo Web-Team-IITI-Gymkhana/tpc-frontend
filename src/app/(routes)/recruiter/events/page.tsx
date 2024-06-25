@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
-import { JobsFC } from "@/helpers/recruiter/api";
+import { JobsFC } from "@/helpers/recruiter/types";
 import Cookies from "js-cookie";
 import { getJobs } from "@/helpers/recruiter/api";
 import toast from "react-hot-toast";

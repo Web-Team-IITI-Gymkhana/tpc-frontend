@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ProfileFC, updateProfileFC } from "@/helpers/recruiter/api";
+import { ProfileFC, updateProfileFC } from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
 import { patchProfile } from "@/helpers/recruiter/api";
 import Cookies from "js-cookie";
@@ -333,3 +333,20 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
     </div>
   );
 };
+
+const EditProfilePage = ({ data }: { data: ProfileFC }) => {
+  return (
+    <div className="flex md:flex-row flex-col justify-around w-full">
+      <div className="">
+        <h2 className="text-xl font-bold text-center">Company Details</h2>
+        <EditCompanyForm profile={data} />
+      </div>
+      <div className="">
+        <h2 className="text-xl font-bold text-center">Profile Details</h2>
+        <EditForm profile={data} />
+      </div>
+    </div>
+  );
+};
+
+export default EditProfilePage;

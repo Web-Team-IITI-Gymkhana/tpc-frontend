@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { JobDetailFC } from "@/helpers/recruiter/api";
-import { JobDetail } from "@/dummyData/Recruiters";
+import { JobDetailFC } from "@/helpers/recruiter/types";
 import Cookies from "js-cookie";
 import { getJobDetail } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
@@ -11,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { getJafDetails } from "@/helpers/recruiter/api";
-import { JAFdetailsFC } from "@/helpers/recruiter/api";
+import { JAFdetailsFC } from "@/helpers/recruiter/types";
 import { patchJobData } from "@/helpers/recruiter/api";
 import { patchSalaryData } from "@/helpers/recruiter/api";
 

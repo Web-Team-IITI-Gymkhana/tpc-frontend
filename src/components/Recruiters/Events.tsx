@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
-import { getEvent, JobDetailFC } from "@/helpers/recruiter/api";
+import { getEvent } from "@/helpers/recruiter/api";
 import Cookies from "js-cookie";
 import loadingImg from "@/../public/loadingSpinner.svg";
-import { EventFC, ApplicationFC } from "@/helpers/recruiter/api";
+import { EventFC, ApplicationFC, JobDetailFC } from "@/helpers/recruiter/types";
 import { CircularProgress } from "@mui/material";
 import { getResume } from "@/helpers/recruiter/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
