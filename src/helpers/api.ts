@@ -14,9 +14,13 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
   }
   const res = await fetch(url("/auth/passwordless/verify"), {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ token: accessToken }),
   });
-  return res.status;
+  const body = await res.json();
+  return { status: res.status, body };
 };
 
 export const fetchAllSeasons = async (accessToken: string | undefined) => {
