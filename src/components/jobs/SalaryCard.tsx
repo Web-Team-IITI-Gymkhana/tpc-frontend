@@ -14,6 +14,7 @@ import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
 import { Button } from "../ui/button";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import Link from "next/link";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -29,11 +30,18 @@ interface Props{
 
 export default function SalaryCard({salaryId, resumes}: Props) {
     const [salaryData, setSalaryData] = useState<Salary | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const fetchSalaryData = async () => {
-      const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
-      setSalaryData(data);
-      console.log("salary ",data)
+    const fetchSalaryData = async () => {      
+      try {
+        const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
+        setSalaryData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      } finally {
+        setLoading(false);
+      }
     };
 
     useEffect(() => {
@@ -81,10 +89,9 @@ export default function SalaryCard({salaryId, resumes}: Props) {
     }
   
     return (
-      <div id="main-container" className="">        
-        {salaryData===null || salaryData==undefined? (
-          <div>No Data</div>
-        ): (
+      <div id="main-container" className="">
+        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}        
+        {salaryData && (
           <div className="bg-white text-black p-5 rounded-xl">
           <div className="font-semibold text-md" onClick={handleViewDetails} style={{ cursor: "pointer" }}>
             <div className="flex justify-between">

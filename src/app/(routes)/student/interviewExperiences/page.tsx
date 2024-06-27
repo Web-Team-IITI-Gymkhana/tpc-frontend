@@ -12,16 +12,26 @@ import { Separator } from "@/components/ui/separator";
 import Cookies from "js-cookie";
 import { InterviewExperience } from "@/helpers/student/types";
 import { GetInterviewExpiriences, OpenInterviewExpirience } from "@/helpers/student/api";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 // http://localhost:5000/api/v1/resumes/file/0c5dee48-c869-4219-b8c0-80cb6ce0e74d.pdf
 
 const InterviewExpiriencePage = () => {
 
   const [interviewExpirienceData, setInterviewExpirienceData] = useState<InterviewExperience[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchInterviewExpiriences = async () => {
-    const data = await GetInterviewExpiriences(Cookies.get("accessToken"));
-    setInterviewExpirienceData(data);
+  const fetchInterviewExpiriences = async () => {    
+    try {
+      const data = await GetInterviewExpiriences(Cookies.get("accessToken"));
+      setInterviewExpirienceData(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Error fetching data:");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const handleOpenInterviewExpirience = async (filename: string) => {
@@ -31,7 +41,7 @@ const InterviewExpiriencePage = () => {
 
   useEffect(()=>{  
 
-    if(interviewExpirienceData.length===0){
+    if(interviewExpirienceData){
       fetchInterviewExpiriences();
     }
   })
@@ -45,9 +55,8 @@ const InterviewExpiriencePage = () => {
         <div className="my-4">
           <Separator />
         </div>
-        {interviewExpirienceData.length===0? (
-          <div>No Interview Expiriences</div>
-        ): (
+        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {interviewExpirienceData.length >0 && (
           <Table className="overflow-hidden">
             <TableHeader>
                 <TableRow>

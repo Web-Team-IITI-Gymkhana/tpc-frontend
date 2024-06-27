@@ -15,6 +15,8 @@ import HorizontalTimeline from "@/components/HorizontalTimeline";
 import { Job, CustomEvent, EventData, CalenderEvent } from "@/helpers/student/types";
 import { GetJobById } from "@/helpers/student/api";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 function transformEvents(events: CustomEvent[]): EventData[] {
   
@@ -87,12 +89,20 @@ function formatNumber(num: number): string {
 const JobPage = ({ params }: { params: { jobId: string } }) => {
 
   const [jobData, setJobData] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchJobData = async () => {
-      const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
-      setJobData(data);
-      storeCalenderEvents(data);
+      try {
+        const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
+        setJobData(data);
+        storeCalenderEvents(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchJobData();
@@ -102,9 +112,8 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
 
   return (
     <div className="m-10 bg-white p-5 border-2 rounded-xl">
-        {jobData===null? (
-          <div>No Data</div>
-        ): (
+        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {jobData && (
           <>
             <div className="font-semibold text-xl">{jobData?.companyDetailsFilled.name}</div>
             <div className="text-gray-600 font-medium text-sm my-1">

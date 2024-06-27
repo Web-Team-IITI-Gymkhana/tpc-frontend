@@ -14,23 +14,31 @@ import { Button } from "@/components/ui/button";
 import { StudentDataType } from "@/helpers/student/types";
 import { GetStudentData } from "@/helpers/student/api";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
-interface Props {}
 
 const ProfilePage = () => {
 
   const [studentData, setStudentData] = useState<StudentDataType | null>(null);
-
   const [totalPenalty, setTotalPenalty] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const fetchStudentData = async () => {
-        const data = await GetStudentData(Cookies.get("accessToken"));
-        setStudentData(data);
+    const fetchStudentData = async () => {        
+        try {
+            const data = await GetStudentData(Cookies.get("accessToken"));
+            setStudentData(data);
 
-        if(data){
-            const total = data.penalties.reduce((sum: number, penalty) => sum + penalty.penalty, 0);
-            setTotalPenalty(total);
+            if(data){
+                const total = data.penalties.reduce((sum: number, penalty) => sum + penalty.penalty, 0);
+                setTotalPenalty(total);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast.error("Error fetching data:");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -42,9 +50,8 @@ const ProfilePage = () => {
 
   return (
     <>
-        {studentData===null? (
-            <div>No Data</div>
-        ): (
+        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {studentData && (
             <div className="">
                 <div className="rounded-xl bg-white text-black p-5">
                     <div className="font-bold text-lg" style={{cursor: "pointer"}}>

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
 import { GetSalaryById } from "@/helpers/student/api";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 interface Props {
   jobItem: OnCampusOffers;
   salaryId: string;
@@ -11,14 +13,22 @@ interface Props {
 
 const OnCampusCard = ({ jobItem, salaryId }: Props) => {
   const [salary, setSalary] = useState<Salary|null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSalary = async () => {
-      const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
-      setSalary(data);
+    const fetchSalary = async () => {      
+      try {
+        const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
+        setSalary(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    if(salaryId !== null && salaryId !==undefined){
+    if(salaryId){
       fetchSalary();
     }
     // setJobs(Jobs);
@@ -37,10 +47,9 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
   }
 
   return (
-    <div className="">     
-      {salary===null || salary===undefined? (
-        <div>No Data</div>
-      ): (
+    <div className="">
+      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}     
+      {salary && (
         <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
           {jobItem.salary.job.company.name}
