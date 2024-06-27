@@ -34,7 +34,9 @@ const ProfilePage = () => {
         }
     }
 
-    fetchStudentData();
+    if(studentData===null){
+        fetchStudentData();
+    }
 
   })
 
@@ -104,36 +106,40 @@ const ProfilePage = () => {
                         </div>
 
 
-                        <div className="my-4">
-                        <Separator />
-                        </div>
+                        {totalPenalty>0 && (
+                            <>
+                                <div className="my-4">
+                                    <Separator />
+                                </div>
 
-                        <h1 className="text-lg font-semibold my-2">Penalties</h1>
-                        <Table className="overflow-hidden">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Sr.</TableHead>
-                                    <TableHead>Reason</TableHead>
-                                    <TableHead>Penalty</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {studentData.penalties.map((item,index)=>(
-                                    <TableRow key={index}>
-                                        <TableCell>{index+1}</TableCell>
-                                        <TableCell>{item.reason}</TableCell>
-                                        <TableCell>{item.penalty}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                            <TableFooter>
-                                <TableRow>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell>{totalPenalty}</TableCell>
-                                </TableRow>
-                            </TableFooter>
-                        </Table>
+                                <h1 className="text-lg font-semibold my-2">Penalties</h1>
+                                <Table className="overflow-hidden">
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Sr.</TableHead>
+                                            <TableHead>Reason</TableHead>
+                                            <TableHead>Penalty</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {studentData.penalties.map((item,index)=>(
+                                            <TableRow key={index}>
+                                                <TableCell>{index+1}</TableCell>
+                                                <TableCell>{item.reason}</TableCell>
+                                                <TableCell>{item.penalty}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell>{totalPenalty}</TableCell>
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            </>
+                        )}
                         <div className="my-4">
                             <Separator />
                         </div>
@@ -163,10 +169,6 @@ const ProfilePage = () => {
                                 ))}
                             </TableBody>
                         </Table>
-
-                        <div className="my-4">
-                            <Separator />
-                        </div>
 
                     </div>
                 </div>

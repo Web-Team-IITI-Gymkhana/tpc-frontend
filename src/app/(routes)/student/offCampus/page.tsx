@@ -25,7 +25,7 @@ const OffCampusPage = () => {
   return (
     <div>
       <div className="my-3 mx-5 font-bold text-xl">
-        <h1>Apply</h1>
+        <h1>Off Campus Offers</h1>
       </div>
       {offCampusOffers.length===0? (
         <div>

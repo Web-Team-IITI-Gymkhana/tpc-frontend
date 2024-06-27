@@ -8,40 +8,34 @@ import { Button } from "@/components/ui/button";
 import Cookies from "js-cookie";
 import { GetOnCampusOffers, GetResumes } from "@/helpers/student/api";
 import { OnCampusOffers, Resume } from "@/helpers/student/types";
-
-interface Props {}
+import OnCampusCard from "@/components/jobs/OnCampusCard";
 
 const StudentPage = () => {
 
   const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);
-  const [resumes, setResumes] = useState<Resume[]>([])
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchOffers = async () => {
       const oco = await GetOnCampusOffers(Cookies.get("accessToken"));
       setOnCampusOffers(oco);
 
-      const res = await GetResumes(Cookies.get("accessToken"));
-      setResumes(res);
-
     };
 
-    fetchJobs();
-    // setJobs(Jobs);
+    fetchOffers();
   }, []);
 
   return (
     <div>
       <div className="my-3 mx-5 font-bold text-xl">
-        <h1>Apply</h1>
+        <h1>On Campus Offers</h1>
       </div>
       {onCampusOffers.length===0? (
         <div>
-          No Jobs
+          No Offers
         </div>
       ): (onCampusOffers.map((job)=>(
         <div key={job.id} className="my-3">
-          <JobCard jobItem={job} salaryId={job.salary.id} resumes={resumes}/>
+          <OnCampusCard jobItem={job} salaryId={job.salary.id}/>
         </div>
       )))}
     </div>

@@ -21,13 +21,22 @@ const Sidebar = () => {
   const userRole = user?.role?.toLowerCase();
   const [isLoaded, setIsLoaded] = useState(false);
 
+
   useEffect(() => {
-    setIsLoaded(true);
+    const userString = Cookies.get("user");
+    const user = userString ? JSON.parse(userString) : null;
+    if (user) {
+      setLoggedIn(true);
+    }
+    setIsAdmin(user?.role === "ADMIN");
+    setIsRecruiter(user?.role === "RECRUITER");
+    setIsStudent(user?.role === "STUDENT");
   }, []);
 
   if (!isLoaded) {
     return null; 
   }
+
   return (
     <motion.div
       initial={{
@@ -134,17 +143,11 @@ const Sidebar = () => {
             {/* <CompanyDropDown userRole={userRole} /> */}
           </div>
           <hr />
-          <NavButtonGroup />
+          <NavButtonGroup loggedIn={isLoggedIn} />
         </div>
-        {isAdmin && (
-          <AdminDashboard/>
-        )}
-        {isStudent && (
-          <StudentDashboard/>
-        )}
-        {isRecruiter&& (
-          <RecruiterDashboard/>
-        )}
+        {isAdmin && <AdminDashboard />}
+        {isStudent && <StudentDashboard />}
+        {isRecruiter && <RecruiterDashboard />}
       </div>
     </motion.div>
   );
