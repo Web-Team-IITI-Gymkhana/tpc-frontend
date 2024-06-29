@@ -1,10 +1,11 @@
 "use client";
 import { PasswordlessLogin } from "@/helpers/api";
 import toast from "react-hot-toast";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 interface Props {}
 
@@ -17,21 +18,20 @@ const LoginPage = ({
 }) => {
 
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(()=>{
     const login = async () => {
-        const res = await PasswordlessLogin(params.token);
-
-        if(res.status===201){
-          console.log(res);
+        try {
+          const res = await PasswordlessLogin(params.token);
           Cookies.set("accessToken", res.body.accessToken, {expires: 365});
           Cookies.set("user",JSON.stringify(jwtDecode(res.body.accessToken)),{ expires: 365 });
           toast.success("Logged in successfully")
           router.push("/recruiter")
-        }
-        else {
-          toast.error("Some error occured")
-          router.push("/login")
+        } catch (error) {
+          toast.error("Some Error Occurred");
+        } finally {
+          setLoading(false);
         }
     }
 
@@ -40,7 +40,7 @@ const LoginPage = ({
 
   return (
     <>
-      <div>Please Wait</div>
+      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
     </>
   );
 };
