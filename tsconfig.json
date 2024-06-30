@@ -31,6 +31,6 @@
     "src/components/Students/StudentsTable/StudentTable.tsx",
     "src/middleware.ts",
     "src/components/JAF/JAF.tsx"
-, "src/components/NewTableComponent/Table.jsx"  ],
+, "src/components/NewTableComponent/Table.jsx", "src/components/NewTableComponent/PenaltyModal.jsx"  ],
   "exclude": ["node_modules"]
 }

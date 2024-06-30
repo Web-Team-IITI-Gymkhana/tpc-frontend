@@ -9,34 +9,18 @@ import NavButtonGroup from "@/components/NavButtonGroup";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
-
-interface Framework {
-  value: string;
-  label: string;
-}
-
-interface Season {
-  id: string;
-  year: string;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Props {
-  AllSeasons: {
-    seasons: Season[];
-  };
-}
-
+import { jwtDecode } from "jwt-decode";
 const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-
   const context = useContext(ToggleContext);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
-  const [isStudent, setIsStudent] = useState<boolean>(false);
-  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const accessToken = Cookies.get("accessToken");
+  const user = accessToken ? jwtDecode(accessToken) as { role: string  } : null 
+  const isAdmin = user?.role === "ADMIN";
+  const isRecruiter = user?.role === "RECRUITER";
+  const isStudent = user?.role === "STUDENT";
+  const userRole = user?.role?.toLowerCase();
+  const [isLoaded, setIsLoaded] = useState(false);
+
 
   useEffect(() => {
     const userString = Cookies.get("user");
@@ -48,6 +32,11 @@ const Sidebar = () => {
     setIsRecruiter(user?.role === "RECRUITER");
     setIsStudent(user?.role === "STUDENT");
   }, []);
+
+  if (!isLoaded) {
+    return null; 
+  }
+
   return (
     <motion.div
       initial={{
