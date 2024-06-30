@@ -13,7 +13,7 @@ const JAFPage = ({
 }) => {
   return (
     <>
-      <JAF/>
+      <JAF />
     </>
   );
 };
