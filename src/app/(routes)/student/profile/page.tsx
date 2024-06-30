@@ -13,7 +13,6 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { StudentDataType } from "@/helpers/student/types";
 import { GetStudentData } from "@/helpers/student/api";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
@@ -27,7 +26,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchStudentData = async () => {        
         try {
-            const data = await GetStudentData(Cookies.get("accessToken"));
+            const data = await GetStudentData();
             setStudentData(data);
 
             if(data){

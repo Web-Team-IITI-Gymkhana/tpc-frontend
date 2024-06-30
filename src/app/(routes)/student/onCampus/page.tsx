@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { GetOnCampusOffers } from "@/helpers/student/api";
 import { OnCampusOffers } from "@/helpers/student/types";
 import OnCampusCard from "@/components/jobs/OnCampusCard";
@@ -15,7 +14,7 @@ const StudentPage = () => {
   useEffect(() => {
     const fetchOffers = async () => {      
       try {
-        const oco = await GetOnCampusOffers(Cookies.get("accessToken"));
+        const oco = await GetOnCampusOffers();
         setOnCampusOffers(oco);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -36,7 +35,7 @@ const StudentPage = () => {
       {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
       {onCampusOffers.length >0 && (onCampusOffers.map((job)=>(
         <div key={job.id} className="my-3">
-          <OnCampusCard jobItem={job} salaryId={job.salary.id}/>
+          <OnCampusCard offerItem={job} salaryId={job.salary.id}/>
         </div>
       )))}
     </div>

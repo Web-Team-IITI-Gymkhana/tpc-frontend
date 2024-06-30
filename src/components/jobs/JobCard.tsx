@@ -1,23 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
-import { fetchJobSalary } from "@/helpers/api";
-import { useState, useEffect } from 'react';
-import {JobDetails} from "@/dummyData/jobdetails"
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Salary, Resume, Jobs } from "@/helpers/student/types";
-import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
-import Cookies from "js-cookie";
-import toast, { Toaster } from "react-hot-toast";
+import { Jobs } from "@/helpers/student/types";
 const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
 const url = (NextUrl: string) => {

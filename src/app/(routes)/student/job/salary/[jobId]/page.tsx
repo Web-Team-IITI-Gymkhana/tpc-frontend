@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import SalaryCard from "@/components/jobs/SalaryCard";
-import Cookies from "js-cookie";
 import { GetJobById, GetResumes } from "@/helpers/student/api";
 import { Resume } from "@/helpers/student/types";
 import toast from "react-hot-toast";
@@ -33,10 +32,10 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   useEffect(() => {
     const fetchSalaryData = async () => {
       try {
-        const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
+        const data = await GetJobById(params.jobId);
         setSalaryData(data.salaries);
 
-        const res = await GetResumes(Cookies.get("accessToken"));
+        const res = await GetResumes();
         setResumes(res);
       } catch (error) {
         console.error("Error fetching data:", error);

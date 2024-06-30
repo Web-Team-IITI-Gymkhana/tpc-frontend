@@ -24,7 +24,7 @@ const InterviewExpiriencePage = () => {
 
   const fetchInterviewExpiriences = async () => {    
     try {
-      const data = await GetInterviewExpiriences(Cookies.get("accessToken"));
+      const data = await GetInterviewExpiriences();
       setInterviewExpirienceData(data);
     } catch (error) {
       console.error("Error fetching data:", error);

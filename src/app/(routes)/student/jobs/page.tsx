@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import JobCard from "@/components/jobs/JobCard";
-import Cookies from "js-cookie";
 import { GetJobs } from "@/helpers/student/api";
 import { Jobs } from "@/helpers/student/types";
 import toast from "react-hot-toast";
@@ -14,7 +13,7 @@ const StudentPage = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const data = await GetJobs(Cookies.get("accessToken"));
+        const data = await GetJobs();
         setJobs(data);
       } catch (error) {
         console.error("Error fetching data:", error);

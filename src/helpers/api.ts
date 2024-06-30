@@ -1,11 +1,83 @@
 const redirect = () => {};
-import { SampleJobData } from "@/dummyData/job";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+import qs from "qs"
+import Cookies from "js-cookie";
+
+interface ApiCallOptions {
+  method?: string;
+  isAuth?: boolean;
+  body?: object;
+  queryParam?: object;
+  next?: object;
+  formData?: FormData;
+}
 
 export const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
+
+export const getUrl = (NextUrl: string) => {
+  return `${baseUrl}/api/v1${NextUrl}`;
+};
+
+export const apiCall = async (
+  path: string,
+{ method = "GET", isAuth = true, body = null, queryParam = null, formData = null, next = null }: ApiCallOptions = {}
+) => {
+  
+  const accessToken = Cookies.get("accessToken");
+  if ((!accessToken || accessToken === undefined) && isAuth){
+    redirect();
+    return;
+  }
+
+  let url = getUrl(path)
+
+  const headers: HeadersInit = {};
+
+  const req = {
+    method: method,
+  }
+
+  if ((method == "POST" || method == "PATCH") && body){
+    req['body'] = JSON.stringify(body);
+    headers['Content-Type'] = 'application/json';
+  }
+  if ((method == "POST" || method == "PATCH") && formData){
+    req['body'] = formData;
+    headers['accept'] = 'application/json';
+  }
+  if (method == "DELETE"){
+    headers['accept'] = 'application/json';
+  }
+
+
+  if(queryParam){
+    const encodedQueryString = qs.stringify(queryParam, {
+      encodeValuesOnly: true,
+      encode: false,
+    });
+    url += `?${encodedQueryString}`;
+  }
+
+  if (isAuth) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  req['headers'] = headers;
+
+
+  if (next){
+    req['next'] =  next;
+  }
+
+  const res = await fetch(url, req);
+  if(method === "GET"){
+    return await res.json();
+  }
+  else return res.ok;
+}
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {

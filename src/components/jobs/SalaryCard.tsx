@@ -34,7 +34,7 @@ export default function SalaryCard({salaryId, resumes}: Props) {
 
     const fetchSalaryData = async () => {      
       try {
-        const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
+        const data = await GetSalaryById(salaryId);
         setSalaryData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -57,8 +57,8 @@ export default function SalaryCard({salaryId, resumes}: Props) {
   };
 
   const handleApply = async () => {
-    const data = await ApplyJob(Cookies.get("accessToken"),salaryId,selectedResume);
-    if(data.status===201){
+    const data = await ApplyJob(salaryId,selectedResume);
+    if(data){
       toast.success("Applied Successfully");
       fetchSalaryData();
     }

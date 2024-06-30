@@ -1,24 +1,23 @@
 import React from "react";
 import { Separator } from "../ui/separator";
 import { useState, useEffect } from 'react';
-import { OnCampusOffers, Salary, Resume } from "@/helpers/student/types";
+import { OnCampusOffers, Salary } from "@/helpers/student/types";
 import { GetSalaryById } from "@/helpers/student/api";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 interface Props {
-  jobItem: OnCampusOffers;
+  offerItem: OnCampusOffers;
   salaryId: string;
 }
 
-const OnCampusCard = ({ jobItem, salaryId }: Props) => {
+const OnCampusCard = ({ offerItem, salaryId }: Props) => {
   const [salary, setSalary] = useState<Salary|null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSalary = async () => {      
       try {
-        const data = await GetSalaryById(salaryId, Cookies.get("accessToken"));
+        const data = await GetSalaryById(salaryId);
         setSalary(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -52,7 +51,7 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
       {salary && (
         <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">
-          {jobItem.salary.job.company.name}
+          {offerItem.salary.job.company.name}
         </div>
         <div className="my-4">
           <Separator />
@@ -60,11 +59,11 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 text-sm mx-2">
           <div>
             <div className="text-gray-500 font-semibold my-2">Role</div>{" "}
-            <div>{jobItem.salary.job.role}</div>
+            <div>{offerItem.salary.job.role}</div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Status</div>{" "}
-            <div>{jobItem.status}</div>
+            <div>{offerItem.status}</div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Period</div>{" "}
@@ -72,7 +71,7 @@ const OnCampusCard = ({ jobItem, salaryId }: Props) => {
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Season</div>{" "}
-            <div>{jobItem.salary.job.season.type} {jobItem.salary.job.season.year}</div>
+            <div>{offerItem.salary.job.season.type} {offerItem.salary.job.season.year}</div>
           </div>
         </div>
         <div className="my-4">

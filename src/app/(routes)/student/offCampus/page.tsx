@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import OffCampusCard from "@/components/jobs/OffCampusCard";
 import { OffCampusOffer } from "@/helpers/student/types";
 import { GetOffCampusOffers } from "@/helpers/student/api";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
@@ -16,7 +15,7 @@ const OffCampusPage = () => {
   useEffect(() => {
     const fetchJobs = async () => {      
       try {
-        const oco = await GetOffCampusOffers(Cookies.get("accessToken"));
+        const oco = await GetOffCampusOffers();
         setOffCampusOffers(oco);
       } catch (error) {
         console.error("Error fetching data:", error);

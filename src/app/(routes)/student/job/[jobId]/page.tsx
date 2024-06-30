@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import HorizontalTimeline from "@/components/HorizontalTimeline";
 import { Job, CustomEvent, EventData, CalenderEvent } from "@/helpers/student/types";
 import { GetJobById } from "@/helpers/student/api";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
@@ -94,7 +93,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
   useEffect(() => {
     const fetchJobData = async () => {
       try {
-        const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
+        const data = await GetJobById(params.jobId);
         setJobData(data);
         storeCalenderEvents(data);
       } catch (error) {

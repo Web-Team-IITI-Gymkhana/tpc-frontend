@@ -30,7 +30,7 @@ const ResumePage = () => {
 
   const fetchResumes = async () => {    
     try {
-      const data = await GetResumes(Cookies.get("accessToken"));
+      const data = await GetResumes();
       setResumeData(data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -63,9 +63,9 @@ const ResumePage = () => {
     const formData = new FormData();
     formData.append('resume', file, file.name);
 
-    const data = await uploadResume(formData, Cookies.get("accessToken"));
+    const data = await uploadResume(formData);
 
-    if(data===201||data===204){
+    if(data){
       toast.success("Uploaded Successfully");
       fetchResumes();
       setFile(null);
@@ -77,9 +77,9 @@ const ResumePage = () => {
   };
 
   const handleDelete = async (filename: string) => {
-    const res = await deleteResume(filename, Cookies.get("accessToken"));
+    const res = await deleteResume(filename);
 
-    if(res===200){
+    if(res){
       toast.success("Deleted Successfully");
       fetchResumes();
     }
