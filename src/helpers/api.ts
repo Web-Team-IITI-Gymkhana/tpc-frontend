@@ -78,6 +78,43 @@ export const apiCall = async (
   }
   else return res.ok;
 }
+export const OpenFile = async (
+  path: string,
+{ method = "GET", isAuth = true, next = null}: ApiCallOptions = {}
+) => {
+  
+  const accessToken = Cookies.get("accessToken");
+  if ((!accessToken || accessToken === undefined) && isAuth){
+    redirect();
+    return;
+  }
+
+  let url = getUrl(path)
+
+  const headers: HeadersInit = {};
+
+  const req = {
+    method: method,
+  }
+
+  if (isAuth) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  req['headers'] = headers;
+
+
+  if (next){
+    req['next'] =  next;
+  }
+
+  fetch(url, req).then(response => response.blob())
+  .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+  })
+  .catch(error => console.error('Error:', error));
+}
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {

@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import Cookies from "js-cookie";
 import { Resume } from "@/helpers/student/types";
 import { GetResumes, OpenResume, deleteResume } from "@/helpers/student/api";
 import { Input } from "@/components/ui/input"
@@ -49,7 +48,7 @@ const ResumePage = () => {
   };
 
   const handleOpenResume = async (filename: string) => {
-    OpenResume(Cookies.get("accessToken"), filename);
+    OpenResume(filename);
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

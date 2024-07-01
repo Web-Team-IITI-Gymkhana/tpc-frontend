@@ -1,6 +1,6 @@
 const redirect = () => { };
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-import { apiCall } from "../api";
+import { OpenFile, apiCall } from "../api";
 
 const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
@@ -17,53 +17,27 @@ export const GetSalaryById = async (salaryId: string) => {
 };
 
 export const GetOnCampusOffers = async () => {
-    return apiCall("/student-view/offers/on-campus", {next: { tags: ["Offers"] },})
+  return apiCall("/student-view/offers/on-campus", {next: { tags: ["Offers"] },})
 };
 
 export const GetOffCampusOffers = async () => {
-    return apiCall("/student-view/offers/off-campus", {next: { tags: ["Offers"] },})
+  return apiCall("/student-view/offers/off-campus", {next: { tags: ["Offers"] },})
 };
 
 export const GetResumes = async () => {
-    return apiCall("/student-view/resume", {next: { tags: ["Resumes"] },})
+  return apiCall("/student-view/resume", {next: { tags: ["Resumes"] },})
 };
 
-export const OpenResume = async (accessToken: string | undefined, filename: string) => {
-    if (!accessToken || accessToken === undefined) {
-      redirect();
-      return;
-    }
-    fetch(url(`/student-view/resume/${filename}`), {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }).then(response => response.blob())
-    .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url);
-    })
-    .catch(error => console.error('Error:', error));
+export const OpenResume = async (filename: string) => {
+  OpenFile(`/student-view/resume/${filename}`)
 };
 
 export const GetInterviewExpiriences = async () => {
-  return apiCall("/student-view/interview-experiences", {next: { tags: ["InterviewExpiriences"] },})
+  return apiCall("/student-view/interview-experiences", {next: { tags: ["InterviewExpiriences"] }})
 };
 
-export const OpenInterviewExpirience = async (accessToken: string | undefined, filename: string) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  fetch(url(`/student-view/interview-experiences/${filename}`), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then(response => response.blob())
-  .then(blob => {
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
-  })
-  .catch(error => console.error('Error:', error));
+export const OpenInterviewExpirience = async (filename: string) => {
+  OpenFile(`/student-view/interview-experiences/${filename}`)
 };
 
 

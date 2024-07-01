@@ -2,9 +2,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { getEvent } from "@/helpers/recruiter/api";
-import Cookies from "js-cookie";
-import loadingImg from "@/../public/loadingSpinner.svg";
-import { EventFC, ApplicationFC, JobDetailFC } from "@/helpers/recruiter/types";
+import { EventFC, ApplicationFC } from "@/helpers/recruiter/types";
 import { CircularProgress } from "@mui/material";
 import { getResume } from "@/helpers/recruiter/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
@@ -131,10 +129,7 @@ export const Applications = ({ eventId }: { eventId: string }) => {
               <tr
                 key={index}
                 onClick={() =>
-                  getResume(
-                    Cookies.get("accessToken"),
-                    application.resume.filepath
-                  )
+                  getResume(application.resume.filepath)
                 }
                 className={`bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
               >

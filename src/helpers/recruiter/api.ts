@@ -4,9 +4,7 @@ import {
   updateProfileFC,
   SalaryFC,
 } from "./types";
-import { apiCall } from "../api";
-
-const redirect = () => {};
+import { OpenFile, apiCall } from "../api";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -36,30 +34,15 @@ export async function getEvent(id: string) {
 }
 
 export async function getDomains() {
-  return apiCall(`/jaf`);
+  return apiCall(`/jaf`, {isAuth: false});
 }
 
 export async function getJafDetails() {
-  return apiCall(`/jaf`);
+  return apiCall(`/jaf`, {isAuth: false});
 }
 
-export const getResume = (
-  accessToken: string | undefined,
-  filename: string
-) => {
-  const u1 = url(`/recruiter-view/resume/${filename}`);
-  axios
-    .get(u1, {
-      responseType: "blob",
-      headers: {
-        "Content-type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      window.open(URL.createObjectURL(response.data));
-    });
+export const getResume = (filename: string) => {
+  OpenFile(`/recruiter-view/resume/${filename}`)
 };
 
 export const patchJobData = async (jobId: string, changes: JobDetailFC) => {
