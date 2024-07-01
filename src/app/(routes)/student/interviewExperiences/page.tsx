@@ -41,7 +41,7 @@ const InterviewExpiriencePage = () => {
 
   useEffect(()=>{  
 
-    if(interviewExpirienceData){
+    if(interviewExpirienceData.length == 0){
       fetchInterviewExpiriences();
     }
   })

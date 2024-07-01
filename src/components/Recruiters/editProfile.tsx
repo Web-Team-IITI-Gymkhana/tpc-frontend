@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ProfileFC, updateProfileFC } from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
 import { patchProfile } from "@/helpers/recruiter/api";
-import Cookies from "js-cookie";
 import { getDomains } from "@/helpers/recruiter/api";
 
 export const EditForm = (params: { profile: ProfileFC }) => {
@@ -34,7 +33,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
       },
     };
     const triggerUpdate = async () => {
-      const res = await patchProfile(Cookies.get("accessToken"), data);
+      const res = await patchProfile(data);
       window.location.reload();
     };
     triggerUpdate();
@@ -142,7 +141,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   const [domainOptions, setDomainsOptions] = useState<[string] | []>([]);
   useEffect(() => {
     const fetchDomains = async () => {
-      const d = await getDomains(Cookies.get("accessToken"));
+      const d = await getDomains();
       setDomainsOptions(d);
     };
     fetchDomains();
@@ -161,7 +160,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
       },
     };
     const triggerUpdate = async () => {
-      const res = await patchProfile(Cookies.get("accessToken"), data);
+      const res = await patchProfile(data);
       window.location.reload();
     };
     triggerUpdate();

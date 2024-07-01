@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from "react";
 import FacultyProfile from "@/components/Faculty/Profile";
 import { fetchProfile } from "@/helpers/faculty/api";
-import Cookies from "js-cookie";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-import { ProfileFC } from "@/helpers/faculty/api";
+import { ProfileFC } from "@/helpers/faculty/types";
 
 const Profile = ({ params }: { params: { facultyId: string } }) => {
   const [data, setData] = useState<ProfileFC>();
@@ -13,7 +12,7 @@ const Profile = ({ params }: { params: { facultyId: string } }) => {
 
   useEffect(() => {
     const profileData = async () => {
-      const jsonData = await fetchProfile(Cookies.get("accessToken"));
+      const jsonData = await fetchProfile();
       setData(jsonData);
       setLoading(false);
     };

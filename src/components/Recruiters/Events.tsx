@@ -88,10 +88,7 @@ export const Applications = ({ eventId }: { eventId: string }) => {
     setApplications(null);
     const fetchData = async () => {
       try {
-        const jsonData: EventFC = await getEvent(
-          Cookies.get("accessToken"),
-          eventId
-        );
+        const jsonData: EventFC = await getEvent(eventId);
         setApplications(jsonData.applications);
       } catch (error) {
         console.log(error);

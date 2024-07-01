@@ -23,7 +23,7 @@ export const getUrl = (NextUrl: string) => {
 
 export const apiCall = async (
   path: string,
-{ method = "GET", isAuth = true, body = null, queryParam = null, formData = null, next = null }: ApiCallOptions = {}
+{ method = "GET", isAuth = true, body = null, queryParam = null, formData = null, next = null,  }: ApiCallOptions = {}
 ) => {
   
   const accessToken = Cookies.get("accessToken");

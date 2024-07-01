@@ -3,7 +3,6 @@ import React from "react";
 import { getJobs } from "@/helpers/recruiter/api";
 import { JobsFC } from "@/helpers/recruiter/types";
 import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +14,7 @@ const JobPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = await getJobs(Cookies.get("accessToken"));
+        const jsonData = await getJobs();
         setData(jsonData);
       } catch (error) {
         error("Error Fetching Data");

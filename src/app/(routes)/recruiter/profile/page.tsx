@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import RecruiterProfile from "@/components/Recruiters/profile";
 import { fetchProfile } from "@/helpers/recruiter/api";
-import Cookies from "js-cookie";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { ProfileFC } from "@/helpers/recruiter/types";
 import EditProfilePage from "@/components/Recruiters/editProfile";
@@ -15,7 +14,7 @@ const Profile = () => {
 
   useEffect(() => {
     const profileData = async () => {
-      const jsonData = await fetchProfile(Cookies.get("accessToken"));
+      const jsonData = await fetchProfile();
       setData(jsonData);
       setLoading(false);
     };

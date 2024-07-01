@@ -1,18 +1,13 @@
 import {
   Dialog,
-  DialogOverlay,
   DialogContent,
   DialogTrigger,
   DialogClose,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
 } from "../ui/dialog";
 import TextArea from "antd/es/input/TextArea";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { updateApproval } from "@/helpers//faculty/api";
-import Cookies from "js-cookie";
 import tick from "@/../public/tick.svg";
 import cross from "@/../public/cross.svg";
 
@@ -25,7 +20,7 @@ interface ButtonProps {
 
 const UpdateApprovalPATCH = (rows: any[], remarks: string, status: string) => {
   for (var i = 0; i < rows.length; i++) {
-    updateApproval(Cookies.get("accessToken"), {
+    updateApproval({
       id: rows[i].id,
       remarks: remarks,
       status: status,
@@ -36,7 +31,6 @@ const UpdateApprovalPATCH = (rows: any[], remarks: string, status: string) => {
 
 const AcceptButton: React.FC<ButtonProps> = ({
   rows = [],
-  children,
   remarks = "",
   finalButton,
 }) => {
@@ -58,7 +52,6 @@ const AcceptButton: React.FC<ButtonProps> = ({
 
 const RejectButton: React.FC<ButtonProps> = ({
   rows = [],
-  children,
   remarks = "",
   finalButton,
 }) => {

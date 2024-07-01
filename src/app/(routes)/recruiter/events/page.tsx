@@ -2,7 +2,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { JobsFC } from "@/helpers/recruiter/types";
-import Cookies from "js-cookie";
 import { getJobs } from "@/helpers/recruiter/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/../public/loadingSpinner.svg";
@@ -17,7 +16,7 @@ const EventPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = await getJobs(Cookies.get("accessToken"));
+        const jsonData = await getJobs();
         setData(jsonData);
       } catch (error) {
         toast.error("Error Fetching Data");
