@@ -35,7 +35,7 @@ const InterviewExpiriencePage = () => {
   }
 
   const handleOpenInterviewExpirience = async (filename: string) => {
-    OpenInterviewExpirience(Cookies.get("accessToken"), filename);
+    OpenInterviewExpirience(filename);
   }
 
 
