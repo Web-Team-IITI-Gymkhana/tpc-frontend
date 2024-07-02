@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import SalaryCard from "@/components/jobs/SalaryCard";
-import Cookies from "js-cookie";
 import { GetJobById, GetResumes } from "@/helpers/student/api";
 import { Resume } from "@/helpers/student/types";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 
 interface Salary {
@@ -26,14 +27,22 @@ interface Salary {
 const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   const [salaryData, setSalaryData] = useState<Salary[]>([]);
   const [resumes, setResumes] = useState<Resume[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSalaryData = async () => {
-      const data = await GetJobById(params.jobId, Cookies.get("accessToken"));
-      setSalaryData(data.salaries);
+      try {
+        const data = await GetJobById(params.jobId);
+        setSalaryData(data.salaries);
 
-      const res = await GetResumes(Cookies.get("accessToken"));
-      setResumes(res);
+        const res = await GetResumes();
+        setResumes(res);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchSalaryData();
@@ -42,11 +51,8 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   return (
     <div>
       <div className="font-bold text-black text-lg ml-2 mb-4">Salaries</div>
-      {salaryData.length===0? (
-        <div>
-          No Data
-        </div>
-      ): (salaryData.map((item,index)=>(
+      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+      {salaryData && (salaryData.map((item,index)=>(
         <div key={index} className="my-3">
           <SalaryCard salaryId={item.id} resumes={resumes}/>
         </div>

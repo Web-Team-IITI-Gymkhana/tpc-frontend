@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { JobDetailFC } from "@/helpers/recruiter/types";
-import Cookies from "js-cookie";
 import { getJobDetail } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -24,12 +23,9 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const accessToken = Cookies.get("accessToken");
-        if (!accessToken) throw new Error("No access token found");
-
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          getJobDetail(accessToken, params.jobID),
-          getJafDetails(accessToken),
+          getJobDetail(params.jobID),
+          getJafDetails(),
         ]);
 
         setJafDetails((prev) => jafDetailsData);
@@ -58,10 +54,10 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   };
 
   const handleSubmit = async () => {
-    const c1 = await patchJobData(Cookies.get("accessToken"), job.id, formData);
+    const c1 = await patchJobData(job.id, formData);
     if (true) {
       formData.salaries.map((salary, index) =>
-        patchSalaryData(Cookies.get("accessToken"), salary)
+        patchSalaryData(salary)
       );
     }
     setEditMode(false);

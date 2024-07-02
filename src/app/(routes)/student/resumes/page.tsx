@@ -10,22 +10,14 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import Cookies from "js-cookie";
-import Link from "next/link";
 import { Resume } from "@/helpers/student/types";
-import { GetResumes, deleteResume } from "@/helpers/student/api";
+import { GetResumes, OpenResume, deleteResume } from "@/helpers/student/api";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { uploadResume } from "@/helpers/student/api";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-
-
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-const url = (NextUrl: string) => {
-  return `${baseUrl}/api/v1${NextUrl}`;
-};
 
 // http://localhost:5000/api/v1/resumes/file/0c5dee48-c869-4219-b8c0-80cb6ce0e74d.pdf
 
@@ -33,10 +25,18 @@ const ResumePage = () => {
 
   const [resumeData, setResumeData] = useState<Resume[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
-  const fetchResumes = async () => {
-    const data = await GetResumes(Cookies.get("accessToken"));
-    setResumeData(data);
+  const fetchResumes = async () => {    
+    try {
+      const data = await GetResumes();
+      setResumeData(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Error fetching data:");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const [file, setFile] = useState<File | null>(null);
@@ -46,6 +46,10 @@ const ResumePage = () => {
       setFile(event.target.files[0]);
     }
   };
+
+  const handleOpenResume = async (filename: string) => {
+    OpenResume(filename);
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,9 +62,9 @@ const ResumePage = () => {
     const formData = new FormData();
     formData.append('resume', file, file.name);
 
-    const data = await uploadResume(formData, Cookies.get("accessToken"));
+    const data = await uploadResume(formData);
 
-    if(data===201||data===204){
+    if(data){
       toast.success("Uploaded Successfully");
       fetchResumes();
       setFile(null);
@@ -72,9 +76,9 @@ const ResumePage = () => {
   };
 
   const handleDelete = async (filename: string) => {
-    const res = await deleteResume(filename, Cookies.get("accessToken"));
+    const res = await deleteResume(filename);
 
-    if(res===200){
+    if(res){
       toast.success("Deleted Successfully");
       fetchResumes();
     }
@@ -97,39 +101,40 @@ const ResumePage = () => {
       <div className="rounded-xl bg-white text-black p-5">
         <div className="font-bold text-lg">
             Resumes
-        </div>
-        <div className="my-4">
-          <Separator />
-        </div>
-        {resumeData.length===0? (
-          <div>No Resumes</div>
-        ): (
-          <Table className="overflow-hidden">
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Sr.</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Delete</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {resumeData.map((item,index)=>(
-                    <TableRow key={index}>
-                        <TableCell>{index+1}</TableCell>
-                        <TableCell>
-                          <Link className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" target="_blank" href={url(`/resumes/file/${item.filepath}`)}>
-                            {item.filepath}
-                          </Link>
-                        </TableCell>
-                        <TableCell>{item.verified? "Verified": "Not Verified"}</TableCell>
-                        <TableCell>
-                          <Button onClick={() => handleDelete(item.filepath)}>Delete</Button>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+        </div>        
+        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {resumeData.length >0 && (
+          <>
+            <div className="my-4">
+              <Separator />
+            </div>
+            <Table className="overflow-hidden">
+              <TableHeader>
+                  <TableRow>
+                      <TableHead>Sr.</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Delete</TableHead>
+                  </TableRow>
+              </TableHeader>
+              <TableBody>
+                  {resumeData.map((item,index)=>(
+                      <TableRow key={index}>
+                          <TableCell>{index+1}</TableCell>
+                          <TableCell>
+                            <div className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" onClick={()=>handleOpenResume(item.filepath)}>
+                              {item.filepath}
+                            </div>
+                          </TableCell>
+                          <TableCell>{item.verified? "Verified": "Not Verified"}</TableCell>
+                          <TableCell>
+                            <Button onClick={() => handleDelete(item.filepath)}>Delete</Button>
+                          </TableCell>
+                      </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </>
         )}
         <div className="my-4">
             <Separator />

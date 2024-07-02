@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import profileImg from "@/../public/profile-icon.svg";
-import { ProfileFC, updateProfileFC } from "@/helpers/recruiter/types";
+import React from "react";
+import { ProfileFC} from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
 import PersonIcon from "@mui/icons-material/Person";
 

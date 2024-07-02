@@ -92,14 +92,12 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
         form.getFieldsValue().salaries.map((salary: any) => {
           const obj = {
             salaryPeriod: salary.salaryPeriod, //text
-            criteria: {
-              programs: salary.programs ? salary.programs : [], //dropdown from backend
-              genders: salary.genders ? salary.genders : [], //dropdown from backend
-              categories: salary.categories ? salary.categories : [], //dropdown from backend
-              minCPI: salary.minCPI ? salary.minCPI : 0, //number
-              tenthMarks: salary.tenthMarks ? salary.tenthMarks : 0, //number
-              twelvethMarks: salary.twelvethMarks ? salary.twelvethMarks : 0, //number
-            },
+            programs: salary.programs ? salary.programs : [], //dropdown from backend
+            genders: salary.genders ? salary.genders : [], //dropdown from backend
+            categories: salary.categories ? salary.categories : [], //dropdown from backend
+            minCPI: salary.minCPI ? salary.minCPI : 0, //number
+            tenthMarks: salary.tenthMarks ? salary.tenthMarks : 0, //number
+            twelthMarks: salary.twelthMarks ? salary.twelthMarks : 0, //number
             baseSalary: salary.baseSalary ? salary.baseSalary : 0,
             totalCTC: salary.totalCTC ? salary.totalCTC : 0,
             takeHomeSalary: salary.takeHomeSalary ? salary.takeHomeSalary : 0,

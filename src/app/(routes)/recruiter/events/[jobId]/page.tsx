@@ -2,7 +2,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { JobDetailFC } from "@/helpers/recruiter/types";
-import Cookies from "js-cookie";
 import { getJobDetail } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { JobEvents } from "@/components/Recruiters/Events";
@@ -14,10 +13,7 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = await getJobDetail(
-          Cookies.get("accessToken"),
-          params.jobId
-        );
+        const jsonData = await getJobDetail(params.jobId);
         setData(jsonData);
       } catch (error) {
         console.log(error);

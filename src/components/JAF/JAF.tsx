@@ -4,6 +4,7 @@ import * as React from "react";
 import { Row, Col, Steps, Space, Button } from "antd";
 import * as Yup from "yup";
 import { FormikWizard, RenderProps } from "formik-wizard-form";
+import toast from "react-hot-toast";
 
 import JobDetails from "./JobDetails";
 import RecruiterDetails from "./RecruiterDetails";
@@ -149,37 +150,37 @@ function JAF() {
             };
             console.log(submitValues);
             axios
-              .post(`${baseUrl}/api/v1/jaf`, {
-                seasonId: values.seasonId,
-                company: {
-                  name: values.compName,
-                  website: values.website,
-                  domains: values.domains,
-                  category: values.category,
-                  address: {
-                    line1: values.line1,
-                    line2: values.line2,
-                    city: values.city,
-                    state: values.state,
-                    zipCode: values.zipCode,
-                    country: values.country,
-                  },
-                  size: values.size,
-                  yearOfEstablishment: values.yearOfEstablishment,
-                  annualTurnover: values.annualTurnover,
-                  socialMediaLink: values.socialMediaLink,
-                },
-                recruiter: {
-                  name: values.recName,
-                  designation: values.designation,
-                  email: values.email,
-                  phoneNumber: "+91 " + values.phoneNumber,
-                  landline: values.landline,
-                },
+              .post(`${baseUrl}/api/v1/jaf`, {                
                 job: {
                   role: values.role,
+                  seasonId: values.seasonId,
                   description: values.description,
+                  companyDetailsFilled: {
+                    name: values.compName,
+                    website: values.website,
+                    domains: values.domains,
+                    category: values.category,
+                    address: {
+                      line1: values.line1,
+                      line2: values.line2,
+                      city: values.city,
+                      state: values.state,
+                      country: values.country,
+                    },
+                    size: values.size,
+                    yearOfEstablishment: values.yearOfEstablishment,
+                    annualTurnover: values.annualTurnover,
+                    socialMediaLink: values.socialMediaLink,
+                  },
+                  recruiterDetailsFilled: {
+                    name: values.recName,
+                    designation: values.designation,
+                    email: values.email,
+                    contact: "+91 " + values.phoneNumber,
+                    landline: values.landline,
+                  },
                   //attachment: values.attachment,//file
+                  others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
                   noOfVacancies: values.noOfVacancies,
@@ -199,14 +200,18 @@ function JAF() {
                       otherRequirements: values.otherRequirements,
                     },
                   },
-                  salaries: values.salaries,
-                  others: values.jobOthers,
                 },
+                salaries: values.salaries,                  
               })
               .then((res) => {
+                toast.success("JAF Form filled successfully")
+                window.location.reload();
                 console.log(res);
               })
-              .catch((err) => console.log(err));
+              .catch((err) => {
+                toast.error("Cannot Submit")
+                console.log(err)
+              });
             setFinalValues(submitValues);
           }}
           validateOnNext

@@ -1,11 +1,9 @@
 "use client";
-import { fetchApprovals, updateApproval } from "@/helpers/faculty/api";
-import Cookies from "js-cookie";
+import { fetchApprovals } from "@/helpers/faculty/api";
 import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useState, useEffect } from "react";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-import { number } from "yup";
 
 const dto = [
   {
@@ -37,10 +35,7 @@ const FacultyPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const jsonData = await fetchApprovals(
-          Cookies.get("accessToken"),
-          undefined
-        );
+        const jsonData = await fetchApprovals(undefined);
         setData(jsonData);
       } catch (error) {
         console.error("Error fetching data:", error);

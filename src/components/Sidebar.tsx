@@ -37,6 +37,7 @@ const Sidebar = () => {
   const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
   const [isStudent, setIsStudent] = useState<boolean>(false);
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
 
   useEffect(() => {
     const userString = Cookies.get("user");
@@ -44,6 +45,7 @@ const Sidebar = () => {
     if (user) {
       setLoggedIn(true);
     }
+    setRole(user?.role.toLowerCase());
     setIsAdmin(user?.role === "ADMIN");
     setIsRecruiter(user?.role === "RECRUITER");
     setIsStudent(user?.role === "STUDENT");
@@ -148,7 +150,7 @@ const Sidebar = () => {
                 }}
                 className="w-[7rem]"
               >
-                Profile
+                <Link href={`/${role}/profile`}>Profile</Link>
               </motion.div>
             </div>
             {/* <CompanyDropDown userRole={userRole} /> */}

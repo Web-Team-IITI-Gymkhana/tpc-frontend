@@ -1,24 +1,27 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobCard from "@/components/jobs/JobCard";
-import { SampleJobData } from "@/dummyData/job";
-import InterviewExperiences from "@/app/(routes)/student/interviewExperiences/page";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import Cookies from "js-cookie";
-import { GetOnCampusOffers, GetResumes } from "@/helpers/student/api";
-import { OnCampusOffers, Resume } from "@/helpers/student/types";
+import { GetOnCampusOffers } from "@/helpers/student/api";
+import { OnCampusOffers } from "@/helpers/student/types";
 import OnCampusCard from "@/components/jobs/OnCampusCard";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 const StudentPage = () => {
 
   const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchOffers = async () => {
-      const oco = await GetOnCampusOffers(Cookies.get("accessToken"));
-      setOnCampusOffers(oco);
-
+    const fetchOffers = async () => {      
+      try {
+        const oco = await GetOnCampusOffers();
+        setOnCampusOffers(oco);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchOffers();
@@ -29,13 +32,10 @@ const StudentPage = () => {
       <div className="my-3 mx-5 font-bold text-xl">
         <h1>On Campus Offers</h1>
       </div>
-      {onCampusOffers.length===0? (
-        <div>
-          No Offers
-        </div>
-      ): (onCampusOffers.map((job)=>(
+      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+      {onCampusOffers.length >0 && (onCampusOffers.map((job)=>(
         <div key={job.id} className="my-3">
-          <OnCampusCard jobItem={job} salaryId={job.salary.id}/>
+          <OnCampusCard offerItem={job} salaryId={job.salary.id}/>
         </div>
       )))}
     </div>

@@ -16,6 +16,7 @@ export const LoginWithEmail = (params: { email: String }) => {
     console.log(res);
     const resOk = res.ok;
     if (resOk) toast.success("Email Has Been Sent");
+    else toast.error("Cannot Login")
     return resOk;
   };
 
