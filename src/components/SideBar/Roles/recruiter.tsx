@@ -1,20 +1,15 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
-import Cookies from "js-cookie";
 import Link from "next/link";
-import NavButtonGroup from "@/components/NavButtonGroup";
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 
 const RecruiterDashboard = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
 
   const context = useContext(ToggleContext);
-
-  const studentId = 2;
   return (
     <>
       <div>
