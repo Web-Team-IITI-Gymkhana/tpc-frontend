@@ -1,5 +1,5 @@
 "use client";
-import { fetchStudentData } from "@/helpers/api";
+import { fetchRecruiterData } from "@/helpers/api";
 import Cookies from "js-cookie";
 import Table from "@/components/NewTableComponent/Table";
 import type {DTO} from '@/dto/StudentDto'
@@ -10,30 +10,29 @@ import {
   createMRTColumnHelper,
 } from 'material-react-table';
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
-import { jsondto } from "@/dto/StudentDto";
+import { recruiterdto } from "@/dto/RecruiterDto";
+import type { RecruiterDTO } from "@/dto/RecruiterDto";
 
-
-const hiddenColumns = ['userId', 'programId', 'id'];
+const hiddenColumns = ['id'];
 
 
 const StudentPage = async () => {
-  const columnHelper = createMRTColumnHelper<DTO>();
-  const columns = generateColumns(jsondto)
+  const columns = generateColumns(recruiterdto)
   console.log(columns)
-  const AllStudents = await fetchStudentData(Cookies.get("accessToken"),null);
+  const AllRecruiters = await fetchRecruiterData(Cookies.get("accessToken"),null);
   const visibleColumns = columns.filter(
     (column:any) => !hiddenColumns.includes(column?.accessorKey)
   );
   
   return (
     <div className="m-10">
-      <h1 className="text-center font-bold text-3xl my-5 py-5">Students</h1>
+      <h1 className="text-center font-bold text-3xl my-5 py-5">Recruiters</h1>
       <div>
-        {AllStudents && (
+        {AllRecruiters && (
           <Table
-            data={AllStudents}
+            data={AllRecruiters}
             columns={visibleColumns}
-            type={"student"}
+            type={"recruiter"}
           />
         )}
       </div>

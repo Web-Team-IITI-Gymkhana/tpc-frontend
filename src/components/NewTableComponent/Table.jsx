@@ -1,19 +1,26 @@
+'use client'
 import {
     MaterialReactTable,
     useMaterialReactTable,
     createMRTColumnHelper,
 } from 'material-react-table';
-import { Box, Button } from '@mui/material';
+import { useState } from 'react';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { mkConfig, generateCsv, download } from 'export-to-csv'; //or use your library of choice here
-
+import { mkConfig, generateCsv, download } from 'export-to-csv';
+import { Box, Button } from '@mui/material';
+import { MenuItem } from '@mui/material';
+import StudentModal from './StudentModal';
+import JobModal from './JobModal';
+import PenaltyModal from './PenaltyModal';
+import RecruiterModal from './RecruiterModal'
 const csvConfig = mkConfig({
     fieldSeparator: ',',
     decimalSeparator: '.',
     useKeysAsHeaders: true,
 });
 
-const Table = ({ data, columns }) => {
+const Table = ({ data, columns, type }) => {
+    const [validationErrors, setValidationErrors] = useState({});
     const flattenObject = (obj, prefix = '') => {
         return Object.keys(obj).reduce((acc, key) => {
             const pre = prefix.length ? prefix + ' ' : '';
@@ -34,23 +41,46 @@ const Table = ({ data, columns }) => {
         const csv = generateCsv(csvConfig)(flattenData(rowData));
         download(csvConfig)(csv);
     };
-    
-    
+
     const handleExportData = () => {
-        
         console.log(flattenData)
         const csv = generateCsv(csvConfig)(flattenData(data));
         download(csvConfig)(csv);
     };
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [id, setId] = useState(null);
+
+    const handleOpenModal = () => setIsModalOpen(true);
+    const handleCloseModal = () => setIsModalOpen(false);
+
     const table = useMaterialReactTable({
         columns,
         data,
+        createDisplayMode: 'modal',
+        editDisplayMode: 'modal',
+        enableRowActions: true,
         enableRowSelection: true,
         columnFilterDisplayMode: 'popover',
         paginationDisplayMode: 'pages',
         enableGlobalFilterModes: true,
         positionToolbarAlertBanner: 'bottom',
+        renderRowActionMenuItems: ({ row, table }) => (
+            <Box>
+                {type === 'student' && (
+                    <MenuItem key="edit" onClick={handleOpenModal}>
+                        Add Penalty
+                    </MenuItem>
+                )}
+                <MenuItem key="view" onClick={() => {
+                    setId(row.original.id);
+                    setOpen(true)
+                }}>
+                    View {type}
+                </MenuItem>
+            </Box>
+        ),
         renderTopToolbarCustomActions: ({ table }) => (
             <Box
                 sx={{
@@ -61,7 +91,6 @@ const Table = ({ data, columns }) => {
                 }}
             >
                 <Button
-                    //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
                     onClick={handleExportData}
                     startIcon={<FileDownloadIcon />}
                 >
@@ -69,7 +98,6 @@ const Table = ({ data, columns }) => {
                 </Button>
                 <Button
                     disabled={table.getPrePaginationRowModel().rows.length === 0}
-                    //export all rows, including from the next page, (still respects filtering and sorting)
                     onClick={() =>
                         handleExportRows(table.getPrePaginationRowModel().rows)
                     }
@@ -79,7 +107,6 @@ const Table = ({ data, columns }) => {
                 </Button>
                 <Button
                     disabled={table.getRowModel().rows.length === 0}
-                    //export all rows as seen on the screen (respects pagination, sorting, filtering, etc.)
                     onClick={() => handleExportRows(table.getRowModel().rows)}
                     startIcon={<FileDownloadIcon />}
                 >
@@ -89,7 +116,6 @@ const Table = ({ data, columns }) => {
                     disabled={
                         !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
                     }
-                    //only export selected rows
                     onClick={() => handleExportRows(table.getSelectedRowModel().rows)}
                     startIcon={<FileDownloadIcon />}
                 >
@@ -97,9 +123,36 @@ const Table = ({ data, columns }) => {
                 </Button>
             </Box>
         ),
+        renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
+            <div className='my-5 mx-5'>
+                <div>Penalty</div>
+                <input placeholde="Add Penalty" />
+                <button>Submit</button>
+            </div>
+        ),
     });
 
-    return (<div className='my-2'><MaterialReactTable table={table} /></div>);
+    return (
+        <>
+            {type === 'student' && (
+                <StudentModal open={open} setOpen={setOpen} id={id} />
+            )}{type == "job" && (
+                <JobModal open={open} setOpen={setOpen} id={id} />
+            )}
+            {type == "recruiter" && (
+                <RecruiterModal open={open} setOpen={setOpen} id={id} />
+            )}
+            <div className='my-2'>
+                <MaterialReactTable table={table} />
+            </div>
+            {type === 'student' && (
+                <PenaltyModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    studentId={id}
+                />
+            )}
+        </>
+    );
 };
-
 export default Table;

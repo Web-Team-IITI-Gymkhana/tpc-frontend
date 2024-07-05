@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Component } from "react";
+import { CircularProgress } from "@mui/material";
 
 class Loading extends Component {
   render() {
@@ -15,10 +16,10 @@ class Loading extends Component {
       );
     }
 
-    // Otherwise, display the loading message
+    // Otherwise, display the Material-UI CircularProgress component
     return (
-      <div className="h-screen w-full text-center flex justify-center items-center font-bold mx-2 my-4 rounded-md bg-white">
-        Loading...
+      <div className="h-screen w-full flex justify-center items-center">
+        <CircularProgress />
       </div>
     );
   }
