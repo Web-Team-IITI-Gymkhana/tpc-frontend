@@ -47,6 +47,8 @@ const style = {
     maxHeight: '90vh',
 };
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function StudentModal({ open, setOpen, id }) {
     const [studentData, setStudentData] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -55,7 +57,7 @@ export default function StudentModal({ open, setOpen, id }) {
         const fetchStudentData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/students/${id}`);
+                const response = await fetch(`${baseUrl}/api/v1/students/${id}`);
                 const data = await response.json();
                 setStudentData(data);
             } catch (error) {

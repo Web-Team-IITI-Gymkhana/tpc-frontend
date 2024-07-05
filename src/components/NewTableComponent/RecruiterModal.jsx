@@ -46,6 +46,8 @@ const style = {
     maxHeight: '90vh',
 };
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function RecruiterModal({ open, setOpen, id }) {
     const [recruiterData, setRecruiterData] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -54,7 +56,7 @@ export default function RecruiterModal({ open, setOpen, id }) {
         const fetchRecruiterData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/recruiters/${id}`);
+                const response = await fetch(`${baseUrl}/api/v1/recruiters/${id}`);
                 const data = await response.json();
                 setRecruiterData(data);
             } catch (error) {

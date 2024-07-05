@@ -13,6 +13,8 @@ const style = {
     p: 4,
 };
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const PenaltyModal = ({ isOpen, onClose, studentId }) => {
     const [penaltyValue, setPenaltyValue] = useState('');
     const [penaltyReason, setPenaltyReason] = useState('');
@@ -27,7 +29,7 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
         ];
 
         try {
-            const response = await fetch('http://localhost:5000/api/v1/penalties', {
+            const response = await fetch(`${baseUrl}/api/v1/penalties`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

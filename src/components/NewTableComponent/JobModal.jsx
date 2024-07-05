@@ -46,6 +46,8 @@ const style = {
     maxHeight: '90vh',
 };
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export default function ViewJobModal({ open, setOpen, id }) {
     const [jobData, setJobData] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -54,7 +56,7 @@ export default function ViewJobModal({ open, setOpen, id }) {
         const fetchJobData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/jobs/${id}`);
+                const response = await fetch(`${baseUrl}/api/v1/jobs/${id}`);
                 const data = await response.json();
                 setJobData(data);
             } catch (error) {

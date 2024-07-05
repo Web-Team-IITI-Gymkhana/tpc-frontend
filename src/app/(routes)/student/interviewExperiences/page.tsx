@@ -9,13 +9,10 @@ import {
     TableCell,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-import Cookies from "js-cookie";
 import { InterviewExperience } from "@/helpers/student/types";
 import { GetInterviewExpiriences, OpenInterviewExpirience } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
-// http://localhost:5000/api/v1/resumes/file/0c5dee48-c869-4219-b8c0-80cb6ce0e74d.pdf
 
 const InterviewExpiriencePage = () => {
 
