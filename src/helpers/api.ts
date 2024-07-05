@@ -275,3 +275,20 @@ export const fetchJobEvents = async (
   const json = await res.json();
   return json;
 };
+
+
+export const fetchRecruiterData = async (accessToken: string | undefined, filter: string | undefined) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  console.log('filter', filter)
+  const res = await fetch(filter ? url(`/recruiters?${filter}`) : url("/recruiters"), {
+    next: { tags: ["AllRecruiters"] },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json = await res.json();
+  return json;
+};

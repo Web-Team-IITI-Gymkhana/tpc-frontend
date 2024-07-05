@@ -32,6 +32,7 @@ const JobPage = async () => {
           <Table
             data={AllJobs}
             columns={visibleColumns}
+            type={"job"}
           />
         )}
       </div>

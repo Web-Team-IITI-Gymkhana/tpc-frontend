@@ -9,29 +9,9 @@ import NavButtonGroup from "@/components/NavButtonGroup";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
-
-interface Framework {
-  value: string;
-  label: string;
-}
-
-interface Season {
-  id: string;
-  year: string;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Props {
-  AllSeasons: {
-    seasons: Season[];
-  };
-}
-
+import { jwtDecode } from "jwt-decode";
 const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-
   const context = useContext(ToggleContext);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
@@ -50,6 +30,7 @@ const Sidebar = () => {
     setIsRecruiter(user?.role === "RECRUITER");
     setIsStudent(user?.role === "STUDENT");
   }, []);
+
   return (
     <motion.div
       initial={{
