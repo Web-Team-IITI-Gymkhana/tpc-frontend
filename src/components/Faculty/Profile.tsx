@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import profileImg from "@/../public/profile-icon.svg";
-import { ProfileFC, updateProfileFC } from "@/helpers/faculty/api";
 import { Button } from "../ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogTrigger,
-  DialogTitle,
   DialogContent,
 } from "../ui/dialog";
 import { patchProfile } from "@/helpers/faculty/api";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { ProfileFC, updateProfileFC } from "@/helpers/faculty/types";
 
 const EditForm = (params: { profile: ProfileFC }) => {
   const [email, updateEmail] = useState<string>(params.profile.user.email);
@@ -30,7 +27,7 @@ const EditForm = (params: { profile: ProfileFC }) => {
     };
 
     const triggerUpdate = async () => {
-      const res = await patchProfile(Cookies.get("accessToken"), data);
+      const res = await patchProfile(data);
       if (res) {
         window.location.reload();
       } else {

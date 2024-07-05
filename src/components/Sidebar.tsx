@@ -13,14 +13,11 @@ import { jwtDecode } from "jwt-decode";
 const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const context = useContext(ToggleContext);
-  const accessToken = Cookies.get("accessToken");
-  const user = accessToken ? jwtDecode(accessToken) as { role: string  } : null 
-  const isAdmin = user?.role === "ADMIN";
-  const isRecruiter = user?.role === "RECRUITER";
-  const isStudent = user?.role === "STUDENT";
-  const userRole = user?.role?.toLowerCase();
-  const [isLoaded, setIsLoaded] = useState(false);
-
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
+  const [isStudent, setIsStudent] = useState<boolean>(false);
+  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
 
   useEffect(() => {
     const userString = Cookies.get("user");
@@ -28,14 +25,11 @@ const Sidebar = () => {
     if (user) {
       setLoggedIn(true);
     }
+    setRole(user?.role.toLowerCase());
     setIsAdmin(user?.role === "ADMIN");
     setIsRecruiter(user?.role === "RECRUITER");
     setIsStudent(user?.role === "STUDENT");
   }, []);
-
-  if (!isLoaded) {
-    return null; 
-  }
 
   return (
     <motion.div
@@ -137,7 +131,7 @@ const Sidebar = () => {
                 }}
                 className="w-[7rem]"
               >
-                Profile
+                <Link href={`/${role}/profile`}>Profile</Link>
               </motion.div>
             </div>
             {/* <CompanyDropDown userRole={userRole} /> */}

@@ -342,3 +342,18 @@ export interface StudentDataType {
       };
   }[];
 }
+
+export interface InterviewExperience {
+  id: string;
+  studentName: string;
+  filename: string;
+  company: {
+    id: string;
+    name: string;
+  };
+  season: {
+    id: string;
+    year: string;
+    type: string;
+  };
+}

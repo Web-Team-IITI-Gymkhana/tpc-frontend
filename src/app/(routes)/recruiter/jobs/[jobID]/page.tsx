@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { JobDetailFC } from "@/helpers/recruiter/types";
-import Cookies from "js-cookie";
 import { getJobDetail } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -13,6 +12,10 @@ import { getJafDetails } from "@/helpers/recruiter/api";
 import { JAFdetailsFC } from "@/helpers/recruiter/types";
 import { patchJobData } from "@/helpers/recruiter/api";
 import { patchSalaryData } from "@/helpers/recruiter/api";
+import {
+  CategorySelectList,
+  GenderSelectList,
+} from "@/components/Recruiters/jobEdit";
 
 const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
@@ -24,12 +27,9 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const accessToken = Cookies.get("accessToken");
-        if (!accessToken) throw new Error("No access token found");
-
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          getJobDetail(accessToken, params.jobID),
-          getJafDetails(accessToken),
+          getJobDetail(params.jobID),
+          getJafDetails(),
         ]);
 
         setJafDetails((prev) => jafDetailsData);
@@ -58,11 +58,9 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   };
 
   const handleSubmit = async () => {
-    const c1 = await patchJobData(Cookies.get("accessToken"), job.id, formData);
+    const c1 = await patchJobData(job.id, formData);
     if (true) {
-      formData.salaries.map((salary, index) =>
-        patchSalaryData(Cookies.get("accessToken"), salary)
-      );
+      formData.salaries.map((salary, index) => patchSalaryData(salary));
     }
     setEditMode(false);
     window.location.reload();
@@ -679,33 +677,12 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div>
                   <h2 className="text-md font-semibold mt-4">Genders</h2>
                   {editMode ? (
-                    <select
-                      value={formData.salaries[salaryIndex].genders}
-                      multiple
-                      onChange={(e) => {
-                        const options = [...e.target.selectedOptions];
-                        const values = options.map((option) => option.value);
-                        const updatedSalary = { ...salary, genders: values };
-                        const updatedSalaries = formData.salaries.map(
-                          (salary, i) => {
-                            if (i === salaryIndex) {
-                              return updatedSalary;
-                            }
-                            return salary;
-                          }
-                        );
-                        setFormData((prevData) => ({
-                          ...prevData,
-                          salaries: updatedSalaries,
-                        }));
-                      }}
-                    >
-                      {jafDetails.genders.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                    <GenderSelectList
+                      givenOptions={jafDetails.genders}
+                      formData={formData}
+                      setFormData={setFormData}
+                      salaryIndex={salaryIndex}
+                    />
                   ) : (
                     <div className="flex flex-wrap !text-md">
                       {salary.genders?.map((gender, genderIndex) => (
@@ -725,33 +702,12 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div>
                   <h2 className="text-md font-semibold mt-4">Categories</h2>
                   {editMode ? (
-                    <select
-                      value={formData.salaries[salaryIndex].categories}
-                      multiple
-                      onChange={(e) => {
-                        const options = [...e.target.selectedOptions];
-                        const values = options.map((option) => option.value);
-                        const updatedSalary = { ...salary, categories: values };
-                        const updatedSalaries = formData.salaries.map(
-                          (salary, i) => {
-                            if (i === salaryIndex) {
-                              return updatedSalary;
-                            }
-                            return salary;
-                          }
-                        );
-                        setFormData((prevData) => ({
-                          ...prevData,
-                          salaries: updatedSalaries,
-                        }));
-                      }}
-                    >
-                      {jafDetails.categories?.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
+                    <CategorySelectList
+                      givenOptions={jafDetails.categories}
+                      formData={formData}
+                      setFormData={setFormData}
+                      salaryIndex={salaryIndex}
+                    />
                   ) : (
                     <div className="flex flex-wrap !text-md">
                       {salary.categories?.map((category, categoryIndex) => (
