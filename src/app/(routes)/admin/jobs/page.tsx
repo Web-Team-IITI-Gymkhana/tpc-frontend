@@ -13,7 +13,7 @@ import {
 } from 'material-react-table';
 import Table from "@/components/NewTableComponent/Table";
 
-const hiddenColumns = ['id'];
+const hiddenColumns = ['id','season.id','company.id','recruiter.id','recruiter.user.id'];
 
 const JobPage = async () => {
   const columnHelper = createMRTColumnHelper<RecruitmentDTO>();
