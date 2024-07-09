@@ -5,12 +5,13 @@ import { Row, Col, Steps, Space, Button } from "antd";
 import * as Yup from "yup";
 import { FormikWizard, RenderProps } from "formik-wizard-form";
 import toast from "react-hot-toast";
-
+import { useState, useEffect } from "react";
 import JobDetails from "./JobDetails";
 import RecruiterDetails from "./RecruiterDetails";
 import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
 import axios from "axios";
+import Loader from "@/components/Loader/loader";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -20,6 +21,27 @@ function JAF() {
   const [finalValues, setFinalValues] = React.useState({});
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+      // Simulate a network request or some async operation
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        // To simulate an error, you could set the error state here
+        // setError(true);
+      }, 2000); // 2 seconds
+  
+      // Cleanup the timer if the component unmounts before the timer finishes
+      return () => clearTimeout(timer);
+    }, []);
+
+
+  if (isLoading) {
+    //formwikWizars is taking loading time so added loader to avoid raw html preview
+      return <div className=" w-[100%] h-[90vh] mx-2 py-4 rounded-md   flex justify-center items-center">
+      <Loader/>
+      </div>
+      ;
+    }
 
   return (
     <div className="flex w-full justify-start gap-10 p-10 align-center">

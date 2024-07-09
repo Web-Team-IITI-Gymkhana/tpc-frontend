@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import Link from "next/link";
+import Loader from "@/components/Loader/loader";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const url = (NextUrl: string) => {
@@ -90,7 +91,9 @@ export default function SalaryCard({salaryId, resumes}: Props) {
   
     return (
       <div id="main-container" className="">
-        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}        
+        {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}        
         {salaryData && (
           <div className="bg-white text-black p-5 rounded-xl">
           <div className="font-semibold text-md" onClick={handleViewDetails} style={{ cursor: "pointer" }}>

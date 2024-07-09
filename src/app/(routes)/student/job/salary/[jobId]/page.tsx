@@ -5,7 +5,7 @@ import { GetJobById, GetResumes } from "@/helpers/student/api";
 import { Resume } from "@/helpers/student/types";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 
 interface Salary {
   id: string;
@@ -51,7 +51,9 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   return (
     <div>
       <div className="font-bold text-black text-lg ml-2 mb-4">Salaries</div>
-      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+      {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
       {salaryData && (salaryData.map((item,index)=>(
         <div key={index} className="my-3">
           <SalaryCard salaryId={item.id} resumes={resumes}/>

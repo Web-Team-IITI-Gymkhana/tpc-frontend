@@ -18,7 +18,7 @@ import { uploadResume } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-
+import Loader from "@/components/Loader/loader";
 const ResumePage = () => {
 
   const [resumeData, setResumeData] = useState<Resume[]>([]);
@@ -100,7 +100,9 @@ const ResumePage = () => {
         <div className="font-bold text-lg">
             Resumes
         </div>        
-        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
         {resumeData.length >0 && (
           <>
             <div className="my-4">
