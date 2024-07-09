@@ -11,7 +11,12 @@ import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import { Button } from "@/components/ui/button";
 import toast, { Toaster } from "react-hot-toast";
 
-const hiddenColumns = ["student.id", "id", "student.user.id"];
+const hiddenColumns = [
+  "student.id",
+  "id",
+  "student.user.id",
+  "student.program.id",
+];
 
 const Resumes = () => {
   const [allresumes, setAllResumes] = useState<ResumeTableData[]>();
@@ -64,9 +69,7 @@ const Resumes = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data: ResumeTableData[] = await fetchResumes(
-        Cookies.get("accessToken")
-      );
+      const data: ResumeTableData[] = await fetchResumes();
       if (!data) {
         toast.error("Some error Occured");
         return;

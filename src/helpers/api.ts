@@ -301,22 +301,8 @@ export const fetchRecruiterData = async (
   return json;
 };
 
-export const fetchResumes = async (accessToken: string | undefined) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/resumes")}`, {
-    next: {
-      tags: ["AllResumes"],
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const json = await res.json();
-  return json;
+export const fetchResumes = async () => {
+  return apiCall("/resumes");
 };
 
 export const getResumeFile = async (fileName: string) => {
