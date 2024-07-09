@@ -11,6 +11,7 @@ import RecruiterDetails from "./RecruiterDetails";
 import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
 import axios from "axios";
+import {TermsAndConditions} from "@/dummyData/TermsAndConditions"
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -22,8 +23,8 @@ function JAF() {
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
   return (
-    <div className="flex w-full justify-start gap-10 p-10 align-center">
-      <div className="ml-auto mr-auto h-screen">
+    <div className="flex flex-col w-full justify-start gap-20 p-10 align-center">
+      <div className="ml-auto mr-auto">
         <FormikWizard
           initialValues={{
             seasonId: "",
@@ -301,6 +302,20 @@ function JAF() {
             );
           }}
         </FormikWizard>
+      </div>
+
+      <div className="ml-auto mr-auto flex flex-col items-center gap-8 ">
+        <div className="flex flex-col items-center  text-[1rem] gap-1 opacity-60">
+        <div>Terms and Conditions</div>
+        <div className=" opacity-50 text-[0.8rem]">	&#40;Please read it carefully&#41;</div>
+        </div>
+        <div>
+          <div className="flex flex-col gap-3  text-[0.8rem] opacity-50">
+            {TermsAndConditions.map((tc, index) => (
+              <div key={index} className="flex gap-3"><span>{index+1}&#46;</span><span className=" text-justify">{tc}</span></div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
