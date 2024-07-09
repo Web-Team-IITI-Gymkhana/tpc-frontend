@@ -5,7 +5,7 @@ import { GetJobs } from "@/helpers/student/api";
 import { Jobs } from "@/helpers/student/types";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 const StudentPage = () => {
   const [jobs, setJobs] = useState<Jobs[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,9 @@ const StudentPage = () => {
         <h1>Apply</h1>
       </div>
       <div>
-        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
         {jobs && (
           jobs.map((job) => (
             <div key={job.id} className="my-3">

@@ -5,7 +5,7 @@ import { JobDetailFC } from "@/helpers/recruiter/types";
 import { getJobDetail } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { JobEvents } from "@/components/Recruiters/Events";
-
+import Loader from "@/components/Loader/loader";
 const EventsPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,9 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
         Events And Applications
       </h1>
       {loading && (
-        <img src={loadingImg.src} alt="" className="mx-auto my-auto" />
+        <div className="h-screen w-full flex justify-center items-center">
+        <Loader/>
+       </div>
       )}
       {job && (
         <div>

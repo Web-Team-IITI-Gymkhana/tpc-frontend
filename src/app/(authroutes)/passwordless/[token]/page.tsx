@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 interface Props {}
 
 const LoginPage = ({
@@ -40,7 +40,9 @@ const LoginPage = ({
 
   return (
     <>
-      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+      {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
     </>
   );
 };

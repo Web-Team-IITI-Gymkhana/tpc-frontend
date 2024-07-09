@@ -5,7 +5,7 @@ import { OnCampusOffers } from "@/helpers/student/types";
 import OnCampusCard from "@/components/jobs/OnCampusCard";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 const StudentPage = () => {
 
   const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);
@@ -32,7 +32,9 @@ const StudentPage = () => {
       <div className="my-3 mx-5 font-bold text-xl">
         <h1>On Campus Offers</h1>
       </div>
-      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+      {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
       {onCampusOffers.length >0 && (onCampusOffers.map((job)=>(
         <div key={job.id} className="my-3">
           <OnCampusCard offerItem={job} salaryId={job.salary.id}/>
