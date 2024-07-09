@@ -9,6 +9,7 @@ interface Props {
   offerItem: OnCampusOffers;
   salaryId: string;
 }
+import  Loader from "@/components/Loader/loader";
 
 const OnCampusCard = ({ offerItem, salaryId }: Props) => {
   const [salary, setSalary] = useState<Salary|null>(null);
@@ -47,7 +48,9 @@ const OnCampusCard = ({ offerItem, salaryId }: Props) => {
 
   return (
     <div className="">
-      {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}     
+      {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}     
       {salary && (
         <div className="rounded-xl bg-white text-black p-5">
         <div className="font-semibold text-md ">

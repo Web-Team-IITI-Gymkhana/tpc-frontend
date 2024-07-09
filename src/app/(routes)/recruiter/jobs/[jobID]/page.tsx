@@ -16,6 +16,7 @@ import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
+import Loader from "@/components/Loader/loader";
 
 const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
@@ -95,7 +96,9 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       </h1>
 
       {loading && (
-        <img src={loadingImg.src} alt="" className="mx-auto my-auto" />
+        <div className="h-screen w-full flex justify-center items-center">
+        <Loader/>
+       </div>
       )}
       {job && (
         <div className="flex flex-col gap-4">

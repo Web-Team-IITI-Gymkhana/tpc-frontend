@@ -6,7 +6,7 @@ import { EventFC, ApplicationFC } from "@/helpers/recruiter/types";
 import { CircularProgress } from "@mui/material";
 import { getResume } from "@/helpers/recruiter/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
-
+import Loader from "@/components/Loader/loader";
 export const JobEvents = ({ events }: { events: [EventFC] }) => {
   const [eventId, setEventId] = useState<string>(null);
 
@@ -103,7 +103,9 @@ export const Applications = ({ eventId }: { eventId: string }) => {
     <div className="w-full">
       {loading && (
         <div className="flex justify-center">
-          <CircularProgress />
+          <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>
         </div>
       )}
       {applications && (

@@ -16,7 +16,7 @@ import { Job, CustomEvent, EventData, CalenderEvent } from "@/helpers/student/ty
 import { GetJobById } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 function transformEvents(events: CustomEvent[]): EventData[] {
   
 
@@ -111,7 +111,9 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
 
   return (
     <div className="m-10 bg-white p-5 border-2 rounded-xl">
-        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
         {jobData && (
           <>
             <div className="font-semibold text-xl">{jobData?.companyDetailsFilled.name}</div>
