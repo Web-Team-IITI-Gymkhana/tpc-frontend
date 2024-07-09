@@ -3,6 +3,7 @@ import { fetchApprovals } from "@/helpers/faculty/api";
 import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useState, useEffect } from "react";
+import Loader from "@/components/Loader/loader";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 
 const dto = [
@@ -51,7 +52,9 @@ const FacultyPage = () => {
       <h1 className="text-center font-bold text-3xl my-5 py-5">Approvals</h1>
       <div>
         {loading && (
-          <img src={loadingImg.src} alt="" className="mx-auto my-auto" />
+          <div className=" w-[100%] h-[50vh] mx-2 py-4 rounded-md bg-white  flex justify-center items-center">
+          <Loader/>
+          </div>
         )}
         {data && (
           <TableComponent
