@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
-
+import Loader from '@/components/Loader/loader';
 const theme = createTheme({
     palette: {
         primary: {
@@ -84,7 +84,9 @@ export default function RecruiterModal({ open, setOpen, id }) {
                 <Box sx={style}>
                     {loading ? (
                         <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
-                            <CircularProgress />
+                            <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>
                         </Box>
                     ) : (
                         <>

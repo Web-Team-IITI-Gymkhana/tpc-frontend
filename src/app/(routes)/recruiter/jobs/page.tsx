@@ -5,7 +5,7 @@ import { JobsFC } from "@/helpers/recruiter/types";
 import { useState, useEffect } from "react";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { useRouter } from "next/navigation";
-
+import Loader from "@/components/Loader/loader";
 const JobPage = () => {
   const [data, setData] = useState<JobsFC[]>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,9 @@ const JobPage = () => {
     <div className="container my-8">
       <h1 className="text-3xl mb-8 font-bold mx-auto text-center">All Jobs</h1>
       {loading && (
-        <img src={loadingImg.src} alt="" className="mx-auto my-auto" />
+       <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>
       )}
       {data && (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">

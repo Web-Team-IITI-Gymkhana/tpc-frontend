@@ -15,7 +15,7 @@ import { StudentDataType } from "@/helpers/student/types";
 import { GetStudentData } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 
 const ProfilePage = () => {
 
@@ -49,7 +49,9 @@ const ProfilePage = () => {
 
   return (
     <>
-        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
         {studentData && (
             <div className="">
                 <div className="rounded-xl bg-white text-black p-5">

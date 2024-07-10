@@ -3,6 +3,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import qs from "qs";
 import Cookies from "js-cookie";
+import { ResumePatchData } from "./types";
 
 interface ApiCallOptions {
   method?: string;
@@ -274,6 +275,7 @@ export const addEvent = async (body: any) => {
   });
 };
 
+
 export const promoteStudent = async (body: any, eventId: string) => {
   return apiCall(`/events/${eventId}`, {
     method: "PATCH",
@@ -302,3 +304,19 @@ export const fetchRecruiterData = async (
   const json = await res.json();
   return json;
 };
+
+export const fetchResumes = async () => {
+  return apiCall("/resumes");
+};
+
+export const getResumeFile = async (fileName: string) => {
+  OpenFile(`/resumes/file/${fileName}`);
+};
+
+export const patchResumeVerify = async (changes: ResumePatchData[]) => {
+  return apiCall(`/resumes`, {
+    method: "PATCH",
+    body: changes,
+  });
+};
+

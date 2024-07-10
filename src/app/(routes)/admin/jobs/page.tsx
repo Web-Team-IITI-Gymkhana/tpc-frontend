@@ -14,7 +14,7 @@ import {
 import Table from "@/components/NewTableComponent/Table";
 import { useEffect, useState } from "react";
 
-const hiddenColumns = ["id"];
+const hiddenColumns = ['id','season.id','company.id','recruiter.id','recruiter.user.id'];
 
 const JobPage = () => {
   const columnHelper = createMRTColumnHelper<RecruitmentDTO>();
