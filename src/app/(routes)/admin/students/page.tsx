@@ -9,7 +9,7 @@ import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
 import { Form } from 'antd';
 import { cookies } from 'next/headers';
-const hiddenColumns = ['userId', 'programId'];
+const hiddenColumns = ['userId', 'programId','id'];
 
 const StudentPage = () => {
   const [students, setStudents] = useState<DTO[]>([]);
