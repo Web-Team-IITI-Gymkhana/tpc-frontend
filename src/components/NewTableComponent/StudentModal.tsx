@@ -256,7 +256,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Name
                                                     </TableCell>
-                                                    <TableCell>{studentData.user ? studentData.user.Name : 'N/A'}</TableCell>
+                                                    <TableCell>{studentData.user ? studentData.user.name : 'N/A'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
@@ -283,24 +283,24 @@ export default function StudentModal({ open, setOpen, id }) {
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Branch
                                                     </TableCell>
-                                                    <TableCell>{studentData.program ? studentData.user.branch : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.program.branch : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Course
-                                                    </TableCell><TableCell>{studentData.program ? studentData.user.course : 'NA'}</TableCell>
+                                                    </TableCell><TableCell>{studentData.program ? studentData.program.course : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Year
                                                     </TableCell>
-                                                    <TableCell>{studentData.program ? studentData.user.year : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.program.year : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Department
                                                     </TableCell>
-                                                    <TableCell>{studentData.program ? studentData.user.department : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.program.department : 'NA'}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -334,7 +334,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                         </TableCell>
                                                         <TableCell>{resume.verified.toString()}</TableCell>
                                                     </TableRow>
-                                                )) : 'NAA'}
+                                                )) : 'NA'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
@@ -345,7 +345,6 @@ export default function StudentModal({ open, setOpen, id }) {
                                         <Table>
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold' }}>Penalty</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold' }}>Reason</TableCell>
                                                 </TableRow>
@@ -353,11 +352,10 @@ export default function StudentModal({ open, setOpen, id }) {
                                             <TableBody>
                                                 {studentData.penalties ? studentData.penalties.map((penalty) => (
                                                     <TableRow key={penalty.id}>
-                                                        <TableCell>{penalty.id}</TableCell>
                                                         <TableCell>{penalty.penalty}</TableCell>
                                                         <TableCell>{penalty.reason}</TableCell>
                                                     </TableRow>
-                                                )) : 'NAA'}
+                                                )) : 'NA'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
