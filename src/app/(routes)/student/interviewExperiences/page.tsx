@@ -13,7 +13,7 @@ import { InterviewExperience } from "@/helpers/student/types";
 import { GetInterviewExpiriences, OpenInterviewExpirience } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import Loader from "@/components/Loader/loader";
 const InterviewExpiriencePage = () => {
 
   const [interviewExpirienceData, setInterviewExpirienceData] = useState<InterviewExperience[]>([]);
@@ -52,7 +52,9 @@ const InterviewExpiriencePage = () => {
         <div className="my-4">
           <Separator />
         </div>
-        {loading && <img src={loadingImg.src} alt="Loading" className="mx-auto my-auto" />}
+        {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
         {interviewExpirienceData.length >0 && (
           <Table className="overflow-hidden">
             <TableHeader>

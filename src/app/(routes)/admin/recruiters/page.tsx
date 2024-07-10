@@ -13,7 +13,7 @@ import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { recruiterdto } from "@/dto/RecruiterDto";
 import type { RecruiterDTO } from "@/dto/RecruiterDto";
 
-const hiddenColumns = ['id'];
+const hiddenColumns = ['id','user.id','company.id'];
 
 
 const StudentPage = async () => {
