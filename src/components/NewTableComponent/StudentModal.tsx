@@ -111,7 +111,6 @@ export default function StudentModal({ open, setOpen, id }) {
             }
             const data = await response.json();
             setStudentData(data);
-            console.log('Student data:', data);
         } catch (error) {
             console.error('Error fetching student data:', error);
         } finally {
@@ -140,10 +139,10 @@ export default function StudentModal({ open, setOpen, id }) {
             const allData = await response.json();
             const filteredData = allData.filter((registration) => registration.student.id === studentId);
 
-            console.log('Filtered registration data:', filteredData);
+            
             setRegistrationData(filteredData);
         } catch (error) {
-            console.error('Error fetching registration data:', error);
+          
         } finally {
             setLoading(false);
         }
@@ -262,13 +261,13 @@ export default function StudentModal({ open, setOpen, id }) {
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Email
                                                     </TableCell>
-                                                    <TableCell>{studentData.user ? studentData.user.email : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.user ? studentData.user.email : 'N/A'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Contact
                                                     </TableCell>
-                                                    <TableCell>{studentData.user ? studentData.user.contact : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.user ? studentData.user.contact : 'N/A'}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -283,24 +282,24 @@ export default function StudentModal({ open, setOpen, id }) {
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Branch
                                                     </TableCell>
-                                                    <TableCell>{studentData.program ? studentData.program.branch : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.program.branch : 'N/A'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Course
-                                                    </TableCell><TableCell>{studentData.program ? studentData.program.course : 'NA'}</TableCell>
+                                                    </TableCell><TableCell>{studentData.program ? studentData.program.course : 'N/A'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Year
                                                     </TableCell>
-                                                    <TableCell>{studentData.program ? studentData.program.year : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.program.year : 'N/A'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Department
                                                     </TableCell>
-                                                    <TableCell>{studentData.program ? studentData.program.department : 'NA'}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.program.department : 'N/A'}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -334,7 +333,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                         </TableCell>
                                                         <TableCell>{resume.verified.toString()}</TableCell>
                                                     </TableRow>
-                                                )) : 'NA'}
+                                                )) : 'N/A'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
@@ -355,7 +354,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                         <TableCell>{penalty.penalty}</TableCell>
                                                         <TableCell>{penalty.reason}</TableCell>
                                                     </TableRow>
-                                                )) : 'NA'}
+                                                )) : 'N/A'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
@@ -390,7 +389,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                             </Button>
                                                         </TableCell>
                                                     </TableRow>
-                                                )) : 'NA'}
+                                                )) : 'N/A'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
