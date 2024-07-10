@@ -17,6 +17,8 @@ import {
 import { fetchEachJob } from "@/helpers/api";
 import Cookies from "js-cookie";
 import { CircularProgress } from "@mui/material";
+import Loader from "@/components/Loader/loader";
+import toast from "react-hot-toast";
 
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
@@ -33,13 +35,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           getJafDetails(),
         ]);
 
-        console.log(jobDetailData);
-
         setJafDetails((prev) => jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        toast.error("Error fetching data");
       } finally {
         setLoading(false);
       }
@@ -96,7 +96,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
       {loading && (
         <div className="w-full h-full flex justify-center items-center">
           <div className="px-28 py-16 bg-white">
-            <CircularProgress />
+            <Loader />
           </div>
         </div>
       )}

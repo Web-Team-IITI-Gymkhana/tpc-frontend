@@ -7,6 +7,8 @@ import { fetchJobEvents } from "@/helpers/api";
 import { EventFC } from "@/helpers/recruiter/types";
 import { Button } from "@/components/ui/button";
 import { AddEvent } from "@/components/Admin/JobEvents";
+import Loader from "@/components/Loader/loader";
+import toast from "react-hot-toast";
 
 const EventsPage = ({ params }: { params: { jobId: string } }) => {
   const [events, setData] = useState<[EventFC]>(null);
@@ -17,10 +19,9 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
     const fetchData = async () => {
       try {
         const jsonData = await fetchJobEvents(params.jobId);
-        console.log(jsonData);
         setData(jsonData);
       } catch (error) {
-        console.log(error);
+        toast.error("Some error occured");
       } finally {
         setLoading(false);
       }
@@ -51,7 +52,7 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
       </div>
       {loading && (
         <div className="w-full flex justify-center">
-          <CircularProgress />
+          <Loader />
         </div>
       )}
       {events && (

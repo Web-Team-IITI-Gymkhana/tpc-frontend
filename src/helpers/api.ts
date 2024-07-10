@@ -259,9 +259,19 @@ export const fetchEachJob = async (
 };
 
 export const fetchJobEvents = async (jobId: any) => {
-  return apiCall(
-    `/events?q%5BfilterBy%5D[job][id][eq]=${jobId}&q%5BfilterBy%5D[job][id][eq]=${jobId}`
-  );
+  return apiCall(`/events`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          job: {
+            id: {
+              eq: [jobId],
+            },
+          },
+        },
+      },
+    },
+  });
 };
 
 export const fetchEventById = async (eventId: any) => {
@@ -274,7 +284,6 @@ export const addEvent = async (body: any) => {
     body: body,
   });
 };
-
 
 export const promoteStudent = async (body: any, eventId: string) => {
   return apiCall(`/events/${eventId}`, {
@@ -319,4 +328,3 @@ export const patchResumeVerify = async (changes: ResumePatchData[]) => {
     body: changes,
   });
 };
-
