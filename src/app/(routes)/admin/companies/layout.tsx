@@ -1,9 +1,8 @@
 interface Props {
   children: React.ReactNode;
-  allcompanies: React.ReactNode;
 }
 
-const CompanyLayout = ({ children, allcompanies }: Props) => {
+const CompanyLayout = ({ children }: Props) => {
   return (
     <div className="">
       {/* {allcompanies} */}
