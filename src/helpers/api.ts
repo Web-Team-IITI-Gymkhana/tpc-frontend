@@ -218,7 +218,6 @@ export const fetchSeasonData = async (
     }
   );
   const json = await res.json();
-  console.log(json);
   return json;
 };
 
