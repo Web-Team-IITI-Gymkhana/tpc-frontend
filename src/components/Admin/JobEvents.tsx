@@ -48,10 +48,6 @@ export const AddEvent = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.currentTarget;
-    console.log({
-      ...formValues,
-      [name]: type === "checkbox" ? checked : value,
-    });
     setFormValues({
       ...formValues,
       [name]: type === "checkbox" ? checked : value,
@@ -60,7 +56,6 @@ export const AddEvent = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formValues);
     try {
       await addEvent([formValues]);
       toast.success("Successfully added");
@@ -355,14 +350,13 @@ export const Applications = ({
         const jsonData: EventFC = await fetchEventById(eventId);
         setApplications(jsonData.applications);
       } catch (error) {
-        console.log(error);
+        toast.error("Some error occured");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-    console.log(applications);
   }, [eventId, seed]);
 
   return (
