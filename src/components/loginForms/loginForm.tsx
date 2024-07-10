@@ -86,7 +86,7 @@ const LoginForm = () => {
                                   { expires: 365 }
                                 );
                                 toast.success("logged in");
-                                window.location.href = "/";
+                                window.location.href = "/viewprofile";
                               }
                             )
                             .catch((err) => {
