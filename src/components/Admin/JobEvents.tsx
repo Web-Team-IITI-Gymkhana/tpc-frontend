@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { use } from "react";
 import { useState, useEffect } from "react";
 import { EventFC, ApplicationFC } from "@/helpers/recruiter/types";
 import { CircularProgress, Modal } from "@mui/material";
@@ -312,8 +312,12 @@ export const JobEvents = ({ events }: { events: [EventFC] }) => {
                 </th>
                 <td className="px-6 py-4">{event.type}</td>
                 <td className="px-6 py-4">{event.metadata}</td>
-                <td className="px-6 py-4">{event.startDateTime}</td>
-                <td className="px-6 py-4">{event.endDateTime}</td>
+                <td className="px-6 py-4">
+                  {new Date(event.startDateTime).toLocaleString()}
+                </td>
+                <td className="px-6 py-4">
+                  {new Date(event.endDateTime).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -341,6 +345,7 @@ export const Applications = ({
   const [applications, setApplications] = useState<[ApplicationFC]>(null);
   const [loading, setLoading] = useState(true);
   const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
+  const [seed, setSeed] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -358,14 +363,17 @@ export const Applications = ({
 
     fetchData();
     console.log(applications);
-  }, [eventId]);
+  }, [eventId, seed]);
 
   return (
     <div className="w-full">
       <PromoteStudent
         open={promoteStudents.length > 0}
         students={promoteStudents}
-        onClose={() => setPromoteStudents([])}
+        onClose={() => {
+          setPromoteStudents([]);
+          setSeed(seed + 1);
+        }}
         events={events}
       />
       {loading && (

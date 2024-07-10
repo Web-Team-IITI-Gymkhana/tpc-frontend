@@ -13,6 +13,7 @@ import StudentModal from "./StudentModal";
 import JobModal from "./NewJobModal";
 import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
+import Link from "next/link";
 const csvConfig = mkConfig({
   fieldSeparator: ",",
   decimalSeparator: ".",
@@ -73,15 +74,21 @@ const Table = ({ data, columns, type }) => {
             Add Penalty
           </MenuItem>
         )}
-        <MenuItem
-          key="view"
-          onClick={() => {
-            setId(row.original.id);
-            setOpen(true);
-          }}
-        >
-          View {type}
-        </MenuItem>
+        {type == "job" ? (
+          <Link href={`/admin/jobs/${row.original.id}`}>
+            <MenuItem key="view">View {type}</MenuItem>
+          </Link>
+        ) : (
+          <MenuItem
+            key="view"
+            onClick={() => {
+              setId(row.original.id);
+              setOpen(true);
+            }}
+          >
+            View {type}
+          </MenuItem>
+        )}
       </Box>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
@@ -137,7 +144,7 @@ const Table = ({ data, columns, type }) => {
       {type === "student" && (
         <StudentModal open={open} setOpen={setOpen} id={id} />
       )}
-      {type == "job" && <JobModal open={open} setOpen={setOpen} jobID={id} />}
+      {/* {type == "job" && <JobModal open={open} setOpen={setOpen} jobID={id} />} */}
       {type == "recruiter" && (
         <RecruiterModal open={open} setOpen={setOpen} id={id} />
       )}
