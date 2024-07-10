@@ -361,14 +361,14 @@ export default function StudentModal({ open, setOpen, id }) {
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
-                                    <Typography variant="h5" component="h3" gutterBottom sx={{ mb: 2 }}>
+                                    <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 2,mb:2}}>
                                         Registration
                                     </Typography>
-                                    <TableContainer>
+                                    <TableContainer  component={Paper} elevation={3} sx={{ mb: 2 }} >
                                         <Table>
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell sx={{ fontWeight: 'bold' }}>Season ID</TableCell>
+                                                    
                                                     <TableCell sx={{ fontWeight: 'bold' }}>Year</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
@@ -378,7 +378,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                             <TableBody>
                                                 {registrationData ? registrationData.map((registration) => (
                                                     <TableRow key={registration.id}>
-                                                        <TableCell>{registration.season.id}</TableCell>
+                                                       
                                                         <TableCell>{registration.season.year}</TableCell>
                                                         <TableCell>{registration.season.type}</TableCell>
                                                         <TableCell>{registration.registered ? "Registered" : "Not Registered"}</TableCell>
