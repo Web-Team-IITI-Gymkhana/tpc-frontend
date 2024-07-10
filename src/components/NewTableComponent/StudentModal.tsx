@@ -15,7 +15,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Button } from '@mui/material';
+
+import Cookies from 'js-cookie';
 import Loader from '@/components/Loader/loader';
+const redirect = () => {};
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -49,32 +53,124 @@ const style = {
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+const handleRegistration = async (accessToken, studentId, seasonId, currentStatus) => {
+    if (!accessToken) {
+        console.error('No access token provided');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${baseUrl}/api/v1/registrations`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify([{
+                studentId,
+                seasonId,
+                registered: !currentStatus
+            }]),
+        });
+
+        if (!res.ok) {
+            const errorDetails = await res.json();
+            console.error(`Failed to update registration status: ${errorDetails.message}`);
+            throw new Error(`Failed to update registration status: ${errorDetails.message}`);
+        }
+
+        console.log('Registration status updated successfully');
+        return true;
+    } catch (error) {
+        console.error('Error updating registration status:', error.message);
+        alert(`Error updating registration status: ${error.message}`);
+        return false;
+    }
+};
+
 export default function StudentModal({ open, setOpen, id }) {
     const [studentData, setStudentData] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [registrationData, setRegistrationData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const fetchStudentData = async (accessToken, id) => {
+        if (!accessToken) {
+            console.error('No access token provided');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch(`${baseUrl}/api/v1/students/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`Error fetching student data: ${response.statusText}`);
+            }
+            const data = await response.json();
+            setStudentData(data);
+            console.log('Student data:', data);
+        } catch (error) {
+            console.error('Error fetching student data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchRegistrationData = async (accessToken, studentId) => {
+        if (!accessToken) {
+            console.error('No access token provided');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch(`${baseUrl}/api/v1/registrations`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching registration data: ${response.statusText}`);
+            }
+
+            const allData = await response.json();
+            const filteredData = allData.filter((registration) => registration.student.id === studentId);
+
+            console.log('Filtered registration data:', filteredData);
+            setRegistrationData(filteredData);
+        } catch (error) {
+            console.error('Error fetching registration data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchStudentData = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch(`${baseUrl}/api/v1/students/${id}`);
-                const data = await response.json();
-                setStudentData(data);
-            } catch (error) {
-                console.error('Error fetching student data:', error);
-            }
-            setLoading(false);
-        };
-
         if (open && id) {
-            fetchStudentData();
+            fetchStudentData(Cookies.get("accessToken"), id);
+            fetchRegistrationData(Cookies.get("accessToken"), id);
         }
     }, [open, id]);
 
     const handleClose = () => setOpen(false);
 
+    const handleStatusChange = async (studentId, seasonId, currentStatus) => {
+        const success = await handleRegistration(Cookies.get("accessToken"), studentId, seasonId, currentStatus);
+        if (success) {
+            setRegistrationData((prevData) =>
+                prevData.map((registration) =>
+                    registration.season.id === seasonId ? { ...registration, registered: !currentStatus } : registration
+                )
+            );
+        }
+    };
+
     return (
-        <ThemeProvider theme={theme} >
+        <ThemeProvider theme={theme}>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -160,19 +256,19 @@ export default function StudentModal({ open, setOpen, id }) {
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Name
                                                     </TableCell>
-                                                    <TableCell>{studentData.user.name}</TableCell>
+                                                    <TableCell>{studentData.user ? studentData.user.Name : 'N/A'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Email
                                                     </TableCell>
-                                                    <TableCell>{studentData.user.email}</TableCell>
+                                                    <TableCell>{studentData.user ? studentData.user.email : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Contact
                                                     </TableCell>
-                                                    <TableCell>{studentData.user.contact}</TableCell>
+                                                    <TableCell>{studentData.user ? studentData.user.contact : 'NA'}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -187,24 +283,24 @@ export default function StudentModal({ open, setOpen, id }) {
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Branch
                                                     </TableCell>
-                                                    <TableCell>{studentData.program.branch}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.user.branch : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Course
-                                                    </TableCell><TableCell>{studentData.program.course}</TableCell>
+                                                    </TableCell><TableCell>{studentData.program ? studentData.user.course : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Year
                                                     </TableCell>
-                                                    <TableCell>{studentData.program.year}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.user.year : 'NA'}</TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                                                         Department
                                                     </TableCell>
-                                                    <TableCell>{studentData.program.department}</TableCell>
+                                                    <TableCell>{studentData.program ? studentData.user.department : 'NA'}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
@@ -222,7 +318,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {studentData.resumes.map((resume) => (
+                                                {studentData.resumes ? studentData.resumes.map((resume) => (
                                                     <TableRow key={resume.id}>
                                                         <TableCell>{resume.id}</TableCell>
                                                         <TableCell>
@@ -238,7 +334,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                                         </TableCell>
                                                         <TableCell>{resume.verified.toString()}</TableCell>
                                                     </TableRow>
-                                                ))}
+                                                )) : 'NAA'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
@@ -255,13 +351,48 @@ export default function StudentModal({ open, setOpen, id }) {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {studentData.penalties.map((penalty) => (
+                                                {studentData.penalties ? studentData.penalties.map((penalty) => (
                                                     <TableRow key={penalty.id}>
                                                         <TableCell>{penalty.id}</TableCell>
                                                         <TableCell>{penalty.penalty}</TableCell>
                                                         <TableCell>{penalty.reason}</TableCell>
                                                     </TableRow>
-                                                ))}
+                                                )) : 'NAA'}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 2,mb:2}}>
+                                        Registration
+                                    </Typography>
+                                    <TableContainer  component={Paper} elevation={3} sx={{ mb: 2 }} >
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>Year</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {registrationData ? registrationData.map((registration) => (
+                                                    <TableRow key={registration.id}>
+                                                       
+                                                        <TableCell>{registration.season.year}</TableCell>
+                                                        <TableCell>{registration.season.type}</TableCell>
+                                                        <TableCell>{registration.registered ? "Registered" : "Not Registered"}</TableCell>
+                                                        <TableCell>
+                                                            <Button
+                                                                variant="contained"
+                                                                color={registration.registered ? "secondary" : "primary"}
+                                                                onClick={() => handleStatusChange(studentData.id, registration.season.id, registration.registered)}
+                                                            >
+                                                                {registration.registered ? "Deregister" : "Register"}
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )) : 'NA'}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
