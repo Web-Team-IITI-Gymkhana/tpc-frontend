@@ -1,8 +1,9 @@
 const redirect = () => {};
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-import qs from "qs"
+import qs from "qs";
 import Cookies from "js-cookie";
+import { ResumePatchData } from "./types";
 
 interface ApiCallOptions {
   method?: string;
@@ -23,37 +24,42 @@ export const getUrl = (NextUrl: string) => {
 
 export const apiCall = async (
   path: string,
-{ method = "GET", isAuth = true, body = null, queryParam = null, formData = null, next = null,  }: ApiCallOptions = {}
+  {
+    method = "GET",
+    isAuth = true,
+    body = null,
+    queryParam = null,
+    formData = null,
+    next = null,
+  }: ApiCallOptions = {}
 ) => {
-  
   const accessToken = Cookies.get("accessToken");
-  if ((!accessToken || accessToken === undefined) && isAuth){
+  if ((!accessToken || accessToken === undefined) && isAuth) {
     redirect();
     return;
   }
 
-  let url = getUrl(path)
+  let url = getUrl(path);
 
   const headers: HeadersInit = {};
 
   const req = {
     method: method,
+  };
+
+  if ((method == "POST" || method == "PATCH") && body) {
+    req["body"] = JSON.stringify(body);
+    headers["Content-Type"] = "application/json";
+  }
+  if ((method == "POST" || method == "PATCH") && formData) {
+    req["body"] = formData;
+    headers["accept"] = "application/json";
+  }
+  if (method == "DELETE") {
+    headers["accept"] = "application/json";
   }
 
-  if ((method == "POST" || method == "PATCH") && body){
-    req['body'] = JSON.stringify(body);
-    headers['Content-Type'] = 'application/json';
-  }
-  if ((method == "POST" || method == "PATCH") && formData){
-    req['body'] = formData;
-    headers['accept'] = 'application/json';
-  }
-  if (method == "DELETE"){
-    headers['accept'] = 'application/json';
-  }
-
-
-  if(queryParam){
+  if (queryParam) {
     const encodedQueryString = qs.stringify(queryParam, {
       encodeValuesOnly: true,
       encode: false,
@@ -62,59 +68,56 @@ export const apiCall = async (
   }
 
   if (isAuth) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  req['headers'] = headers;
+  req["headers"] = headers;
 
-
-  if (next){
-    req['next'] =  next;
+  if (next) {
+    req["next"] = next;
   }
 
   const res = await fetch(url, req);
-  if(method === "GET"){
+  if (method === "GET") {
     return await res.json();
-  }
-  else return res.ok;
-}
+  } else return res.ok;
+};
 export const OpenFile = async (
   path: string,
-{ method = "GET", isAuth = true, next = null}: ApiCallOptions = {}
+  { method = "GET", isAuth = true, next = null }: ApiCallOptions = {}
 ) => {
-  
   const accessToken = Cookies.get("accessToken");
-  if ((!accessToken || accessToken === undefined) && isAuth){
+  if ((!accessToken || accessToken === undefined) && isAuth) {
     redirect();
     return;
   }
 
-  let url = getUrl(path)
+  let url = getUrl(path);
 
   const headers: HeadersInit = {};
 
   const req = {
     method: method,
-  }
+  };
 
   if (isAuth) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  req['headers'] = headers;
+  req["headers"] = headers;
 
-
-  if (next){
-    req['next'] =  next;
+  if (next) {
+    req["next"] = next;
   }
 
-  fetch(url, req).then(response => response.blob())
-  .then(blob => {
+  fetch(url, req)
+    .then((response) => response.blob())
+    .then((blob) => {
       const url = window.URL.createObjectURL(blob);
       window.open(url);
-  })
-  .catch(error => console.error('Error:', error));
-}
+    })
+    .catch((error) => console.error("Error:", error));
+};
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
@@ -122,9 +125,9 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
     return;
   }
   const res = await fetch(url("/auth/passwordless/verify"), {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ token: accessToken }),
   });
@@ -376,19 +379,39 @@ export const fetchJobEvents = async (
   return json;
 };
 
-
-export const fetchRecruiterData = async (accessToken: string | undefined, filter: string | undefined) => {
+export const fetchRecruiterData = async (
+  accessToken: string | undefined,
+  filter: string | undefined
+) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  console.log('filter', filter)
-  const res = await fetch(filter ? url(`/recruiters?${filter}`) : url("/recruiters"), {
-    next: { tags: ["AllRecruiters"] },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  console.log("filter", filter);
+  const res = await fetch(
+    filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
+    {
+      next: { tags: ["AllRecruiters"] },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
   const json = await res.json();
   return json;
+};
+
+export const fetchResumes = async () => {
+  return apiCall("/resumes");
+};
+
+export const getResumeFile = async (fileName: string) => {
+  OpenFile(`/resumes/file/${fileName}`);
+};
+
+export const patchResumeVerify = async (changes: ResumePatchData[]) => {
+  return apiCall(`/resumes`, {
+    method: "PATCH",
+    body: changes,
+  });
 };

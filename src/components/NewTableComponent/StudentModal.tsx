@@ -15,8 +15,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Button } from '@mui/material';
-import Cookies from 'js-cookie';
 
+import Cookies from 'js-cookie';
+import Loader from '@/components/Loader/loader';
 const redirect = () => {};
 
 const theme = createTheme({
@@ -180,7 +181,9 @@ export default function StudentModal({ open, setOpen, id }) {
                 <Box sx={style}>
                     {loading ? (
                         <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
-                            <CircularProgress />
+                            <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>
                         </Box>
                     ) : (
                         <>
