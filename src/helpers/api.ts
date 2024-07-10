@@ -225,82 +225,11 @@ export const fetchSeasonData = async (
   return json;
 };
 
-export const registerStudents = async (
-  accessToken: string | undefined,
-  students: {
-    id: string; // UUID of the student
-    seasonId: string; // UUID of the season
-  }[]
-) => {
-  if (!accessToken) {
-    redirect();
-    return;
-  }
-
-  // Map the students to the required format
-  const body = students.map(student => ({
-    studentId: student.id,
-    seasonId: student.seasonId
-  }));
-
-  // Send the registration request
-  const res = await fetch(`${baseUrl}/api/v1/registrations`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  // Handle the response
-  const responseBody = await res.json();
-  console.log('Response status:', res.status);
-  console.log('Response body:', responseBody);
-
-  // Throw an error if the request was not successful
-  if (!res.ok) {
-    throw new Error(`Failed to register the students: ${responseBody.message}`);
-  }
-};
 
 
 
 
 
-
-
-
-export const deregisterStudent = async (accessToken: string | undefined, studentId: string, seasonId: string) => {
-  if (!accessToken) {
-      console.error('No access token provided');
-      return;
-  }
-
-  try {
-      const res = await fetch(`${baseUrl}/api/v1/registrations/de-register`, {
-          method: 'PATCH',
-          headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              studentId,
-              seasonId
-          }),
-      });
-
-      if (!res.ok) {
-          throw new Error('Failed to deregister the student');
-      }
-
-      console.log('Student deregistered successfully');
-      // Optionally, refetch the registration data to update the UI
-      // await fetchRegistrationData(accessToken, studentId);
-  } catch (error) {
-      console.error('Error deregistering the student:', error);
-  }
-};
 
 
 export const fetchCompanyRecruiters = async (
