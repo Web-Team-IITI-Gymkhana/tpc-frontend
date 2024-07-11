@@ -386,4 +386,3 @@ export const postJobCoordinator = async (
     body: body,
   });
 };
-
