@@ -6,7 +6,7 @@ import { fetchProfile } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { ProfileFC } from "@/helpers/recruiter/types";
 import EditProfilePage from "@/components/Recruiters/editProfile";
-
+import Loader from "@/components/Loader/loader";
 const Profile = () => {
   const [data, setData] = useState<ProfileFC>();
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,9 @@ const Profile = () => {
 
   return (
     <div className="h-screen flex justify-center">
-      {loading && <img src={loadingImg.src} width={200} />}
+      {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
       {data &&
         (editMode ? (
           <EditProfilePage data={data} />

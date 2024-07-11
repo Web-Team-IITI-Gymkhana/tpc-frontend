@@ -321,6 +321,7 @@ export const fetchRecruiterData = async (
     redirect();
     return;
   }
+
   const res = await fetch(
     filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
     {
@@ -385,3 +386,4 @@ export const postJobCoordinator = async (
     body: body,
   });
 };
+
