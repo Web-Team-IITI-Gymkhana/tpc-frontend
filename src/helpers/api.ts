@@ -1,11 +1,9 @@
-"use client";
-import { useState, useEffect } from 'react';
-import qs from "qs";
-import Cookies from "js-cookie";
-
-const redirect = () => { };
+const redirect = () => {};
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+import qs from "qs";
+import Cookies from "js-cookie";
+import { ResumePatchData } from "./types";
 
 interface ApiCallOptions {
   method?: string;
@@ -26,9 +24,15 @@ export const getUrl = (NextUrl: string) => {
 
 export const apiCall = async (
   path: string,
-  { method = "GET", isAuth = true, body = null, queryParam = null, formData = null, next = null, }: ApiCallOptions = {}
+  {
+    method = "GET",
+    isAuth = true,
+    body = null,
+    queryParam = null,
+    formData = null,
+    next = null,
+  }: ApiCallOptions = {}
 ) => {
-
   const accessToken = Cookies.get("accessToken");
   if ((!accessToken || accessToken === undefined) && isAuth) {
     redirect();
@@ -39,20 +43,20 @@ export const apiCall = async (
 
   const headers: HeadersInit = {};
 
-  const req: RequestInit = {
+  const req = {
     method: method,
   };
 
-  if ((method === "POST" || method === "PATCH") && body) {
-    req.body = JSON.stringify(body);
-    headers['Content-Type'] = 'application/json';
+  if ((method == "POST" || method == "PATCH") && body) {
+    req["body"] = JSON.stringify(body);
+    headers["Content-Type"] = "application/json";
   }
-  if ((method === "POST" || method === "PATCH") && formData) {
-    req.body = formData;
-    headers['accept'] = 'application/json';
+  if ((method == "POST" || method == "PATCH") && formData) {
+    req["body"] = formData;
+    headers["accept"] = "application/json";
   }
-  if (method === "DELETE") {
-    headers['accept'] = 'application/json';
+  if (method == "DELETE") {
+    headers["accept"] = "application/json";
   }
 
   if (queryParam) {
@@ -64,27 +68,24 @@ export const apiCall = async (
   }
 
   if (isAuth) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  req.headers = headers;
+  req["headers"] = headers;
 
   if (next) {
-    req.next = next;
+    req["next"] = next;
   }
 
   const res = await fetch(url, req);
   if (method === "GET") {
     return await res.json();
-  }
-  return res.ok;
+  } else return res.ok;
 };
-
 export const OpenFile = async (
   path: string,
   { method = "GET", isAuth = true, next = null }: ApiCallOptions = {}
 ) => {
-
   const accessToken = Cookies.get("accessToken");
   if ((!accessToken || accessToken === undefined) && isAuth) {
     redirect();
@@ -95,26 +96,27 @@ export const OpenFile = async (
 
   const headers: HeadersInit = {};
 
-  const req: RequestInit = {
+  const req = {
     method: method,
   };
 
   if (isAuth) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
+    headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  req.headers = headers;
+  req["headers"] = headers;
 
   if (next) {
-    req.next = next;
+    req["next"] = next;
   }
 
-  fetch(url, req).then(response => response.blob())
-    .then(blob => {
+  fetch(url, req)
+    .then((response) => response.blob())
+    .then((blob) => {
       const url = window.URL.createObjectURL(blob);
       window.open(url);
     })
-    .catch(error => console.error('Error:', error));
+    .catch((error) => console.error("Error:", error));
 };
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
@@ -123,13 +125,14 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
     return;
   }
   const res = await fetch(url("/auth/passwordless/verify"), {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ token: accessToken }),
   });
-  return { status: res.status, body: await res.json() };
+  const body = await res.json();
+  return { status: res.status, body };
 };
 
 export const fetchAllSeasons = async (accessToken: string | undefined) => {
@@ -142,7 +145,7 @@ export const fetchAllSeasons = async (accessToken: string | undefined) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await res.json();
+return await res.json
 };
 
 export const fetchCompany = async (accessToken: string | undefined) => {
@@ -155,7 +158,7 @@ export const fetchCompany = async (accessToken: string | undefined) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await res.json();
+return await res.json
 };
 
 export const fetchAllJobs = async (
@@ -172,7 +175,8 @@ export const fetchAllJobs = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await res.json();
+return await res.json
+  // return SampleJobData
 };
 
 export const fetchStudentData = async (
@@ -192,7 +196,7 @@ export const fetchStudentData = async (
       },
     }
   );
-  return await res.json();
+return await res.json
 };
 
 export const fetchSeasonData = async (
@@ -212,7 +216,7 @@ export const fetchSeasonData = async (
       },
     }
   );
-  return await res.json();
+return await res.json
 };
 
 export const fetchCompanyRecruiters = async (
@@ -231,7 +235,7 @@ export const fetchCompanyRecruiters = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await res.json();
+return await res.json
 };
 
 export const fetchJobSalary = async (
@@ -247,7 +251,7 @@ export const fetchJobSalary = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await res.json();
+return await res.json
 };
 
 export const fetchEachJob = async (
@@ -263,39 +267,112 @@ export const fetchEachJob = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  return await res.json();
+
+return await res.json
 };
 
-export const fetchJobEvents = async (
+export const fetchJobEvents = async (jobId: any) => {
+  return apiCall(`/events`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          job: {
+            id: {
+              eq: [jobId],
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const fetchEventById = async (eventId: any) => {
+  return apiCall(`/events/${eventId}`);
+};
+
+export const addEvent = async (body: any) => {
+  return apiCall(`/events`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const promoteStudent = async (body: any, eventId: string) => {
+  return apiCall(`/events/${eventId}`, {
+    method: "PATCH",
+    body: body,
+  });
+};
+
+export const fetchRecruiterData = async (
   accessToken: string | undefined,
-  jobId: any
+  filter: string | undefined
 ) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
     return;
   }
-  const res = await fetch(`${url("/jobs")}/${jobId}/events`, {
-    next: {
-      tags: ["AllEvents"],
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  return await res.json();
+  const res = await fetch(
+    filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
+    {
+      next: { tags: ["AllRecruiters"] },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+return await res.json
 };
 
-export const fetchRecruiterData = async (accessToken: string | undefined, filter: string | undefined) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  console.log('filter', filter);
-  const res = await fetch(filter ? url(`/recruiters?${filter}`) : url("/recruiters"), {
-    next: { tags: ["AllRecruiters"] },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+export const fetchResumes = async () => {
+  return apiCall("/resumes");
+};
+
+export const getResumeFile = async (fileName: string) => {
+  OpenFile(`/resumes/file/${fileName}`);
+};
+
+export const patchResumeVerify = async (changes: ResumePatchData[]) => {
+  return apiCall(`/resumes`, {
+    method: "PATCH",
+    body: changes,
   });
-  return await res.json();
+};
+
+export const getStudentSalaryOffers = async (
+  jobId: string,
+  studentId: string
+) => {
+  return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
+};
+
+export const postOnCampusOffer = async (
+  body: {
+    salaryId: string;
+    studentId: string;
+    status: string;
+  }[]
+) => {
+  return apiCall(`/on-campus-offers/`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const fetchTpcMembers = async () => {
+  return apiCall(`/tpc-members`);
+};
+
+export const postJobCoordinator = async (
+  body: {
+    jobId: string;
+    tpcMemberId: string;
+    role: string;
+  }[]
+) => {
+  return apiCall(`/jobs/coordinators`, {
+    method: "POST",
+    body: body,
+  });
 };
