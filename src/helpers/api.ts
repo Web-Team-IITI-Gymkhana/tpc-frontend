@@ -258,25 +258,38 @@ export const fetchEachJob = async (
   return json;
 };
 
-export const fetchJobEvents = async (
-  accessToken: string | undefined,
-  jobId: any
-) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/jobs")}/${jobId}/events`, {
-    next: {
-      tags: ["AllEvents"],
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+export const fetchJobEvents = async (jobId: any) => {
+  return apiCall(`/events`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          job: {
+            id: {
+              eq: [jobId],
+            },
+          },
+        },
+      },
     },
   });
+};
 
-  const json = await res.json();
-  return json;
+export const fetchEventById = async (eventId: any) => {
+  return apiCall(`/events/${eventId}`);
+};
+
+export const addEvent = async (body: any) => {
+  return apiCall(`/events`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const promoteStudent = async (body: any, eventId: string) => {
+  return apiCall(`/events/${eventId}`, {
+    method: "PATCH",
+    body: body,
+  });
 };
 
 export const fetchRecruiterData = async (
@@ -287,7 +300,6 @@ export const fetchRecruiterData = async (
     redirect();
     return;
   }
-  console.log("filter", filter);
   const res = await fetch(
     filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
     {
@@ -313,5 +325,42 @@ export const patchResumeVerify = async (changes: ResumePatchData[]) => {
   return apiCall(`/resumes`, {
     method: "PATCH",
     body: changes,
+  });
+};
+
+export const getStudentSalaryOffers = async (
+  jobId: string,
+  studentId: string
+) => {
+  return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
+};
+
+export const postOnCampusOffer = async (
+  body: {
+    salaryId: string;
+    studentId: string;
+    status: string;
+  }[]
+) => {
+  return apiCall(`/on-campus-offers/`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const fetchTpcMembers = async () => {
+  return apiCall(`/tpc-members`);
+};
+
+export const postJobCoordinator = async (
+  body: {
+    jobId: string;
+    tpcMemberId: string;
+    role: string;
+  }[]
+) => {
+  return apiCall(`/jobs/coordinators`, {
+    method: "POST",
+    body: body,
   });
 };
