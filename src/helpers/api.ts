@@ -203,6 +203,27 @@ export const fetchStudentData = async (
   return json;
 };
 
+export const fetchSeasonData = async (
+  accessToken: string | undefined,
+  filter: string | undefined
+) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(
+    filter ? url(`/registrations?${filter}`) : url("/registrations"),
+    {
+      next: { tags: ["AllStudents"] },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  const json = await res.json();
+  return json;
+};
+
 export const fetchCompanyRecruiters = async (
   accessToken: string | undefined,
   companyId: string | undefined
