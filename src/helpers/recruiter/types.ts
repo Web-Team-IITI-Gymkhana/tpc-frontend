@@ -32,6 +32,7 @@ export interface EventFC {
   startDateTime: string;
   endDateTime: string;
   applications?: [ApplicationFC];
+  job?: JobDetailFC;
 }
 
 export interface JAFdetailsFC {
