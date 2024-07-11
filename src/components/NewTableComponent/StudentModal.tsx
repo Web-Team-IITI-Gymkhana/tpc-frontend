@@ -19,7 +19,6 @@ import { Button } from '@mui/material';
 import Cookies from 'js-cookie';
 import Loader from '@/components/Loader/loader';
 const redirect = () => {};
-
 const theme = createTheme({
     palette: {
         primary: {
@@ -77,6 +76,7 @@ const handleRegistration = async (accessToken, studentId, seasonId, currentStatu
             const errorDetails = await res.json();
             console.error(`Failed to update registration status: ${errorDetails.message}`);
             throw new Error(`Failed to update registration status: ${errorDetails.message}`);
+            //Will change it in a separate console removal PR
         }
 
         console.log('Registration status updated successfully');
@@ -135,11 +135,8 @@ export default function StudentModal({ open, setOpen, id }) {
             if (!response.ok) {
                 throw new Error(`Error fetching registration data: ${response.statusText}`);
             }
-
             const allData = await response.json();
             const filteredData = allData.filter((registration) => registration.student.id === studentId);
-
-            
             setRegistrationData(filteredData);
         } catch (error) {
           
@@ -150,8 +147,9 @@ export default function StudentModal({ open, setOpen, id }) {
 
     useEffect(() => {
         if (open && id) {
-            fetchStudentData(Cookies.get("accessToken"), id);
-            fetchRegistrationData(Cookies.get("accessToken"), id);
+            const accessToken = Cookies.get("accessToken");
+            fetchStudentData(accessToken, id);
+            fetchRegistrationData(accessToken, id);
         }
     }, [open, id]);
 
