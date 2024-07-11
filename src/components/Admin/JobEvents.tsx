@@ -1,15 +1,23 @@
 "use client";
-import React, { use } from "react";
+import React from "react";
 import { useState, useEffect } from "react";
-import { EventFC, ApplicationFC } from "@/helpers/recruiter/types";
-import { CircularProgress, Modal } from "@mui/material";
+import { EventFC, ApplicationFC, SalaryFC } from "@/helpers/recruiter/types";
+import { CircularProgress, Modal, Typography } from "@mui/material";
 import { getResume } from "@/helpers/recruiter/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import { addEvent, fetchEventById, promoteStudent } from "@/helpers/api";
+import {
+  addEvent,
+  fetchEventById,
+  getStudentSalaryOffers,
+  postOnCampusOffer,
+  promoteStudent,
+} from "@/helpers/api";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { Unstable_NumberInput as NumberInput } from "@mui/base/Unstable_NumberInput";
+import Table from "../NewTableComponent/Table";
+import generateColumns from "../NewTableComponent/ColumnMapping";
 
 const typeOptions = [
   "POLL",
@@ -191,7 +199,7 @@ const PromoteStudent = ({
   onClose: () => void;
   events: EventFC[];
 }) => {
-  const [roundNumber, setRoundNumber] = useState<number>();
+  const [roundNumber, setRoundNumber] = useState<number>(0);
   const studentIds = students.map((student) => student.id);
   const [eventId, setEventId] = useState<string>();
   useEffect(() => {
@@ -207,6 +215,7 @@ const PromoteStudent = ({
   const updateEvent = async () => {
     await promoteStudent({ studentIds }, eventId);
     toast.success("Successfully promoted!");
+    onClose();
   };
 
   return (
@@ -250,6 +259,107 @@ const PromoteStudent = ({
           >
             Promote / Demote
           </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+const MakeJobOfferModal = ({
+  open,
+  students,
+  onClose,
+  events,
+  lastEvent,
+}: {
+  open: boolean;
+  students: any[];
+  onClose: () => void;
+  events: EventFC[];
+  lastEvent: EventFC;
+}) => {
+  const studentIds = students.map((student) => student.id);
+  const [salaries, setSalaries] = useState<SalaryFC[]>();
+  const columns = generateColumns([
+    {
+      select: "",
+      baseSalary: 0,
+      totalCTC: 0,
+      takeHomeSalary: 0,
+      grossSalary: 0,
+      otherCompensations: 0,
+      salaryPeriod: "string",
+      job: {
+        role: "string",
+        company: {
+          name: "string",
+        },
+      },
+    },
+  ]);
+  console.log(columns);
+
+  const makeOffer = async (salaryId: string) => {
+    await postOnCampusOffer([
+      {
+        salaryId: salaryId,
+        studentId: studentIds[0],
+        status: "ACCEPTED",
+      },
+    ]);
+    toast.success("Made a successful offer!");
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    const fetchSalaries = async () => {
+      const salaries = await getStudentSalaryOffers(
+        lastEvent.job.id,
+        studentIds[0]
+      );
+      const newSalaries = salaries.map((salary) => ({
+        select: (
+          <Button
+            onClick={() => {
+              makeOffer(salary.id);
+            }}
+          >
+            Select
+          </Button>
+        ),
+        ...salary,
+      }));
+      console.log(newSalaries);
+      setSalaries(newSalaries);
+    };
+    fetchSalaries();
+  }, []);
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      className="w-full h-full flex justify-center items-center text-black"
+    >
+      <div className="bg-white p-8 rounded-xl max-w-[90vw]">
+        <div>
+          <Typography
+            variant="h4"
+            fontFamily={"inherit"}
+            fontWeight={"bold"}
+            align="center"
+          >
+            Select Salary
+          </Typography>
+          {salaries ? (
+            <div className="max-w-full">
+              <Table data={salaries} columns={columns} type={"salary"} />
+            </div>
+          ) : (
+            <div className="w-full flex justify-center">
+              <CircularProgress />
+            </div>
+          )}
         </div>
       </div>
     </Modal>
@@ -338,6 +448,16 @@ export const Applications = ({
   events: EventFC[];
 }) => {
   const [applications, setApplications] = useState<[ApplicationFC]>(null);
+  var lastEvent: EventFC;
+  events.forEach((event) => {
+    if (lastEvent) {
+      if (lastEvent.roundNumber < event.roundNumber) {
+        lastEvent = event;
+      }
+    } else {
+      lastEvent = event;
+    }
+  });
   const [loading, setLoading] = useState(true);
   const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
   const [seed, setSeed] = useState(0);
@@ -361,15 +481,28 @@ export const Applications = ({
 
   return (
     <div className="w-full">
-      <PromoteStudent
-        open={promoteStudents.length > 0}
-        students={promoteStudents}
-        onClose={() => {
-          setPromoteStudents([]);
-          setSeed(seed + 1);
-        }}
-        events={events}
-      />
+      {lastEvent.id == eventId && promoteStudents.length > 0 ? (
+        <MakeJobOfferModal
+          open={promoteStudents.length > 0}
+          students={promoteStudents}
+          onClose={() => {
+            setPromoteStudents([]);
+            setSeed(seed + 1);
+          }}
+          events={events}
+          lastEvent={lastEvent}
+        />
+      ) : (
+        <PromoteStudent
+          open={promoteStudents.length > 0}
+          students={promoteStudents}
+          onClose={() => {
+            setPromoteStudents([]);
+            setSeed(seed + 1);
+          }}
+          events={events}
+        />
+      )}
       {loading && (
         <div className="flex justify-center">
           <CircularProgress />
@@ -418,19 +551,35 @@ export const Applications = ({
                   {application.resume.verified && <VerifiedIcon />}
                 </td>
                 <td className="px-6 py-4">
-                  <Button
-                    onClick={() => {
-                      setPromoteStudents([
-                        ...promoteStudents,
-                        {
-                          id: application.student.id,
-                          name: application.student.user.name,
-                        },
-                      ]);
-                    }}
-                  >
-                    Promote / Demote
-                  </Button>
+                  {lastEvent.id == eventId ? (
+                    <Button
+                      onClick={() => {
+                        setPromoteStudents([
+                          ...promoteStudents,
+                          {
+                            id: application.student.id,
+                            name: application.student.user.name,
+                          },
+                        ]);
+                      }}
+                    >
+                      Make Offer
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setPromoteStudents([
+                          ...promoteStudents,
+                          {
+                            id: application.student.id,
+                            name: application.student.user.name,
+                          },
+                        ]);
+                      }}
+                    >
+                      Promote / Demote
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

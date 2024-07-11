@@ -328,3 +328,23 @@ export const patchResumeVerify = async (changes: ResumePatchData[]) => {
     body: changes,
   });
 };
+
+export const getStudentSalaryOffers = async (
+  jobId: string,
+  studentId: string
+) => {
+  return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
+};
+
+export const postOnCampusOffer = async (
+  body: {
+    salaryId: string;
+    studentId: string;
+    status: string;
+  }[]
+) => {
+  return apiCall(`/on-campus-offers/`, {
+    method: "POST",
+    body: body,
+  });
+};
