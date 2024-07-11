@@ -3,11 +3,11 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { EventFC, ApplicationFC, SalaryFC } from "@/helpers/recruiter/types";
 import { CircularProgress, Modal, Typography } from "@mui/material";
-import { getResume } from "@/helpers/recruiter/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import {
   addEvent,
   fetchEventById,
+  getResumeFile,
   getStudentSalaryOffers,
   postOnCampusOffer,
   promoteStudent,
@@ -543,7 +543,7 @@ export const Applications = ({
                 <td className="px-6 py-4">{application.student.user.email}</td>
                 <td
                   className="px-6 py-4"
-                  onClick={() => getResume(application.resume.filepath)}
+                  onClick={() => getResumeFile(application.resume.filepath)}
                 >
                   {application.resume.filepath}{" "}
                   {application.resume.verified && <VerifiedIcon />}

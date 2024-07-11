@@ -347,3 +347,20 @@ export const postOnCampusOffer = async (
     body: body,
   });
 };
+
+export const fetchTpcMembers = async () => {
+  return apiCall(`/tpc-members`);
+};
+
+export const postJobCoordinator = async (
+  body: {
+    jobId: string;
+    tpcMemberId: string;
+    role: string;
+  }[]
+) => {
+  return apiCall(`/jobs/coordinators`, {
+    method: "POST",
+    body: body,
+  });
+};

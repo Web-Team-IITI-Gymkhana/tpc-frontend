@@ -18,6 +18,7 @@ import { fetchEachJob } from "@/helpers/api";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
+import JobCoordinatorForm from "@/components/Admin/AddForms";
 
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
@@ -561,6 +562,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   </div>
                 </div>
               ))}
+              <JobCoordinatorForm jobId={params.jobId} />
             </div>
           </div>
           <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
