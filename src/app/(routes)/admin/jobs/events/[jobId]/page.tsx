@@ -2,7 +2,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { JobEvents } from "@/components/Admin/JobEvents";
-import { CircularProgress } from "@mui/material";
 import { fetchJobEvents } from "@/helpers/api";
 import { EventFC } from "@/helpers/recruiter/types";
 import { Button } from "@/components/ui/button";

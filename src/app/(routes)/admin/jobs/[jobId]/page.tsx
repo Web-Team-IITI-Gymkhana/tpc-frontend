@@ -16,7 +16,6 @@ import {
 } from "@/components/Recruiters/jobEdit";
 import { fetchEachJob } from "@/helpers/api";
 import Cookies from "js-cookie";
-import { CircularProgress } from "@mui/material";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 
