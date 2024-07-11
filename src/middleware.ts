@@ -13,6 +13,7 @@ const studentRoutes = [
   "/student/resumes",
 ];
 const recruiterRoutes = ["/recruiter/jaf", "/recruiter/prevjaf"];
+const facultyRoutes = ["/faculty", "/faculty/profile"];
 
 export function middleware(request: NextRequest) {
   const userCookie = request.cookies.get("user");
@@ -21,14 +22,17 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === "/" && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (request.nextUrl.pathname === "/viewprofile" && user?.role === "STUDENT") {
+  if (request.nextUrl.pathname === "/" && user?.role === "STUDENT") {
     return NextResponse.redirect(new URL("/student/profile", request.url));
   }
-  if (request.nextUrl.pathname === "/viewprofile" && user?.role === "ADMIN") {
-    return NextResponse.redirect(new URL("admin/companies", request.url));
+  if (request.nextUrl.pathname === "/" && user?.role === "ADMIN") {
+    return NextResponse.redirect(new URL("admin/profile", request.url));
   }
-  if (request.nextUrl.pathname === "/viewprofile" && user?.role === "RECRUITER") {
-    return NextResponse.redirect(new URL("/recruiter/jaf", request.url));
+  if (request.nextUrl.pathname === "/" && user?.role === "RECRUITER") {
+    return NextResponse.redirect(new URL("/recruiter/profile", request.url));
+  }
+  if (request.nextUrl.pathname === "/" && user?.role === "FACULTY") {
+    return NextResponse.redirect(new URL("/faculty", request.url));
   }
 
   if (
@@ -47,6 +51,13 @@ export function middleware(request: NextRequest) {
     user?.role !== "RECRUITER" &&
     recruiterRoutes.includes(request.nextUrl.pathname) &&
     request.url.includes("/recruiter")
+  ) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  if (
+    user?.role !== "FACULTY" &&
+    facultyRoutes.includes(request.nextUrl.pathname) &&
+    request.url.includes("/faculty")
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
