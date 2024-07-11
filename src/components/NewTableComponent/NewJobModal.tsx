@@ -18,6 +18,7 @@ import { fetchEachJob } from "@/helpers/api";
 import Cookies from "js-cookie";
 import Modal from "@mui/material/Modal";
 import { CircularProgress } from "@mui/material";
+import toast from "react-hot-toast";
 
 const JobModal = ({
   jobID,
@@ -47,13 +48,11 @@ const JobModal = ({
           getJafDetails(),
         ]);
 
-        console.log(jobDetailData);
-
         setJafDetails((prev) => jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        toast.error("Error Fetching data");
       } finally {
         setLoading(false);
       }

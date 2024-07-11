@@ -300,7 +300,6 @@ export const fetchRecruiterData = async (
     redirect();
     return;
   }
-  console.log("filter", filter);
   const res = await fetch(
     filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
     {

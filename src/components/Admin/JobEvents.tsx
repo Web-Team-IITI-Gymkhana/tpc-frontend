@@ -297,7 +297,6 @@ const MakeJobOfferModal = ({
       },
     },
   ]);
-  console.log(columns);
 
   const makeOffer = async (salaryId: string) => {
     await postOnCampusOffer([
@@ -329,7 +328,6 @@ const MakeJobOfferModal = ({
         ),
         ...salary,
       }));
-      console.log(newSalaries);
       setSalaries(newSalaries);
     };
     fetchSalaries();

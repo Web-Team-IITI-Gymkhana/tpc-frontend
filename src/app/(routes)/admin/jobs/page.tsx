@@ -14,12 +14,17 @@ import {
 import Table from "@/components/NewTableComponent/Table";
 import { useEffect, useState } from "react";
 
-const hiddenColumns = ['id','season.id','company.id','recruiter.id','recruiter.user.id'];
+const hiddenColumns = [
+  "id",
+  "season.id",
+  "company.id",
+  "recruiter.id",
+  "recruiter.user.id",
+];
 
 const JobPage = () => {
   const columnHelper = createMRTColumnHelper<RecruitmentDTO>();
   const columns = generateColumns(recruitmentDTO);
-  console.log(columns);
   const [allJobs, setAllJobs] = useState();
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey)
@@ -28,7 +33,6 @@ const JobPage = () => {
   useEffect(() => {
     const getData = async () => {
       const data = await fetchAllJobs(Cookies.get("accessToken"), undefined);
-      console.log(data);
       setAllJobs(data);
     };
     getData();
