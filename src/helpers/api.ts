@@ -224,13 +224,6 @@ export const fetchSeasonData = async (
   return json;
 };
 
-
-
-
-
-
-
-
 export const fetchCompanyRecruiters = async (
   accessToken: string | undefined,
   companyId: string | undefined
@@ -328,6 +321,7 @@ export const fetchRecruiterData = async (
     redirect();
     return;
   }
+
   const res = await fetch(
     filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
     {
