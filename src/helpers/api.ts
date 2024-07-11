@@ -145,7 +145,8 @@ export const fetchAllSeasons = async (accessToken: string | undefined) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchCompany = async (accessToken: string | undefined) => {
@@ -158,7 +159,8 @@ export const fetchCompany = async (accessToken: string | undefined) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchAllJobs = async (
@@ -175,7 +177,8 @@ export const fetchAllJobs = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-return await res.json
+  const json = await res.json();
+  return json;
   // return SampleJobData
 };
 
@@ -196,27 +199,8 @@ export const fetchStudentData = async (
       },
     }
   );
-return await res.json
-};
-
-export const fetchSeasonData = async (
-  accessToken: string | undefined,
-  filter: string | undefined
-) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(
-    filter ? url(`/registrations?${filter}`) : url("/registrations"),
-    {
-      next: { tags: ["AllStudents"] },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchCompanyRecruiters = async (
@@ -235,7 +219,8 @@ export const fetchCompanyRecruiters = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchJobSalary = async (
@@ -251,7 +236,8 @@ export const fetchJobSalary = async (
       Authorization: `Bearer ${accessToken}`,
     },
   });
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchEachJob = async (
@@ -268,7 +254,8 @@ export const fetchEachJob = async (
     },
   });
 
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchJobEvents = async (jobId: any) => {
@@ -322,7 +309,8 @@ export const fetchRecruiterData = async (
       },
     }
   );
-return await res.json
+  const json = await res.json();
+  return json;
 };
 
 export const fetchResumes = async () => {
