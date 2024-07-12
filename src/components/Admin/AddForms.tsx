@@ -41,6 +41,9 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchTpcMembers();
+
+      console.log(data);
+
       setTpcMembers(data);
       setLoading(false);
     };
