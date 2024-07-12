@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
+import { Input, InputAdornment, TextField } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const LoginForm = () => {
   const [email, setemail] = useState<String | null>(null);
@@ -16,15 +18,24 @@ const LoginForm = () => {
                 <div className="my-2 w-full h-max">
                   <div className="mb-4">
                     <div className="md:col-span-5">
-                      <input
-                        type="text"
+                      <TextField
+                        type="email"
                         name="email"
                         id="email"
-                        className="h-10 border mt-1 rounded px-4 max-w-full w-80 bg-gray-50"
                         placeholder="email@domain.com"
                         required={true}
                         onChange={(e) => {
                           setemail(e?.target?.value);
+                        }}
+                        helperText="Only for Recruiters"
+                        className="mt-1 rounded"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccountCircleIcon />
+                            </InputAdornment>
+                          ),
+                          className: "h-10 max-w-full w-80 overflow-hidden",
                         }}
                       />
                     </div>
