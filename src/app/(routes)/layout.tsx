@@ -8,7 +8,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const AuthLayout = async ({ children }: Props) => {
+const RoutesLayout = async ({ children }: Props) => {
   return (
     <div className="flex-auto flex h-[92vh] ">
       {/* sidebar and main content share this space */}
@@ -22,4 +22,4 @@ const AuthLayout = async ({ children }: Props) => {
   );
 };
 
-export default AuthLayout;
+export default RoutesLayout;

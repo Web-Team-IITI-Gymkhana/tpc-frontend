@@ -5,7 +5,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const RoutesLayout = async ({ children }: Props) => {
+const AuthLayout = async ({ children }: Props) => {
   return (
     <div className="flex-auto flex h-[100vh] w-[100vw]">
       <Providers>{children}</Providers>
@@ -13,4 +13,4 @@ const RoutesLayout = async ({ children }: Props) => {
   );
 };
 
-export default RoutesLayout;
+export default AuthLayout;
