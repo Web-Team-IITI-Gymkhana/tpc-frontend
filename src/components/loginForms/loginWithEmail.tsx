@@ -2,22 +2,29 @@ import React from "react";
 import { url } from "../../helpers/api";
 import LockImg from "@/../public/icons/lock.svg";
 import toast from "react-hot-toast";
-
+import { apiCall } from "@/helpers/api";
 export const LoginWithEmail = (params: { email: String }) => {
   const onClick = async () => {
-    const res = await fetch(url("/auth/passwordless"), {
-      method: "POST",
-      cache: "no-store",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ email: params.email }),
-    });
-    console.log(res);
-    const resOk = res.ok;
-    if (resOk) toast.success("Email Has Been Sent");
-    else toast.error("Cannot Login")
-    return resOk;
+    try {
+      const { email } = params;
+      const response = await apiCall("/auth/passwordless", {
+          method: "POST",
+          body: { email },
+      });
+
+      if (response.ok) {
+          toast.success("Email has been sent");
+          // Optionally handle further actions upon successful response
+      } else {
+          toast.error("Cannot login");
+      }
+
+      return response.ok;
+  } catch (error) {
+      console.error("Error:", error);
+      toast.error("An error occurred while sending the email");
+      return false;
+  }
   };
 
   return (

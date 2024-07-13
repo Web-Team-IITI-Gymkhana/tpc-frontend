@@ -15,6 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import Loader from '@/components/Loader/loader';
+import {fetchEachJob} from "@/helpers/api"
 const theme = createTheme({
     palette: {
         primary: {
@@ -56,8 +57,7 @@ export default function ViewJobModal({ open, setOpen, id }) {
         const fetchJobData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`${baseUrl}/api/v1/jobs/${id}`);
-                const data = await response.json();
+                const data = await fetchEachJob(id);
                 setJobData(data);
             } catch (error) {
                 console.error('Error fetching job data:', error);
