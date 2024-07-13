@@ -163,6 +163,58 @@ export const fetchCompany = async (accessToken: string | undefined) => {
   return json;
 };
 
+export const assignCompany = async (
+  accessToken: string | undefined,
+  assignments: { id: string; companyId: string }[]
+) => {
+  if (!accessToken) {
+    redirect();  
+    return;
+  }
+
+  const res = await fetch(url("/jobs"), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(assignments),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to assign company");
+  }
+
+  const json = await res.json();
+  return json;
+};
+
+export const assignRecruiter = async (
+  accessToken: string | undefined,
+  assignments: { id: string; recruiterId: string }[]
+) => {
+  if (!accessToken) {
+    redirect();
+    return;
+  }
+
+  const res = await fetch(url("/jobs"), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(assignments),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to assign recruiter");
+  }
+
+  const json = await res.json();
+  return json;
+};
+
 export const fetchAllJobs = async (
   accessToken: string | undefined,
   filter: string | undefined
@@ -220,26 +272,6 @@ export const fetchSeasonData = async (
       },
     }
   );
-  const json = await res.json();
-  return json;
-};
-
-export const fetchCompanyRecruiters = async (
-  accessToken: string | undefined,
-  companyId: string | undefined
-) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/companies")}/${companyId}/recruiters/`, {
-    next: {
-      tags: ["AllRecruiters"],
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
   const json = await res.json();
   return json;
 };
