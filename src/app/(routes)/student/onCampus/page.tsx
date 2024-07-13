@@ -1,47 +1,43 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import JobCard from "@/components/jobs/JobCard";
-import { SampleJobData } from "@/dummyData/job";
-import InterviewExperiences from "@/app/(routes)/student/interviewExperiences/page";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import Cookies from "js-cookie";
-import { GetOnCampusOffers, GetResumes } from "@/helpers/student/api";
-import { OnCampusOffers, Resume } from "@/helpers/student/types";
-
-interface Props {}
-
+import { GetOnCampusOffers } from "@/helpers/student/api";
+import { OnCampusOffers } from "@/helpers/student/types";
+import OnCampusCard from "@/components/jobs/OnCampusCard";
+import toast from "react-hot-toast";
+import loadingImg from "@/components/Faculty/loadingSpinner.svg";
+import Loader from "@/components/Loader/loader";
 const StudentPage = () => {
 
   const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);
-  const [resumes, setResumes] = useState<Resume[]>([])
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      const oco = await GetOnCampusOffers(Cookies.get("accessToken"));
-      setOnCampusOffers(oco);
-
-      const res = await GetResumes(Cookies.get("accessToken"));
-      setResumes(res);
-
+    const fetchOffers = async () => {      
+      try {
+        const oco = await GetOnCampusOffers();
+        setOnCampusOffers(oco);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchJobs();
-    // setJobs(Jobs);
+    fetchOffers();
   }, []);
 
   return (
     <div>
       <div className="my-3 mx-5 font-bold text-xl">
-        <h1>Apply</h1>
+        <h1>On Campus Offers</h1>
       </div>
-      {onCampusOffers.length===0? (
-        <div>
-          No Jobs
-        </div>
-      ): (onCampusOffers.map((job)=>(
+      {loading && <div className="h-screen w-full flex justify-center items-center">
+       <Loader/>
+      </div>}
+      {onCampusOffers.length >0 && (onCampusOffers.map((job)=>(
         <div key={job.id} className="my-3">
-          <JobCard jobItem={job} salaryId={job.salary.id} resumes={resumes}/>
+          <OnCampusCard offerItem={job} salaryId={job.salary.id}/>
         </div>
       )))}
     </div>

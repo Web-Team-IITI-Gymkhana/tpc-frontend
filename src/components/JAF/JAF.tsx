@@ -4,12 +4,15 @@ import * as React from "react";
 import { Row, Col, Steps, Space, Button } from "antd";
 import * as Yup from "yup";
 import { FormikWizard, RenderProps } from "formik-wizard-form";
-
+import toast from "react-hot-toast";
+import { useState, useEffect } from "react";
 import JobDetails from "./JobDetails";
 import RecruiterDetails from "./RecruiterDetails";
 import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
 import axios from "axios";
+import {TermsAndConditions} from "@/dummyData/TermsAndConditions"
+import Loader from "@/components/Loader/loader";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -19,10 +22,31 @@ function JAF() {
   const [finalValues, setFinalValues] = React.useState({});
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+      // Simulate a network request or some async operation
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        // To simulate an error, you could set the error state here
+        // setError(true);
+      }, 2000); // 2 seconds
+  
+      // Cleanup the timer if the component unmounts before the timer finishes
+      return () => clearTimeout(timer);
+    }, []);
+
+
+  if (isLoading) {
+    //formwikWizars is taking loading time so added loader to avoid raw html preview
+      return <div className=" w-[100%] h-[90vh] mx-2 py-4 rounded-md   flex justify-center items-center">
+      <Loader/>
+      </div>
+      ;
+    }
 
   return (
-    <div className="flex w-full justify-start gap-10 p-10 align-center">
-      <div className="ml-auto mr-auto h-screen">
+    <div className="flex flex-col w-full justify-start gap-20 p-10 align-center">
+      <div className="ml-auto mr-auto">
         <FormikWizard
           initialValues={{
             seasonId: "",
@@ -149,37 +173,37 @@ function JAF() {
             };
             console.log(submitValues);
             axios
-              .post(`${baseUrl}/api/v1/jaf`, {
-                seasonId: values.seasonId,
-                company: {
-                  name: values.compName,
-                  website: values.website,
-                  domains: values.domains,
-                  category: values.category,
-                  address: {
-                    line1: values.line1,
-                    line2: values.line2,
-                    city: values.city,
-                    state: values.state,
-                    zipCode: values.zipCode,
-                    country: values.country,
-                  },
-                  size: values.size,
-                  yearOfEstablishment: values.yearOfEstablishment,
-                  annualTurnover: values.annualTurnover,
-                  socialMediaLink: values.socialMediaLink,
-                },
-                recruiter: {
-                  name: values.recName,
-                  designation: values.designation,
-                  email: values.email,
-                  phoneNumber: "+91 " + values.phoneNumber,
-                  landline: values.landline,
-                },
+              .post(`${baseUrl}/api/v1/jaf`, {                
                 job: {
                   role: values.role,
+                  seasonId: values.seasonId,
                   description: values.description,
+                  companyDetailsFilled: {
+                    name: values.compName,
+                    website: values.website,
+                    domains: values.domains,
+                    category: values.category,
+                    address: {
+                      line1: values.line1,
+                      line2: values.line2,
+                      city: values.city,
+                      state: values.state,
+                      country: values.country,
+                    },
+                    size: values.size,
+                    yearOfEstablishment: values.yearOfEstablishment,
+                    annualTurnover: values.annualTurnover,
+                    socialMediaLink: values.socialMediaLink,
+                  },
+                  recruiterDetailsFilled: {
+                    name: values.recName,
+                    designation: values.designation,
+                    email: values.email,
+                    contact: "+91 " + values.phoneNumber,
+                    landline: values.landline,
+                  },
                   //attachment: values.attachment,//file
+                  others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
                   noOfVacancies: values.noOfVacancies,
@@ -199,14 +223,18 @@ function JAF() {
                       otherRequirements: values.otherRequirements,
                     },
                   },
-                  salaries: values.salaries,
-                  others: values.jobOthers,
                 },
+                salaries: values.salaries,                  
               })
               .then((res) => {
+                toast.success("JAF Form filled successfully")
+                window.location.reload();
                 console.log(res);
               })
-              .catch((err) => console.log(err));
+              .catch((err) => {
+                toast.error("Cannot Submit")
+                console.log(err)
+              });
             setFinalValues(submitValues);
           }}
           validateOnNext
@@ -296,6 +324,20 @@ function JAF() {
             );
           }}
         </FormikWizard>
+      </div>
+
+      <div className="ml-auto mr-auto flex flex-col items-center gap-8 ">
+        <div className="flex flex-col items-center  text-[1rem] gap-1 opacity-60">
+        <div>Terms and Conditions</div>
+        <div className=" opacity-50 text-[0.8rem]">	&#40;Please read it carefully&#41;</div>
+        </div>
+        <div>
+          <div className="flex flex-col gap-3  text-[0.8rem] opacity-50">
+            {TermsAndConditions.map((tc, index) => (
+              <div key={index} className="flex gap-3"><span>{index+1}&#46;</span><span className=" text-justify">{tc}</span></div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

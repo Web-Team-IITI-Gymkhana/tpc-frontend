@@ -1,54 +1,35 @@
 "use client";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
-import { CompanyDropDown } from "./SideBar/DropDowns/CompanyDropDown";
-import { SessionDropDown } from "./SideBar/DropDowns/SeasonDropDown";
-import { JobDropDown } from "./SideBar/DropDowns/JobDropDown";
-import { StudentDropDown } from "./SideBar/DropDowns/StudentDropDown";
-import { FacultyDropDown } from "./SideBar/DropDowns/FacultyDropDown";
-import { RecruiterDropDown } from "./SideBar/DropDowns/RecuiterDropDown";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
-
-interface Framework {
-  value: string;
-  label: string;
-}
-
-interface Season {
-  id: string;
-  year: string;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Props {
-  AllSeasons: {
-    seasons: Season[];
-  };
-}
-
+import { jwtDecode } from "jwt-decode";
 const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
-
   const context = useContext(ToggleContext);
-  const userString = Cookies.get("user");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
+  const [isStudent, setIsStudent] = useState<boolean>(false);
+  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
 
-  const user = userString ? JSON.parse(userString) : null;
-  const isAdmin = user?.userType === "ADMIN";
-  // const isAdmin = true;
-  const isRecruiter = user?.userType === "RECRUITER"
-  // const isRecruiter = true;
-  const isStudent = user?.userType === "STUDENT"
-  // const isStudent = true;
-  const userRole = user?.userType?.toLowerCase();
+  useEffect(() => {
+    const userString = Cookies.get("user");
+    const user = userString ? JSON.parse(userString) : null;
+    if (user) {
+      setLoggedIn(true);
+    }
+    setRole(user?.role.toLowerCase());
+    setIsAdmin(user?.role === "ADMIN");
+    setIsRecruiter(user?.role === "RECRUITER");
+    setIsStudent(user?.role === "STUDENT");
+  }, []);
 
   return (
     <motion.div
@@ -150,23 +131,17 @@ const Sidebar = () => {
                 }}
                 className="w-[7rem]"
               >
-                Profile
+                <Link href={`/${role}/profile`}>Profile</Link>
               </motion.div>
             </div>
             {/* <CompanyDropDown userRole={userRole} /> */}
           </div>
           <hr />
-          <NavButtonGroup />
+          <NavButtonGroup loggedIn={isLoggedIn} />
         </div>
-        {isAdmin && (
-          <AdminDashboard/>
-        )}
-        {isStudent && (
-          <StudentDashboard/>
-        )}
-        {isRecruiter&& (
-          <RecruiterDashboard/>
-        )}
+        {isAdmin && <AdminDashboard />}
+        {isStudent && <StudentDashboard />}
+        {isRecruiter && <RecruiterDashboard />}
       </div>
     </motion.div>
   );

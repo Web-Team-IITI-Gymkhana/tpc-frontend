@@ -3,6 +3,8 @@ import * as Papa from "papaparse";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const ImportData = () => {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +49,7 @@ const ImportData = () => {
       }));
 
       console.log(formattedData);
-      await axios.post("http://localhost:5000/api/v1/students/", formattedData);
+      await axios.post(`${baseUrl}/api/v1/students/`, formattedData);
       console.log("Students added successfully!");
     } catch (err) {
       setError(

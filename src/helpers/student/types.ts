@@ -52,82 +52,110 @@ export interface Resume {
 }
 
 export interface Salary {
+  id: string;
+  salaryPeriod: string;
+  others: string;
+  baseSalary: number;
+  totalCTC: number;
+  takeHomeSalary: number;
+  grossSalary: number;
+  otherCompensations: number;
+  job: {
     id: string;
-    baseSalary: number;
-    totalCTC: number;
-    takeHomeSalary: number;
-    grossSalary: number;
-    otherCompensations: number;
-    salaryPeriod: string;
-    job: {
-        id: string;
-        role: string;
-        company: {
-        id: string;
-        name: string;
-        };
-        season: {
-        id: string;
-        year: string;
-        type: string; // Assuming "INTERN" is a possible value, you might want to use a union type if there are more types.
-        };
-        salaries: {
-        id: string;
-        totalCTC: number;
-        salaryPeriod: string;
-        genders: string[]; // Assuming "MALE" is a possible value, you might want to use a union type if there are more genders.
-        programs: string[];
-        facultyApprovals: string[];
-        categories: string[]; // Assuming "GENERAL" is a possible value, you might want to use a union type if there are more categories.
-        minCPI: number;
-        tenthMarks: number;
-        twelthMarks: number;
-        }[];
-    };
+    role: string;
     others: string;
-    genders: string[]; // Assuming "MALE" is a possible value, you might want to use a union type if there are more genders.
-    programs: string[];
-    facultyApprovals: string[];
-    categories: string[]; // Assuming "GENERAL" is a possible value, you might want to use a union type if there are more categories.
-    minCPI: number;
-    tenthMarks: number;
-    twelthMarks: number;
-    facultyApprovalRequests: {
+    selectionProcedure: {
+      tests: {
+        type: string;
+        duration: number;
+      }[];
+      interviews: {
+        type: string;
+        duration: number;
+      }[];
+      requirements: {
+        numberOfMembers: number;
+        numberOfRooms: number;
+        otherRequirements: string;
+      };
+      selectionMode: string;
+      groupDiscussion: boolean;
+      shortlistFromResume: boolean;
+    };
+    location: string;
+    offerLetterReleaseDate: string;
+    duration: number;
+    season: {
+      id: string;
+      year: string;
+      type: string;
+    };
+    company: {
+      id: string;
+      name: string;
+      domains: string[];
+      category: string;
+    };
+    applications: {
+      id: string;
+      eventId: string;
+      resume: {
         id: string;
-        status: string; // Assuming "APPROVED" is a possible value, you might want to use a union type if there are more statuses.
-        remarks: string;
-        faculty: {
-        id: string;
-        department: string; // Assuming "Astronomy, Astrophysics and Space Engineering" is a possible value, you might want to use a union type if there are more departments.
-        user: {
-            id: string;
-            name: string;
-            email: string;
-            contact: string;
-        };
-        };
+        filepath: string;
+        verified: boolean;
+      };
     }[];
-    onCampusOffers: {
-        id: string;
-        status: string;
-        student: {
-        id: string;
-        rollNo: string;
-        user: {
-            id: string;
-            name: string;
-            email: string;
-            contact: string;
-        };
-        program: {
-            id: string;
-            branch: string;
-            course: string;
-            year: string;
-            department: string;
-        };
-        };
+    events: {
+      id: string;
+      roundNumber: number;
+      type: string;
+      startDateTime: string;
+      endDateTime: string;
     }[];
+    jobCoordinators: {
+      id: string;
+      role: string;
+      tpcMember: {
+        id: string;
+        department: string;
+        role: string;
+        user: {
+          id: string;
+          email: string;
+          name: string;
+          contact: string;
+        };
+      };
+    }[];
+  };
+}
+
+
+export interface Jobs {
+  id: string;
+  role: string;
+  active: boolean;
+  currentStatus: string;
+  location: string;
+  season: {
+    id: string;
+    year: string;
+    type: string;
+  };
+  company: {
+    id: string;
+    name: string;
+  };
+  recruiter: {
+    id: string;
+    designation: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      contact: string;
+    };
+  };
 }
 
 export interface Job {
@@ -168,7 +196,9 @@ export interface Job {
         duration: number;
       }[];
       requirements: {
+        numberOfMembers: number;
         numberOfRooms: number;
+        otherRequirements: string;
       };
       selectionMode: string;
       groupDiscussion: boolean;
@@ -311,4 +341,19 @@ export interface StudentDataType {
           type: string;
       };
   }[];
+}
+
+export interface InterviewExperience {
+  id: string;
+  studentName: string;
+  filename: string;
+  company: {
+    id: string;
+    name: string;
+  };
+  season: {
+    id: string;
+    year: string;
+    type: string;
+  };
 }
