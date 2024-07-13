@@ -1,9 +1,9 @@
-const redirect = () => {};
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import qs from "qs";
 import Cookies from "js-cookie";
 import { ResumePatchData } from "./types";
+
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 interface ApiCallOptions {
   method?: string;
@@ -14,13 +14,12 @@ interface ApiCallOptions {
   formData?: FormData;
 }
 
-export const url = (NextUrl: string) => {
-  return `${baseUrl}/api/v1${NextUrl}`;
+const redirect = () => {
+
 };
 
-export const getUrl = (NextUrl: string) => {
-  return `${baseUrl}/api/v1${NextUrl}`;
-};
+export const url = (NextUrl: string) => { return `${baseUrl}/api/v1${NextUrl}`; };
+export const getUrl = (NextUrl: string) => { return `${baseUrl}/api/v1${NextUrl}`;};
 
 export const apiCall = async (
   path: string,
@@ -39,7 +38,7 @@ export const apiCall = async (
     return;
   }
 
-  let url = getUrl(path);
+  let requestUrl = getUrl(path);
 
   const headers: HeadersInit = {};
 
@@ -64,7 +63,7 @@ export const apiCall = async (
       encodeValuesOnly: true,
       encode: false,
     });
-    url += `?${encodedQueryString}`;
+    requestUrl += `?${encodedQueryString}`;
   }
 
   if (isAuth) {
@@ -77,22 +76,25 @@ export const apiCall = async (
     req["next"] = next;
   }
 
-  const res = await fetch(url, req);
+  const res = await fetch(requestUrl, req);
+
   if (method === "GET") {
     return await res.json();
-  } else return res.ok;
+  } else{ 
+    return res.ok
+  };
 };
-export const OpenFile = async (
-  path: string,
-  { method = "GET", isAuth = true, next = null }: ApiCallOptions = {}
-) => {
+
+export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
+  const { method = "GET", isAuth = true, next = null } = options;
+
   const accessToken = Cookies.get("accessToken");
   if ((!accessToken || accessToken === undefined) && isAuth) {
     redirect();
     return;
   }
 
-  let url = getUrl(path);
+  let requestUrl = getUrl(path);
 
   const headers: HeadersInit = {};
 
@@ -110,11 +112,11 @@ export const OpenFile = async (
     req["next"] = next;
   }
 
-  fetch(url, req)
+  fetch(requestUrl, req)
     .then((response) => response.blob())
     .then((blob) => {
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
+      const fileUrl = window.URL.createObjectURL(blob);
+      window.open(fileUrl);
     })
     .catch((error) => console.error("Error:", error));
 };
@@ -136,169 +138,73 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
 };
 
 export const fetchAllSeasons = async (accessToken: string | undefined) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(url("/seasons"), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const json = await res.json();
-  return json;
+  return apiCall("/seasons");
 };
 
 export const fetchCompany = async (accessToken: string | undefined) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(url("/companies"), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const json = await res.json();
-  return json;
+  return apiCall("/companies");
 };
 
 export const fetchAllJobs = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(filter ? url(`/jobs?${filter}`) : url("/jobs"), {
+  return apiCall(filter ? `/jobs?${filter}` : "/jobs", {
+   
     next: { tags: ["AllJobs"] },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   });
-  const json = await res.json();
-  return json;
-  // return SampleJobData
 };
 
 export const fetchStudentData = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(
-    filter ? url(`/students?${filter}`) : url("/students"),
-    {
-      next: { tags: ["AllStudents"] },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-  const json = await res.json();
-  return json;
+  return apiCall(filter ? `/students?${filter}` : "/students", {
+
+    next: { tags: ["AllStudents"] },
+  });
 };
 
 export const fetchCompanyRecruiters = async (
   accessToken: string | undefined,
   companyId: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/companies")}/${companyId}/recruiters/`, {
-    next: {
-      tags: ["AllRecruiters"],
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+  return apiCall(`/companies/${companyId}/recruiters/`, {
+ 
+    next: { tags: ["AllRecruiters"] },
   });
-  const json = await res.json();
-  return json;
 };
 
 export const fetchJobSalary = async (
   accessToken: string | undefined,
   jobId: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/jobs")}/${jobId}/salary/`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  const json = await res.json();
-  return json;
+  return apiCall(`/jobs/${jobId}/salary/`);
 };
 
 export const fetchEachJob = async (
   accessToken: string | undefined,
   jobId: any
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/jobs")}/${jobId}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const json = await res.json();
-  return json;
+  return apiCall(`/jobs/${jobId}`);
 };
 
 export const fetchJobEvents = async (
   accessToken: string | undefined,
   jobId: any
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(`${url("/jobs")}/${jobId}/events`, {
-    next: {
-      tags: ["AllEvents"],
-    },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+  return apiCall(`/jobs/${jobId}/events`, {
+    next: { tags: ["AllEvents"] },
   });
-
-  const json = await res.json();
-  return json;
 };
 
 export const fetchRecruiterData = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  console.log("filter", filter);
-  const res = await fetch(
-    filter ? url(`/recruiters?${filter}`) : url("/recruiters"),
-    {
-      next: { tags: ["AllRecruiters"] },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-  const json = await res.json();
-  return json;
+  return apiCall(filter ? `/recruiters?${filter}` : "/recruiters", {
+    next: { tags: ["AllRecruiters"] },
+  });
 };
 
 export const fetchResumes = async () => {
