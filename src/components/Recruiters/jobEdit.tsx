@@ -15,7 +15,7 @@ export const CategorySelectList = ({
       ...formData.salaries[salaryIndex],
       categories: values,
     };
-    const updatedSalaries = formData.salaries.map((salary, i) => {
+    const updatedSalaries = formData.salaries?.map((salary, i) => {
       if (i === salaryIndex) {
         return updatedSalary;
       }
@@ -35,7 +35,7 @@ export const CategorySelectList = ({
   return (
     <Select
       isMulti
-      value={formData.salaries[salaryIndex].categories.map((category) => ({
+      value={formData.salaries[salaryIndex].categories?.map((category) => ({
         value: category,
         label: category,
       }))}
@@ -61,7 +61,7 @@ export const GenderSelectList = ({
       ...formData.salaries[salaryIndex],
       genders: values,
     };
-    const updatedSalaries = formData.salaries.map((salary, i) => {
+    const updatedSalaries = formData.salaries?.map((salary, i) => {
       if (i === salaryIndex) {
         return updatedSalary;
       }
@@ -81,7 +81,7 @@ export const GenderSelectList = ({
   return (
     <Select
       isMulti
-      value={formData.salaries[salaryIndex].genders.map((gender) => ({
+      value={formData.salaries[salaryIndex].genders?.map((gender) => ({
         value: gender,
         label: gender,
       }))}

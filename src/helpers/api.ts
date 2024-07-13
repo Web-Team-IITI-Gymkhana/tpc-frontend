@@ -165,6 +165,27 @@ export const fetchStudentData = async (
   });
 };
 
+export const fetchSeasonData = async (
+  accessToken: string | undefined,
+  filter: string | undefined
+) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(
+    filter ? url(`/registrations?${filter}`) : url("/registrations"),
+    {
+      next: { tags: ["AllStudents"] },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  const json = await res.json();
+  return json;
+};
+
 export const fetchCompanyRecruiters = async (
   accessToken: string | undefined,
   companyId: string | undefined
@@ -189,12 +210,38 @@ export const fetchEachJob = async (
   return apiCall(`/jobs/${jobId}`);
 };
 
-export const fetchJobEvents = async (
-  accessToken: string | undefined,
-  jobId: any
-) => {
-  return apiCall(`/jobs/${jobId}/events`, {
-    next: { tags: ["AllEvents"] },
+
+export const fetchJobEvents = async (jobId: any) => {
+  return apiCall(`/events`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          job: {
+            id: {
+              eq: [jobId],
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const fetchEventById = async (eventId: any) => {
+  return apiCall(`/events/${eventId}`);
+};
+
+export const addEvent = async (body: any) => {
+  return apiCall(`/events`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const promoteStudent = async (body: any, eventId: string) => {
+  return apiCall(`/events/${eventId}`, {
+    method: "PATCH",
+    body: body,
   });
 };
 
@@ -202,9 +249,11 @@ export const fetchRecruiterData = async (
   accessToken: string | undefined,
   filter: string | undefined
 ) => {
+
   return apiCall(filter ? `/recruiters?${filter}` : "/recruiters", {
     next: { tags: ["AllRecruiters"] },
   });
+
 };
 
 export const fetchResumes = async () => {
@@ -219,5 +268,42 @@ export const patchResumeVerify = async (changes: ResumePatchData[]) => {
   return apiCall(`/resumes`, {
     method: "PATCH",
     body: changes,
+  });
+};
+
+export const getStudentSalaryOffers = async (
+  jobId: string,
+  studentId: string
+) => {
+  return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
+};
+
+export const postOnCampusOffer = async (
+  body: {
+    salaryId: string;
+    studentId: string;
+    status: string;
+  }[]
+) => {
+  return apiCall(`/on-campus-offers/`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const fetchTpcMembers = async () => {
+  return apiCall(`/tpc-members`);
+};
+
+export const postJobCoordinator = async (
+  body: {
+    jobId: string;
+    tpcMemberId: string;
+    role: string;
+  }[]
+) => {
+  return apiCall(`/jobs/coordinators`, {
+    method: "POST",
+    body: body,
   });
 };
