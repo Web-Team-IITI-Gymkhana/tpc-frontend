@@ -78,7 +78,7 @@ export default function CalendarHeader() {
 
         </span>
         {Isopen && 
-        <span className='absolute mt-10 bg-white rounded py-2 '>
+        <span className='absolute mt-10 bg-white rounded py-2 z-10'>
           {drop_down_list.map((view_name,idx) => (
 
             <p 

@@ -5,13 +5,13 @@ import { getDate } from "./CalenderComponent/util";
 import Month from "./CalenderComponent/Month";
 import GlobalContext from "./context/GlobalContext";
 import CalendarHeader from "./CalenderComponent/CalendarHeader";
-import EventModal from "./CalenderComponent/EventModal";
+import EventDetails from "./CalenderComponent/EventDetails";
 import SidebarCalendar from "./CalenderComponent/SidebarCalendar";
 import WeeklyView from "./CalenderComponent/WeeklyView";
 import DailyView from "./CalenderComponent/DailyView";
 
 export default function Calendar(){
-    const{ monthIndex , showEventModal,setShowEventModal,Current_view, weekOffset,dateOffset } = useContext(GlobalContext);
+    const{ monthIndex , showEventModal,Current_view, weekOffset,dateOffset } = useContext(GlobalContext);
     const [currentMonth,setCurrentMonth]= useState(getMonth());
     const [currentWeek,setCurrentWeek]= useState(getWeek(weekOffset));
     const [displayDate,setDisplayDate]= useState(getDate(dateOffset));
@@ -31,7 +31,7 @@ export default function Calendar(){
 
     return(
         <div> 
-            { showEventModal && <EventModal /> }
+            { showEventModal && <EventDetails /> }
             
             
             <div className="flex flex-col h-screen">
