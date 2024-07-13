@@ -10,7 +10,6 @@ import { mkConfig, generateCsv, download } from "export-to-csv";
 import { Box, Button } from "@mui/material";
 import { MenuItem } from "@mui/material";
 import StudentModal from "./StudentModal";
-import JobModal from "./NewJobModal";
 import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
 import Link from "next/link";
