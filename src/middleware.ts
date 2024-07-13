@@ -22,7 +22,6 @@ export function middleware(request: NextRequest) {
   }
 
   if (user?.role !== "ADMIN" && request.nextUrl.pathname.startsWith("/admin")) {
-
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (
@@ -31,11 +30,10 @@ export function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (user?.role !== "RECRUITER" && request.url.includes("/recruiter")) {
-
+  if (user?.role !== "RECRUITER" && request.url.startsWith("/recruiter")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (user?.role !== "FACULTY" && request.url.includes("/faculty")) {
+  if (user?.role !== "FACULTY" && request.url.startsWith("/faculty")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

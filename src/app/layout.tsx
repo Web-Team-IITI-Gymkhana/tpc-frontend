@@ -14,10 +14,9 @@ export const metadata: Metadata = {
 
 interface Props {
   children: React.ReactNode;
-  auth: React.ReactNode;
 }
 
-const RootLayout = async ({ children, auth }: Props) => {
+const RootLayout = async ({ children }: Props) => {
   const className = inter.className;
   return (
     <html lang="en">
@@ -28,8 +27,7 @@ const RootLayout = async ({ children, auth }: Props) => {
             <Toaster />
 
             <NextAuthProvider>
-              {children}
-              {auth}
+              <div>{children}</div>
             </NextAuthProvider>
           </div>
         </ToggleProvider>
