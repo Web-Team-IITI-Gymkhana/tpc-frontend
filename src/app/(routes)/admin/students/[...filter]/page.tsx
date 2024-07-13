@@ -5,7 +5,7 @@ import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import qs from "qs";
+
 const dto = [
     {
         id: "string",
