@@ -1,5 +1,4 @@
 import qs from "qs";
-import axios from "axios";
 
 export const handleFilterChange = (
   columnId: string,
@@ -33,12 +32,10 @@ export const handleOperatorChange = (
 
 export const handleSubmit = (filterOutput: any,setFilteredTableData:any) => {
   const queryObject = filterOutput;
-  console.log(queryObject);
   const encodedQueryString = qs.stringify(queryObject, {
     encodeValuesOnly: true,
     encode: false,
   });
   const url = `${window.location.href}/${encodedQueryString}`;
-  console.log(url)
   window.open(url, '_blank');
 };

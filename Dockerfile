@@ -4,9 +4,10 @@ WORKDIR /usr/app
 
 RUN npm install --global pm2
 
-COPY ./package*.json ./
+COPY ./package.json ./
+COPY ./yarn.lock ./
 
-RUN npm ci
+RUN yarn install --frozen-lockfile
 
 COPY ./ ./
 
