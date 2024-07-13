@@ -1,6 +1,7 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
-import { Form, Input, Row, Col, Select } from "antd";
+import { Form, Input, Row, Col, Select,Checkbox } from "antd";
 import { useEffect, useState } from "react";
+import {TermsAndConditions} from "@/dummyData/TermsAndConditions"
 import axios from "axios";
 
 type StepProps = {
@@ -51,6 +52,28 @@ const SeasonDetails = ({ errors, values, handleChange }: StepProps) => {
             ></Select>
           </Form.Item>
         </Col>
+      </Row>
+      <Row>
+      <div className="ml-auto mr-auto flex flex-col items-start gap-8 ">
+        <div className="flex flex-col items-center w-[100%] text-[1rem] gap-1 opacity-60">
+        <div>Terms and Conditions</div>
+        <div className=" opacity-50 text-[0.8rem]">	&#40;Please read it carefully&#41;</div>
+        </div>
+        <div>
+          <div className="flex flex-col gap-3  text-[0.8rem] opacity-50">
+            {TermsAndConditions.map((tc, index) => (
+              <div key={index} className="flex gap-3"><span>{index+1}&#46;</span><span className=" text-justify">{tc}</span></div>
+            ))}
+          </div>
+        </div>
+        <Checkbox
+              onChange={(e) => (values.terms = e.target.checked)}
+              name="terms"
+              value={values.terms}
+            >
+               I accept the terms and conditions
+            </Checkbox>
+      </div>
       </Row>
     </Form>
   );

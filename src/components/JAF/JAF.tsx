@@ -11,7 +11,7 @@ import RecruiterDetails from "./RecruiterDetails";
 import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
 import axios from "axios";
-import {TermsAndConditions} from "@/dummyData/TermsAndConditions"
+
 import Loader from "@/components/Loader/loader";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -326,19 +326,7 @@ function JAF() {
         </FormikWizard>
       </div>
 
-      <div className="ml-auto mr-auto flex flex-col items-center gap-8 ">
-        <div className="flex flex-col items-center  text-[1rem] gap-1 opacity-60">
-        <div>Terms and Conditions</div>
-        <div className=" opacity-50 text-[0.8rem]">	&#40;Please read it carefully&#41;</div>
-        </div>
-        <div>
-          <div className="flex flex-col gap-3  text-[0.8rem] opacity-50">
-            {TermsAndConditions.map((tc, index) => (
-              <div key={index} className="flex gap-3"><span>{index+1}&#46;</span><span className=" text-justify">{tc}</span></div>
-            ))}
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 }
