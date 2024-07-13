@@ -50,6 +50,7 @@ function JAF() {
         <FormikWizard
           initialValues={{
             seasonId: "",
+            terms: false,
             compName: "",
             website: "",
             domains: [],
@@ -246,6 +247,10 @@ function JAF() {
               //   year: Yup.number().typeError("Please enter a valid Year").required("Required"),
               //   type: Yup.string().required("Required"),
               // }),
+              validationSchema: Yup.object().shape({
+                seasonId: Yup.string().required("Please select a season"),
+                terms: Yup.boolean().oneOf([true], "Please accept the terms and conditions to proceed"),
+              }),
             },
             {
               component: CompanyDetails,
