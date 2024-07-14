@@ -14,33 +14,36 @@ const LoginPage = ({
     token: string;
   };
 }) => {
-
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
+  useEffect(() => {
     const login = async () => {
-        try {
-          const res = await PasswordlessLogin(params.token);
-          Cookies.set("accessToken", res.body.accessToken, {expires: 365});
-          Cookies.set("user",JSON.stringify(jwtDecode(res.body.accessToken)),{ expires: 365 });
-          toast.success("Logged in successfully")
-          router.push("/recruiter")
-        } catch (error) {
-          toast.error("Some Error Occurred");
-        } finally {
-          setLoading(false);
-        }
-    }
+      try {
+        const res = await PasswordlessLogin(params.token);
+        Cookies.set("accessToken", res.body.accessToken, { expires: 365 });
+        Cookies.set("user", JSON.stringify(jwtDecode(res.body.accessToken)), {
+          expires: 365,
+        });
+        toast.success("Logged in successfully");
+        router.push("/recruiter");
+      } catch (error) {
+        toast.error("Some Error Occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
 
     login();
-  })  
+  });
 
   return (
     <>
-      {loading && <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>}
+      {loading && (
+        <div className="h-screen w-full flex justify-center items-center">
+          <Loader />
+        </div>
+      )}
     </>
   );
 };

@@ -1,8 +1,6 @@
 //this will be used to create the login page.
 "use client";
 import React, { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
 import { Input, InputAdornment, TextField } from "@mui/material";

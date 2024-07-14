@@ -1,6 +1,35 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const adminRoutes = [
+  "/admin/company",
+  "/admin/students",
+  "/admin/job",
+  /^\/admin\/jobs\/events\/[a-zA-Z0-9\-]+$/,
+];
+
+const studentRoutes = [
+  "/student/jobs",
+  "/student/offCampus",
+  "/student/onCampus",
+  "/student/interviewExperiences",
+  "/student/profile",
+  "/student/resumes",
+  /^\/student\/job\/[a-zA-Z0-9\-]+$/,
+  /^\/student\/job\/salary\/[a-zA-Z0-9\-]+$/,
+];
+
+const recruiterRoutes = [
+  "/recruiter",
+  "/recruiter/jobs",
+  "/recruiter/events",
+  "/recruiter/profile",
+  /^\/recruiter\/jobs\/[a-zA-Z0-9\-]+$/,
+  /^\/recruiter\/events\/[a-zA-Z0-9\-]+$/,
+];
+
+const facultyRoutes = ["/faculty", "/faculty/profile"];
+
 export function middleware(request: NextRequest) {
   const userCookie = request.cookies.get("user");
   const user = userCookie ? JSON.parse(userCookie.value) : null;
@@ -21,16 +50,34 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/faculty", request.url));
   }
 
-  if (user?.role !== "ADMIN" && request.nextUrl.pathname.startsWith("/admin")) {
+  if (
+    user?.role !== "ADMIN" &&
+    adminRoutes.some((route) =>
+      typeof route === "string"
+        ? request.nextUrl.pathname === route
+        : route.test(request.nextUrl.pathname),
+    )
+  ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (
     user?.role !== "STUDENT" &&
-    request.nextUrl.pathname.startsWith("/student")
+    studentRoutes.some((route) =>
+      typeof route === "string"
+        ? request.nextUrl.pathname === route
+        : route.test(request.nextUrl.pathname),
+    )
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (user?.role !== "RECRUITER" && request.url.startsWith("/recruiter")) {
+  if (
+    user?.role !== "RECRUITER" &&
+    recruiterRoutes.some((route) =>
+      typeof route === "string"
+        ? request.nextUrl.pathname === route
+        : route.test(request.nextUrl.pathname),
+    )
+  ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (user?.role !== "FACULTY" && request.url.startsWith("/faculty")) {

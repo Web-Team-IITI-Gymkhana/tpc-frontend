@@ -51,14 +51,17 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   return (
     <div>
       <div className="font-bold text-black text-lg ml-2 mb-4">Salaries</div>
-      {loading && <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>}
-      {salaryData && (salaryData.map((item,index)=>(
-        <div key={index} className="my-3">
-          <SalaryCard salaryId={item.id} resumes={resumes}/>
+      {loading && (
+        <div className="h-screen w-full flex justify-center items-center">
+          <Loader />
         </div>
-      )))}
+      )}
+      {salaryData &&
+        salaryData.map((item, index) => (
+          <div key={index} className="my-3">
+            <SalaryCard salaryId={item.id} resumes={resumes} />
+          </div>
+        ))}
     </div>
   );
 };
