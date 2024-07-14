@@ -1,4 +1,4 @@
-const redirect = () => { };
+const redirect = () => {};
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import qs from "qs";
@@ -295,7 +295,6 @@ export const fetchCompanyRecruiters = async (
   return json;
 };
 
-
 export const fetchJobSalary = async (
   accessToken: string | undefined,
   jobId: string | undefined
@@ -436,5 +435,19 @@ export const postJobCoordinator = async (
   return apiCall(`/jobs/coordinators`, {
     method: "POST",
     body: body,
+  });
+};
+
+export const getUserById = async (userId: string) => {
+  return apiCall(`/users`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          id: {
+            eq: ["4105818e-a203-4e35-ae7f-8881a4caf804"],
+          },
+        },
+      },
+    },
   });
 };
