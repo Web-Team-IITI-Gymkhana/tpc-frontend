@@ -166,8 +166,7 @@ export const assignRecruiter = async (
 };
 
 export const fetchAllJobs = async (
-
-  filter: string | undefined
+  filter?: string
 ) => {
   return apiCall(filter ? `/jobs?${filter}` : "/jobs", {
    
@@ -176,8 +175,7 @@ export const fetchAllJobs = async (
 };
 
 export const fetchStudentData = async (
-
-  filter: string | undefined
+  filter?: string
 ) => {
   return apiCall(filter ? `/students?${filter}` : "/students", {
 
@@ -258,8 +256,7 @@ export const promoteStudent = async (body: any, eventId: string) => {
 };
 
 export const fetchRecruiterData = async (
- 
-  filter: string | undefined
+  filter?: string
 ) => {
 
   return apiCall(filter ? `/recruiters?${filter}` : "/recruiters", {
@@ -356,6 +353,7 @@ export const fetchRegistrationDataById = async (studentId: any) => {
 };
 
 
+
 //OnClick Functions
 
 export const createJobEvent = async (
@@ -402,3 +400,11 @@ export const deleteEvent = async (jobId: string, eventId: string) => {
     throw new Error("Error deleting event");
   }
 };
+
+export const loginWithEmail = async (email: string) => {
+  return apiCall("/auth/passwordless", {
+    method: "POST",
+    body: { email },
+  });
+}
+

@@ -11,8 +11,8 @@ import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
 
 const LoginForm = () => {
-  const [email, setemail] = useState<String | null>(null);
-  const [role, setrole] = useState<String | null>("STUDENT");
+  const [email, setemail] = useState<string | null>(null);
+  const [role, setrole] = useState<string | null>("STUDENT");
   const router = useRouter();
   return (
     <>

@@ -1,17 +1,8 @@
 "use client";
 import { fetchRecruiterData } from "@/helpers/api";
-import Cookies from "js-cookie";
 import Table from "@/components/NewTableComponent/Table";
-import type {DTO} from '@/dto/StudentDto'
-import {
-  MaterialReactTable,
-  useMaterialReactTable,
-  type MRT_Row,
-  createMRTColumnHelper,
-} from 'material-react-table';
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { recruiterdto } from "@/dto/RecruiterDto";
-import type { RecruiterDTO } from "@/dto/RecruiterDto";
 
 const hiddenColumns = ['id','user.id','company.id'];
 
@@ -19,7 +10,7 @@ const hiddenColumns = ['id','user.id','company.id'];
 const StudentPage = async () => {
   const columns = generateColumns(recruiterdto)
   console.log(columns)
-  const AllRecruiters = await fetchRecruiterData(null);
+  const AllRecruiters = await fetchRecruiterData();
   const visibleColumns = columns.filter(
     (column:any) => !hiddenColumns.includes(column?.accessorKey)
   );
