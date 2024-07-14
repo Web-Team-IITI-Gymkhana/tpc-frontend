@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Cookies from "js-cookie";
 import { getUserById } from "@/helpers/api";
+import Loader from "../Loader/loader";
 
 interface ProfileProps {
   name: string;
@@ -31,7 +32,7 @@ const AdminProfile = () => {
         <div className="flex w-full justify-between items-center">
           <AccountCircleIcon sx={{ fontSize: "5rem" }} />
         </div>
-        {profile && (
+        {profile ? (
           <div className="mt-8 p-8 rounded-lg bg-gray-100 flex flex-col flex-wrap">
             <div>
               <span className="font-semibold">Name: </span>
@@ -49,6 +50,10 @@ const AdminProfile = () => {
               <span className="font-semibold">Contact: </span>
               {profile.contact}
             </div>
+          </div>
+        ) : (
+          <div className="p-12">
+            <Loader />
           </div>
         )}
       </div>

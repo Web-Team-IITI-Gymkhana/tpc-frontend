@@ -444,7 +444,7 @@ export const getUserById = async (userId: string) => {
       q: {
         filterBy: {
           id: {
-            eq: ["4105818e-a203-4e35-ae7f-8881a4caf804"],
+            eq: [userId],
           },
         },
       },
