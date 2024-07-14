@@ -1,16 +1,12 @@
 import React from "react";
-import { url } from "../../helpers/api";
 import LockImg from "@/../public/icons/lock.svg";
 import toast from "react-hot-toast";
-import { apiCall } from "@/helpers/api";
-export const LoginWithEmail = (params: { email: String }) => {
+import { loginWithEmail } from "@/helpers/api";
+export const LoginWithEmail = (params: { email: string }) => {
   const onClick = async () => {
     try {
       const { email } = params;
-      const response = await apiCall("/auth/passwordless", {
-          method: "POST",
-          body: { email },
-      });
+      const response = await loginWithEmail(email);
 
       if (response.ok) {
           toast.success("Email has been sent");

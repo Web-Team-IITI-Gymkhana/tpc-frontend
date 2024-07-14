@@ -349,3 +349,10 @@ export const fetchRegistrationDataById = async (studentId: any) => {
     console.error('Error fetching registration data:', error);
   }
 };
+
+export const loginWithEmail = async (email: string) => {
+  return apiCall("/auth/passwordless", {
+    method: "POST",
+    body: { email },
+  });
+}
