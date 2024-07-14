@@ -1,4 +1,4 @@
-const redirect = () => {};
+const redirect = () => { };
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import qs from "qs";
@@ -168,7 +168,7 @@ export const assignCompany = async (
   assignments: { id: string; companyId: string }[]
 ) => {
   if (!accessToken) {
-    redirect();  
+    redirect();
     return;
   }
 
@@ -275,6 +275,26 @@ export const fetchSeasonData = async (
   const json = await res.json();
   return json;
 };
+export const fetchCompanyRecruiters = async (
+  accessToken: string | undefined,
+  companyId: string | undefined
+) => {
+  if (!accessToken || accessToken === undefined) {
+    redirect();
+    return;
+  }
+  const res = await fetch(`${url("/companies")}/${companyId}/recruiters/`, {
+    next: {
+      tags: ["AllRecruiters"],
+    },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json = await res.json();
+  return json;
+};
+
 
 export const fetchJobSalary = async (
   accessToken: string | undefined,
