@@ -223,6 +223,7 @@ const AdminDashboard = () => {
             {/* <RecruiterDropDown userRole={userRole} /> */}
           </div>
         </Link>
+        <Link href={"/admin/seasons"}>
         <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
           <div className="flex justify-start gap-[1vw]">
             <div className="w-[2vw]">
@@ -256,6 +257,7 @@ const AdminDashboard = () => {
           </div>
           {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
         </div>
+        </Link>
         <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
           <div className="flex justify-start gap-[1vw]">
             <div className="w-[2vw]">
