@@ -97,8 +97,8 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
 
       {loading && (
         <div className="h-screen w-full flex justify-center items-center">
-        <Loader/>
-       </div>
+          <Loader />
+        </div>
       )}
       {job && (
         <div className="flex flex-col gap-4">
@@ -340,7 +340,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                 formData.selectionProcedure.tests.map((i, j) =>
                                   j === index
                                     ? { ...i, type: e.target.value }
-                                    : i
+                                    : i,
                                 );
                               setFormData((prev) => ({
                                 ...prev,
@@ -367,7 +367,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                 formData.selectionProcedure.tests.map((t, i) =>
                                   i === index
                                     ? { ...t, duration: Number(e.target.value) }
-                                    : t
+                                    : t,
                                 );
                               setFormData((prev) => ({
                                 ...prev,
@@ -417,7 +417,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                     (i, j) =>
                                       j === index
                                         ? { ...i, type: e.target.value }
-                                        : i
+                                        : i,
                                   );
                                 setFormData((prev) => ({
                                   ...prev,
@@ -445,7 +445,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                     (i, j) =>
                                       j === index
                                         ? { ...i, duration: e.target.value }
-                                        : i
+                                        : i,
                                   );
                                 setFormData((prev) => ({
                                   ...prev,
@@ -457,7 +457,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                               }}
                             />
                           </li>
-                        )
+                        ),
                       )
                     : job.selectionProcedure.interviews.map((p, index) => (
                         <li key={index} className="my-2">
@@ -563,7 +563,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, baseSalary: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -587,7 +587,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, totalCTC: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -611,7 +611,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, takeHomeSalary: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -635,7 +635,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, grossSalary: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -663,7 +663,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, otherCompensations: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,

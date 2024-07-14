@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
-import {login} from "@/helpers/api";
+import { login } from "@/helpers/api";
 
 const LoginForm = () => {
   const [email, setemail] = useState<string | null>(null);

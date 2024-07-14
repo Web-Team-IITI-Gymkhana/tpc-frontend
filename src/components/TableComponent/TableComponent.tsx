@@ -66,7 +66,7 @@ export default function TableComponent({
     [key: string]: "asc" | "desc";
   }>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -92,7 +92,7 @@ export default function TableComponent({
           setCheckedRows((prevCheckedRows) =>
             !!value
               ? [...prevCheckedRows, row.original]
-              : prevCheckedRows.filter((r) => r !== row.original)
+              : prevCheckedRows.filter((r) => r !== row.original),
           );
         }}
         aria-label="Select row"
@@ -187,7 +187,7 @@ export default function TableComponent({
                             column.id,
                             "",
                             filters,
-                            setFilters
+                            setFilters,
                           );
                         }}
                       >
@@ -284,7 +284,7 @@ export default function TableComponent({
                   const updatedFilters = filters.map((existingFilter) =>
                     existingFilter.columnId === columnId
                       ? { ...existingFilter, value: event.target.value }
-                      : existingFilter
+                      : existingFilter,
                   );
                   setFilters(updatedFilters);
                 }}
@@ -353,7 +353,7 @@ export default function TableComponent({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                         {/* Sorting Button */}
                         <button
@@ -363,7 +363,7 @@ export default function TableComponent({
                               sortingOrder,
                               filterOutput,
                               setSortingOrder,
-                              setSorting
+                              setSorting,
                             )
                           }
                           className={`ml-2 ${
@@ -397,7 +397,7 @@ export default function TableComponent({
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

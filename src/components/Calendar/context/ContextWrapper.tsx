@@ -1,20 +1,23 @@
-import React, { useState, useReducer, useEffect, useMemo } from 'react';
-import dayjs from 'dayjs';
-import GlobalContext from './GlobalContext';
-import { selectedDayEvent } from './GlobalContext';
-import { fetchEvents } from '@/helpers/api';
+import React, { useState, useReducer, useEffect, useMemo } from "react";
+import dayjs from "dayjs";
+import GlobalContext from "./GlobalContext";
+import { selectedDayEvent } from "./GlobalContext";
+import { fetchEvents } from "@/helpers/api";
 
 export const labelsClasses = new Map([
   ["INTERVIEW", "green"],
   ["PPT", "red"],
   ["TEST", "indigo"],
   ["COMPLETED", "blue"],
-  ["APPLICATION", "purple"]
+  ["APPLICATION", "purple"],
 ]);
 
-function savedEventsReducer(state: selectedDayEvent[], { type, payload }: { type: string, payload: any }) {
+function savedEventsReducer(
+  state: selectedDayEvent[],
+  { type, payload }: { type: string; payload: any },
+) {
   switch (type) {
-    case 'fetch':
+    case "fetch":
       return payload;
     default:
       throw new Error();
@@ -25,26 +28,28 @@ export default function ContextWrapper(props: any) {
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
   const [weekOffset, setWeekOffset] = useState(0);
   const [dateOffset, setDateOffset] = useState(0);
-  const [Current_view, SetCurrent_view] = useState('Month');
+  const [Current_view, SetCurrent_view] = useState("Month");
   const [showEventModal, setShowEventModal] = useState(false);
   const [daySelected, setDaySelected] = useState(dayjs());
-  const [selectedEvent, setSelectedEvent] = useState<selectedDayEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<selectedDayEvent | null>(
+    null,
+  );
   const [labels, setLabels] = useState(() => {
-    return Array.from(labelsClasses.keys()).map(label => ({
+    return Array.from(labelsClasses.keys()).map((label) => ({
       label,
-      checked: true
+      checked: true,
     }));
   });
   const [savedEvents, dispatchCallEvents] = useReducer(savedEventsReducer, []);
-  const [timeFrom, setTimeFrom] = useState('from');
-  const [timeTo, setTimeTo] = useState('to');
+  const [timeFrom, setTimeFrom] = useState("from");
+  const [timeTo, setTimeTo] = useState("to");
 
   const filteredEvents = useMemo(() => {
-    return savedEvents.filter((evt:selectedDayEvent) =>
+    return savedEvents.filter((evt: selectedDayEvent) =>
       labels
         .filter((lbl) => lbl.checked)
         .map((lbl) => lbl.label)
-        .includes(evt.type)
+        .includes(evt.type),
     );
   }, [savedEvents, labels]);
 
@@ -52,9 +57,9 @@ export default function ContextWrapper(props: any) {
     async function fetchAndSetEvents() {
       try {
         const data = await fetchEvents();
-        dispatchCallEvents({ type: 'fetch', payload: data });
+        dispatchCallEvents({ type: "fetch", payload: data });
       } catch (error) {
-        console.error('Failed to fetch events:', error);
+        console.error("Failed to fetch events:", error);
       }
     }
     fetchAndSetEvents();
@@ -74,8 +79,10 @@ export default function ContextWrapper(props: any) {
     });
   }, [savedEvents]);
 
-  function updateLabel(newLabel: { label: string, checked: boolean }) {
-    setLabels((prevLabels) => prevLabels.map((lbl) => (lbl.label === newLabel.label ? newLabel : lbl)));
+  function updateLabel(newLabel: { label: string; checked: boolean }) {
+    setLabels((prevLabels) =>
+      prevLabels.map((lbl) => (lbl.label === newLabel.label ? newLabel : lbl)),
+    );
   }
 
   return (

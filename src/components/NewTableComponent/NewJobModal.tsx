@@ -43,7 +43,7 @@ const JobModal = ({
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchJobById( jobID),
+          fetchJobById(jobID),
           getJafDetails(),
         ]);
 
@@ -373,7 +373,7 @@ const JobModal = ({
                                         (i, j) =>
                                           j === index
                                             ? { ...i, type: e.target.value }
-                                            : i
+                                            : i,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -403,10 +403,10 @@ const JobModal = ({
                                             ? {
                                                 ...t,
                                                 duration: Number(
-                                                  e.target.value
+                                                  e.target.value,
                                                 ),
                                               }
-                                            : t
+                                            : t,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -418,7 +418,7 @@ const JobModal = ({
                                   }}
                                 />
                               </li>
-                            )
+                            ),
                           )
                         : job.selectionProcedure.tests.map((p, index) => (
                             <li key={index} className="my-2">
@@ -457,7 +457,7 @@ const JobModal = ({
                                         (i, j) =>
                                           j === index
                                             ? { ...i, type: e.target.value }
-                                            : i
+                                            : i,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -471,7 +471,7 @@ const JobModal = ({
                                   {jafDetails.interviewTypes.map(
                                     (test, index) => (
                                       <option key={index}>{test}</option>
-                                    )
+                                    ),
                                   )}
                                 </select>
                                 <br />
@@ -487,7 +487,7 @@ const JobModal = ({
                                         (i, j) =>
                                           j === index
                                             ? { ...i, duration: e.target.value }
-                                            : i
+                                            : i,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -499,7 +499,7 @@ const JobModal = ({
                                   }}
                                 />
                               </li>
-                            )
+                            ),
                           )
                         : job.selectionProcedure.interviews.map((p, index) => (
                             <li key={index} className="my-2">
@@ -611,7 +611,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, baseSalary: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -635,7 +635,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, totalCTC: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -659,7 +659,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, takeHomeSalary: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -683,7 +683,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, grossSalary: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -711,7 +711,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, otherCompensations: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,

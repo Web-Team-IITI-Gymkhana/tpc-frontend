@@ -36,7 +36,7 @@ export const apiCall = async (
     formData = null,
     next = null,
     recieveResponse = false,
-  }: ApiCallOptions = {}
+  }: ApiCallOptions = {},
 ) => {
   const accessToken = Cookies.get("accessToken");
   if (!accessToken && isAuth) {
@@ -152,7 +152,7 @@ export const fetchCompany = async () => {
 };
 
 export const assignCompany = async (
-  assignments: { id: string; companyId: string }[]
+  assignments: { id: string; companyId: string }[],
 ) => {
   return apiCall("/jobs", {
     method: "PATCH",
@@ -161,7 +161,7 @@ export const assignCompany = async (
 };
 
 export const assignRecruiter = async (
-  assignments: { id: string; recruiterId: string }[]
+  assignments: { id: string; recruiterId: string }[],
 ) => {
   return apiCall("/jobs", {
     method: "PATCH",
@@ -262,7 +262,7 @@ export const patchResumeVerify = async (changes: ResumePatchData[]) => {
 
 export const getStudentSalaryOffers = async (
   jobId: string,
-  studentId: string
+  studentId: string,
 ) => {
   return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
 };
@@ -272,7 +272,7 @@ export const postOnCampusOffer = async (
     salaryId: string;
     studentId: string;
     status: string;
-  }[]
+  }[],
 ) => {
   return apiCall(`/on-campus-offers/`, {
     method: "POST",
@@ -289,7 +289,7 @@ export const postJobCoordinator = async (
     jobId: string;
     tpcMemberId: string;
     role: string;
-  }[]
+  }[],
 ) => {
   return apiCall(`/jobs/coordinators`, {
     method: "POST",
@@ -329,7 +329,7 @@ export const fetchRecruiterById = async (id: string | undefined) => {
 export const fetchRegistrations = async (
   studentId: any,
   seasonId: any,
-  currentStatus: any
+  currentStatus: any,
 ) => {
   return apiCall("/registrations", {
     method: "POST",
@@ -349,7 +349,7 @@ export const fetchRegistrationDataById = async (studentId: any) => {
     const data = await apiCall("/registrations");
 
     const filteredData = data.filter(
-      (registration: any) => registration.student.id === studentId
+      (registration: any) => registration.student.id === studentId,
     );
     return filteredData;
   } catch (error) {
@@ -363,7 +363,7 @@ export const createJobEvent = async (
   jobId: String,
   type: string,
   round: string,
-  date: string
+  date: string,
 ) => {
   return apiCall(`/jobs/${jobId}/events`, {
     method: "POST",

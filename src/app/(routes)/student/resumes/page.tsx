@@ -1,31 +1,38 @@
 "use client";
-import React, { useEffect, useState, ChangeEvent, FormEvent  } from "react";
+import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import {
-    Table,
-    TableHeader,
-    TableBody,
-    TableHead,
-    TableRow,
-    TableCell,
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Resume } from "@/helpers/student/types";
 import { GetResumes, OpenResume, deleteResume } from "@/helpers/student/api";
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { uploadResume } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Loader from "@/components/Loader/loader";
 const ResumePage = () => {
-
   const [resumeData, setResumeData] = useState<Resume[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchResumes = async () => {    
+  const fetchResumes = async () => {
     try {
       const data = await GetResumes();
       setResumeData(data);
@@ -35,7 +42,7 @@ const ResumePage = () => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const [file, setFile] = useState<File | null>(null);
 
@@ -47,97 +54,99 @@ const ResumePage = () => {
 
   const handleOpenResume = async (filename: string) => {
     OpenResume(filename);
-  }
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!file) {
-      toast.error('Please select a file to upload.');
+      toast.error("Please select a file to upload.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('resume', file, file.name);
+    formData.append("resume", file, file.name);
 
     const data = await uploadResume(formData);
 
-    if(data){
+    if (data) {
       toast.success("Uploaded Successfully");
       fetchResumes();
       setFile(null);
-      setDialogOpen(false)
-    }
-    else{
-      toast.error("Error uploading file")
+      setDialogOpen(false);
+    } else {
+      toast.error("Error uploading file");
     }
   };
 
   const handleDelete = async (filename: string) => {
     const res = await deleteResume(filename);
 
-    if(res){
+    if (res) {
       toast.success("Deleted Successfully");
       fetchResumes();
+    } else {
+      toast.error("Error deleting file");
     }
-    else{
-      toast.error("Error deleting file")
-    }
+  };
 
-  }
-
-
-  useEffect(()=>{  
-
-    if(resumeData.length===0){
+  useEffect(() => {
+    if (resumeData.length === 0) {
       fetchResumes();
     }
-  })
+  });
 
   return (
     <>
       <div className="rounded-xl bg-white text-black p-5">
-        <div className="font-bold text-lg">
-            Resumes
-        </div>        
-        {loading && <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>}
-        {resumeData.length >0 && (
+        <div className="font-bold text-lg">Resumes</div>
+        {loading && (
+          <div className="h-screen w-full flex justify-center items-center">
+            <Loader />
+          </div>
+        )}
+        {resumeData.length > 0 && (
           <>
             <div className="my-4">
               <Separator />
             </div>
             <Table className="overflow-hidden">
               <TableHeader>
-                  <TableRow>
-                      <TableHead>Sr.</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Delete</TableHead>
-                  </TableRow>
+                <TableRow>
+                  <TableHead>Sr.</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Delete</TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
-                  {resumeData.map((item,index)=>(
-                      <TableRow key={index}>
-                          <TableCell>{index+1}</TableCell>
-                          <TableCell>
-                            <div className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out" onClick={()=>handleOpenResume(item.filepath)}>
-                              {item.filepath}
-                            </div>
-                          </TableCell>
-                          <TableCell>{item.verified? "Verified": "Not Verified"}</TableCell>
-                          <TableCell>
-                            <Button onClick={() => handleDelete(item.filepath)}>Delete</Button>
-                          </TableCell>
-                      </TableRow>
-                  ))}
+                {resumeData.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      <div
+                        className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                        onClick={() => handleOpenResume(item.filepath)}
+                      >
+                        {item.filepath}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {item.verified ? "Verified" : "Not Verified"}
+                    </TableCell>
+                    <TableCell>
+                      <Button onClick={() => handleDelete(item.filepath)}>
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </>
         )}
         <div className="my-4">
-            <Separator />
+          <Separator />
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -152,7 +161,9 @@ const ResumePage = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="grid w-full max-w-sm items-center gap-1.5 my-2">
-                <Label className="text-black" htmlFor="name">Name</Label>
+                <Label className="text-black" htmlFor="name">
+                  Name
+                </Label>
                 <Input
                   id="name"
                   className="cursor-pointer text-black"
@@ -161,7 +172,9 @@ const ResumePage = () => {
                 />
               </div>
               <div className="grid w-full max-w-sm items-center gap-1.5">
-                <Label className="text-black" htmlFor="resume">Resume</Label>
+                <Label className="text-black" htmlFor="resume">
+                  Resume
+                </Label>
                 <Input
                   id="resume"
                   className="cursor-pointer text-black"
@@ -170,7 +183,7 @@ const ResumePage = () => {
                 />
               </div>
               <DialogFooter>
-                <Button className="my-4" type="submit" >
+                <Button className="my-4" type="submit">
                   Add
                 </Button>
               </DialogFooter>

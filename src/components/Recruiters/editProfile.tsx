@@ -7,19 +7,19 @@ import { getDomains } from "@/helpers/recruiter/api";
 export const EditForm = (params: { profile: ProfileFC }) => {
   const { profile } = params;
   const [email, updateEmail] = useState<string>(
-    profile.user.email ? profile.user.email : ""
+    profile.user.email ? profile.user.email : "",
   );
   const [contact, updateContact] = useState<string>(
-    profile.user.contact ? profile.user.contact : ""
+    profile.user.contact ? profile.user.contact : "",
   );
   const [name, updateName] = useState<string>(
-    profile.user.name ? profile.user.name : ""
+    profile.user.name ? profile.user.name : "",
   );
   const [designation, setDesignation] = useState<string>(
-    profile.designation ? profile.designation : ""
+    profile.designation ? profile.designation : "",
   );
   const [landline, setLandline] = useState<string>(
-    profile.landline ? profile.landline : ""
+    profile.landline ? profile.landline : "",
   );
 
   const updateProfile = () => {
@@ -115,27 +115,27 @@ export const EditForm = (params: { profile: ProfileFC }) => {
 export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   const { profile } = params;
   const [companyName, setCompanyName] = useState<string>(
-    profile.company.name ? profile.company.name : ""
+    profile.company.name ? profile.company.name : "",
   );
   const [domains, setDomains] = useState(
-    profile.company.domains ? profile.company.domains : []
+    profile.company.domains ? profile.company.domains : [],
   );
   const [category, setCategory] = useState<string>(
-    profile.company.category ? profile.company.category : ""
+    profile.company.category ? profile.company.category : "",
   );
   const [address, setAddress] = useState<any>(
-    profile.company.address ? profile.company.address : {}
+    profile.company.address ? profile.company.address : {},
   );
   const [size, setSize] = useState<number>(
-    profile.company.size ? profile.company.size : 0
+    profile.company.size ? profile.company.size : 0,
   );
   const [yearOfEstablishment, setYearOfEstablishment] = useState<string>(
     profile.company.yearOfEstablishment
       ? profile.company.yearOfEstablishment
-      : ""
+      : "",
   );
   const [socialMediaLink, setSocialMediaLink] = useState<string>(
-    profile.company.socialMediaLink ? profile.company.socialMediaLink : ""
+    profile.company.socialMediaLink ? profile.company.socialMediaLink : "",
   );
 
   const [domainOptions, setDomainsOptions] = useState<[string] | []>([]);
