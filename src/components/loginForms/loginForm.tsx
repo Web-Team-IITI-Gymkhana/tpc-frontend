@@ -1,15 +1,12 @@
 //this will be used to create the login page.
 "use client";
-import { url } from "@/helpers/api";
 import React, { useState } from "react";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
 import {login} from "@/helpers/api";
+
 const LoginForm = () => {
   const [email, setemail] = useState<string | null>(null);
   const [role, setrole] = useState<string | null>("STUDENT");
