@@ -14,11 +14,10 @@ import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
-import { fetchEachJob } from "@/helpers/api";
-import Cookies from "js-cookie";
+import { fetchJobById } from "@/helpers/api";
 import Modal from "@mui/material/Modal";
-import { CircularProgress } from "@mui/material";
 import toast from "react-hot-toast";
+import Loader from "../Loader/loader";
 
 const JobModal = ({
   jobID,
@@ -44,7 +43,7 @@ const JobModal = ({
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchEachJob(Cookies.get("accessToken"), jobID),
+          fetchJobById( jobID),
           getJafDetails(),
         ]);
 
@@ -114,7 +113,7 @@ const JobModal = ({
         {loading && (
           <div className="w-full h-full flex justify-center items-center">
             <div className="px-28 py-16 bg-white">
-              <CircularProgress />
+              <Loader />
             </div>
           </div>
         )}

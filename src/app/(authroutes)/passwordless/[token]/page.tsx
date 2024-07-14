@@ -5,9 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import Loader from "@/components/Loader/loader";
-interface Props {}
 
 const LoginPage = ({
   params,

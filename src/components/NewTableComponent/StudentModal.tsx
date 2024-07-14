@@ -11,13 +11,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Button } from '@mui/material';
-
-import Cookies from 'js-cookie';
+import {fetchRegistrations} from '@/helpers/api';
 import Loader from '@/components/Loader/loader';
+import { fetchStudentDataById, fetchRegistrationDataById } from '@/helpers/api';
 const redirect = () => {};
 const theme = createTheme({
     palette: {
@@ -52,30 +51,14 @@ const style = {
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const handleRegistration = async (accessToken, studentId, seasonId, currentStatus) => {
-    if (!accessToken) {
-        console.error('No access token provided');
-        return;
-    }
-
+const handleRegistration = async (studentId:any, seasonId:any, currentStatus:any) => {
+   
     try {
-        const res = await fetch(`${baseUrl}/api/v1/registrations`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify([{
-                studentId,
-                seasonId,
-                registered: !currentStatus
-            }]),
-        });
+        const response = await fetchRegistrations(studentId, seasonId, currentStatus);
 
-        if (!res.ok) {
-            const errorDetails = await res.json();
-            console.error(`Failed to update registration status: ${errorDetails.message}`);
-            throw new Error(`Failed to update registration status: ${errorDetails.message}`);
+        if (!response) {
+            console.error('Failed to update registration status');
+            throw new Error('Failed to update registration status');
             //Will change it in a separate console removal PR
         }
 
@@ -93,23 +76,11 @@ export default function StudentModal({ open, setOpen, id }) {
     const [registrationData, setRegistrationData] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchStudentData = async (accessToken, id) => {
-        if (!accessToken) {
-            console.error('No access token provided');
-            return;
-        }
-
+    const fetchStudentData = async (id:any) => {
+        
         setLoading(true);
         try {
-            const response = await fetch(`${baseUrl}/api/v1/students/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`Error fetching student data: ${response.statusText}`);
-            }
-            const data = await response.json();
+            const data = await fetchStudentDataById(id);
             setStudentData(data);
         } catch (error) {
             console.error('Error fetching student data:', error);
@@ -118,26 +89,12 @@ export default function StudentModal({ open, setOpen, id }) {
         }
     };
 
-    const fetchRegistrationData = async (accessToken, studentId) => {
-        if (!accessToken) {
-            console.error('No access token provided');
-            return;
-        }
-
+    const fetchRegistrationData = async (studentId:any) => {
+        
         setLoading(true);
         try {
-            const response = await fetch(`${baseUrl}/api/v1/registrations`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error fetching registration data: ${response.statusText}`);
-            }
-            const allData = await response.json();
-            const filteredData = allData.filter((registration) => registration.student.id === studentId);
-            setRegistrationData(filteredData);
+            const data = await fetchRegistrationDataById(studentId);
+            setRegistrationData(data)
         } catch (error) {
           
         } finally {
@@ -147,19 +104,19 @@ export default function StudentModal({ open, setOpen, id }) {
 
     useEffect(() => {
         if (open && id) {
-            const accessToken = Cookies.get("accessToken");
-            fetchStudentData(accessToken, id);
-            fetchRegistrationData(accessToken, id);
+        
+            fetchStudentData(id);
+            fetchRegistrationData(id);
         }
     }, [open, id]);
 
     const handleClose = () => setOpen(false);
 
-    const handleStatusChange = async (studentId, seasonId, currentStatus) => {
-        const success = await handleRegistration(Cookies.get("accessToken"), studentId, seasonId, currentStatus);
+    const handleStatusChange = async (studentId:any, seasonId:any, currentStatus:any) => {
+        const success = await handleRegistration(studentId, seasonId, currentStatus);
         if (success) {
-            setRegistrationData((prevData) =>
-                prevData.map((registration) =>
+            setRegistrationData((prevData:any) =>
+                prevData.map((registration:any) =>
                     registration.season.id === seasonId ? { ...registration, registered: !currentStatus } : registration
                 )
             );

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Component } from "react";
-import { CircularProgress } from "@mui/material";
 import Loader from "@/components/Loader/loader"
 
 class Loading extends Component {

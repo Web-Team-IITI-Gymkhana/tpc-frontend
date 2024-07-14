@@ -26,8 +26,7 @@ interface Props {
 
 const RootLayout = async ({ children, auth }: Props) => {
   const className = inter.className;
-  // const AllSeasons = await fetchAllSeasons(cookies()?.get("accessToken")?.value);
-  // console.log(AllSeasons);
+
   return (
     <html lang="en">
       <body className={className}>

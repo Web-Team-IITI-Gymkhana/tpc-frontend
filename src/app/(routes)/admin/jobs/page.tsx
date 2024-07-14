@@ -1,14 +1,9 @@
 "use client";
 import { fetchAllJobs } from "@/helpers/api";
-import Cookies from "js-cookie";
-import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import type { RecruitmentDTO } from "@/dto/JobDto";
 import { recruitmentDTO } from "@/dto/JobDto";
 import {
-  MaterialReactTable,
-  useMaterialReactTable,
-  type MRT_Row,
   createMRTColumnHelper,
 } from "material-react-table";
 import Table from "@/components/NewTableComponent/Table";
@@ -24,7 +19,6 @@ const hiddenColumns = [
 ];
 
 const JobPage = () => {
-  const columnHelper = createMRTColumnHelper<RecruitmentDTO>();
   const columns = generateColumns(recruitmentDTO);
   const [loading, setLoading] = useState(true);
   const [allJobs, setAllJobs] = useState();
@@ -34,7 +28,7 @@ const JobPage = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const data = await fetchAllJobs(Cookies.get("accessToken"), undefined);
+      const data = await fetchAllJobs();
       setAllJobs(data);
       setLoading(false);
     };
