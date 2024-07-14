@@ -34,7 +34,7 @@ const JobPage = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const data = await fetchAllJobs( undefined);
+      const data = await fetchAllJobs();
       setAllJobs(data);
       setLoading(false);
     };
