@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { fetchResumes, getResumeFile, patchResumeVerify } from "@/helpers/api";
-import Cookies from "js-cookie";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import Table from "@/components/NewTableComponent/Table";
 import { resumeDto, Resume, ResumeTableData } from "@/dto/ResumeDto";

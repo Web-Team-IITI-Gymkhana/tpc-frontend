@@ -17,6 +17,7 @@ import { useState } from "react";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { deleteEvent } from "@/helpers/api";
 interface Props {
   jobId: string;
   eventId: string;
@@ -72,26 +73,17 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
                 return;
               }
               setloading(true);
-              await axios
-                .delete(
-                  `http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events/${eventId}`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${Cookies.get("accessToken")}`,
-                    },
-                  },
-                )
-                .then((response) => {
-                  submit("AllEvents");
-                  setloading(false);
-                  setopen(false);
-                  toast.success("Event Deleted");
-                })
-                .catch((err) => {
-                  console.log(err);
-                  setopen(false);
-                  toast.error("Error Deleting Event");
-                });
+              try {
+                await deleteEvent(jobId, eventId);
+                submit("AllEvents");
+                setloading(false);
+                setopen(false);
+                toast.success("Event Deleted");
+              } catch (err) {
+                console.log(err);
+                setopen(false);
+                toast.error("Error Deleting Event");
+              }
             }}
           >
             {loading ? "Deleting..." : "Delete Now"}

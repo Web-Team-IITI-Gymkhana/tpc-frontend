@@ -2,8 +2,6 @@
 import * as React from "react";
 import { useState } from "react";
 import Modal from "react-modal";
-import { fetchStudentData } from "@/helpers/api";
-import Cookies from "js-cookie";
 import {
   ColumnDef,
   ColumnFiltersState,

@@ -1,6 +1,5 @@
 "use client";
 import { fetchStudentData } from "@/helpers/api";
-import Cookies from "js-cookie";
 import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useRouter } from "next/router";
@@ -35,7 +34,7 @@ const StudentPage = ({ params }: any) => {
             const decodedParams = decodeURIComponent(params.filter[0]);
             console.log(decodedParams)
             const AllStudents = await fetchStudentData(
-                Cookies.get("accessToken"),
+      
                 decodedParams
             );
             setStudents(AllStudents);
