@@ -1,6 +1,5 @@
 import React from "react";
 import dayjs, { Dayjs } from "dayjs";
-
 export interface DispatchCallEventsAction {
     type: string;
     payload: any;
@@ -11,14 +10,30 @@ export interface updateLabelAction {
     checked: boolean;
   }
 
+export interface Job {
+  id: string;
+  role: string;
+  company: {
+      id: string;
+      name: string;
+  };
+  season: {
+      id: string;
+      type: string;
+      year:number;
+  };
+}
+
 export interface selectedDayEvent{
-    title:string,
-    description:string,
-    label:string,
-    id:string;
-    day: number | null;
-    timeFrom: string;
-    timeTo: string;
+    id:string,
+    startDateTime:Date,
+    endDateTime:Date,
+    metadata:string,
+    roundNumber:number,
+    type:string,
+    visibleToRecruiter:boolean,
+    job:Job
+
 }
 
   
