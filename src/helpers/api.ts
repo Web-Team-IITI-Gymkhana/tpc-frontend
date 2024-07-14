@@ -1,5 +1,7 @@
 import qs from "qs";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import toast, { Toaster } from "react-hot-toast";
 import { ResumePatchData } from "./types";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -350,5 +352,53 @@ export const fetchRegistrationDataById = async (studentId: any) => {
     return filteredData;
   } catch (error) {
     console.error('Error fetching registration data:', error);
+  }
+};
+
+
+//OnClick Functions
+
+export const createJobEvent = async (
+  jobId: String,
+  type: string,
+  round: string,
+  date: string
+) => {
+  return apiCall(`/jobs/${jobId}/events`, {
+    method: "POST",
+    body: { type, roundNumber: round, startDateTime: date },
+  });
+};
+
+export const login = async (email: string, role: string) => {
+  const response = await apiCall("/auth/login/", {
+    method: "POST",
+    body: { email: email, role: role.toUpperCase() },
+    isAuth: false,
+  });
+
+  if (response) {
+    const accessToken = response.accessToken;
+    Cookies.set("accessToken", accessToken, { expires: 365 });
+    Cookies.set("user", JSON.stringify(jwtDecode(accessToken)), {
+      expires: 365,
+    });
+    toast.success("Logged in");
+    window.location.href = "/";
+  } else {
+    throw new Error("Login failed");
+  }
+};
+
+
+
+export const deleteEvent = async (jobId: string, eventId: string) => {
+  try {
+    const response = await apiCall(`/jobs/${jobId}/events/${eventId}`, {
+      method: "DELETE",
+    });
+    return response;
+  } catch (error) {
+    throw new Error("Error deleting event");
   }
 };

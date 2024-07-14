@@ -61,38 +61,15 @@ const LoginForm = () => {
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         onClick={() => {
                           if (email == null || email.length == 0) {
-                            toast.error("Email is Required");
+                            toast.error("Email is required");
                             return;
                           }
-                          axios
-                            .post(url("/auth/login/"), {
-                              email: email,
-                              role: role?.toUpperCase(),
-                            })
-                            .then(
-                              (response: { data: { accessToken: string } }) => {
-                                Cookies.set(
-                                  "accessToken",
-                                  response.data.accessToken,
-                                  {
-                                    expires: 365,
-                                  }
-                                );
-                                Cookies.set(
-                                  "user",
-                                  JSON.stringify(
-                                    jwtDecode(response.data.accessToken)
-                                  ),
-                                  { expires: 365 }
-                                );
-                                toast.success("logged in");
-                                window.location.href = "/";
-                              }
-                            )
-                            .catch((err) => {
-                              alert(err);
-                              toast.error("Some Error Occured");
-                            });
+                          try {
+                            await login(email, role);
+                          } catch (err) {
+                            alert(err);
+                            toast.error("Some error occurred");
+                          }
                         }}
                       >
                         Request Access
