@@ -19,25 +19,42 @@ import Cookies from "js-cookie";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
-
+import { fetchCompany,fetchRecruiterData } from "@/helpers/api";
+import { assignCompany,assignRecruiter } from "@/helpers/api";
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
+
+  const accessToken = Cookies.get("accessToken");
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(null);
   const [jafDetails, setJafDetails] = useState<JAFdetailsFC>();
-
+  const [companyData, setCompanyData] = useState(null);
+  const [recruiterData, setRecruiterData] = useState(null);
+  const [companyDropDown, setcompanyDropDown] = useState(false);
+  const [recruiterDropDown, setrecruiterDropDown] = useState(false);
+  const[selectedCompany,setSelectedCompany]=useState(null)
+  const[selectedRecruiter,setSelectedRecruiter]=useState(null)
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchEachJob(Cookies.get("accessToken"), params.jobId),
+        const [jobDetailData, jafDetailsData, companyData, recruiterData] = await Promise.all([
+          fetchEachJob(accessToken, params.jobId),
           getJafDetails(),
+          fetchCompany(accessToken),
+          fetchRecruiterData(accessToken, null),
         ]);
 
-        setJafDetails((prev) => jafDetailsData);
+        setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
+        setCompanyData(companyData);
+        setRecruiterData(recruiterData);
+        const matchedCompany = companyData.find(company => company.id === jobDetailData.company.id);
+        setSelectedCompany(matchedCompany);
+        const matchedRecruiter = recruiterData.find(recruiter => recruiter.id === jobDetailData.recruiter.id);
+        setSelectedRecruiter(matchedRecruiter);
       } catch (error) {
         toast.error("Error fetching data");
       } finally {
@@ -47,7 +64,23 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
     fetchData();
   }, [params.jobId]);
-
+  const toggleDropdown = (state:string) => {
+    if(state==="company"){
+      setcompanyDropDown(!companyDropDown);
+    }
+    else{
+      setrecruiterDropDown(!recruiterDropDown);
+    }
+  };
+  const handleCompanySelect = (company) => {
+    setSelectedCompany(company);
+    setcompanyDropDown(false);
+  };
+  const handleRecruiterSelect = (recruiter) => {
+    setSelectedRecruiter(recruiter);
+    setrecruiterDropDown(false);
+  };
+  
   const handleEditClick = () => {
     if (editMode) {
       handleSubmit();
@@ -139,6 +172,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 )}
               </div>
             </div>
+         
             <div>
               <div className="font-semibold text-lg my-4">Skills</div>
               <div className="flex flex-wrap gap-4">
@@ -224,6 +258,189 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               </div>
             </div>
           </div>
+          <div className="flex flex-col gap-4">
+  <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
+    <div className="font-bold text-xl my-4">Company Details</div>
+    <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col w-full">
+        <div className="font-semibold my-2">Company Name</div>
+        <div className="flex">
+          {companyDropDown ? (
+            <div className="relative w-full">
+              <input
+                type="text"
+                className="input-field w-full border border-gray-300 rounded p-2"
+                value={selectedCompany?.name || ""}
+                onFocus={() => toggleDropdown("company")}
+                readOnly
+              />
+              {companyDropDown && (
+                <div className="dropdown bg-gray-100 rounded-lg shadow-md mt-2 absolute w-full max-h-60 overflow-auto z-10">
+                  {companyData.map((company) => (
+                    <div
+                      key={company.id}
+                      className="dropdown-item py-2 px-4 hover:bg-gray-200 cursor-pointer rounded-md"
+                      onClick={() => handleCompanySelect(company)}
+                    >
+                      {company.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between w-full">
+              <div onClick={()=> toggleDropdown("company")} className="cursor-pointer w-full">
+                {selectedCompany?.name || "Select a Company"}
+              </div>
+              <Button onClick={()=> toggleDropdown("company")} className="ml-2">
+                {selectedCompany?.id === "f47ac10b-58cc-4372-a567-0e02b2c3d479" ? "Assign" : "Change"}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col flex-1">
+        <div className="font-semibold my-2">Annual Turnover</div>
+        <div className="flex items-center">
+
+          <div>{selectedCompany?.annualTurnover}</div>
+        </div>
+      </div>
+      <div className="flex flex-col flex-1">
+        <div className="font-semibold my-2">Year of Establishment</div>
+        <div className="flex items-center">
+          <span className="mr-2">Year of Establishment:</span>
+          <div>{selectedCompany?.yearOfEstablishment}</div>
+        </div>
+      </div>
+      <div className="flex flex-col flex-1">
+        <div className="font-semibold my-2">Category</div>
+        <div className="flex items-center">
+          <div>{selectedCompany?.category}</div>
+        </div>
+      </div>
+      <div className="flex flex-col flex-1">
+        <div className="font-semibold my-2">Social Media Link</div>
+        <div className="flex items-center">
+          <div>
+            <a href={selectedCompany?.socialMediaLink} target="_blank" rel="noopener noreferrer">
+              {selectedCompany?.socialMediaLink}
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end w-full mt-4">
+        <Button onClick={async () => {
+          if (selectedCompany) {
+            try {
+              await assignCompany(accessToken, [{ id: job.id, companyId: selectedCompany.id }]);
+              toast.success("Company assigned successfully");
+            } catch (error) {
+              toast.error("Failed to assign company");
+            }
+          }
+        }}>Submit</Button>
+      </div>
+    </div>
+  </div>
+</div>
+<div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
+  <div className="font-semibold text-lg my-4">Recruiter Details</div>
+  <div className="flex flex-wrap gap-4">
+    <div className="flex flex-col w-full">
+      <div className="font-semibold my-2">Recruiter Name</div>
+      <div className="flex">
+        {recruiterDropDown ? (
+          <div className="relative w-full">
+            <input
+              type="text"
+              className="input-field w-full border border-gray-300 rounded p-2"
+              value={selectedRecruiter?.user.name || ""}
+              onFocus={() => toggleDropdown("recruiter")}
+              readOnly
+            />
+            {recruiterDropDown && (
+              <div className="dropdown bg-gray-100 rounded-lg shadow-md mt-2 absolute w-full max-h-60 overflow-auto z-10">
+                {recruiterData.map((recruiter) => (
+                  <div
+                    key={recruiter.id}
+                    className="dropdown-item py-2 px-4 hover:bg-gray-200 cursor-pointer rounded-md"
+                    onClick={() => handleRecruiterSelect(recruiter)}
+                  >
+                    {recruiter.user.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <div onClick={() => setrecruiterDropDown(true)} className="cursor-pointer w-full">
+              {selectedRecruiter?.user.name || "Select a Recruiter"}
+            </div>
+            <Button onClick={() => setrecruiterDropDown(true)} className="ml-2">
+              {selectedRecruiter?.id==="3a0a4d51-3085-4d39-8a0b-376e4e1e63a1"? "Assign" : "Change"}
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div className="flex flex-col flex-1">
+      <div className="font-semibold my-2">Name</div>
+      <div className="flex items-center">
+        <div>{selectedRecruiter?.user.name}</div>
+      </div>
+    </div>
+    <div className="flex flex-col flex-1">
+      <div className="font-semibold my-2">Email</div>
+      <div className="flex items-center">
+        <div>{selectedRecruiter?.user.email}</div>
+      </div>
+    </div>
+    <div className="flex flex-col flex-1">
+      <div className="font-semibold my-2">Contact</div>
+      <div className="flex items-center">
+        <div>{selectedRecruiter?.user.contact}</div>
+      </div>
+    </div>
+    <div className="flex flex-col flex-1">
+      <div className="font-semibold my-2">Company</div>
+      <div className="flex items-center">
+
+        <div>{selectedRecruiter?.company.name}</div>
+      </div>
+    </div>
+    <div className="flex flex-col flex-1">
+      <div className="font-semibold my-2">Designation</div>
+      <div className="flex items-center">
+
+        <div>{selectedRecruiter?.designation}</div>
+      </div>
+    </div>
+    <div className="flex justify-end w-full mt-4">
+      <Button
+        onClick={async () => {
+          if (selectedRecruiter) {
+            try {
+              await assignRecruiter(accessToken, [{ id: job.id, recruiterId: selectedRecruiter.id }]);
+              toast.success("Recruiter assigned successfully");
+            } catch (error) {
+              toast.error("Failed to assign recruiter");
+            }
+          }
+        }}
+      >
+        Submit
+      </Button>
+    </div>
+  </div>
+</div>
+
+          
+
+
           {job.selectionProcedure && (
             <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
               <div className="font-semibold text-lg mb-4">
