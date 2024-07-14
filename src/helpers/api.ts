@@ -16,9 +16,7 @@ interface ApiCallOptions {
   formData?: FormData;
 }
 
-const redirect = () => {
-
-};
+const redirect = () => {};
 
 export const url = (NextUrl: string) => { return `${baseUrl}/api/v1${NextUrl}`; };
 export const getUrl = (NextUrl: string) => { return `${baseUrl}/api/v1${NextUrl}`;};
@@ -35,7 +33,7 @@ export const apiCall = async (
   }: ApiCallOptions = {}
 ) => {
   const accessToken = Cookies.get("accessToken");
-  if ((!accessToken || accessToken === undefined) && isAuth) {
+  if ((!accessToken) && isAuth) {
     redirect();
     return;
   }

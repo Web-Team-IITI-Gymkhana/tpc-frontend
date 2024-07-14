@@ -15,10 +15,9 @@ import {
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
 import { fetchJobById } from "@/helpers/api";
-import Cookies from "js-cookie";
 import Modal from "@mui/material/Modal";
-import { CircularProgress } from "@mui/material";
 import toast from "react-hot-toast";
+import Loader from "../Loader/loader";
 
 const JobModal = ({
   jobID,
@@ -114,7 +113,7 @@ const JobModal = ({
         {loading && (
           <div className="w-full h-full flex justify-center items-center">
             <div className="px-28 py-16 bg-white">
-              <CircularProgress />
+              <Loader />
             </div>
           </div>
         )}
