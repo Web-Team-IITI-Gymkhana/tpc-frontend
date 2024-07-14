@@ -81,7 +81,7 @@ export default function StudentModal({ open, setOpen, id }) {
         setLoading(true);
         try {
             const data = await fetchStudentDataById(id);
-            return data;
+            setStudentData(data);
         } catch (error) {
             console.error('Error fetching student data:', error);
         } finally {
