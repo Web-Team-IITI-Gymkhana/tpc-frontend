@@ -14,7 +14,7 @@ import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
-import { fetchEachJob } from "@/helpers/api";
+import { fetchJobById } from "@/helpers/api";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
@@ -40,7 +40,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData, companyData, recruiterData] = await Promise.all([
-          fetchEachJob(accessToken, params.jobId),
+          fetchJobById(accessToken, params.jobId),
           getJafDetails(),
           fetchCompany(accessToken),
           fetchRecruiterData(accessToken, null),
