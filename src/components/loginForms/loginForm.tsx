@@ -1,14 +1,11 @@
 //this will be used to create the login page.
 "use client";
-import { url } from "@/helpers/api";
 import React, { useState } from "react";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
+import { login } from "@/helpers/api";
 
 const LoginForm = () => {
   const [email, setemail] = useState<string | null>(null);
@@ -59,7 +56,7 @@ const LoginForm = () => {
                     <div className="items-center flex justify-center flex-col gap-4">
                       <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => {
+                        onClick={async () => {
                           if (email == null || email.length == 0) {
                             toast.error("Email is required");
                             return;
