@@ -14,8 +14,7 @@ import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
-import { fetchEachJob } from "@/helpers/api";
-import Cookies from "js-cookie";
+import { fetchJobById } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
@@ -23,7 +22,7 @@ import { fetchCompany,fetchRecruiterData } from "@/helpers/api";
 import { assignCompany,assignRecruiter } from "@/helpers/api";
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
-  const accessToken = Cookies.get("accessToken");
+
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
@@ -40,10 +39,10 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData, companyData, recruiterData] = await Promise.all([
-          fetchEachJob(accessToken, params.jobId),
+          fetchJobById(params.jobId),
           getJafDetails(),
-          fetchCompany(accessToken),
-          fetchRecruiterData(accessToken, null),
+          fetchCompany(),
+          fetchRecruiterData(),
         ]);
 
         setJafDetails(jafDetailsData);
@@ -334,7 +333,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         <Button onClick={async () => {
           if (selectedCompany) {
             try {
-              await assignCompany(accessToken, [{ id: job.id, companyId: selectedCompany.id }]);
+              await assignCompany( [{ id: job.id, companyId: selectedCompany.id }]);
               toast.success("Company assigned successfully");
             } catch (error) {
               toast.error("Failed to assign company");
@@ -424,7 +423,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         onClick={async () => {
           if (selectedRecruiter) {
             try {
-              await assignRecruiter(accessToken, [{ id: job.id, recruiterId: selectedRecruiter.id }]);
+              await assignRecruiter([{ id: job.id, recruiterId: selectedRecruiter.id }]);
               toast.success("Recruiter assigned successfully");
             } catch (error) {
               toast.error("Failed to assign recruiter");

@@ -7,11 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import Cookies from "js-cookie";
 import Link from "next/link";
-import { revalidateTag } from "next/cache";
 import EachCompanyDiv from "./EachCompanyDiv";
-interface Props {}
 
 interface company {
   id: string;
@@ -19,7 +16,7 @@ interface company {
 }
 
 const AllCompaniesComponent = async () => {
-  const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
+  const Companies = await fetchCompany();
 
   if (Companies?.companies?.length === 0) {
     return (
@@ -29,10 +26,8 @@ const AllCompaniesComponent = async () => {
     );
   }
   const Recruiters = await fetchCompanyRecruiters(
-    cookies()?.get("accessToken")?.value,
     cookies()?.get("companyId")?.value,
   );
-  console.log("Recruiters", Recruiters);
   return (
     <div className="">
       <div className="border-r-2  rounded-md">

@@ -1,5 +1,4 @@
 import CompanyCard from "@/components/company/CompanyCard";
-import { cookies } from "next/headers";
 import { fetchCompany } from "@/helpers/api";
 import { ChevronRight } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
@@ -15,7 +14,7 @@ interface company {
 }
 
 const CompanyPage = async () => {
-  const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
+  const Companies = await fetchCompany();
 
   if (Companies?.length === 0) {
     return (

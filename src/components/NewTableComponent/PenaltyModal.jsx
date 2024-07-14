@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Modal, TextField, Typography } from '@mui/material';
-
+import {fetchPenalties} from "@/helpers/api"
 const style = {
     position: 'absolute',
     top: '50%',
@@ -29,13 +29,7 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
         ];
 
         try {
-            const response = await fetch(`${baseUrl}/api/v1/penalties`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
+            const response = await fetchPenalties(requestBody);
 
             if (response.ok) {
                 console.log('Penalty submitted successfully');
