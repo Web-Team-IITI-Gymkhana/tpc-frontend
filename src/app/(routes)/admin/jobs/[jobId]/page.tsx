@@ -23,7 +23,7 @@ import { fetchCompany,fetchRecruiterData } from "@/helpers/api";
 import { assignCompany,assignRecruiter } from "@/helpers/api";
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
-  const accessToken = Cookies.get("accessToken");
+
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
@@ -334,7 +334,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         <Button onClick={async () => {
           if (selectedCompany) {
             try {
-              await assignCompany(accessToken, [{ id: job.id, companyId: selectedCompany.id }]);
+              await assignCompany( [{ id: job.id, companyId: selectedCompany.id }]);
               toast.success("Company assigned successfully");
             } catch (error) {
               toast.error("Failed to assign company");
@@ -424,7 +424,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         onClick={async () => {
           if (selectedRecruiter) {
             try {
-              await assignRecruiter(accessToken, [{ id: job.id, recruiterId: selectedRecruiter.id }]);
+              await assignRecruiter([{ id: job.id, recruiterId: selectedRecruiter.id }]);
               toast.success("Recruiter assigned successfully");
             } catch (error) {
               toast.error("Failed to assign recruiter");

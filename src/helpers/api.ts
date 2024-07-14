@@ -146,55 +146,21 @@ export const fetchCompany = async () => {
 };
 
 export const assignCompany = async (
-  accessToken: string | undefined,
   assignments: { id: string; companyId: string }[]
 ) => {
-  if (!accessToken) {
-    redirect();
-    return;
-  }
-
-  const res = await fetch(url("/jobs"), {
+  return apiCall("/jobs", {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(assignments),
+    body: assignments,
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to assign company");
-  }
-
-  const json = await res.json();
-  return json;
 };
 
 export const assignRecruiter = async (
-  accessToken: string | undefined,
   assignments: { id: string; recruiterId: string }[]
 ) => {
-  if (!accessToken) {
-    redirect();
-    return;
-  }
-
-  const res = await fetch(url("/jobs"), {
+  return apiCall("/jobs", {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(assignments),
+    body: assignments,
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to assign recruiter");
-  }
-
-  const json = await res.json();
-  return json;
 };
 
 export const fetchAllJobs = async (
@@ -218,25 +184,13 @@ export const fetchStudentData = async (
 };
 
 export const fetchSeasonData = async (
-  accessToken: string | undefined,
   filter: string | undefined
 ) => {
-  if (!accessToken || accessToken === undefined) {
-    redirect();
-    return;
-  }
-  const res = await fetch(
-    filter ? url(`/registrations?${filter}`) : url("/registrations"),
-    {
-      next: { tags: ["AllStudents"] },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-  const json = await res.json();
-  return json;
+  return apiCall(filter ? `/registrations?${filter}` : "/registrations", {
+    next: { tags: ["AllStudents"] },
+  });
 };
+
 export const fetchCompanyRecruiters = async (
 
   companyId: string | undefined
