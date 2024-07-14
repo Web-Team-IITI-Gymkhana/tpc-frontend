@@ -451,3 +451,7 @@ export const getUserById = async (userId: string) => {
     },
   });
 };
+
+export const fetchEvents = async () => {
+  return apiCall("/events");
+};
