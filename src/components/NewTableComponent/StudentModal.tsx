@@ -18,6 +18,7 @@ import { Button } from '@mui/material';
 import {fetchRegistrations} from '@/helpers/api';
 import Cookies from 'js-cookie';
 import Loader from '@/components/Loader/loader';
+import { fetchStudentDataById, fetchRegistrationDataById } from '@/helpers/api';
 const redirect = () => {};
 const theme = createTheme({
     palette: {
@@ -77,24 +78,12 @@ export default function StudentModal({ open, setOpen, id }) {
     const [registrationData, setRegistrationData] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchStudentData = async (accessToken:any, id:any) => {
-        if (!accessToken) {
-            console.error('No access token provided');
-            return;
-        }
-
+    const fetchStudentData = async (id:any) => {
+        
         setLoading(true);
         try {
-            const response = await fetch(`${baseUrl}/api/v1/students/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`Error fetching student data: ${response.statusText}`);
-            }
-            const data = await response.json();
-            setStudentData(data);
+            const data = await fetchStudentDataById(id);
+            return data;
         } catch (error) {
             console.error('Error fetching student data:', error);
         } finally {
@@ -102,26 +91,12 @@ export default function StudentModal({ open, setOpen, id }) {
         }
     };
 
-    const fetchRegistrationData = async (accessToken:any, studentId:any) => {
-        if (!accessToken) {
-            console.error('No access token provided');
-            return;
-        }
-
+    const fetchRegistrationData = async (studentId:any) => {
+        
         setLoading(true);
         try {
-            const response = await fetch(`${baseUrl}/api/v1/registrations`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error fetching registration data: ${response.statusText}`);
-            }
-            const allData = await response.json();
-            const filteredData = allData.filter((registration) => registration.student.id === studentId);
-            setRegistrationData(filteredData);
+            const data = await fetchRegistrationDataById(studentId);
+    return data;
         } catch (error) {
           
         } finally {
@@ -131,9 +106,9 @@ export default function StudentModal({ open, setOpen, id }) {
 
     useEffect(() => {
         if (open && id) {
-            const accessToken = Cookies.get("accessToken");
-            fetchStudentData(accessToken, id);
-            fetchRegistrationData(accessToken, id);
+        
+            fetchStudentData(id);
+            fetchRegistrationData(id);
         }
     }, [open, id]);
 

@@ -183,6 +183,10 @@ export const fetchStudentData = async (
   });
 };
 
+export const fetchStudentDataById = async (id: any) => {
+  return apiCall(`/students/${id}`);
+};
+
 export const fetchSeasonData = async (
   filter: string | undefined
 ) => {
@@ -336,4 +340,15 @@ export const fetchRegistrations = async (studentId:any, seasonId:any, currentSta
       registered: !currentStatus
     }]
   });
+};
+
+export const fetchRegistrationDataById = async (studentId: any) => {
+  try {
+    const data = await apiCall("/registrations");
+
+    const filteredData = data.filter((registration: any) => registration.student.id === studentId);
+    return filteredData;
+  } catch (error) {
+    console.error('Error fetching registration data:', error);
+  }
 };
