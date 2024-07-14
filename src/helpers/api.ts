@@ -1,4 +1,4 @@
-const redirect = () => {};
+const redirect = () => { };
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import qs from "qs";
@@ -163,6 +163,58 @@ export const fetchCompany = async (accessToken: string | undefined) => {
   return json;
 };
 
+export const assignCompany = async (
+  accessToken: string | undefined,
+  assignments: { id: string; companyId: string }[]
+) => {
+  if (!accessToken) {
+    redirect();
+    return;
+  }
+
+  const res = await fetch(url("/jobs"), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(assignments),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to assign company");
+  }
+
+  const json = await res.json();
+  return json;
+};
+
+export const assignRecruiter = async (
+  accessToken: string | undefined,
+  assignments: { id: string; recruiterId: string }[]
+) => {
+  if (!accessToken) {
+    redirect();
+    return;
+  }
+
+  const res = await fetch(url("/jobs"), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(assignments),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to assign recruiter");
+  }
+
+  const json = await res.json();
+  return json;
+};
+
 export const fetchAllJobs = async (
   accessToken: string | undefined,
   filter: string | undefined
@@ -223,7 +275,6 @@ export const fetchSeasonData = async (
   const json = await res.json();
   return json;
 };
-
 export const fetchCompanyRecruiters = async (
   accessToken: string | undefined,
   companyId: string | undefined
@@ -243,6 +294,7 @@ export const fetchCompanyRecruiters = async (
   const json = await res.json();
   return json;
 };
+
 
 export const fetchJobSalary = async (
   accessToken: string | undefined,
