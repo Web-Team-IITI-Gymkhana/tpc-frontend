@@ -94,7 +94,7 @@ export default function StudentModal({ open, setOpen, id }) {
         setLoading(true);
         try {
             const data = await fetchRegistrationDataById(studentId);
-    return data;
+            setRegistrationData(data)
         } catch (error) {
           
         } finally {

@@ -42,7 +42,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           fetchJobById(params.jobId),
           getJafDetails(),
           fetchCompany(),
-          fetchRecruiterData( null),
+          fetchRecruiterData(),
         ]);
 
         setJafDetails(jafDetailsData);
