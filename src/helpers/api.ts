@@ -318,6 +318,7 @@ export const postJobCoordinator = async (
 };
 
 
+
 export const fetchPenalties = async (body: any) => {
   return apiCall('/penalties', {
     method: 'POST',
@@ -407,4 +408,10 @@ export const loginWithEmail = async (email: string) => {
     body: { email },
   });
 }
+
+
+export const fetchEvents = async () => {
+  return apiCall("/events");
+
+};
 
