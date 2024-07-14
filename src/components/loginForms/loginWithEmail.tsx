@@ -9,18 +9,18 @@ export const LoginWithEmail = (params: { email: string }) => {
       const response = await loginWithEmail(email);
 
       if (response.ok) {
-          toast.success("Email has been sent");
-          // Optionally handle further actions upon successful response
+        toast.success("Email has been sent");
+        // Optionally handle further actions upon successful response
       } else {
-          toast.error("Cannot login");
+        toast.error("Cannot login");
       }
 
       return response.ok;
-  } catch (error) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("An error occurred while sending the email");
       return false;
-  }
+    }
   };
 
   return (

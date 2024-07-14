@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Jobs } from "@/helpers/student/types";
 const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
@@ -22,19 +22,23 @@ const JobCard = ({ jobItem }: Props) => {
   return (
     <div className="">
       <div className="rounded-xl bg-white text-black p-5">
-        <div className="font-semibold text-md ">
-          {jobItem.company.name}
-        </div>
+        <div className="font-semibold text-md ">{jobItem.company.name}</div>
         <div className="my-4">
           <Separator />
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2" onClick={handleViewDetails} style={{cursor: "pointer"}}>
+        <div
+          className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2"
+          onClick={handleViewDetails}
+          style={{ cursor: "pointer" }}
+        >
           <div>
             <div className="text-gray-500 font-semibold my-2">Role</div>{" "}
             <div>{jobItem.role}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Current Status</div>{" "}
+            <div className="text-gray-500 font-semibold my-2">
+              Current Status
+            </div>{" "}
             <div>{jobItem.currentStatus}</div>
           </div>
           <div>
@@ -43,13 +47,15 @@ const JobCard = ({ jobItem }: Props) => {
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Season</div>{" "}
-            <div>{jobItem.season.type} {jobItem.season.year}</div>
+            <div>
+              {jobItem.season.type} {jobItem.season.year}
+            </div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Recruiter</div>{" "}
             <div>{jobItem.recruiter.user.name}</div>
           </div>
-        </div>        
+        </div>
         {showDescription && (
           <div className="mt-4">
             <div className="my-4">
@@ -59,23 +65,27 @@ const JobCard = ({ jobItem }: Props) => {
               <div className="flex justify-between">
                 <h1 className="text-lg font-semibold">About The Work</h1>
                 <div className="text-sm my-3">
-                  <Link href={url(`/student/job/${jobItem.id}`)} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">
-                    View Details {'>'}
+                  <Link
+                    href={url(`/student/job/${jobItem.id}`)}
+                    className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                  >
+                    View Details {">"}
                   </Link>
                 </div>
               </div>
               <ul className="list-disc mx-10">
                 <li>
-                  Build an application in Flutter and connect REST APIs to provide a
-                  seamless experience to users
+                  Build an application in Flutter and connect REST APIs to
+                  provide a seamless experience to users
                 </li>
                 <li>
-                  Take ownership of the application and work alongside backend and
-                  database engineers to deliver tasks based on timeline
+                  Take ownership of the application and work alongside backend
+                  and database engineers to deliver tasks based on timeline
                 </li>
                 <li>Work with 3rd party services to integrate in app</li>
                 <li>
-                  Attend daily standup calls to discuss team updates and next tasks
+                  Attend daily standup calls to discuss team updates and next
+                  tasks
                 </li>
               </ul>
             </div>
@@ -112,24 +122,24 @@ const JobCard = ({ jobItem }: Props) => {
               <ul className="list-disc mx-10">
                 <li> are available for the work from home job/internship</li>
                 <li>
-                  can work from 8:00 pm - 2:00 am Indian Standard Time (as the company
-                  is based outside of India & their local work timings are 9:30 am -
-                  3:30 pm Eastern Standard Time)
+                  can work from 8:00 pm - 2:00 am Indian Standard Time (as the
+                  company is based outside of India & their local work timings
+                  are 9:30 am - 3:30 pm Eastern Standard Time)
                 </li>
                 <li>
-                  can start the work from home job/internship between 4th Jan24 and
-                  8th Feb24
+                  can start the work from home job/internship between 4th Jan24
+                  and 8th Feb24
                 </li>
                 <li> are available for duration of 3 months</li>
                 <li> have relevant skills and interests</li>
               </ul>
-            </div>            
+            </div>
             <div className="flex justify-between my-3">
               <Button>
-                <Link href={`/student/job/salary/${jobItem.id}`}>Salaries</Link>                
+                <Link href={`/student/job/salary/${jobItem.id}`}>Salaries</Link>
               </Button>
             </div>
-          </div>          
+          </div>
         )}
       </div>
     </div>

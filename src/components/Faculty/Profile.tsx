@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import profileImg from "@/../public/profile-icon.svg";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-} from "../ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "../ui/dialog";
 import { patchProfile } from "@/helpers/faculty/api";
 import toast from "react-hot-toast";
 import { ProfileFC, updateProfileFC } from "@/helpers/faculty/types";
@@ -13,7 +9,7 @@ import { ProfileFC, updateProfileFC } from "@/helpers/faculty/types";
 const EditForm = (params: { profile: ProfileFC }) => {
   const [email, updateEmail] = useState<string>(params.profile.user.email);
   const [contact, updateContact] = useState<string>(
-    params.profile.user.contact
+    params.profile.user.contact,
   );
   const [name, updateName] = useState<string>(params.profile.user.name);
 

@@ -104,8 +104,8 @@ export const Applications = ({ eventId }: { eventId: string }) => {
       {loading && (
         <div className="flex justify-center">
           <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>
+            <Loader />
+          </div>
         </div>
       )}
       {applications && (
@@ -130,9 +130,7 @@ export const Applications = ({ eventId }: { eventId: string }) => {
             {applications.map((application, index) => (
               <tr
                 key={index}
-                onClick={() =>
-                  getResume(application.resume.filepath)
-                }
+                onClick={() => getResume(application.resume.filepath)}
                 className={`bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
               >
                 <th

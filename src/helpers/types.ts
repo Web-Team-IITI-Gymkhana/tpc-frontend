@@ -1,5 +1,4 @@
 export interface ResumePatchData {
-    id: string;
-    verified: boolean;
-  }
-
+  id: string;
+  verified: boolean;
+}

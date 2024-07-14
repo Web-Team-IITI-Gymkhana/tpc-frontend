@@ -19,8 +19,12 @@ interface ApiCallOptions {
 
 const redirect = () => {};
 
-export const url = (NextUrl: string) => { return `${baseUrl}/api/v1${NextUrl}`; };
-export const getUrl = (NextUrl: string) => { return `${baseUrl}/api/v1${NextUrl}`;};
+export const url = (NextUrl: string) => {
+  return `${baseUrl}/api/v1${NextUrl}`;
+};
+export const getUrl = (NextUrl: string) => {
+  return `${baseUrl}/api/v1${NextUrl}`;
+};
 
 export const apiCall = async (
   path: string,
@@ -32,10 +36,10 @@ export const apiCall = async (
     formData = null,
     next = null,
     recieveResponse = false,
-  }: ApiCallOptions = {}
+  }: ApiCallOptions = {},
 ) => {
   const accessToken = Cookies.get("accessToken");
-  if ((!accessToken) && isAuth) {
+  if (!accessToken && isAuth) {
     redirect();
     return;
   }
@@ -82,9 +86,9 @@ export const apiCall = async (
 
   if (method === "GET" || recieveResponse) {
     return await res.json();
-  } else{ 
-    return res.ok
-  };
+  } else {
+    return res.ok;
+  }
 };
 
 export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
@@ -148,7 +152,7 @@ export const fetchCompany = async () => {
 };
 
 export const assignCompany = async (
-  assignments: { id: string; companyId: string }[]
+  assignments: { id: string; companyId: string }[],
 ) => {
   return apiCall("/jobs", {
     method: "PATCH",
@@ -157,7 +161,7 @@ export const assignCompany = async (
 };
 
 export const assignRecruiter = async (
-  assignments: { id: string; recruiterId: string }[]
+  assignments: { id: string; recruiterId: string }[],
 ) => {
   return apiCall("/jobs", {
     method: "PATCH",
@@ -165,20 +169,14 @@ export const assignRecruiter = async (
   });
 };
 
-export const fetchAllJobs = async (
-  filter?: string
-) => {
+export const fetchAllJobs = async (filter?: string) => {
   return apiCall(filter ? `/jobs?${filter}` : "/jobs", {
-   
     next: { tags: ["AllJobs"] },
   });
 };
 
-export const fetchStudentData = async (
-  filter?: string
-) => {
+export const fetchStudentData = async (filter?: string) => {
   return apiCall(filter ? `/students?${filter}` : "/students", {
-
     next: { tags: ["AllStudents"] },
   });
 };
@@ -187,39 +185,25 @@ export const fetchStudentDataById = async (id: any) => {
   return apiCall(`/students/${id}`);
 };
 
-export const fetchSeasonData = async (
-  filter: string | undefined
-) => {
+export const fetchSeasonData = async (filter: string | undefined) => {
   return apiCall(filter ? `/registrations?${filter}` : "/registrations", {
     next: { tags: ["AllStudents"] },
   });
 };
 
-export const fetchCompanyRecruiters = async (
-
-  companyId: string | undefined
-) => {
+export const fetchCompanyRecruiters = async (companyId: string | undefined) => {
   return apiCall(`/companies/${companyId}/recruiters/`, {
- 
     next: { tags: ["AllRecruiters"] },
   });
 };
 
-
-export const fetchJobSalary = async (
-
-  jobId: string | undefined
-) => {
+export const fetchJobSalary = async (jobId: string | undefined) => {
   return apiCall(`/jobs/${jobId}/salary/`);
 };
 
-export const fetchJobById = async (
-
-  jobId: any
-) => {
+export const fetchJobById = async (jobId: any) => {
   return apiCall(`/jobs/${jobId}`);
 };
-
 
 export const fetchJobEvents = async (jobId: any) => {
   return apiCall(`/events`, {
@@ -255,14 +239,10 @@ export const promoteStudent = async (body: any, eventId: string) => {
   });
 };
 
-export const fetchRecruiterData = async (
-  filter?: string
-) => {
-
+export const fetchRecruiterData = async (filter?: string) => {
   return apiCall(filter ? `/recruiters?${filter}` : "/recruiters", {
     next: { tags: ["AllRecruiters"] },
   });
-
 };
 
 export const fetchResumes = async () => {
@@ -282,7 +262,7 @@ export const patchResumeVerify = async (changes: ResumePatchData[]) => {
 
 export const getStudentSalaryOffers = async (
   jobId: string,
-  studentId: string
+  studentId: string,
 ) => {
   return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
 };
@@ -292,7 +272,7 @@ export const postOnCampusOffer = async (
     salaryId: string;
     studentId: string;
     status: string;
-  }[]
+  }[],
 ) => {
   return apiCall(`/on-campus-offers/`, {
     method: "POST",
@@ -309,7 +289,7 @@ export const postJobCoordinator = async (
     jobId: string;
     tpcMemberId: string;
     role: string;
-  }[]
+  }[],
 ) => {
   return apiCall(`/jobs/coordinators`, {
     method: "POST",
@@ -317,11 +297,9 @@ export const postJobCoordinator = async (
   });
 };
 
-
-
 export const fetchPenalties = async (body: any) => {
-  return apiCall('/penalties', {
-    method: 'POST',
+  return apiCall("/penalties", {
+    method: "POST",
     body: body,
   });
 };
@@ -330,15 +308,21 @@ export const fetchRecruiterById = async (id: string | undefined) => {
   return apiCall(`/recruiters/${id}`);
 };
 
-export const fetchRegistrations = async (studentId:any, seasonId:any, currentStatus:any) => {
-  return apiCall('/registrations', {
-    method: 'POST',
+export const fetchRegistrations = async (
+  studentId: any,
+  seasonId: any,
+  currentStatus: any,
+) => {
+  return apiCall("/registrations", {
+    method: "POST",
     isAuth: true,
-    body: [{
-      studentId,
-      seasonId,
-      registered: !currentStatus
-    }]
+    body: [
+      {
+        studentId,
+        seasonId,
+        registered: !currentStatus,
+      },
+    ],
   });
 };
 
@@ -346,14 +330,14 @@ export const fetchRegistrationDataById = async (studentId: any) => {
   try {
     const data = await apiCall("/registrations");
 
-    const filteredData = data.filter((registration: any) => registration.student.id === studentId);
+    const filteredData = data.filter(
+      (registration: any) => registration.student.id === studentId,
+    );
     return filteredData;
   } catch (error) {
-    console.error('Error fetching registration data:', error);
+    console.error("Error fetching registration data:", error);
   }
 };
-
-
 
 //OnClick Functions
 
@@ -361,7 +345,7 @@ export const createJobEvent = async (
   jobId: String,
   type: string,
   round: string,
-  date: string
+  date: string,
 ) => {
   return apiCall(`/jobs/${jobId}/events`, {
     method: "POST",
@@ -389,8 +373,6 @@ export const login = async (email: string, role: string) => {
   }
 };
 
-
-
 export const deleteEvent = async (jobId: string, eventId: string) => {
   try {
     const response = await apiCall(`/jobs/${jobId}/events/${eventId}`, {
@@ -407,11 +389,8 @@ export const loginWithEmail = async (email: string) => {
     method: "POST",
     body: { email },
   });
-}
-
+};
 
 export const fetchEvents = async () => {
   return apiCall("/events");
-
 };
-
