@@ -14,6 +14,7 @@ interface ApiCallOptions {
   queryParam?: object;
   next?: object;
   formData?: FormData;
+  recieveResponse?: boolean;
 }
 
 const redirect = () => {};
@@ -30,6 +31,7 @@ export const apiCall = async (
     queryParam = null,
     formData = null,
     next = null,
+    recieveResponse = false,
   }: ApiCallOptions = {}
 ) => {
   const accessToken = Cookies.get("accessToken");
@@ -78,7 +80,7 @@ export const apiCall = async (
 
   const res = await fetch(requestUrl, req);
 
-  if (method === "GET") {
+  if (method === "GET" || recieveResponse) {
     return await res.json();
   } else{ 
     return res.ok
@@ -371,8 +373,8 @@ export const login = async (email: string, role: string) => {
     method: "POST",
     body: { email: email, role: role.toUpperCase() },
     isAuth: false,
+    recieveResponse: true,
   });
-
   if (response) {
     const accessToken = response.accessToken;
     Cookies.set("accessToken", accessToken, { expires: 365 });
