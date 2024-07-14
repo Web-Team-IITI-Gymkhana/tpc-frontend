@@ -39,7 +39,7 @@ const StudentPage = ({ params }: any) => {
             const decodedParams = decodeURIComponent(params.filter[0]);
             console.log(decodedParams)
             const AllFilteredJobs = await fetchAllJobs(
-                Cookies.get("accessToken"),
+               
                 decodedParams,
             );
             setJobs(AllFilteredJobs);

@@ -15,7 +15,7 @@ interface company {
 }
 
 const CompanyPage = async () => {
-  const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
+  const Companies = await fetchCompany();
 
   if (Companies?.length === 0) {
     return (

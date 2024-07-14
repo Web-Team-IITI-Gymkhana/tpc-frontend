@@ -52,7 +52,7 @@ const style = {
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const handleRegistration = async (accessToken:any, studentId:any, seasonId:any, currentStatus:any) => {
+const handleRegistration = async (studentId:any, seasonId:any, currentStatus:any) => {
    
     try {
         const response = await fetchRegistrations(studentId, seasonId, currentStatus);
@@ -77,7 +77,7 @@ export default function StudentModal({ open, setOpen, id }) {
     const [registrationData, setRegistrationData] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchStudentData = async (accessToken, id) => {
+    const fetchStudentData = async (accessToken:any, id:any) => {
         if (!accessToken) {
             console.error('No access token provided');
             return;
@@ -102,7 +102,7 @@ export default function StudentModal({ open, setOpen, id }) {
         }
     };
 
-    const fetchRegistrationData = async (accessToken, studentId) => {
+    const fetchRegistrationData = async (accessToken:any, studentId:any) => {
         if (!accessToken) {
             console.error('No access token provided');
             return;
@@ -139,11 +139,11 @@ export default function StudentModal({ open, setOpen, id }) {
 
     const handleClose = () => setOpen(false);
 
-    const handleStatusChange = async (studentId, seasonId, currentStatus) => {
-        const success = await handleRegistration(Cookies.get("accessToken"), studentId, seasonId, currentStatus);
+    const handleStatusChange = async (studentId:any, seasonId:any, currentStatus:any) => {
+        const success = await handleRegistration(studentId, seasonId, currentStatus);
         if (success) {
-            setRegistrationData((prevData) =>
-                prevData.map((registration) =>
+            setRegistrationData((prevData:any) =>
+                prevData.map((registration:any) =>
                     registration.season.id === seasonId ? { ...registration, registered: !currentStatus } : registration
                 )
             );

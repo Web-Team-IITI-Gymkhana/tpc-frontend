@@ -137,11 +137,11 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
   return { status: res.status, body };
 };
 
-export const fetchAllSeasons = async (accessToken: string | undefined) => {
+export const fetchAllSeasons = async () => {
   return apiCall("/seasons");
 };
 
-export const fetchCompany = async (accessToken: string | undefined) => {
+export const fetchCompany = async () => {
   return apiCall("/companies");
 };
 
@@ -198,7 +198,7 @@ export const assignRecruiter = async (
 };
 
 export const fetchAllJobs = async (
-  accessToken: string | undefined,
+
   filter: string | undefined
 ) => {
   return apiCall(filter ? `/jobs?${filter}` : "/jobs", {
@@ -208,7 +208,7 @@ export const fetchAllJobs = async (
 };
 
 export const fetchStudentData = async (
-  accessToken: string | undefined,
+
   filter: string | undefined
 ) => {
   return apiCall(filter ? `/students?${filter}` : "/students", {
@@ -238,7 +238,7 @@ export const fetchSeasonData = async (
   return json;
 };
 export const fetchCompanyRecruiters = async (
-  accessToken: string | undefined,
+
   companyId: string | undefined
 ) => {
   return apiCall(`/companies/${companyId}/recruiters/`, {
@@ -249,14 +249,14 @@ export const fetchCompanyRecruiters = async (
 
 
 export const fetchJobSalary = async (
-  accessToken: string | undefined,
+
   jobId: string | undefined
 ) => {
   return apiCall(`/jobs/${jobId}/salary/`);
 };
 
 export const fetchJobById = async (
-  accessToken: string | undefined,
+
   jobId: any
 ) => {
   return apiCall(`/jobs/${jobId}`);
@@ -298,7 +298,7 @@ export const promoteStudent = async (body: any, eventId: string) => {
 };
 
 export const fetchRecruiterData = async (
-  accessToken: string | undefined,
+ 
   filter: string | undefined
 ) => {
 

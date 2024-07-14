@@ -44,7 +44,7 @@ const JobModal = ({
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchJobById(Cookies.get("accessToken"), jobID),
+          fetchJobById( jobID),
           getJafDetails(),
         ]);
 

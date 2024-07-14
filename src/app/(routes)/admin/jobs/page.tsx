@@ -34,7 +34,7 @@ const JobPage = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const data = await fetchAllJobs(Cookies.get("accessToken"), undefined);
+      const data = await fetchAllJobs( undefined);
       setAllJobs(data);
       setLoading(false);
     };

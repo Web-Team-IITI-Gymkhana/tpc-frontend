@@ -35,7 +35,7 @@ const StudentPage = ({ params }: any) => {
             const decodedParams = decodeURIComponent(params.filter[0]);
             console.log(decodedParams)
             const AllStudents = await fetchStudentData(
-                Cookies.get("accessToken"),
+      
                 decodedParams
             );
             setStudents(AllStudents);

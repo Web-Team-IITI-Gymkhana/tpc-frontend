@@ -40,10 +40,10 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData, companyData, recruiterData] = await Promise.all([
-          fetchJobById(accessToken, params.jobId),
+          fetchJobById(params.jobId),
           getJafDetails(),
-          fetchCompany(accessToken),
-          fetchRecruiterData(accessToken, null),
+          fetchCompany(),
+          fetchRecruiterData( null),
         ]);
 
         setJafDetails(jafDetailsData);

@@ -27,7 +27,7 @@ const StudentPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchStudentData(Cookies.get("accessToken"), null);
+      const data = await fetchStudentData(null);
       setStudents(data);
       console.log(data);
     };

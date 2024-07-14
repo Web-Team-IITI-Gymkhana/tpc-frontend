@@ -19,7 +19,7 @@ interface company {
 }
 
 const AllCompaniesComponent = async () => {
-  const Companies = await fetchCompany(cookies()?.get("accessToken")?.value);
+  const Companies = await fetchCompany();
 
   if (Companies?.companies?.length === 0) {
     return (
@@ -29,7 +29,6 @@ const AllCompaniesComponent = async () => {
     );
   }
   const Recruiters = await fetchCompanyRecruiters(
-    cookies()?.get("accessToken")?.value,
     cookies()?.get("companyId")?.value,
   );
   console.log("Recruiters", Recruiters);
