@@ -30,12 +30,12 @@ export const handleOperatorChange = (
   );
 };
 
-export const handleSubmit = (filterOutput: any,setFilteredTableData:any) => {
+export const handleSubmit = (filterOutput: any, setFilteredTableData: any) => {
   const queryObject = filterOutput;
   const encodedQueryString = qs.stringify(queryObject, {
     encodeValuesOnly: true,
     encode: false,
   });
   const url = `${window.location.href}/${encodedQueryString}`;
-  window.open(url, '_blank');
+  window.open(url, "_blank");
 };

@@ -32,16 +32,17 @@ const StudentPage = () => {
         <h1>Apply</h1>
       </div>
       <div>
-        {loading && <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>}
-        {jobs && (
+        {loading && (
+          <div className="h-screen w-full flex justify-center items-center">
+            <Loader />
+          </div>
+        )}
+        {jobs &&
           jobs.map((job) => (
             <div key={job.id} className="my-3">
               <JobCard jobItem={job} />
             </div>
-          ))
-        )}
+          ))}
       </div>
     </div>
   );

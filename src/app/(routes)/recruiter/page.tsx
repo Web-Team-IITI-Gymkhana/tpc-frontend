@@ -24,9 +24,11 @@ const Profile = () => {
 
   return (
     <div className="h-screen flex justify-center">
-      {loading && <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>}
+      {loading && (
+        <div className="h-screen w-full flex justify-center items-center">
+          <Loader />
+        </div>
+      )}
       {data &&
         (editMode ? (
           <EditProfilePage data={data} />

@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import submit from "../action";
-import  { createJobEvent } from "@/helpers/api";
+import { createJobEvent } from "@/helpers/api";
 interface Props {
   jobId: String;
 }
@@ -85,7 +85,12 @@ export function AddEventDialog({ jobId }: Props) {
               onClick={async () => {
                 setloading(true);
                 try {
-                  const success = await createJobEvent(jobId, type, round, date);
+                  const success = await createJobEvent(
+                    jobId,
+                    type,
+                    round,
+                    date,
+                  );
                   if (success) {
                     submit("AllEvents");
                   }

@@ -314,7 +314,7 @@ const MakeJobOfferModal = ({
     const fetchSalaries = async () => {
       const salaries = await getStudentSalaryOffers(
         lastEvent.job.id,
-        studentIds[0]
+        studentIds[0],
       );
       const newSalaries = salaries.map((salary) => ({
         select: (
