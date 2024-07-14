@@ -185,8 +185,48 @@ export const fetchStudentDataById = async (id: any) => {
   return apiCall(`/students/${id}`);
 };
 
-export const fetchSeasonData = async (filter: string | undefined) => {
-  return apiCall(filter ? `/registrations?${filter}` : "/registrations", {
+export const fetchSeasonData = async (year:any,registered:boolean) => {
+  return apiCall(`/registrations`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          season: {
+            year: {
+              eq: [year],
+            },
+          },
+          registered: {
+            eq: [registered],
+          },
+        },
+        orderBy: {
+          id: "DESC",
+          student: {
+            id: "DESC",
+            rollNo: "DESC",
+            user: {
+              id: "DESC",
+              name: "DESC",
+              email: "DESC",
+              contact: "DESC",
+            },
+            program: {
+              id: "DESC",
+              branch: "DESC",
+              course: "DESC",
+              year: "DESC",
+              department: "DESC",
+            },
+          },
+          season: {
+            id: "DESC",
+            year: "DESC",
+            type: "DESC",
+          },
+          registered: "DESC",
+        },
+      },
+    },
     next: { tags: ["AllStudents"] },
   });
 };
@@ -227,6 +267,13 @@ export const fetchEventById = async (eventId: any) => {
 
 export const addEvent = async (body: any) => {
   return apiCall(`/events`, {
+    method: "POST",
+    body: body,
+  });
+};
+
+export const addSeason = async (body: any) => {
+  return apiCall(`/seasons`, {
     method: "POST",
     body: body,
   });
