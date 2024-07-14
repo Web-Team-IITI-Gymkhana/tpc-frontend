@@ -1,6 +1,5 @@
 "use client";
 import { fetchStudentData } from "@/helpers/api";
-import Cookies from "js-cookie";
 import TableComponent from "@/components/TableComponent/TableComponent";
 import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useRouter } from "next/router";

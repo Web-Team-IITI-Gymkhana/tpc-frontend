@@ -15,7 +15,6 @@ import {
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
 import { fetchJobById } from "@/helpers/api";
-import Cookies from "js-cookie";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";

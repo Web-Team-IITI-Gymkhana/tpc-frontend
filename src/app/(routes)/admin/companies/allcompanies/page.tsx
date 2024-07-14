@@ -1,5 +1,4 @@
 import CompanyCard from "@/components/company/CompanyCard";
-import { cookies } from "next/headers";
 import { fetchCompany } from "@/helpers/api";
 import { ChevronRight } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
