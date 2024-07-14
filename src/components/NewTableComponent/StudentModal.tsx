@@ -15,7 +15,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { Button } from '@mui/material';
-
+import {fetchRegistrations} from '@/helpers/api';
 import Cookies from 'js-cookie';
 import Loader from '@/components/Loader/loader';
 const redirect = () => {};
@@ -52,30 +52,14 @@ const style = {
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const handleRegistration = async (accessToken, studentId, seasonId, currentStatus) => {
-    if (!accessToken) {
-        console.error('No access token provided');
-        return;
-    }
-
+const handleRegistration = async (accessToken:any, studentId:any, seasonId:any, currentStatus:any) => {
+   
     try {
-        const res = await fetch(`${baseUrl}/api/v1/registrations`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify([{
-                studentId,
-                seasonId,
-                registered: !currentStatus
-            }]),
-        });
+        const response = await fetchRegistrations(studentId, seasonId, currentStatus);
 
-        if (!res.ok) {
-            const errorDetails = await res.json();
-            console.error(`Failed to update registration status: ${errorDetails.message}`);
-            throw new Error(`Failed to update registration status: ${errorDetails.message}`);
+        if (!response) {
+            console.error('Failed to update registration status');
+            throw new Error('Failed to update registration status');
             //Will change it in a separate console removal PR
         }
 

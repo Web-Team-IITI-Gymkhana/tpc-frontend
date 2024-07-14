@@ -203,7 +203,7 @@ export const fetchJobSalary = async (
   return apiCall(`/jobs/${jobId}/salary/`);
 };
 
-export const fetchEachJob = async (
+export const fetchJobById = async (
   accessToken: string | undefined,
   jobId: any
 ) => {
@@ -305,5 +305,29 @@ export const postJobCoordinator = async (
   return apiCall(`/jobs/coordinators`, {
     method: "POST",
     body: body,
+  });
+};
+
+
+export const fetchPenalties = async (body: any) => {
+  return apiCall('/penalties', {
+    method: 'POST',
+    body: body,
+  });
+};
+
+export const fetchRecruiterById = async (id: string | undefined) => {
+  return apiCall(`/recruiters/${id}`);
+};
+
+export const fetchRegistrations = async (studentId:any, seasonId:any, currentStatus:any) => {
+  return apiCall('/registrations', {
+    method: 'POST',
+    isAuth: true,
+    body: [{
+      studentId,
+      seasonId,
+      registered: !currentStatus
+    }]
   });
 };

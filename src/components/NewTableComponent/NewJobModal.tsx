@@ -14,7 +14,7 @@ import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
-import { fetchEachJob } from "@/helpers/api";
+import { fetchJobById } from "@/helpers/api";
 import Cookies from "js-cookie";
 import Modal from "@mui/material/Modal";
 import { CircularProgress } from "@mui/material";
@@ -44,7 +44,7 @@ const JobModal = ({
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchEachJob(Cookies.get("accessToken"), jobID),
+          fetchJobById(Cookies.get("accessToken"), jobID),
           getJafDetails(),
         ]);
 
