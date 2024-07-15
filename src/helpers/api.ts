@@ -297,6 +297,24 @@ export const postJobCoordinator = async (
   });
 };
 
+export const getUserById = async (userId: string) => {
+  return apiCall(`/users`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          id: {
+            eq: [userId],
+          },
+        },
+      },
+    },
+  });
+};
+
+export const fetchEvents = async () => {
+  return apiCall("/events");
+};
+
 export const fetchPenalties = async (body: any) => {
   return apiCall("/penalties", {
     method: "POST",
@@ -389,8 +407,4 @@ export const loginWithEmail = async (email: string) => {
     method: "POST",
     body: { email },
   });
-};
-
-export const fetchEvents = async () => {
-  return apiCall("/events");
 };
