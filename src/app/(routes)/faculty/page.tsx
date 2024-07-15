@@ -53,7 +53,7 @@ const FacultyPage = () => {
       <div>
         {loading && (
           <div className=" w-[100%] h-[50vh] mx-2 py-4 rounded-md bg-white  flex justify-center items-center">
-          <Loader/>
+            <Loader />
           </div>
         )}
         {data && (

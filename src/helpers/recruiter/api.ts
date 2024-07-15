@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  JobDetailFC,
-  updateProfileFC,
-  SalaryFC,
-} from "./types";
+import { JobDetailFC, updateProfileFC, SalaryFC } from "./types";
 import { OpenFile, apiCall } from "../api";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -18,7 +14,10 @@ export const fetchProfile = async () => {
 };
 
 export const patchProfile = async (changes: updateProfileFC) => {
-  return apiCall(`/recruiter-view/recruiter`, {method: "PATCH", body: changes});
+  return apiCall(`/recruiter-view/recruiter`, {
+    method: "PATCH",
+    body: changes,
+  });
 };
 
 export const getJobs = async () => {
@@ -34,19 +33,18 @@ export async function getEvent(id: string) {
 }
 
 export async function getDomains() {
-  return apiCall(`/jaf`, {isAuth: false});
+  return apiCall(`/jaf`, { isAuth: false });
 }
 
 export async function getJafDetails() {
-  return apiCall(`/jaf`, {isAuth: false});
+  return apiCall(`/jaf`, { isAuth: false });
 }
 
 export const getResume = (filename: string) => {
-  OpenFile(`/recruiter-view/resume/${filename}`)
+  OpenFile(`/recruiter-view/resume/${filename}`);
 };
 
 export const patchJobData = async (jobId: string, changes: JobDetailFC) => {
-
   const patchFormat = {
     role: "string",
     noOfVacancies: 0,
@@ -84,10 +82,11 @@ export const patchJobData = async (jobId: string, changes: JobDetailFC) => {
   };
 
   const toPatch = {};
-  Object.entries(patchFormat).map(
-    ([key]) => (toPatch[key] = changes[key])
-  );
-  return apiCall(`/recruiter-view/jobs/${jobId}`, {method: "PATCH", body: toPatch});
+  Object.entries(patchFormat).map(([key]) => (toPatch[key] = changes[key]));
+  return apiCall(`/recruiter-view/jobs/${jobId}`, {
+    method: "PATCH",
+    body: toPatch,
+  });
 };
 
 export const patchSalaryData = async (salary: SalaryFC) => {
@@ -107,8 +106,9 @@ export const patchSalaryData = async (salary: SalaryFC) => {
   };
 
   const toPatch = {};
-  Object.entries(patchFormat).map(
-    ([key]) => (toPatch[key] = salary[key])
-  );
-  return apiCall(`/recruiter-view/salary/${salary.id}`, {method: "PATCH", body: toPatch});
+  Object.entries(patchFormat).map(([key]) => (toPatch[key] = salary[key]));
+  return apiCall(`/recruiter-view/salary/${salary.id}`, {
+    method: "PATCH",
+    body: toPatch,
+  });
 };

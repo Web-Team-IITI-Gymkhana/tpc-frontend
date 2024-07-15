@@ -6,12 +6,12 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
+} from "@/components/ui/hover-card";
 import { Separator } from "./ui/separator";
 
 interface Event {
   date: string;
-  status:string;
+  status: string;
   title: string;
   // description: string;
   // bgColor: string;
@@ -477,27 +477,29 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
   `;
 
   let selectedIndex = -1;
-  let fillingLineWidth
-  let mul=0;
-  const len=720;
-  const [a,seta] = useState<string|null>("");
-  useEffect(()=>{  
-      // Find the index of the selected event
-      for (let i = 0; i < eventsData.length; i++) {
-        if (eventsData[i].status === "selected") {
-          selectedIndex = i;
-          break;
-        }
+  let fillingLineWidth;
+  let mul = 0;
+  const len = 720;
+  const [a, seta] = useState<string | null>("");
+  useEffect(() => {
+    // Find the index of the selected event
+    for (let i = 0; i < eventsData.length; i++) {
+      if (eventsData[i].status === "selected") {
+        selectedIndex = i;
+        break;
       }
-      
-      // Calculate the width of the filling line
-      fillingLineWidth = selectedIndex !== -1 ? `${(selectedIndex + 1) * (180 / eventsData.length)}px` : "0";
-      mul= selectedIndex * (720/eventsData.length)
-      mul+=39;
-      mul/=len;
-      seta('scaleX('+mul+')');
-      
-  })
+    }
+
+    // Calculate the width of the filling line
+    fillingLineWidth =
+      selectedIndex !== -1
+        ? `${(selectedIndex + 1) * (180 / eventsData.length)}px`
+        : "0";
+    mul = selectedIndex * (720 / eventsData.length);
+    mul += 39;
+    mul /= len;
+    seta("scaleX(" + mul + ")");
+  });
 
   return (
     <>
@@ -521,12 +523,12 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
                                     className={`event-trigger ${event.status}`}
                                     style={{
                                       left: `${index * (720 / eventsData.length)}px`,
-                                      position: 'absolute',
-                                      bottom: '0',
-                                      textAlign: 'center',
-                                      fontSize: '1rem',
-                                      paddingBottom: '15px',
-                                      cursor: 'pointer'
+                                      position: "absolute",
+                                      bottom: "0",
+                                      textAlign: "center",
+                                      fontSize: "1rem",
+                                      paddingBottom: "15px",
+                                      cursor: "pointer",
                                     }}
                                   >
                                     {event.date}
@@ -535,7 +537,9 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
                                 </HoverCardTrigger>
                                 <HoverCardContent
                                   className="bg-white w-[10vw] px-4 py-5"
-                                  style={{ marginLeft: `${index==0?(index * (720 / eventsData.length)):(index)* (550 / eventsData.length)}%` }}
+                                  style={{
+                                    marginLeft: `${index == 0 ? index * (720 / eventsData.length) : index * (550 / eventsData.length)}%`,
+                                  }}
                                 >
                                   {event.title}
                                   <Separator className="my-2" />
@@ -545,12 +549,24 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
                             </li>
                           ))}
                         </ol>
-                        <span className="filling-line" aria-hidden="true" style={{ transform: `${a}` }}></span>
+                        <span
+                          className="filling-line"
+                          aria-hidden="true"
+                          style={{ transform: `${a}` }}
+                        ></span>
                       </div>
                     </div>
                     <ul className="cd-timeline-navigation">
-                      <li><a href="#0" className="prev inactive">Prev</a></li>
-                      <li><a href="#0" className="next">Next</a></li>
+                      <li>
+                        <a href="#0" className="prev inactive">
+                          Prev
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#0" className="next">
+                          Next
+                        </a>
+                      </li>
                     </ul>
                   </div>
                 </div>

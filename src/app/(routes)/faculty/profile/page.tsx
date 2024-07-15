@@ -22,9 +22,11 @@ const Profile = ({ params }: { params: { facultyId: string } }) => {
 
   return (
     <div className="h-screen grid justify-center items-center">
-      {loading && <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
-      </div>}
+      {loading && (
+        <div className="h-screen w-full flex justify-center items-center">
+          <Loader />
+        </div>
+      )}
       {data && <FacultyProfile profile={data} />}
     </div>
   );

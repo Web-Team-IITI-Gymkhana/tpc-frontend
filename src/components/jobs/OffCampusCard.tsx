@@ -6,7 +6,6 @@ interface Props {
 }
 
 const OffCampusCard = ({ jobItem }: Props) => {
-
   function formatNumber(num: number): string {
     if (num >= 1e7) {
       const crores = num / 1e7;
@@ -20,11 +19,9 @@ const OffCampusCard = ({ jobItem }: Props) => {
   }
 
   return (
-    <div className="">     
+    <div className="">
       <div className="rounded-xl bg-white text-black p-5">
-        <div className="font-semibold text-md ">
-          {jobItem.company.name}
-        </div>
+        <div className="font-semibold text-md ">{jobItem.company.name}</div>
         <div className="my-4">
           <Separator />
         </div>
@@ -54,8 +51,8 @@ const OffCampusCard = ({ jobItem }: Props) => {
           <Separator />
         </div>
         <div className="w-full h-30 border-2 p-2 text-sm">
-            {jobItem.metadata}
-        </div>        
+          {jobItem.metadata}
+        </div>
       </div>
     </div>
   );

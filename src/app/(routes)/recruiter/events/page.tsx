@@ -32,8 +32,8 @@ const EventPage = () => {
       <h1 className="text-3xl mb-8 font-bold mx-auto text-center">Events</h1>
       {loading && (
         <div className="h-screen w-full flex justify-center items-center">
-        <Loader/>
-       </div>
+          <Loader />
+        </div>
       )}
       {data && (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
