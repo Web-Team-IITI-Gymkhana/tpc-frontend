@@ -124,7 +124,7 @@ export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
       const fileUrl = window.URL.createObjectURL(blob);
       window.open(fileUrl);
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => toast.error("Error fetching data"));
 };
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
@@ -353,7 +353,7 @@ export const fetchRegistrationDataById = async (studentId: any) => {
     );
     return filteredData;
   } catch (error) {
-    console.error("Error fetching registration data:", error);
+    toast.error("Error fetching registration data");
   }
 };
 
@@ -406,5 +406,85 @@ export const loginWithEmail = async (email: string) => {
   return apiCall("/auth/passwordless", {
     method: "POST",
     body: { email },
+  });
+};
+
+export const patchJobData = async (jobId: string, changes: any) => {
+  const patchFormat = {
+    id: "string",
+    seasonId: "string",
+    recruiterId: "string",
+    companyId: "string",
+    role: "string",
+    active: true,
+    currentStatus: "INITIALIZED",
+    noOfVacancies: 0,
+    duration: 0,
+    location: "string",
+    selectionProcedure: {
+      selectionMode: "OFFLINE",
+      shortlistFromResume: true,
+      groupDiscussion: true,
+      tests: [
+        {
+          type: "APTITUDE",
+          duration: 0,
+        },
+      ],
+      interviews: [
+        {
+          type: "HR",
+          duration: 0,
+        },
+      ],
+      requirements: {
+        numberOfMembers: 0,
+        numberOfRooms: 0,
+        otherRequirements: "string",
+      },
+      others: "string",
+    },
+    description: "string",
+    attachment: "string",
+    skills: "string",
+    offerLetterReleaseDate: "2024-07-15T09:30:53.234Z",
+    joiningDate: "2024-07-15T09:30:53.234Z",
+    feedback: "string",
+  };
+
+  const toPatch = {};
+  Object.entries(patchFormat).map(([key]) => {
+    if (changes[key] !== undefined) {
+      toPatch[key] = changes[key];
+    }
+  });
+  return apiCall(`/jobs`, {
+    method: "PATCH",
+    body: [toPatch],
+  });
+};
+
+export const patchSalaryData = async (salary: any) => {
+  const patchFormat = {
+    id: "string",
+    baseSalary: 0,
+    totalCTC: 0,
+    takeHomeSalary: 0,
+    grossSalary: 0,
+    otherCompensations: 0,
+    genders: [],
+    programs: [],
+    categories: [],
+    salaryPeriod: "",
+    minCPI: 0,
+    tenthMarks: 0,
+    twelthMarks: 0,
+  };
+
+  const toPatch = {};
+  Object.entries(patchFormat).map(([key]) => (toPatch[key] = salary[key]));
+  return apiCall(`/salaries`, {
+    method: "PATCH",
+    body: [toPatch],
   });
 };

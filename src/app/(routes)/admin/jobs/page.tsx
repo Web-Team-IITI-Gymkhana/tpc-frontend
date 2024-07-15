@@ -27,7 +27,11 @@ const JobPage = () => {
   useEffect(() => {
     const getData = async () => {
       const data = await fetchAllJobs();
-      setAllJobs(data);
+      const newData = data.map((d: any) => ({
+        ...d,
+        active: d.active ? "Active" : "Inactive",
+      }));
+      setAllJobs(newData);
       setLoading(false);
     };
     getData();
