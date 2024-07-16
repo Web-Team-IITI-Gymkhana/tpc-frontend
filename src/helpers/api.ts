@@ -418,15 +418,7 @@ export const fetchRegistrations = async (
   });
 };
 
-
-    const filteredData = data.filter(
-      (registration: any) => registration.student.id === studentId,
-    );
-    return filteredData;
-  } catch (error) {
-    toast.error("Error fetching registration data");
-  }
-};
+ 
 //OnClick Functions
 
 export const createJobEvent = async (
