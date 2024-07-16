@@ -311,16 +311,7 @@ export const promoteStudent = async (body: any, eventId: string) => {
   });
 };
 
-export const updateRegistrationStatus = async (registrationId:any, registered:any) => {
 
-  return apiCall(`/registrations`, {
-    method: "PATCH",
-    body: {
-      id: registrationId,
-      registered: registered, 
-    },
-  });
-};
 
 export const fetchRecruiterData = async (filter?: string) => {
   return apiCall(filter ? `/recruiters?${filter}` : "/recruiters", {

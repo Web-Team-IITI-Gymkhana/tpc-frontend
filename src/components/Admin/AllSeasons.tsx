@@ -21,7 +21,7 @@ import { Unstable_NumberInput as NumberInput } from "@mui/base/Unstable_NumberIn
 import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 import { addSeason } from "@/helpers/api";
-import { updateRegistrationStatus} from "@/helpers/api";
+
 const hiddenColumns = [
   "id",
   "registered",

@@ -83,7 +83,7 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
   const [registrationData, setRegistrationData] = useState(null);
   const [registrationDataCurrent, setRegistrationDataCurrent] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [datachange, setDataChange] = useState(false);
   const fetchStudentData = async (id: any) => {
     setLoading(true);
     try {
@@ -127,8 +127,32 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
     }
   }, [open, id]);
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {setOpen(false); 
+    if (datachange) {
+    window.location.reload();
+  }
+};
 
+  const handleStatusChangeCurrent = async (
+    studentId: any,
+    seasonId: any,
+    currentStatus: any,
+  ) => {
+    const success = await handleRegistration(
+      studentId,
+      seasonId,
+      currentStatus,
+    );
+    if (success) {
+      setRegistrationDataCurrent((prevData: any) =>
+        prevData.map((registration: any) =>
+          registration.season.id === seasonId
+            ? { ...registration, registered: !currentStatus }
+            : registration,
+        ),
+      );
+    }
+  };
   const handleStatusChange = async (
     studentId: any,
     seasonId: any,
@@ -538,12 +562,19 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                                         ? "secondary"
                                         : "primary"
                                     }
-                                    onClick={() =>
+                                    onClick={() =>{
+                                      handleStatusChangeCurrent(
+                                        studentData.id,
+                                        registration.season.id,
+                                        registration.registered,
+                                      )
                                       handleStatusChange(
                                         studentData.id,
                                         registration.season.id,
                                         registration.registered,
                                       )
+                                      setDataChange(true)
+                                    }
                                     }
                                   >
                                     {registration.registered
@@ -563,7 +594,7 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                     gutterBottom
                     sx={{ mt: 2, mb: 2 }}
                   >
-                    All Registration
+                    All Registrations
                   </Typography>
                   <TableContainer
                     component={Paper}
@@ -610,12 +641,19 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                                         ? "secondary"
                                         : "primary"
                                     }
-                                    onClick={() =>
+                                    onClick={() =>{
+                                      handleStatusChangeCurrent(
+                                        studentData.id,
+                                        registration.season.id,
+                                        registration.registered,
+                                      )
                                       handleStatusChange(
                                         studentData.id,
                                         registration.season.id,
                                         registration.registered,
                                       )
+                                      setDataChange(true)
+                                    }
                                     }
                                   >
                                     {registration.registered
