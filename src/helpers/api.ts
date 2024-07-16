@@ -185,51 +185,7 @@ export const fetchStudentDataById = async (id: any) => {
   return apiCall(`/students/${id}`);
 };
 
-export const fetchSeasonData = async (year:any,registered:boolean) => {
-  return apiCall(`/registrations`, {
-    queryParam: {
-      q: {
-        filterBy: {
-          season: {
-            year: {
-              eq: [year],
-            },
-          },
-          registered: {
-            eq: [registered],
-          },
-        },
-        orderBy: {
-          id: "DESC",
-          student: {
-            id: "DESC",
-            rollNo: "DESC",
-            user: {
-              id: "DESC",
-              name: "DESC",
-              email: "DESC",
-              contact: "DESC",
-            },
-            program: {
-              id: "DESC",
-              branch: "DESC",
-              course: "DESC",
-              year: "DESC",
-              department: "DESC",
-            },
-          },
-          season: {
-            id: "DESC",
-            year: "DESC",
-            type: "DESC",
-          },
-          registered: "DESC",
-        },
-      },
-    },
-    next: { tags: ["AllStudents"] },
-  });
-};
+
 
 export const fetchCompanyRecruiters = async (companyId: string | undefined) => {
   return apiCall(`/companies/${companyId}/recruiters/`, {
@@ -261,6 +217,75 @@ export const fetchJobEvents = async (jobId: any) => {
   });
 };
 
+export const fetchSeasonData = async (year:any,registered:boolean) => {
+  return apiCall(`/registrations`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          season: {
+            year: {
+              eq: [year],
+            },
+          },
+          registered: {
+            eq: [registered],
+          },
+        },
+        
+      },
+    },
+    next: { tags: ["AllStudents"] },
+  });
+};
+
+export const fetchRegistrationDataById = async (studentId: any) => {
+  console.log(studentId);
+  return apiCall(`/registrations`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          student:{
+            id: {
+              eq: [studentId],
+            },
+          },
+          }, 
+         
+        },
+        
+      },
+    next: { tags: ["AllStudents"] },
+  });
+};
+export const fetchRegistrationDataByIdAndSeason = async (studentId: any,type:any,year:boolean) => {
+  console.log(studentId);
+  return apiCall(`/registrations`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          season: {
+            type:{
+              eq: [type],
+            },
+            year: {
+              eq: [year],
+            },
+          },
+          
+          student:{
+            id: {
+              eq: [studentId],
+            },
+          },
+          }, 
+         
+        },
+        
+      },
+    next: { tags: ["AllStudents"] },
+  });
+};
+
 export const fetchEventById = async (eventId: any) => {
   return apiCall(`/events/${eventId}`);
 };
@@ -283,6 +308,17 @@ export const promoteStudent = async (body: any, eventId: string) => {
   return apiCall(`/events/${eventId}`, {
     method: "PATCH",
     body: body,
+  });
+};
+
+export const updateRegistrationStatus = async (registrationId:any, registered:any) => {
+
+  return apiCall(`/registrations`, {
+    method: "PATCH",
+    body: {
+      id: registrationId,
+      registered: registered, 
+    },
   });
 };
 
@@ -373,18 +409,7 @@ export const fetchRegistrations = async (
   });
 };
 
-export const fetchRegistrationDataById = async (studentId: any) => {
-  try {
-    const data = await apiCall("/registrations");
 
-    const filteredData = data.filter(
-      (registration: any) => registration.student.id === studentId,
-    );
-    return filteredData;
-  } catch (error) {
-    console.error("Error fetching registration data:", error);
-  }
-};
 
 //OnClick Functions
 

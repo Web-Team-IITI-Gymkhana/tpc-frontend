@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
-import { EventFC, ApplicationFC, SalaryFC } from "@/helpers/season/types";
+import { EventFC, ApplicationFC } from "@/helpers/season/types";
 import { CircularProgress, Modal, Typography } from "@mui/material";
+import { seasonDTO } from "@/dto/SeasonDto";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import {
   addEvent,
@@ -20,6 +21,15 @@ import { Unstable_NumberInput as NumberInput } from "@mui/base/Unstable_NumberIn
 import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 import { addSeason } from "@/helpers/api";
+import { updateRegistrationStatus} from "@/helpers/api";
+const hiddenColumns = [
+  "id",
+  "registered",
+  "season.id",
+  "student.id",
+  "student.program.id",
+  "student.user.id",
+];
 const typeOptions = [
   "INTERN",
   "PLACEMENT"
@@ -367,28 +377,18 @@ export const AllSeasons = ({ events }: { events: [EventFC] }) => {
 
 
 export const Registered = ({
-  eventYear,
-  events,
+  eventYear
 }: {
   eventYear: string;
   events: EventFC[];
 }) => {
   const [Registered, setRegistered] = useState<[ApplicationFC]>(null);
-  var lastEvent: EventFC;
-  events.forEach((event) => {
-    if (lastEvent) {
-      if (lastEvent.year < event.year) {
-        lastEvent = event;
-      }
-    } else {
-      lastEvent = event;
-    }
-  });
-
   const [loading, setLoading] = useState(true);
-  const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
-  const [seed, setSeed] = useState(0);
-
+  const columns = generateColumns(seasonDTO);
+  const [loadingbutton, setloadingbutton] = useState<boolean>(false);
+  const visibleColumns = columns.filter(
+    (column: any) => !hiddenColumns.includes(column?.accessorKey),
+  );
   useEffect(() => {
     setLoading(true);
     setRegistered(null);
@@ -396,6 +396,7 @@ export const Registered = ({
       try {
         const jsonData = await fetchSeasonData(eventYear,true);
         setRegistered(jsonData);
+        
       } catch (error) {
         toast.error("Some error occured");
       } finally {
@@ -404,111 +405,18 @@ export const Registered = ({
     };
 
     fetchData();
-  }, [eventYear, seed]);
+  }, [eventYear]);
 
   return (
     <div className="w-full">
-      {/* {lastEvent.id == eventId && promoteStudents.length > 0 ? (
-        <MakeJobOfferModal
-          open={promoteStudents.length > 0}
-          students={promoteStudents}
-          onClose={() => {
-            setPromoteStudents([]);
-            setSeed(seed + 1);
-          }}
-          events={events}
-          lastEvent={lastEvent}
-        />
-      ) : (
-        <PromoteStudent
-          open={promoteStudents.length > 0}
-          students={promoteStudents}
-          onClose={() => {
-            setPromoteStudents([]);
-            setSeed(seed + 1);
-          }}
-          events={events}
-        />
-      )} */}
+      
       {loading && (
         <div className="flex justify-center">
           <CircularProgress />
         </div>
       )}
       {Registered && ( 
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Roll Number
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Email
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Course
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-         
-            {Registered.map((application, index) => (
-              <tr
-                key={index}
-                className={`bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  {application.student.rollNo}
-                </th>
-                <td className="px-6 py-4">{application.student.user.name}</td>
-                <td className="px-6 py-4">{application.student.user.email}</td>
-                <td className="px-6 py-4">{application.student.program.course}</td>
-                
-                {/* <td className="px-6 py-4">
-                  {lastEvent.id == eventId ? (
-                    <Button
-                      onClick={() => {
-                        setPromoteStudents([
-                          ...promoteStudents,
-                          {
-                            id: application.student.id,
-                            name: application.student.user.name,
-                          },
-                        ]);
-                      }}
-                    >
-                      Make Offer
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        setPromoteStudents([
-                          ...promoteStudents,
-                          {
-                            id: application.student.id,
-                            name: application.student.user.name,
-                          },
-                        ]);
-                      }}
-                    >
-                      Promote / Demote
-                    </Button>
-                  )}
-                </td> */}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table data={Registered} columns={visibleColumns} type={"season"} />
       )}
     </div>
   );
@@ -518,35 +426,26 @@ export const Registered = ({
 
 
 export const UnRegistered = ({
-  eventYear,
-  events,
+  eventYear
 }: {
   eventYear: string;
   events: EventFC[];
 }) => {
-  const [Registered, setRegistered] = useState<[ApplicationFC]>(null);
-  var lastEvent: EventFC;
-  events.forEach((event) => {
-    if (lastEvent) {
-      if (lastEvent.year < event.year) {
-        lastEvent = event;
-      }
-    } else {
-      lastEvent = event;
-    }
-  });
-
+  const [UnRegistered, setUnRegistered] = useState<[ApplicationFC]>(null);
   const [loading, setLoading] = useState(true);
-  const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
-  const [seed, setSeed] = useState(0);
+  const columns = generateColumns(seasonDTO);
+  const [loadingbutton, setloadingbutton] = useState<boolean>(false);
+  const visibleColumns = columns.filter(
+    (column: any) => !hiddenColumns.includes(column?.accessorKey),
+  );
 
   useEffect(() => {
     setLoading(true);
-    setRegistered(null);
+    setUnRegistered(null);
     const fetchData = async () => {
       try {
         const jsonData = await fetchSeasonData(eventYear,null);
-        setRegistered(jsonData);
+        setUnRegistered(jsonData);
       } catch (error) {
         toast.error("Some error occured");
       } finally {
@@ -555,113 +454,21 @@ export const UnRegistered = ({
     };
 
     fetchData();
-  }, [eventYear, seed]);
+  }, [eventYear]);
 
   return (
     <div className="w-full">
-      {/* {lastEvent.id == eventId && promoteStudents.length > 0 ? (
-        <MakeJobOfferModal
-          open={promoteStudents.length > 0}
-          students={promoteStudents}
-          onClose={() => {
-            setPromoteStudents([]);
-            setSeed(seed + 1);
-          }}
-          events={events}
-          lastEvent={lastEvent}
-        />
-      ) : (
-        <PromoteStudent
-          open={promoteStudents.length > 0}
-          students={promoteStudents}
-          onClose={() => {
-            setPromoteStudents([]);
-            setSeed(seed + 1);
-          }}
-          events={events}
-        />
-      )} */}
+      
       {loading && (
         <div className="flex justify-center">
           <CircularProgress />
         </div>
       )}
-      {Registered && ( 
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Roll Number
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Email
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Course
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-         
-            {Registered.map((application, index) => (
-              <tr
-                key={index}
-                className={`bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  {application.student.rollNo}
-                </th>
-                <td className="px-6 py-4">{application.student.user.name}</td>
-                <td className="px-6 py-4">{application.student.user.email}</td>
-                <td className="px-6 py-4">{application.student.program.course}</td>
-                
-                {/* <td className="px-6 py-4">
-                  {lastEvent.id == eventId ? (
-                    <Button
-                      onClick={() => {
-                        setPromoteStudents([
-                          ...promoteStudents,
-                          {
-                            id: application.student.id,
-                            name: application.student.user.name,
-                          },
-                        ]);
-                      }}
-                    >
-                      Make Offer
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        setPromoteStudents([
-                          ...promoteStudents,
-                          {
-                            id: application.student.id,
-                            name: application.student.user.name,
-                          },
-                        ]);
-                      }}
-                    >
-                      Promote / Demote
-                    </Button>
-                  )}
-                </td> */}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {UnRegistered && ( 
+        <Table data={UnRegistered} columns={visibleColumns} type={"season"} />
       )}
     </div>
   );
 };
+
 
