@@ -33,7 +33,6 @@ const StudentPage = ({ params }: any) => {
   useEffect(() => {
     const fetchData = async () => {
       const decodedParams = decodeURIComponent(params.filter[0]);
-      console.log(decodedParams);
       const AllFilteredJobs = await fetchAllJobs(decodedParams);
       setJobs(AllFilteredJobs);
     };

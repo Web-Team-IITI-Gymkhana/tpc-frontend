@@ -16,6 +16,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 import Loader from "@/components/Loader/loader";
 import { fetchJobById } from "@/helpers/api";
+import toast from "react-hot-toast";
 const theme = createTheme({
   palette: {
     primary: {
@@ -60,7 +61,7 @@ export default function ViewJobModal({ open, setOpen, id }) {
         const data = await fetchJobById(id);
         setJobData(data);
       } catch (error) {
-        console.error("Error fetching job data:", error);
+        toast.error("Error fetching job data:");
       }
       setLoading(false);
     };

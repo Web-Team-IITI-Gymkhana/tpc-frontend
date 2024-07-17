@@ -37,7 +37,6 @@ const ResumePage = () => {
       const data = await GetResumes();
       setResumeData(data);
     } catch (error) {
-      console.error("Error fetching data:", error);
       toast.error("Error fetching data:");
     } finally {
       setLoading(false);

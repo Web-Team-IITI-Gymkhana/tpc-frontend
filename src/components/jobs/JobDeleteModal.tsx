@@ -80,7 +80,6 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
                 setopen(false);
                 toast.success("Event Deleted");
               } catch (err) {
-                console.log(err);
                 setopen(false);
                 toast.error("Error Deleting Event");
               }
