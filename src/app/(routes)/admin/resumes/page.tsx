@@ -30,7 +30,6 @@ const Resumes = () => {
     const updatedResumes: ResumeTableData[] = resumes.map((resume) =>
       resume.id == id ? { ...resume, verified: true } : resume,
     );
-    console.log(updatedResumes);
     setData(updatedResumes);
   };
 

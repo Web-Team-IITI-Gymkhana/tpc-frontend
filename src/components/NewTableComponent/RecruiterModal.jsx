@@ -16,6 +16,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { grey } from "@mui/material/colors";
 import Loader from "@/components/Loader/loader";
 import { fetchRecruiterById } from "@/helpers/api";
+import toast from "react-hot-toast";
 const theme = createTheme({
   palette: {
     primary: {
@@ -60,7 +61,7 @@ export default function RecruiterModal({ open, setOpen, id }) {
         const data = await fetchRecruiterById(id);
         setRecruiterData(data);
       } catch (error) {
-        console.error("Error fetching recruiter data:", error);
+        toast.error("Error fetching recruiter data");
       }
       setLoading(false);
     };

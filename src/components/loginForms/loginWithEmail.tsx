@@ -17,7 +17,6 @@ export const LoginWithEmail = (params: { email: string }) => {
 
       return response.ok;
     } catch (error) {
-      console.error("Error:", error);
       toast.error("An error occurred while sending the email");
       return false;
     }

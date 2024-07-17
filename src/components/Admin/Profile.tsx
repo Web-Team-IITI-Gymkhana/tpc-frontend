@@ -20,7 +20,6 @@ const AdminProfile = () => {
       const user = Cookies.get("user");
       const userId = JSON.parse(user).id;
       const data = await getUserById(userId);
-      console.log(data);
       setProfile(data[0]);
     };
     setData();
