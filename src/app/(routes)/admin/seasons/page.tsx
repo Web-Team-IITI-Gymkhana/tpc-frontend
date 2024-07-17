@@ -2,18 +2,17 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { AllSeasons } from "@/components/Admin/AllSeasons";
-import { fetchJobEvents } from "@/helpers/api";
 import { fetchAllSeasons } from "@/helpers/api";
-import { EventFC } from "@/helpers/season/types";
+import { SeasonFC } from "@/helpers/season/types";
 import { Button } from "@/components/ui/button";
 import { AddSeason } from "@/components/Admin/AllSeasons";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 
-const EventsPage = () => {
-  const [events, setData] = useState<[EventFC]>(null);
+const SeasonsPage = () => {
+  const [seasons, setData] = useState<[SeasonFC]>(null);
   const [loading, setLoading] = useState(true);
-  const [addEventForm, setAddEventForm] = useState(false);
+  const [addSeasonForm, setAddSeasonForm] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,16 +33,16 @@ const EventsPage = () => {
       <h1 className="text-3xl mb-8 font-bold mx-auto text-center">
         Seasons
       </h1>
-      {addEventForm && (
+      {addSeasonForm && (
         <AddSeason
-          open={addEventForm}
-          setOpen={setAddEventForm}
+          open={addSeasonForm}
+          setOpen={setAddSeasonForm}
         />
       )}
       <div className="w-full px-4 pb-4 flex justify-end">
         <Button
           onClick={() => {
-            setAddEventForm(true);
+            setAddSeasonForm(true);
           }}
         >
           Add Season
@@ -54,13 +53,13 @@ const EventsPage = () => {
           <Loader />
         </div>
       )}
-      {events && (
+      {seasons && (
         <div>
-          <AllSeasons events={events} />
+          <AllSeasons seasons={seasons} />
         </div>
       )}
     </div>
   );
 };
 
-export default EventsPage;
+export default SeasonsPage;

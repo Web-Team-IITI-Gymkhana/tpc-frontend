@@ -26,7 +26,7 @@ export interface ApplicationFC {
   
 }
 
-export interface EventFC {
+export interface SeasonFC {
   id: string;
   year: string;
   type: string;
