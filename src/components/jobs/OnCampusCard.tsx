@@ -20,7 +20,6 @@ const OnCampusCard = ({ offerItem, salaryId }: Props) => {
       try {
         const data = await GetSalaryById(salaryId);
         setSalary(data);
-        console.log(data);
       } catch (error) {
         toast.error("Error fetching data",{duration: 3000});
       } finally {
