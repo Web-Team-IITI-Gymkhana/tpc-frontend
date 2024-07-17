@@ -40,12 +40,11 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
   const [salaryData, setSalaryData] = useState<Salary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSalaryData = async () => {
+  const fetchSalaryData = async () => {      
     try {
       const data = await GetSalaryById(salaryId);
       setSalaryData(data);
     } catch (error) {
-      console.error("Error fetching data:", error);
       toast.error("Error fetching data:");
     } finally {
       setLoading(false);
