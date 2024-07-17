@@ -15,6 +15,8 @@ const hiddenColumns = [
   "id",
   "student.user.id",
   "student.program.id",
+  ,"companyDetailsFilled.name",
+  "recruiterDetailsFilled.name"
 ];
 
 const Resumes = () => {

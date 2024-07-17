@@ -4,7 +4,7 @@ import Table from "@/components/NewTableComponent/Table";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { recruiterdto } from "@/dto/RecruiterDto";
 
-const hiddenColumns = ["id", "user.id", "company.id"];
+const hiddenColumns = ["id", "user.id", "company.id","companyDetailsFilled.name","recruiterDetailsFilled.name"];
 
 const StudentPage = async () => {
   const columns = generateColumns(recruiterdto);
