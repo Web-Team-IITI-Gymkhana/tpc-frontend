@@ -591,7 +591,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     Year of Establishment
                   </div>
                   <div className="flex items-center">
-           
+                    <span className="mr-2">Year of Establishment:</span>
                     <div>{selectedCompany?.yearOfEstablishment}</div>
                   </div>
                 </div>

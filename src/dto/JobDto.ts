@@ -59,26 +59,6 @@ const recruitmentDTO = [
       id: "string",
       name: "string",
     },
-    companyDetailsFilled : {
-      name: "string",
-      address: {
-        city: "string",
-        line1: "string",
-        state: "string",
-        country: "string"
-      },
-      domains: ["string"],
-      category: "string",
-      yearOfEstablishment: "string"
-    },
-    recruiterDetailsFilled :{
-      name: "string",
-      email: "string",
-      contact: "string",
-      designation: "string"
-    },
-    
-  
     recruiter: {
       id: "string",
       designation: "string",

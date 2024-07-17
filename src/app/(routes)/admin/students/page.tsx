@@ -6,7 +6,7 @@ import type { DTO } from "@/dto/StudentDto";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
 
-const hiddenColumns = ["userId", "programId", "id","companyDetailsFilled.name","recruiterDetailsFilled.name"];
+const hiddenColumns = ["userId", "programId", "id"];
 
 const StudentPage = () => {
   const [students, setStudents] = useState<DTO[]>([]);

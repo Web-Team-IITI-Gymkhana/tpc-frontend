@@ -21,18 +21,6 @@ export default function generateColumns(dto: any): ColumnDef<any>[] {
       }
     });
   }
-  generatedColumns.push(
-    {
-      accessorKey: "companyDetailsFilled.name",
-      header: "Company_Details_Name",
-      size: getColumnSize("name"),
-    },
-    {
-      accessorKey: "recruiterDetailsFilled.name",
-      header: "Recruiter_Details_Name",
-      size: getColumnSize("name"),
-    }
-  );
 
   function getColumnSize(key: string): number {
     const sizes: { [key: string]: number } = {
