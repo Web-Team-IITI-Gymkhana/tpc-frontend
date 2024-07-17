@@ -38,7 +38,7 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
         const res = await GetResumes();
         setResumes(res);
       } catch (error) {
-        toast.error("Error fetching data:");
+        toast.error("Error fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }

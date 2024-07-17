@@ -227,11 +227,11 @@ function JAF() {
                 salaries: values.salaries,
               })
               .then((res) => {
-                toast.success("JAF Form filled successfully");
+                toast.success("JAF Form filled successfully",{duration: 3000});
                 window.location.reload();
               })
               .catch((err) => {
-                toast.error("Cannot Submit");
+                toast.error("Cannot Submit",{duration: 3000});
               });
             setFinalValues(submitValues);
           }}

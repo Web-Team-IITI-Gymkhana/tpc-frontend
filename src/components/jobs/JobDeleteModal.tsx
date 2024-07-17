@@ -69,7 +69,7 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
             type="submit"
             onClick={async () => {
               if (answer != "Delete") {
-                toast.error("Input Not Matching");
+                toast.error("Input Not Matching",{duration: 3000});
                 return;
               }
               setloading(true);
@@ -78,10 +78,10 @@ export function JobDeleteModal({ jobId, eventId }: Props) {
                 submit("AllEvents");
                 setloading(false);
                 setopen(false);
-                toast.success("Event Deleted");
+                toast.success("Event Deleted",{duration: 3000});
               } catch (err) {
+                toast.error("Error Deleting Event",{duration: 3000});
                 setopen(false);
-                toast.error("Error Deleting Event");
               }
             }}
           >

@@ -33,15 +33,15 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
       const response = await fetchPenalties(requestBody);
 
       if (response.ok) {
-        toast.success("Penalty submitted successfully");
+        toast.success("Penalty added successfully",{duration: 3000});
         onClose();
         setPenaltyValue("");
         setPenaltyReason("");
       } else {
-        toast.error("Error submitting penalty");
+        toast.error("Error submitting penalty",{duration: 3000});
       }
     } catch (error) {
-      toast.error("Error submitting penalty:", error);
+      toast.error("Error submitting penalty",{duration: 3000});
     }
   };
 

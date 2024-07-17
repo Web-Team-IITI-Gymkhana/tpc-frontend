@@ -96,7 +96,7 @@ export function AddEventDialog({ jobId }: Props) {
                     submit("AllEvents");
                   }
                 } catch (error) {
-                  toast.error("Error creating job event:", error);
+                  toast.error("Error creating job event",{duration: 3000});
                 } finally {
                   setloading(false);
                 }

@@ -27,7 +27,7 @@ const props: UploadProps = {
   },
   onChange(info: any) {
     if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
+
     }
     if (info.file.status === "done") {
       message.success(`${info.file.name} file uploaded successfully`);
@@ -87,7 +87,6 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
       onValuesChange={() => {
         values.interviews = form.getFieldsValue().interviews;
         values.tests = form.getFieldsValue().tests;
-        console.log(form.getFieldsValue().salaries);
         let objx: any = [];
         form.getFieldsValue().salaries.map((salary: any) => {
           const obj = {

@@ -48,13 +48,14 @@ const ImportData = () => {
           contact: row["Contact"],
         },
       }));
+;
       await axios.post(`${baseUrl}/api/v1/students/`, formattedData);
-      toast.success("Students added successfully!");
+      toast.success("Students added successfully",{duration: 3000});
     } catch (err) {
       setError(
-        "Error adding students. Please check the CSV file and try again.",
+        ": Error adding students. Please check the CSV file and try again.",
       );
-      toast.error("Error adding students:", err);
+      toast.error(`Error adding students ${err}`,{duration: 3000});
     } finally {
       setIsLoading(false);
     }

@@ -45,7 +45,7 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
       const data = await GetSalaryById(salaryId);
       setSalaryData(data);
     } catch (error) {
-      toast.error("Error fetching data:");
+      toast.error("Error fetching data",{duration: 3000});
     } finally {
       setLoading(false);
     }
@@ -66,10 +66,10 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
   const handleApply = async () => {
     const data = await ApplyJob(salaryId, selectedResume);
     if (data) {
-      toast.success("Applied Successfully");
+      toast.success("Applied Successfully",{duration: 3000});
       fetchSalaryData();
     } else {
-      toast.error("Cannot Apply");
+      toast.error("Cannot Apply",{duration: 3000});
     }
   };
 
@@ -79,7 +79,6 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
   };
 
   function formatNumber(num: number): string {
-    console.log(num);
     if (num >= 1e7) {
       const crores = num / 1e7;
       return `₹${crores.toFixed(2)} Crores`;

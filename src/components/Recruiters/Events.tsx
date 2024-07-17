@@ -90,7 +90,7 @@ export const Applications = ({ eventId }: { eventId: string }) => {
         const jsonData: EventFC = await getEvent(eventId);
         setApplications(jsonData.applications);
       } catch (error) {
-        toast.error(error);
+        toast.error("Error fetching Events",{duration: 3000});
       } finally {
         setLoading(false);
       }

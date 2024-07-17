@@ -65,16 +65,12 @@ const handleRegistration = async (
     );
 
     if (!response) {
-      toast.error("Failed to update registration status");
-      throw new Error("Failed to update registration status");
-      //Will change it in a separate toast removal PR
+      toast.error("Failed to update registration status",{duration: 3000});
     }
-
-    toast.success("Registration status updated successfully");
+    toast.success("Registration status updated successfully",{duration: 3000});
     return true;
   } catch (error) {
-    toast.error("Error updating registration status:", error.message);
-    alert(`Error updating registration status: ${error.message}`);
+    toast.error("Failed to update registration status",{duration: 3000});
     return false;
   }
 };
@@ -90,7 +86,7 @@ export default function StudentModal({ open, setOpen, id }) {
       const data = await fetchStudentDataById(id);
       setStudentData(data);
     } catch (error) {
-      toast.error("Error fetching student data");
+      toast.error("Error fetching student data",{duration: 3000});
     } finally {
       setLoading(false);
     }

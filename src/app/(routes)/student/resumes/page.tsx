@@ -37,7 +37,7 @@ const ResumePage = () => {
       const data = await GetResumes();
       setResumeData(data);
     } catch (error) {
-      toast.error("Error fetching data:");
+      toast.error("Error fetching data",{duration: 3000});
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ const ResumePage = () => {
     event.preventDefault();
 
     if (!file) {
-      toast.error("Please select a file to upload.");
+      toast.error("Please select a file to upload.",{duration: 3000});
       return;
     }
 
@@ -69,12 +69,12 @@ const ResumePage = () => {
     const data = await uploadResume(formData);
 
     if (data) {
-      toast.success("Uploaded Successfully");
+      toast.success("Uploaded Successfully",{duration: 3000});
       fetchResumes();
       setFile(null);
       setDialogOpen(false);
     } else {
-      toast.error("Error uploading file");
+      toast.error("Error uploading file",{duration: 3000});
     }
   };
 
@@ -82,10 +82,10 @@ const ResumePage = () => {
     const res = await deleteResume(filename);
 
     if (res) {
-      toast.success("Deleted Successfully");
+      toast.success("Deleted Successfully",{duration: 3000});
       fetchResumes();
     } else {
-      toast.error("Error deleting file");
+      toast.error("Error deleting file",{duration: 3000});
     }
   };
 

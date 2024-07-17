@@ -61,7 +61,7 @@ export default function ViewJobModal({ open, setOpen, id }) {
         const data = await fetchJobById(id);
         setJobData(data);
       } catch (error) {
-        toast.error("Error fetching job data:");
+       toast.error("Error fetching job data",{duration: 3000});
       }
       setLoading(false);
     };

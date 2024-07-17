@@ -4,7 +4,6 @@ import GlobalContext from "./GlobalContext";
 import { selectedDayEvent } from "./GlobalContext";
 import { fetchEvents } from "@/helpers/api";
 import toast from "react-hot-toast";
-
 export const labelsClasses = new Map([
   ["INTERVIEW", "green"],
   ["PPT", "red"],
@@ -60,7 +59,7 @@ export default function ContextWrapper(props: any) {
         const data = await fetchEvents();
         dispatchCallEvents({ type: "fetch", payload: data });
       } catch (error) {
-        toast.error("Failed to fetch events:");
+        toast.error("Failed to fetch events",{duration: 3000});
       }
     }
     fetchAndSetEvents();

@@ -58,14 +58,14 @@ const LoginForm = () => {
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         onClick={async () => {
                           if (email == null || email.length == 0) {
-                            toast.error("Email is required");
+                            toast.error("Email is required",{duration: 3000});
                             return;
                           }
                           try {
                             await login(email, role);
                           } catch (err) {
                             alert(err);
-                            toast.error("Some error occurred");
+                            toast.error("Some error occurred",{duration: 3000});
                           }
                         }}
                       >

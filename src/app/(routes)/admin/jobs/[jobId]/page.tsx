@@ -78,7 +78,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         );
         setSelectedRecruiter(matchedRecruiter);
       } catch (error) {
-        toast.error("Error fetching data");
+        toast.error("Error fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }
@@ -401,9 +401,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           await assignCompany([
                             { id: job.id, companyId: selectedCompany.id },
                           ]);
-                          toast.success("Company assigned successfully");
+                          toast.success("Company assigned successfully",{duration: 3000});
                         } catch (error) {
-                          toast.error("Failed to assign company");
+                          toast.error("Failed to assign company",{duration: 3000});
                         }
                       }
                     }}
@@ -503,9 +503,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         await assignRecruiter([
                           { id: job.id, recruiterId: selectedRecruiter.id },
                         ]);
-                        toast.success("Recruiter assigned successfully");
+                        toast.success("Recruiter assigned successfully",{duration: 3000});
                       } catch (error) {
-                        toast.error("Failed to assign recruiter");
+                        toast.error("Failed to assign recruiter",{duration: 3000});
                       }
                     }
                   }}

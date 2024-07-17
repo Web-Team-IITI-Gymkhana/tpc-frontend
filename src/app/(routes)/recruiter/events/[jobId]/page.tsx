@@ -17,7 +17,9 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
         const jsonData = await getJobDetail(params.jobId);
         setData(jsonData);
       } catch (error) {
-        toast.error("Error Fetching Data");
+
+        toast.error("Error fetching data",{duration: 3000});
+
       } finally {
         setLoading(false);
       }

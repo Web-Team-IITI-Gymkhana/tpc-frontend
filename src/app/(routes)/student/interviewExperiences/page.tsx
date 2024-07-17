@@ -28,7 +28,7 @@ const InterviewExpiriencePage = () => {
       const data = await GetInterviewExpiriences();
       setInterviewExpirienceData(data);
     } catch (error) {
-      toast.error("Error fetching data:");
+      toast.error("Error fetching data",{duration: 3000});
     } finally {
       setLoading(false);
     }

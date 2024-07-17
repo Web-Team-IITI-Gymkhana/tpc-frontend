@@ -15,7 +15,6 @@ const AddCompany = () => {
     sector: "",
   });
 
-  
 
   return (
     <>

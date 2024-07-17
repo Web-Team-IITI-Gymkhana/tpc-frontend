@@ -69,7 +69,7 @@ const Resumes = () => {
     const fetchData = async () => {
       const data: ResumeTableData[] = await fetchResumes();
       if (!data) {
-        toast.error("Some error Occured");
+        toast.error("Some error Occured",{duration: 3000});
         return;
       }
       setData(data);

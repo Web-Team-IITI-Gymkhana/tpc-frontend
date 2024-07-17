@@ -66,10 +66,10 @@ export const AddEvent = ({
     e.preventDefault();
     try {
       await addEvent([formValues]);
-      toast.success("Successfully added");
+      toast.success("Successfully added",{duration: 3000});
       window.location.reload();
     } catch {
-      toast.error("Some Error Occured");
+      toast.error("Some Error Occured",{duration: 3000});
     }
   };
 
@@ -214,7 +214,7 @@ const PromoteStudent = ({
 
   const updateEvent = async () => {
     await promoteStudent({ studentIds }, eventId);
-    toast.success("Successfully promoted!");
+    toast.success("Successfully promoted!",{duration: 3000});
     onClose();
   };
 
@@ -306,7 +306,7 @@ const MakeJobOfferModal = ({
         status: "ACCEPTED",
       },
     ]);
-    toast.success("Made a successful offer!");
+    toast.success("Made a successful offer!",{duration: 3000});
     window.location.reload();
   };
 
@@ -468,7 +468,7 @@ export const Applications = ({
         const jsonData: EventFC = await fetchEventById(eventId);
         setApplications(jsonData.applications);
       } catch (error) {
-        toast.error("Some error occured");
+        toast.error("Some error occured",{duration: 3000});
       } finally {
         setLoading(false);
       }

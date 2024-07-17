@@ -35,7 +35,7 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
         role: role,
       },
     ]);
-    toast.success("Added! Reload to see changes");
+    toast.success("Added! Reload to see changes",{duration: 3000});
   };
 
   useEffect(() => {
