@@ -103,7 +103,6 @@ export const columns: ColumnDef<Student>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const student = row.original;
-      console.log(student);
       let isDeleteModalOpen = false;
       return (
         <DropdownMenu>
@@ -174,7 +173,6 @@ export default function RecruitersTable({ data }: any) {
       setFilters((x: any) => x.filter((y: any) => y.columnId !== columnId));
     }
   };
-  console.log(filters);
 
   return (
     <div className="w-full">

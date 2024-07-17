@@ -7,6 +7,7 @@ import { CircularProgress } from "@mui/material";
 import { getResume } from "@/helpers/recruiter/api";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import Loader from "@/components/Loader/loader";
+import toast from "react-hot-toast";
 export const JobEvents = ({ events }: { events: [EventFC] }) => {
   const [eventId, setEventId] = useState<string>(null);
 
@@ -89,14 +90,13 @@ export const Applications = ({ eventId }: { eventId: string }) => {
         const jsonData: EventFC = await getEvent(eventId);
         setApplications(jsonData.applications);
       } catch (error) {
-        console.log(error);
+        toast.error("Error fetching Events",{duration: 3000});
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-    console.log(applications);
   }, [eventId]);
 
   return (

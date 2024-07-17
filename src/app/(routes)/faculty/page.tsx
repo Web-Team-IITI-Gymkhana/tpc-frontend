@@ -5,7 +5,7 @@ import generateColumns from "@/components/TableComponent/ColumnMapping";
 import { useState, useEffect } from "react";
 import Loader from "@/components/Loader/loader";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
-
+import toast from "react-hot-toast";
 const dto = [
   {
     status: "string",
@@ -39,7 +39,7 @@ const FacultyPage = () => {
         const jsonData = await fetchApprovals(undefined);
         setData(jsonData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        toast.error("Error fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }

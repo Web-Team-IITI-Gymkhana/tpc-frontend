@@ -60,7 +60,7 @@ export default function RecruiterModal({ open, setOpen, id }) {
         const data = await fetchRecruiterById(id);
         setRecruiterData(data);
       } catch (error) {
-        console.error("Error fetching recruiter data:", error);
+        toast.error("Error fetching recruiter data",{duration: 3000});
       }
       setLoading(false);
     };

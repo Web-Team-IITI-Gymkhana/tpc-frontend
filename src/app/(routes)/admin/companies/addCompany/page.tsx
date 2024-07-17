@@ -15,9 +15,7 @@ const AddCompany = () => {
     sector: "",
   });
 
-  useEffect(() => {
-    console.log(form);
-  });
+
 
   return (
     <>

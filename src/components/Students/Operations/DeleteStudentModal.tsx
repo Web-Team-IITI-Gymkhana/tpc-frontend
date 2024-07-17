@@ -24,7 +24,6 @@ export default function DeleteStudentModal({
   isDeleteModalOpen,
   setisDeleteModal,
 }: Props) {
-  console.log("memberId", memberId);
   const [answer, setanswer] = React.useState<string | null>(null);
   const { toast } = useToast();
   return (

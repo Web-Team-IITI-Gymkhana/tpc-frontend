@@ -8,15 +8,9 @@ export default function copyIDsToClipboard(table: any) {
   navigator.clipboard
     .writeText(clipboardText)
     .then(() => {
-      console.log("IDs copied to clipboard:", clipboardText);
-      toast.success("IDs copied to clipboard!", {
-        duration: 3000, // Duration in milliseconds
-      });
+      toast.success("IDs copied to clipboard!",{duration: 3000});
     })
     .catch((err) => {
-      console.error("Failed to copy IDs to clipboard:", err);
-      toast.error("Failed to copy IDs to clipboard.", {
-        duration: 3000, // Duration in milliseconds
-      });
+      toast.error("Failed to copy IDs to clipboard.",{duration: 3000});
     });
 }

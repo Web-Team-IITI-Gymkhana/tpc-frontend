@@ -38,13 +38,11 @@ const Table = ({ data, columns, type }) => {
   };
   const handleExportRows = (rows) => {
     const rowData = rows.map((row) => row.original);
-    console.log(rowData);
     const csv = generateCsv(csvConfig)(flattenData(rowData));
     download(csvConfig)(csv);
   };
 
   const handleExportData = () => {
-    console.log(flattenData);
     const csv = generateCsv(csvConfig)(flattenData(data));
     download(csvConfig)(csv);
   };

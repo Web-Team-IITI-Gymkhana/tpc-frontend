@@ -51,7 +51,7 @@ const JobModal = ({
         setData(jobDetailData);
         setFormData(jobDetailData);
       } catch (error) {
-        toast.error("Error Fetching data");
+        toast.error("Error Fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }

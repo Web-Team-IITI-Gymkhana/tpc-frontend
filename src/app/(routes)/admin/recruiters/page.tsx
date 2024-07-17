@@ -8,7 +8,6 @@ const hiddenColumns = ["id", "user.id", "company.id"];
 
 const StudentPage = async () => {
   const columns = generateColumns(recruiterdto);
-  console.log(columns);
   const AllRecruiters = await fetchRecruiterData();
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),

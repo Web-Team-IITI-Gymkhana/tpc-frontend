@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import * as Papa from "papaparse";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-
+import toast from "react-hot-toast";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const ImportData = () => {
@@ -47,15 +47,14 @@ const ImportData = () => {
           contact: row["Contact"],
         },
       }));
-
-      console.log(formattedData);
+;
       await axios.post(`${baseUrl}/api/v1/students/`, formattedData);
-      console.log("Students added successfully!");
+      toast.success("Students added successfully",{duration: 3000});
     } catch (err) {
       setError(
-        "Error adding students. Please check the CSV file and try again.",
+        ": Error adding students. Please check the CSV file and try again.",
       );
-      console.error("Error adding students:", err);
+      toast.error(`Error adding students ${err}`,{duration: 3000});
     } finally {
       setIsLoading(false);
     }

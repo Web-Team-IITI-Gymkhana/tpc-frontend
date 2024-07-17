@@ -25,10 +25,10 @@ const LoginPage = ({
         Cookies.set("user", JSON.stringify(jwtDecode(res.body.accessToken)), {
           expires: 365,
         });
-        toast.success("Logged in successfully");
+        toast.success("Logged in successfully",{duration: 3000});
         router.push("/recruiter");
       } catch (error) {
-        toast.error("Some Error Occurred");
+        toast.error("Some Error Occurred",{duration: 3000});
       } finally {
         setLoading(false);
       }

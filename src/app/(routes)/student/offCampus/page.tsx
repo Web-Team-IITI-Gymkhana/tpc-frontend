@@ -17,8 +17,8 @@ const OffCampusPage = () => {
         const oco = await GetOffCampusOffers();
         setOffCampusOffers(oco);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        toast.error("Error fetching data:");
+
+        toast.error("Error fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }

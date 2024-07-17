@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import submit from "../action";
 import { createJobEvent } from "@/helpers/api";
+import toast from "react-hot-toast";
 interface Props {
   jobId: String;
 }
@@ -95,7 +96,7 @@ export function AddEventDialog({ jobId }: Props) {
                     submit("AllEvents");
                   }
                 } catch (error) {
-                  console.error("Error creating job event:", error);
+                  toast.error("Error creating job event",{duration: 3000});
                 } finally {
                   setloading(false);
                 }

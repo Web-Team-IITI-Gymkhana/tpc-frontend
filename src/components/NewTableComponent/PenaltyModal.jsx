@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { fetchPenalties } from "@/helpers/api";
+import toast from "react-hot-toast";
 const style = {
   position: "absolute",
   top: "50%",
@@ -32,15 +33,15 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
       const response = await fetchPenalties(requestBody);
 
       if (response.ok) {
-        console.log("Penalty submitted successfully");
+        toast.success("Penalty added successfully",{duration: 3000});
         onClose();
         setPenaltyValue("");
         setPenaltyReason("");
       } else {
-        console.error("Error submitting penalty");
+        toast.error("Error submitting penalty",{duration: 3000});
       }
     } catch (error) {
-      console.error("Error submitting penalty:", error);
+      toast.error("Error submitting penalty",{duration: 3000});
     }
   };
 

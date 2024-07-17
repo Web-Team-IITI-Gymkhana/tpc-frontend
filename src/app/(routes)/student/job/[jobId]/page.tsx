@@ -101,8 +101,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
         setJobData(data);
         storeCalenderEvents(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        toast.error("Error fetching data:");
+        toast.error("Error fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }

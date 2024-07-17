@@ -124,7 +124,7 @@ export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
       const fileUrl = window.URL.createObjectURL(blob);
       window.open(fileUrl);
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => toast.error("Error",{duration: 3000}));
 };
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
@@ -335,7 +335,7 @@ export const fetchRegistrationDataById = async (studentId: any) => {
     );
     return filteredData;
   } catch (error) {
-    console.error("Error fetching registration data:", error);
+    toast.error("Error fetching registration data",{duration: 3000});
   }
 };
 
@@ -366,7 +366,7 @@ export const login = async (email: string, role: string) => {
     Cookies.set("user", JSON.stringify(jwtDecode(accessToken)), {
       expires: 365,
     });
-    toast.success("Logged in");
+    toast.success("Logged in",{duration: 3000});
     window.location.href = "/";
   } else {
     throw new Error("Login failed");

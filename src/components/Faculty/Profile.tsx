@@ -27,7 +27,7 @@ const EditForm = (params: { profile: ProfileFC }) => {
       if (res) {
         window.location.reload();
       } else {
-        toast.error("Some Error Occured");
+        toast.error("Some Error Occured",{duration: 3000});
       }
     };
     triggerUpdate();

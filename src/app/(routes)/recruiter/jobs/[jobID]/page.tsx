@@ -17,7 +17,7 @@ import {
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
 import Loader from "@/components/Loader/loader";
-
+import toast from "react-hot-toast";
 const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
         setData(jobDetailData);
         setFormData(jobDetailData);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        toast.error("Error fetching data",{duration: 3000});
       } finally {
         setLoading(false);
       }

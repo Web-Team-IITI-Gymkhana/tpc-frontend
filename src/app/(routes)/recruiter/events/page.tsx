@@ -19,7 +19,7 @@ const EventPage = () => {
         const jsonData = await getJobs();
         setData(jsonData);
       } catch (error) {
-        toast.error("Error Fetching Data");
+        toast.error("Error Fetching Data",{duration: 3000});
       } finally {
         setLoading(false);
       }
