@@ -83,12 +83,10 @@ export const apiCall = async (
   }
 
   const res = await fetch(requestUrl, req);
-
-  if (method === "GET" || recieveResponse) {
-    return await res.json();
-  } else {
-    return res.ok;
-  }
+  if (method === "GET") {
+    if(res.ok) return await res.json();
+    else throw new Error("Cannot fetch");
+  } else return res.ok;
 };
 
 export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {

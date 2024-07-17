@@ -6,6 +6,7 @@ import { getJobDetail } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { JobEvents } from "@/components/Recruiters/Events";
 import Loader from "@/components/Loader/loader";
+import toast from "react-hot-toast";
 const EventsPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
         const jsonData = await getJobDetail(params.jobId);
         setData(jsonData);
       } catch (error) {
-        console.log(error);
+        toast.error("Error Fetching Data");
       } finally {
         setLoading(false);
       }
