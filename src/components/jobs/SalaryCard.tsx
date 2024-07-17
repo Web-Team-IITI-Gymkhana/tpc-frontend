@@ -40,7 +40,7 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
   const [salaryData, setSalaryData] = useState<Salary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSalaryData = async () => {
+  const fetchSalaryData = async () => {      
     try {
       const data = await GetSalaryById(salaryId);
       setSalaryData(data);
