@@ -8,8 +8,8 @@ import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { getJafDetails } from "@/helpers/recruiter/api";
 import { JAFdetailsFC } from "@/helpers/recruiter/types";
-import { patchJobData } from "@/helpers/recruiter/api";
-import { patchSalaryData } from "@/helpers/recruiter/api";
+import { patchJobData } from "@/helpers/api";
+import { patchSalaryData } from "@/helpers/api";
 import {
   CategorySelectList,
   GenderSelectList,
@@ -20,6 +20,22 @@ import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
 import { fetchCompany, fetchRecruiterData } from "@/helpers/api";
 import { assignCompany, postCompany, assignRecruiter, postRecruiter } from "@/helpers/api";
+import Select from "react-select";
+const currentStatusOptions = [
+  "INITIALIZED",
+  "SCHEDULED",
+  "PPT_DONE",
+  "POLL_FREEZED",
+  "TEST_COMPLETED",
+  "INTERVIEW_COMPLETED",
+  "RECRUITMENT_PROCESS_COMPLELETED",
+  "OFFER_LETTER_RELEASED",
+  "PROCESS_ON_HOLD",
+  "PROCESS_TERMINATED",
+  "OFFER_REVOKED",
+];
+
+
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
@@ -34,8 +50,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
   const [toggleCompanyModal, setToggleCompanyModal] = useState(false);
   const [toggleRecruiterModal, setToggleRecruiterModal] = useState(false);
-
-
   const [companyFormData, setCompanyFormData] = useState({
     name: '',
     size: 0,
@@ -63,6 +77,10 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
       contact: ''
     }
   });
+  const newCurrentStatusOptions = currentStatusOptions.map((option) => ({
+    value: option,
+    label: option,
+  }));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -237,10 +255,8 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const handleSubmit = async () => {
-    const c1 = await patchJobData(job.id, formData);
-    if (true) {
-      formData.salaries.map((salary, index) => patchSalaryData(salary));
-    }
+    await patchJobData(job.id, formData);
+    formData.salaries.map((salary, index) => patchSalaryData(salary));
     setEditMode(false);
     window.location.reload();
   };
@@ -295,11 +311,41 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-lg">Activity </span>
-                <span>{job.active ? "Active" : "Inactive"}</span>
+                {editMode ? (
+                  <input
+                    type="checkbox"
+                    name="activity"
+                    value={formData.active}
+                    onChange={(e) => {
+                      setFormData((form) => ({
+                        ...form,
+                        active: e.target.checked,
+                      }));
+                    }}
+                  />
+                ) : (
+                  <span>{job.active ? "Active" : "Inactive"}</span>
+                )}
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-lg">Current Status </span>
-                <span>{job.currentStatus}</span>
+                {editMode ? (
+                  <Select
+                    options={newCurrentStatusOptions}
+                    value={{
+                      value: formData.currentStatus,
+                      label: formData.currentStatus,
+                    }}
+                    onChange={(value) => {
+                      setFormData((form) => ({
+                        ...formData,
+                        currentStatus: value.value,
+                      }));
+                    }}
+                  />
+                ) : (
+                  <span>{job.currentStatus}</span>
+                )}
               </div>
               <div className="flex flex-col gap-4">
                 <Link
