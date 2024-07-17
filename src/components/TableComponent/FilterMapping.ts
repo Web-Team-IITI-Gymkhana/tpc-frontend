@@ -61,7 +61,5 @@ export default function mapFiltersToJsonOutput(
       }
     });
   });
-
-  console.log(output);
   return output;
 }

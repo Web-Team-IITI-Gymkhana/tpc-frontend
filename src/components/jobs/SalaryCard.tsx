@@ -45,7 +45,6 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
       const data = await GetSalaryById(salaryId);
       setSalaryData(data);
     } catch (error) {
-      console.error("Error fetching data:", error);
       toast.error("Error fetching data:");
     } finally {
       setLoading(false);

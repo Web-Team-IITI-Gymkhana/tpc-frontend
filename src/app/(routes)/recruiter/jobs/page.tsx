@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader/loader";
+import toast from "react-hot-toast";
 const JobPage = () => {
   const [data, setData] = useState<JobsFC[]>(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ const JobPage = () => {
         const jsonData = await getJobs();
         setData(jsonData);
       } catch (error) {
-        error("Error Fetching Data");
+        toast.error("Error Fetching Data");
       } finally {
         setLoading(false);
       }
