@@ -11,14 +11,12 @@ const hiddenColumns = ["id", "user.id", "company.id"];
 const StudentPage = async () => {
   const columns = generateColumns(recruiterdto);
   const [AllRecruiters, setRecruiters] = useState<RecruiterDTO[]>([]);
-  console.log(columns);
   useEffect(() => {
     const fetchRecruiters = async () => {
       try {
         const data = await fetchRecruiterData();
         setRecruiters(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
         toast.error("Error fetching data:");
       }
     };
