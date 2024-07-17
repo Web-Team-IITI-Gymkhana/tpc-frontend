@@ -23,7 +23,8 @@ const SeasonDetails = ({
   useEffect(() => {
     axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
       res.data.seasons.map((season: any) => {
-        options.push({ value: season.id, label: season.type });
+        const seasonString = `${season.type} ${season.year}`
+        options.push({ value: season.id, label: seasonString });
       });
       setOptionsx(options);
     });
@@ -32,22 +33,6 @@ const SeasonDetails = ({
     <Form layout="vertical">
       <h1 className="text-xl">Season Details</h1>
       <Row gutter={32}>
-        {/* <Col span={12}>
-        <Form.Item label="Year"                             
-        >
-           <Select                                   
-            defaultValue={`${values.year}`}
-            onChange={(value) => values.year = value}
-            options={[
-              { value: '2024', label: '2024' },
-              { value: '2025', label: '2025' },
-              { value: '2026', label: '2026' },
-              { value: '2027', label: '2027' },
-            ]}
-          >            
-          </Select>
-        </Form.Item>
-      </Col> */}
         <Col span={24}>
           <Form.Item
             label="Type"

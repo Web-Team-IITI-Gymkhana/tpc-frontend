@@ -2,14 +2,29 @@
 import { fetchRecruiterData } from "@/helpers/api";
 import Table from "@/components/NewTableComponent/Table";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
-import { recruiterdto } from "@/dto/RecruiterDto";
+import { RecruiterDTO, recruiterdto } from "@/dto/RecruiterDto";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const hiddenColumns = ["id", "user.id", "company.id"];
 
 const StudentPage = async () => {
   const columns = generateColumns(recruiterdto);
+  const [AllRecruiters, setRecruiters] = useState<RecruiterDTO[]>([]);
   console.log(columns);
-  const AllRecruiters = await fetchRecruiterData();
+  useEffect(() => {
+    const fetchRecruiters = async () => {
+      try {
+        const data = await fetchRecruiterData();
+        setRecruiters(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:");
+      }
+    };
+
+    fetchRecruiters();
+  }, []);
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
   );
