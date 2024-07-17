@@ -14,11 +14,10 @@ import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
-import { fetchEachJob } from "@/helpers/api";
-import Cookies from "js-cookie";
+import { fetchJobById } from "@/helpers/api";
 import Modal from "@mui/material/Modal";
-import { CircularProgress } from "@mui/material";
 import toast from "react-hot-toast";
+import Loader from "../Loader/loader";
 
 const JobModal = ({
   jobID,
@@ -44,7 +43,7 @@ const JobModal = ({
     const fetchData = async () => {
       try {
         const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchEachJob(Cookies.get("accessToken"), jobID),
+          fetchJobById(jobID),
           getJafDetails(),
         ]);
 
@@ -114,7 +113,7 @@ const JobModal = ({
         {loading && (
           <div className="w-full h-full flex justify-center items-center">
             <div className="px-28 py-16 bg-white">
-              <CircularProgress />
+              <Loader />
             </div>
           </div>
         )}
@@ -374,7 +373,7 @@ const JobModal = ({
                                         (i, j) =>
                                           j === index
                                             ? { ...i, type: e.target.value }
-                                            : i
+                                            : i,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -404,10 +403,10 @@ const JobModal = ({
                                             ? {
                                                 ...t,
                                                 duration: Number(
-                                                  e.target.value
+                                                  e.target.value,
                                                 ),
                                               }
-                                            : t
+                                            : t,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -419,7 +418,7 @@ const JobModal = ({
                                   }}
                                 />
                               </li>
-                            )
+                            ),
                           )
                         : job.selectionProcedure.tests.map((p, index) => (
                             <li key={index} className="my-2">
@@ -458,7 +457,7 @@ const JobModal = ({
                                         (i, j) =>
                                           j === index
                                             ? { ...i, type: e.target.value }
-                                            : i
+                                            : i,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -472,7 +471,7 @@ const JobModal = ({
                                   {jafDetails.interviewTypes.map(
                                     (test, index) => (
                                       <option key={index}>{test}</option>
-                                    )
+                                    ),
                                   )}
                                 </select>
                                 <br />
@@ -488,7 +487,7 @@ const JobModal = ({
                                         (i, j) =>
                                           j === index
                                             ? { ...i, duration: e.target.value }
-                                            : i
+                                            : i,
                                       );
                                     setFormData((prev) => ({
                                       ...prev,
@@ -500,7 +499,7 @@ const JobModal = ({
                                   }}
                                 />
                               </li>
-                            )
+                            ),
                           )
                         : job.selectionProcedure.interviews.map((p, index) => (
                             <li key={index} className="my-2">
@@ -612,7 +611,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, baseSalary: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -636,7 +635,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, totalCTC: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -660,7 +659,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, takeHomeSalary: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -684,7 +683,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, grossSalary: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -712,7 +711,7 @@ const JobModal = ({
                               (s, i) =>
                                 i === salaryIndex
                                   ? { ...s, otherCompensations: e.target.value }
-                                  : s
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,

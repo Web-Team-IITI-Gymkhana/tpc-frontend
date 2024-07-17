@@ -1,18 +1,15 @@
 //this will be used to create the login page.
 "use client";
-import { url } from "@/helpers/api";
 import React, { useState } from "react";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
+import { login } from "@/helpers/api";
 
 const LoginForm = () => {
-  const [email, setemail] = useState<String | null>(null);
-  const [role, setrole] = useState<String | null>("STUDENT");
+  const [email, setemail] = useState<string | null>(null);
+  const [role, setrole] = useState<string | null>("STUDENT");
   const router = useRouter();
   return (
     <>
@@ -59,40 +56,17 @@ const LoginForm = () => {
                     <div className="items-center flex justify-center flex-col gap-4">
                       <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => {
+                        onClick={async () => {
                           if (email == null || email.length == 0) {
-                            toast.error("Email is Required");
+                            toast.error("Email is required");
                             return;
                           }
-                          axios
-                            .post(url("/auth/login/"), {
-                              email: email,
-                              role: role?.toUpperCase(),
-                            })
-                            .then(
-                              (response: { data: { accessToken: string } }) => {
-                                Cookies.set(
-                                  "accessToken",
-                                  response.data.accessToken,
-                                  {
-                                    expires: 365,
-                                  }
-                                );
-                                Cookies.set(
-                                  "user",
-                                  JSON.stringify(
-                                    jwtDecode(response.data.accessToken)
-                                  ),
-                                  { expires: 365 }
-                                );
-                                toast.success("logged in");
-                                window.location.href = "/";
-                              }
-                            )
-                            .catch((err) => {
-                              alert(err);
-                              toast.error("Some Error Occured");
-                            });
+                          try {
+                            await login(email, role);
+                          } catch (err) {
+                            alert(err);
+                            toast.error("Some error occurred");
+                          }
                         }}
                       >
                         Request Access

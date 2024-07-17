@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Cookies from "js-cookie";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
 import { useState } from "react";
 import submit from "../action";
-
+import { createJobEvent } from "@/helpers/api";
 interface Props {
   jobId: String;
 }
@@ -86,20 +84,21 @@ export function AddEventDialog({ jobId }: Props) {
               disabled={loading}
               onClick={async () => {
                 setloading(true);
-                await axios
-                  .post(
-                    `http://tpc.iiti.ac.in/api/v1/jobs/${jobId}/events`,
-                    { type: type, roundNumber: round, startDateTime: date },
-                    {
-                      headers: {
-                        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-                      },
-                    },
-                  )
-                  .then((response) => {
+                try {
+                  const success = await createJobEvent(
+                    jobId,
+                    type,
+                    round,
+                    date,
+                  );
+                  if (success) {
                     submit("AllEvents");
-                    setloading(false);
-                  });
+                  }
+                } catch (error) {
+                  console.error("Error creating job event:", error);
+                } finally {
+                  setloading(false);
+                }
               }}
             >
               {loading ? "Submitting..." : "Save changes"}

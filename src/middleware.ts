@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-
-
 const adminRoutes = [
   "/admin/company",
   "/admin/students",
   "/admin/job",
-  /^\/admin\/jobs\/events\/[a-zA-Z0-9\-]+$/
+  /^\/admin\/jobs\/events\/[a-zA-Z0-9\-]+$/,
 ];
-
 
 const studentRoutes = [
   "/student/jobs",
@@ -19,7 +16,7 @@ const studentRoutes = [
   "/student/profile",
   "/student/resumes",
   /^\/student\/job\/[a-zA-Z0-9\-]+$/,
-  /^\/student\/job\/salary\/[a-zA-Z0-9\-]+$/
+  /^\/student\/job\/salary\/[a-zA-Z0-9\-]+$/,
 ];
 
 const recruiterRoutes = [
@@ -28,7 +25,7 @@ const recruiterRoutes = [
   "/recruiter/events",
   "/recruiter/profile",
   /^\/recruiter\/jobs\/[a-zA-Z0-9\-]+$/,
-  /^\/recruiter\/events\/[a-zA-Z0-9\-]+$/
+  /^\/recruiter\/events\/[a-zA-Z0-9\-]+$/,
 ];
 
 const facultyRoutes = ["/faculty", "/faculty/profile"];
@@ -55,28 +52,31 @@ export function middleware(request: NextRequest) {
 
   if (
     user?.role !== "ADMIN" &&
-    adminRoutes.some(route => 
-      typeof route === "string" 
-        ? request.nextUrl.pathname === route 
-        : route.test(request.nextUrl.pathname))
+    adminRoutes.some((route) =>
+      typeof route === "string"
+        ? request.nextUrl.pathname === route
+        : route.test(request.nextUrl.pathname),
+    )
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (
     user?.role !== "STUDENT" &&
-    studentRoutes.some(route => 
-      typeof route === "string" 
-        ? request.nextUrl.pathname === route 
-        : route.test(request.nextUrl.pathname))
+    studentRoutes.some((route) =>
+      typeof route === "string"
+        ? request.nextUrl.pathname === route
+        : route.test(request.nextUrl.pathname),
+    )
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (
     user?.role !== "RECRUITER" &&
-    recruiterRoutes.some(route => 
-      typeof route === "string" 
-        ? request.nextUrl.pathname === route 
-        : route.test(request.nextUrl.pathname))
+    recruiterRoutes.some((route) =>
+      typeof route === "string"
+        ? request.nextUrl.pathname === route
+        : route.test(request.nextUrl.pathname),
+    )
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -87,8 +87,6 @@ export function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-
-
 
   return NextResponse.next();
 }

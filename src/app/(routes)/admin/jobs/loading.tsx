@@ -1,8 +1,7 @@
 "use client";
 
 import React, { Component } from "react";
-import { CircularProgress } from "@mui/material";
-import Loader from "@/components/Loader/loader"
+import Loader from "@/components/Loader/loader";
 
 class Loading extends Component {
   render() {
@@ -20,7 +19,7 @@ class Loading extends Component {
     // Otherwise, display the Material-UI CircularProgress component
     return (
       <div className="h-screen w-full flex justify-center items-center">
-       <Loader/>
+        <Loader />
       </div>
     );
   }

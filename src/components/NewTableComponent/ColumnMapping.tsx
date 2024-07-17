@@ -1,7 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-
-export default function generateColumns(dto:any): ColumnDef<any>[] {
+export default function generateColumns(dto: any): ColumnDef<any>[] {
   const generatedColumns: ColumnDef<any>[] = [];
 
   function generateColumnsRecursive(data: any, prefix = "") {
@@ -40,7 +39,7 @@ export default function generateColumns(dto:any): ColumnDef<any>[] {
       year: 80,
     };
 
-    return sizes[key] || 150; 
+    return sizes[key] || 150;
   }
 
   if (dto.length > 0) {

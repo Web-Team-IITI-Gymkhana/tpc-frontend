@@ -1,5 +1,5 @@
 import React from "react";
-import { ProfileFC} from "@/helpers/recruiter/types";
+import { ProfileFC } from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
 import PersonIcon from "@mui/icons-material/Person";
 
@@ -52,7 +52,7 @@ const RecruiterProfile = (params: {
             <span className="font-semibold">Domains: </span>
             <span>
               {params.profile.company.domains.map(
-                (domain, index) => `${domain}, `
+                (domain, index) => `${domain}, `,
               )}
             </span>
           </div>
@@ -68,7 +68,7 @@ const RecruiterProfile = (params: {
                   <li key={key}>
                     {key} : {value}
                   </li>
-                )
+                ),
               )}
             </ul>
           </div>

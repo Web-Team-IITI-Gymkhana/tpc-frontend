@@ -31,8 +31,8 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
       </h1>
       {loading && (
         <div className="h-screen w-full flex justify-center items-center">
-        <Loader/>
-       </div>
+          <Loader />
+        </div>
       )}
       {job && (
         <div>

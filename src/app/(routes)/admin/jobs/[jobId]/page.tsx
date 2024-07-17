@@ -8,17 +8,33 @@ import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { getJafDetails } from "@/helpers/recruiter/api";
 import { JAFdetailsFC } from "@/helpers/recruiter/types";
-import { patchJobData } from "@/helpers/recruiter/api";
-import { patchSalaryData } from "@/helpers/recruiter/api";
+import { patchJobData } from "@/helpers/api";
+import { patchSalaryData } from "@/helpers/api";
 import {
   CategorySelectList,
   GenderSelectList,
 } from "@/components/Recruiters/jobEdit";
-import { fetchEachJob } from "@/helpers/api";
-import Cookies from "js-cookie";
+import { fetchJobById } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
+import { fetchCompany, fetchRecruiterData } from "@/helpers/api";
+import { assignCompany, assignRecruiter } from "@/helpers/api";
+import Select from "react-select";
+
+const currentStatusOptions = [
+  "INITIALIZED",
+  "SCHEDULED",
+  "PPT_DONE",
+  "POLL_FREEZED",
+  "TEST_COMPLETED",
+  "INTERVIEW_COMPLETED",
+  "RECRUITMENT_PROCESS_COMPLELETED",
+  "OFFER_LETTER_RELEASED",
+  "PROCESS_ON_HOLD",
+  "PROCESS_TERMINATED",
+  "OFFER_REVOKED",
+];
 
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
@@ -26,18 +42,41 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(null);
   const [jafDetails, setJafDetails] = useState<JAFdetailsFC>();
+  const [companyData, setCompanyData] = useState(null);
+  const [recruiterData, setRecruiterData] = useState(null);
+  const [companyDropDown, setcompanyDropDown] = useState(false);
+  const [recruiterDropDown, setrecruiterDropDown] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedRecruiter, setSelectedRecruiter] = useState(null);
+  const newCurrentStatusOptions = currentStatusOptions.map((option) => ({
+    value: option,
+    label: option,
+  }));
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [jobDetailData, jafDetailsData] = await Promise.all([
-          fetchEachJob(Cookies.get("accessToken"), params.jobId),
-          getJafDetails(),
-        ]);
+        const [jobDetailData, jafDetailsData, companyData, recruiterData] =
+          await Promise.all([
+            fetchJobById(params.jobId),
+            getJafDetails(),
+            fetchCompany(),
+            fetchRecruiterData(),
+          ]);
 
-        setJafDetails((prev) => jafDetailsData);
+        setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
+        setCompanyData(companyData);
+        setRecruiterData(recruiterData);
+        const matchedCompany = companyData.find(
+          (company) => company.id === jobDetailData.company.id,
+        );
+        setSelectedCompany(matchedCompany);
+        const matchedRecruiter = recruiterData.find(
+          (recruiter) => recruiter.id === jobDetailData.recruiter.id,
+        );
+        setSelectedRecruiter(matchedRecruiter);
       } catch (error) {
         toast.error("Error fetching data");
       } finally {
@@ -47,6 +86,21 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
     fetchData();
   }, [params.jobId]);
+  const toggleDropdown = (state: string) => {
+    if (state === "company") {
+      setcompanyDropDown(!companyDropDown);
+    } else {
+      setrecruiterDropDown(!recruiterDropDown);
+    }
+  };
+  const handleCompanySelect = (company) => {
+    setSelectedCompany(company);
+    setcompanyDropDown(false);
+  };
+  const handleRecruiterSelect = (recruiter) => {
+    setSelectedRecruiter(recruiter);
+    setrecruiterDropDown(false);
+  };
 
   const handleEditClick = () => {
     if (editMode) {
@@ -61,10 +115,8 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const handleSubmit = async () => {
-    const c1 = await patchJobData(job.id, formData);
-    if (true) {
-      formData.salaries.map((salary, index) => patchSalaryData(salary));
-    }
+    await patchJobData(job.id, formData);
+    formData.salaries.map((salary, index) => patchSalaryData(salary));
     setEditMode(false);
     window.location.reload();
   };
@@ -119,11 +171,41 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-lg">Activity </span>
-                <span>{job.active ? "Active" : "Inactive"}</span>
+                {editMode ? (
+                  <input
+                    type="checkbox"
+                    name="activity"
+                    value={formData.active}
+                    onChange={(e) => {
+                      setFormData((form) => ({
+                        ...form,
+                        active: e.target.checked,
+                      }));
+                    }}
+                  />
+                ) : (
+                  <span>{job.active ? "Active" : "Inactive"}</span>
+                )}
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-lg">Current Status </span>
-                <span>{job.currentStatus}</span>
+                {editMode ? (
+                  <Select
+                    options={newCurrentStatusOptions}
+                    value={{
+                      value: formData.currentStatus,
+                      label: formData.currentStatus,
+                    }}
+                    onChange={(value) => {
+                      setFormData((form) => ({
+                        ...formData,
+                        currentStatus: value.value,
+                      }));
+                    }}
+                  />
+                ) : (
+                  <span>{job.currentStatus}</span>
+                )}
               </div>
               <div className="flex flex-col gap-4">
                 <Link
@@ -139,6 +221,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 )}
               </div>
             </div>
+
             <div>
               <div className="font-semibold text-lg my-4">Skills</div>
               <div className="flex flex-wrap gap-4">
@@ -224,6 +307,215 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               </div>
             </div>
           </div>
+          <div className="flex flex-col gap-4">
+            <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
+              <div className="font-bold text-xl my-4">Company Details</div>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col w-full">
+                  <div className="font-semibold my-2">Company Name</div>
+                  <div className="flex">
+                    {companyDropDown ? (
+                      <div className="relative w-full">
+                        <input
+                          type="text"
+                          className="input-field w-full border border-gray-300 rounded p-2"
+                          value={selectedCompany?.name || ""}
+                          onFocus={() => toggleDropdown("company")}
+                          readOnly
+                        />
+                        {companyDropDown && (
+                          <div className="dropdown bg-gray-100 rounded-lg shadow-md mt-2 absolute w-full max-h-60 overflow-auto z-10">
+                            {companyData.map((company) => (
+                              <div
+                                key={company.id}
+                                className="dropdown-item py-2 px-4 hover:bg-gray-200 cursor-pointer rounded-md"
+                                onClick={() => handleCompanySelect(company)}
+                              >
+                                {company.name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between w-full">
+                        <div
+                          onClick={() => toggleDropdown("company")}
+                          className="cursor-pointer w-full"
+                        >
+                          {selectedCompany?.name || "Select a Company"}
+                        </div>
+                        <Button
+                          onClick={() => toggleDropdown("company")}
+                          className="ml-2"
+                        >
+                          {selectedCompany?.id ===
+                          "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                            ? "Assign"
+                            : "Change"}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1">
+                  <div className="font-semibold my-2">Annual Turnover</div>
+                  <div className="flex items-center">
+                    <div>{selectedCompany?.annualTurnover}</div>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1">
+                  <div className="font-semibold my-2">
+                    Year of Establishment
+                  </div>
+                  <div className="flex items-center">
+                    <span className="mr-2">Year of Establishment:</span>
+                    <div>{selectedCompany?.yearOfEstablishment}</div>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1">
+                  <div className="font-semibold my-2">Category</div>
+                  <div className="flex items-center">
+                    <div>{selectedCompany?.category}</div>
+                  </div>
+                </div>
+                <div className="flex flex-col flex-1">
+                  <div className="font-semibold my-2">Social Media Link</div>
+                  <div className="flex items-center">
+                    <div>
+                      <a
+                        href={selectedCompany?.socialMediaLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {selectedCompany?.socialMediaLink}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end w-full mt-4">
+                  <Button
+                    onClick={async () => {
+                      if (selectedCompany) {
+                        try {
+                          await assignCompany([
+                            { id: job.id, companyId: selectedCompany.id },
+                          ]);
+                          toast.success("Company assigned successfully");
+                        } catch (error) {
+                          toast.error("Failed to assign company");
+                        }
+                      }
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
+            <div className="font-semibold text-lg my-4">Recruiter Details</div>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col w-full">
+                <div className="font-semibold my-2">Recruiter Name</div>
+                <div className="flex">
+                  {recruiterDropDown ? (
+                    <div className="relative w-full">
+                      <input
+                        type="text"
+                        className="input-field w-full border border-gray-300 rounded p-2"
+                        value={selectedRecruiter?.user.name || ""}
+                        onFocus={() => toggleDropdown("recruiter")}
+                        readOnly
+                      />
+                      {recruiterDropDown && (
+                        <div className="dropdown bg-gray-100 rounded-lg shadow-md mt-2 absolute w-full max-h-60 overflow-auto z-10">
+                          {recruiterData.map((recruiter) => (
+                            <div
+                              key={recruiter.id}
+                              className="dropdown-item py-2 px-4 hover:bg-gray-200 cursor-pointer rounded-md"
+                              onClick={() => handleRecruiterSelect(recruiter)}
+                            >
+                              {recruiter.user.name}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between w-full">
+                      <div
+                        onClick={() => setrecruiterDropDown(true)}
+                        className="cursor-pointer w-full"
+                      >
+                        {selectedRecruiter?.user.name || "Select a Recruiter"}
+                      </div>
+                      <Button
+                        onClick={() => setrecruiterDropDown(true)}
+                        className="ml-2"
+                      >
+                        {selectedRecruiter?.id ===
+                        "3a0a4d51-3085-4d39-8a0b-376e4e1e63a1"
+                          ? "Assign"
+                          : "Change"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col flex-1">
+                <div className="font-semibold my-2">Name</div>
+                <div className="flex items-center">
+                  <div>{selectedRecruiter?.user.name}</div>
+                </div>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="font-semibold my-2">Email</div>
+                <div className="flex items-center">
+                  <div>{selectedRecruiter?.user.email}</div>
+                </div>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="font-semibold my-2">Contact</div>
+                <div className="flex items-center">
+                  <div>{selectedRecruiter?.user.contact}</div>
+                </div>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="font-semibold my-2">Company</div>
+                <div className="flex items-center">
+                  <div>{selectedRecruiter?.company.name}</div>
+                </div>
+              </div>
+              <div className="flex flex-col flex-1">
+                <div className="font-semibold my-2">Designation</div>
+                <div className="flex items-center">
+                  <div>{selectedRecruiter?.designation}</div>
+                </div>
+              </div>
+              <div className="flex justify-end w-full mt-4">
+                <Button
+                  onClick={async () => {
+                    if (selectedRecruiter) {
+                      try {
+                        await assignRecruiter([
+                          { id: job.id, recruiterId: selectedRecruiter.id },
+                        ]);
+                        toast.success("Recruiter assigned successfully");
+                      } catch (error) {
+                        toast.error("Failed to assign recruiter");
+                      }
+                    }
+                  }}
+                >
+                  Submit
+                </Button>
+              </div>
+            </div>
+          </div>
+
           {job.selectionProcedure && (
             <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
               <div className="font-semibold text-lg mb-4">
@@ -351,7 +643,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                     (i, j) =>
                                       j === index
                                         ? { ...i, type: e.target.value }
-                                        : i
+                                        : i,
                                   );
                                 setFormData((prev) => ({
                                   ...prev,
@@ -382,7 +674,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                             ...t,
                                             duration: Number(e.target.value),
                                           }
-                                        : t
+                                        : t,
                                   );
                                 setFormData((prev) => ({
                                   ...prev,
@@ -432,7 +724,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       (i, j) =>
                                         j === index
                                           ? { ...i, type: e.target.value }
-                                          : i
+                                          : i,
                                     );
                                   setFormData((prev) => ({
                                     ...prev,
@@ -446,7 +738,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                 {jafDetails.interviewTypes.map(
                                   (test, index) => (
                                     <option key={index}>{test}</option>
-                                  )
+                                  ),
                                 )}
                               </select>
                               <br />
@@ -462,7 +754,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       (i, j) =>
                                         j === index
                                           ? { ...i, duration: e.target.value }
-                                          : i
+                                          : i,
                                     );
                                   setFormData((prev) => ({
                                     ...prev,
@@ -474,7 +766,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                 }}
                               />
                             </li>
-                          )
+                          ),
                         )
                       : job.selectionProcedure.interviews.map((p, index) => (
                           <li key={index} className="my-2">
@@ -582,7 +874,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, baseSalary: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -606,7 +898,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, totalCTC: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -630,7 +922,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, takeHomeSalary: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -654,7 +946,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, grossSalary: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,
@@ -682,7 +974,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             (s, i) =>
                               i === salaryIndex
                                 ? { ...s, otherCompensations: e.target.value }
-                                : s
+                                : s,
                           );
                           setFormData((prev) => ({
                             ...prev,

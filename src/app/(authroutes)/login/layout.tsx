@@ -4,12 +4,6 @@ interface Props {
   children: React.ReactNode;
 }
 
-async function getAuth() {
-  const res = await fetch("/api/auth");
-  const json = await res.json();
-  return json;
-}
-
 const LoginModalLayout = ({ children }: Props) => {
   return (
     <>

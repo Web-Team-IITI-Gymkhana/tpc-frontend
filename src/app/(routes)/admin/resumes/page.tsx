@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { fetchResumes, getResumeFile, patchResumeVerify } from "@/helpers/api";
-import Cookies from "js-cookie";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import Table from "@/components/NewTableComponent/Table";
 import { resumeDto, Resume, ResumeTableData } from "@/dto/ResumeDto";
@@ -23,13 +22,13 @@ const Resumes = () => {
   const newResumeDto = [{ update: "string", ...resumeDto[0] }];
   const columns = generateColumns(newResumeDto);
   const visibleColumns = columns.filter(
-    (column: any) => !hiddenColumns.includes(column?.accessorKey)
+    (column: any) => !hiddenColumns.includes(column?.accessorKey),
   );
 
   const updateVerification = (id: string, resumes: ResumeTableData[]) => {
     patchResumeVerify([{ id: id, verified: true }]);
     const updatedResumes: ResumeTableData[] = resumes.map((resume) =>
-      resume.id == id ? { ...resume, verified: true } : resume
+      resume.id == id ? { ...resume, verified: true } : resume,
     );
     console.log(updatedResumes);
     setData(updatedResumes);
