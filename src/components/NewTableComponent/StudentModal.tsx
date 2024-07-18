@@ -17,6 +17,7 @@ import { Button } from "@mui/material";
 import { fetchRegistrations } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
 import { fetchStudentDataById, fetchRegistrationDataById } from "@/helpers/api";
+import toast from "react-hot-toast";
 const redirect = () => {};
 const theme = createTheme({
   palette: {
@@ -64,15 +65,15 @@ const handleRegistration = async (
     );
 
     if (!response) {
-      console.error("Failed to update registration status");
+      toast.error("Failed to update registration status");
       throw new Error("Failed to update registration status");
-      //Will change it in a separate console removal PR
+      //Will change it in a separate toast removal PR
     }
 
-    console.log("Registration status updated successfully");
+    toast.success("Registration status updated successfully");
     return true;
   } catch (error) {
-    console.error("Error updating registration status:", error.message);
+    toast.error("Error updating registration status:", error.message);
     alert(`Error updating registration status: ${error.message}`);
     return false;
   }
@@ -89,7 +90,7 @@ export default function StudentModal({ open, setOpen, id }) {
       const data = await fetchStudentDataById(id);
       setStudentData(data);
     } catch (error) {
-      console.error("Error fetching student data:", error);
+      toast.error("Error fetching student data");
     } finally {
       setLoading(false);
     }

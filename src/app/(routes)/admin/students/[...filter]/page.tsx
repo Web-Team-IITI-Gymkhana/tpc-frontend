@@ -30,7 +30,6 @@ const StudentPage = ({ params }: any) => {
 
       // Extract query parameters from the URL
       const decodedParams = decodeURIComponent(params.filter[0]);
-      console.log(decodedParams);
       const AllStudents = await fetchStudentData(decodedParams);
       setStudents(AllStudents);
     };

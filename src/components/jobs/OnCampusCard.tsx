@@ -20,8 +20,8 @@ const OnCampusCard = ({ offerItem, salaryId }: Props) => {
       try {
         const data = await GetSalaryById(salaryId);
         setSalary(data);
+        console.log(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
         toast.error("Error fetching data:");
       } finally {
         setLoading(false);

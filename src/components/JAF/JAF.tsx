@@ -172,7 +172,6 @@ function JAF() {
                 others: values.jobOthers, //other textarea
               },
             };
-            console.log(submitValues);
             axios
               .post(`${baseUrl}/api/v1/jaf`, {
                 job: {
@@ -230,11 +229,9 @@ function JAF() {
               .then((res) => {
                 toast.success("JAF Form filled successfully");
                 window.location.reload();
-                console.log(res);
               })
               .catch((err) => {
                 toast.error("Cannot Submit");
-                console.log(err);
               });
             setFinalValues(submitValues);
           }}
