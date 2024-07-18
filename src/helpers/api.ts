@@ -157,6 +157,31 @@ export const assignCompany = async (
     body: assignments,
   });
 };
+export const postCompany = async (
+  companies: {
+    name: string;
+    category: string;
+    yearOfEstablishment: string;
+    website: string;
+    size: number;
+    annualTurnover: string;
+    socialMediaLink: string;
+    domains: string[];
+    address: {
+      line1: string;
+      line2: string;
+      city: string;
+      state: string;
+      country: string;
+    };
+  }[],
+) => {
+  return apiCall("/companies", {
+    method: "POST",
+    body: companies,
+  });
+  toast.success("Company created");
+};
 
 export const assignRecruiter = async (
   assignments: { id: string; recruiterId: string }[],
@@ -164,6 +189,24 @@ export const assignRecruiter = async (
   return apiCall("/jobs", {
     method: "PATCH",
     body: assignments,
+  });
+};
+
+export const postRecruiter = async (
+  recruiters: {
+    designation: string;
+    landline: string;
+    companyId: string;
+    user: {
+      name: string;
+      email: string;
+      contact: string;
+    };
+  }[],
+) => {
+  return apiCall("/recruiters", {
+    method: "POST",
+    body: recruiters,
   });
 };
 

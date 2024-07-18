@@ -1,12 +1,15 @@
 import { ColumnDef } from "@tanstack/react-table";
-
+const customHeaders: { [key: string]: string } = {
+  "companyDetailsFilled.name": "Company_Details_Name",
+  "recruiterDetailsFilled.name": "Recruiter_Details_Name",
+};
 export default function generateColumns(dto: any): ColumnDef<any>[] {
   const generatedColumns: ColumnDef<any>[] = [];
 
   function generateColumnsRecursive(data: any, prefix = "") {
     Object.entries(data).forEach(([key, value]) => {
-      const header = key.charAt(0).toUpperCase() + key.slice(1);
       const accessorKey = prefix ? `${prefix}.${key}` : key;
+      const header = customHeaders[accessorKey] || key.charAt(0).toUpperCase() + key.slice(1);
 
       if (typeof value === "object" && value !== null) {
         generateColumnsRecursive(value, accessorKey);
@@ -21,6 +24,7 @@ export default function generateColumns(dto: any): ColumnDef<any>[] {
       }
     });
   }
+
 
   function getColumnSize(key: string): number {
     const sizes: { [key: string]: number } = {

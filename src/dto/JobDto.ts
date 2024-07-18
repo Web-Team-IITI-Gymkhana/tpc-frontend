@@ -43,6 +43,14 @@ interface RecruitmentDTO {
 // Example data matching the DTO structure
 const recruitmentDTO = [
   {
+    companyDetailsFilled: {
+      name: "string",
+
+    },
+    recruiterDetailsFilled: {
+      name: "string",
+
+    },
     id: "string",
     role: "string",
     active: "boolean",
