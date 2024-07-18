@@ -182,7 +182,7 @@ export const postCompany = async (
     method: "POST",
     body: companies,
   });
-  toast.success("Companyyyyy successfully posted");
+  toast.success("Company created");
 };
 
 export const assignRecruiter = async (
