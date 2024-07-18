@@ -13,6 +13,7 @@ import StudentModal from "./StudentModal";
 import JobModal from "./NewJobModal";
 import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
+import SeasonModal from "./SeasonModal";
 import Link from "next/link";
 const csvConfig = mkConfig({
   fieldSeparator: ",",
@@ -52,6 +53,8 @@ const Table = ({ data, columns, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState(null);
+  const [seasontype, setSeasonType] = useState(null);
+  const [year, setYear] = useState(null);
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
@@ -74,11 +77,26 @@ const Table = ({ data, columns, type }) => {
             Add Penalty
           </MenuItem>
         )}
+        
         {type == "job" ? (
           <Link href={`/admin/jobs/${row.original.id}`}>
             <MenuItem key="view">View {type}</MenuItem>
           </Link>
         ) : (
+          type == "season" ? (
+            <MenuItem
+            key="view"
+            onClick={() => {
+              setId(row.original.student.id);
+              setSeasonType(row.original.season.type);
+              setYear(row.original.season.year);
+              setOpen(true);
+            }}
+          >
+            View Student
+          </MenuItem>
+          
+          ) : (
           <MenuItem
             key="view"
             onClick={() => {
@@ -88,6 +106,7 @@ const Table = ({ data, columns, type }) => {
           >
             View {type}
           </MenuItem>
+          )
         )}
       </Box>
     ),
@@ -158,6 +177,10 @@ const Table = ({ data, columns, type }) => {
           studentId={id}
         />
       )}
+      {type === "season" && (
+        <SeasonModal open={open} setOpen={setOpen} id={id} type={seasontype} year={year} />
+      )}
+
     </>
   );
 };
