@@ -107,7 +107,7 @@ export const AddSeason = ({
               required
             ></Select>
           </div>
-          <Button type="submit">Add Event</Button>
+          <Button type="submit">Add Season</Button>
         </form>
       </div>
     </Modal>
