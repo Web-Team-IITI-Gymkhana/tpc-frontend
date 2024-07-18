@@ -141,6 +141,20 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
   return { status: res.status, body };
 };
 
+export const fetchFaculties = async () => {
+  return apiCall("/faculties");
+};
+export const facultyApproval = async (salaryId: string, facultyId:string) => {
+  const requestBody: {facultyId: string}[]= [{facultyId: facultyId}];
+
+console.log(requestBody);
+  return apiCall(`/faculty-approvals/${salaryId}`, {
+    method: "POST",
+    body:requestBody,
+
+  });
+}
+
 export const fetchAllSeasons = async () => {
   return apiCall("/seasons");
 };
