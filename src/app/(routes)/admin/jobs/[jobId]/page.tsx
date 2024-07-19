@@ -18,8 +18,8 @@ import { fetchJobById } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
-import { fetchCompany, fetchRecruiterData, fetchFaculties, facultyApproval } from "@/helpers/api";
-import { assignCompany, postCompany, assignRecruiter, postRecruiter } from "@/helpers/api";
+import { fetchCompany, fetchRecruiterData, fetchFaculties, postFacultyApproval } from "@/helpers/api";
+import { assignCompany, postCompany, assignRecruiter, postRecruiter, fetchApprovals } from "@/helpers/api";
 import Select from "react-select";
 const currentStatusOptions = [
   "INITIALIZED",
@@ -43,6 +43,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [formData, setFormData] = useState(null);
   const [jafDetails, setJafDetails] = useState<JAFdetailsFC>();
   const [facultyData, setFacultyData] = useState(null);
+  const [facultyApprovals, setFacultyApprovals] = useState([]);
   const [selectedFaculties, setSelectedFaculties] = useState([]);
   const [facultyDropDown, setFacultyDropdown] = useState([false]);
   const [companyData, setCompanyData] = useState(null);
@@ -53,6 +54,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
   const [toggleCompanyModal, setToggleCompanyModal] = useState(false);
   const [toggleRecruiterModal, setToggleRecruiterModal] = useState(false);
+  const [approvalModal, setApprovalModal] = useState(false);
   const [companyFormData, setCompanyFormData] = useState({
     name: '',
     size: 0,
@@ -95,14 +97,16 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             getJafDetails(),
             fetchCompany(),
             fetchRecruiterData(),
-            fetchFaculties()
+            fetchFaculties(),
           ]);
+
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
         setFacultyData(facultyData);
         setCompanyData(companyData);
         setRecruiterData(recruiterData);
+        console.log("job", jobDetailData);
         setRecruiterFormData({
           designation: jobDetailData.recruiterDetailsFilled.designation,
           landline: jobDetailData.recruiterDetailsFilled.landline,
@@ -130,6 +134,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           },
           domains: jobDetailData.companyDetailsFilled.domains || ['']
         });
+
         const matchedCompany = companyData.find(
           (company) => company.id === jobDetailData.company.id,
         );
@@ -144,7 +149,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [params.jobId]);
 
@@ -155,6 +159,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
       [name]: value,
     }));
   };
+
   const handleRecruiterFormChange = (e) => {
     const { name, value } = e.target;
     const [mainKey, subKey] = name.split('.');
@@ -248,11 +253,18 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const submitApproval = async (salaryIndex) => {
     const selected = selectedFaculties[salaryIndex] || [];
     for (let i = 0; i < selected.length; i++) {
-      await facultyApproval(job.salaries[salaryIndex].id, selected[i]);
+      await postFacultyApproval(job.salaries[salaryIndex].id, selected[i]);
     }
 
   };
 
+  const getApprovals = async (salaryIndex) => {
+    setLoading(true);
+    const approvals = await fetchApprovals(job.salaries[salaryIndex].id);
+    console.log("approvals", approvals);
+    setFacultyApprovals(approvals);
+    setLoading(false);
+  };
 
   const handleEditClick = () => {
     if (editMode) {
@@ -1176,172 +1188,181 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
             </div>
             {job.salaries?.map((salary, salaryIndex) => (
-              <>   <div key={salaryIndex} className="flex flex-col">
-                <div className="relative">
-                  <Button
-                    color="primary"
-                    className=""
-                    onClick={() => {
-                      setFacultyDropdown((prev) => {
-                        const newDropdownState = [...prev];
-                        newDropdownState[salaryIndex] = !newDropdownState[salaryIndex];
-                        return newDropdownState;
-                      });
-                    }}
-                  >
-                    Select Faculty
-                  </Button> {facultyDropDown[salaryIndex] && (<button
-                    className="bg-blue-500 text-white p-2 ml-4 rounded  hover:bg-blue-600 transition duration-200"
-                    onClick={() => submitApproval(salaryIndex)}
-                  >
-                    Submit Request
-                  </button>)}
-                  {facultyDropDown[salaryIndex] && (
-                    <><div className="absolute left-0 mt-2 mb-3 w-60 bg-white border border-gray-300 max-h-60 overflow-auto rounded shadow-lg z-10">
-                      {facultyData.map((faculty) => (
-                        <label
-                          key={faculty.id}
-                          className="flex items-center p-2 bg-gray-100 hover:bg-gray-200 transition duration-200"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedFaculties[salaryIndex]?.includes(faculty.id) || false}
-                            onChange={() => {
-                              setSelectedFaculties((prev) => {
-                                const newSelectedFaculties = [...prev];
-                                if (!newSelectedFaculties[salaryIndex]) {
-                                  newSelectedFaculties[salaryIndex] = [];
-                                }
-                                if (newSelectedFaculties[salaryIndex].includes(faculty.id)) {
-                                  newSelectedFaculties[salaryIndex] = newSelectedFaculties[salaryIndex].filter((id) => id !== faculty.id);
-                                } else {
-                                  newSelectedFaculties[salaryIndex].push(faculty.id);
-                                }
-                                return newSelectedFaculties;
-                              });
-                            }}
-                            className="form-checkbox h-4 w-4 text-blue-600" />
-                          <span className="ml-2 text-gray-700">{faculty.user.name}</span>
-                        </label>
-                      ))}
-                    </div></>
-                  )}
-                </div>
-              </div>
+              <>
                 <div key={salaryIndex}>
-                  <div className="flex md:flex-row flex-col flex-wrap justify-between">
-                    <div>
-                      <div className="font-semibold my-2">Base Salary</div>{" "}
+                  <div className="flex md:flex-row flex-col flex-wrap ">
+                    <div className="w-1/6">
+                      <div className="font-semibold my-2">Base Salary</div>
                       {editMode ? (
                         <input
                           type="text"
                           name="baseSalary"
                           value={formData.salaries[salaryIndex].baseSalary}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map(
-                              (s, i) => i === salaryIndex
-                                ? { ...s, baseSalary: e.target.value }
-                                : s
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, baseSalary: e.target.value } : s
                             );
                             setFormData((prev) => ({
                               ...prev,
                               salaries: updatedSalaries,
                             }));
-                          }} />
+                          }}
+                        />
                       ) : (
                         <div>{salary.baseSalary}</div>
                       )}
                     </div>
-                    <div>
-                      <div className="font-semibold my-2">CTC</div>{" "}
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">CTC</div>
                       {editMode ? (
                         <input
                           type="text"
                           name="totalCTC"
                           value={formData.salaries[salaryIndex].totalCTC}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map(
-                              (s, i) => i === salaryIndex
-                                ? { ...s, totalCTC: e.target.value }
-                                : s
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, totalCTC: e.target.value } : s
                             );
                             setFormData((prev) => ({
                               ...prev,
                               salaries: updatedSalaries,
                             }));
-                          }} />
+                          }}
+                        />
                       ) : (
                         <div>{salary.totalCTC}</div>
                       )}
                     </div>
-                    <div>
-                      <div className="font-semibold my-2">Take Home Salary</div>{" "}
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">Take Home Salary</div>
                       {editMode ? (
                         <input
                           type="text"
                           name="takeHomeSalary"
                           value={formData.salaries[salaryIndex].takeHomeSalary}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map(
-                              (s, i) => i === salaryIndex
-                                ? { ...s, takeHomeSalary: e.target.value }
-                                : s
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, takeHomeSalary: e.target.value } : s
                             );
                             setFormData((prev) => ({
                               ...prev,
                               salaries: updatedSalaries,
                             }));
-                          }} />
+                          }}
+                        />
                       ) : (
                         <div>{salary.takeHomeSalary}</div>
                       )}
                     </div>
-                    <div>
-                      <div className="font-semibold my-2">Gross Salary</div>{" "}
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">Gross Salary</div>
                       {editMode ? (
                         <input
                           type="text"
                           name="grossSalary"
                           value={formData.salaries[salaryIndex].grossSalary}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map(
-                              (s, i) => i === salaryIndex
-                                ? { ...s, grossSalary: e.target.value }
-                                : s
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, grossSalary: e.target.value } : s
                             );
                             setFormData((prev) => ({
                               ...prev,
                               salaries: updatedSalaries,
                             }));
-                          }} />
+                          }}
+                        />
                       ) : (
                         <div>{salary.grossSalary}</div>
                       )}
                     </div>
-                    <div>
-                      <div className="font-semibold my-2">
-                        Other Compensations
-                      </div>{" "}
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">Other Compensations</div>
                       {editMode ? (
                         <input
                           type="text"
                           name="otherCompensations"
                           value={formData.salaries[salaryIndex].otherCompensations}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map(
-                              (s, i) => i === salaryIndex
-                                ? { ...s, otherCompensations: e.target.value }
-                                : s
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, otherCompensations: e.target.value } : s
                             );
                             setFormData((prev) => ({
                               ...prev,
                               salaries: updatedSalaries,
                             }));
-                          }} />
+                          }}
+                        />
                       ) : (
                         <div>{salary.otherCompensations}</div>
                       )}
                     </div>
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">Minimum CPI</div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="minCPI"
+                          value={formData.salaries[salaryIndex].minCPI}
+                          onChange={(e) => {
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, minCPI: e.target.value } : s
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              salaries: updatedSalaries,
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <div>{salary.minCPI}</div>
+                      )}
+                    </div>
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">Tenth Marks</div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="tenthMarks"
+                          value={formData.salaries[salaryIndex].tenthMarks}
+                          onChange={(e) => {
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, tenthMarks: e.target.value } : s
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              salaries: updatedSalaries,
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <div>{salary.tenthMarks}</div>
+                      )}
+                    </div>
+                    <div  className="w-1/6">
+                      <div className="font-semibold my-2">Twelfth Marks</div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="twelfthMarks"
+                          value={formData.salaries[salaryIndex].twelthMarks}
+                          onChange={(e) => {
+                            const updatedSalaries = formData.salaries.map((s, i) =>
+                              i === salaryIndex ? { ...s, tweltthMarks: e.target.value } : s
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              salaries: updatedSalaries,
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <div>{salary.twelthMarks}</div>
+                      )}
+                    </div>
+
+
+
+
                   </div>
                   {/* Genders */}
                   <div>
@@ -1390,13 +1411,99 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       </div>
                     )}
                   </div>
+                  <div className="flex justify-end mt-2 mb-4"><Button color="primary" onClick={() => { setApprovalModal(!approvalModal); getApprovals(salaryIndex) }} >Current Approvals</Button></div>
+                  {approvalModal && (
+                    <div className="fixed inset-0 flex items-center justify-center z-30 bg-gray-800 bg-opacity-10">
+                      <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
+                        <div className="flex justify-between items-center p-4 border-b">
+                          <h2 className="text-xl font-semibold">Current Approvals</h2>
+                          <button className="text-gray-500 text-lg font-extrabold hover:text-gray-700" onClick={() => setApprovalModal(!approvalModal)}>
+                            X
+                          </button>
+                        </div>
+                        <div className="p-4 web overflow-auto" style={{ maxHeight: "75vh" }}>
+                          {loading ? (
+                            <Loader />
+                          ) : (
+                            facultyApprovals.map((approval, salaryIndex) => (
+                              <div key={approval.id} className="border-b border-gray-300 py-2">
+                                <h3 className="text-lg font-semibold">{approval?.faculty.user.name}</h3>
+                                <p className="text-gray-600"><strong>Department:</strong> {approval.faculty.department}</p>
+                                <p className="text-gray-600"><strong>Email:</strong> {approval.faculty?.user.email}</p>
+                                <p className="text-gray-600"><strong>Contact:</strong> {approval.faculty?.user.contact}</p>
+                                <p className="text-gray-600"><strong>Status:</strong> {approval.status}</p>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex justify-end">
+                    {facultyDropDown[salaryIndex] && (<button
+                      className="bg-blue-500 text-white p-2 mr-4 rounded  hover:bg-blue-600 transition duration-200"
+                      onClick={() => submitApproval(salaryIndex)}
+                    >
+                      Submit Request
+                    </button>)}
+                    <Button
+                      color="primary"
+                      className=""
+                      onClick={() => {
+                        setFacultyDropdown((prev) => {
+                          const newDropdownState = [...prev];
+                          newDropdownState[salaryIndex] = !newDropdownState[salaryIndex];
+                          return newDropdownState;
+                        });
+                      }}
+                    >
+                      Select Faculty
+                    </Button>
+                  </div>
+
+                  <div key={salaryIndex} className="flex flex-col">
+                    <div className="relative">
+
+                      {facultyDropDown[salaryIndex] && (
+                        <><div className="absolute right-0 mt-2 mb-3 w-60 bg-white border border-gray-300 max-h-60 overflow-auto rounded shadow-lg z-10">
+                          {facultyData.map((faculty) => (
+                            <label
+                              key={faculty.id}
+                              className="flex items-center p-2 bg-gray-100 hover:bg-gray-200 transition duration-200"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedFaculties[salaryIndex]?.includes(faculty.id) || false}
+                                onChange={() => {
+                                  setSelectedFaculties((prev) => {
+                                    const newSelectedFaculties = [...prev];
+                                    if (!newSelectedFaculties[salaryIndex]) {
+                                      newSelectedFaculties[salaryIndex] = [];
+                                    }
+                                    if (newSelectedFaculties[salaryIndex].includes(faculty.id)) {
+                                      newSelectedFaculties[salaryIndex] = newSelectedFaculties[salaryIndex].filter((id) => id !== faculty.id);
+                                    } else {
+                                      newSelectedFaculties[salaryIndex].push(faculty.id);
+                                    }
+                                    return newSelectedFaculties;
+                                  });
+                                }}
+                                className="form-checkbox h-4 w-4 text-blue-600" />
+                              <span className="ml-2 text-gray-700">{faculty.user.name}</span>
+                            </label>
+                          ))}
+                        </div></>
+                      )}
+                    </div>
+                  </div>
                   <Separator className="my-4" />
-                </div></>
+                </div ></>
             ))}
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

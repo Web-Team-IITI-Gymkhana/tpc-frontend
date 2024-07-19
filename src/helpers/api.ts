@@ -144,7 +144,7 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
 export const fetchFaculties = async () => {
   return apiCall("/faculties");
 };
-export const facultyApproval = async (salaryId: string, facultyId:string) => {
+export const postFacultyApproval = async (salaryId: string, facultyId:string) => {
   const requestBody: {facultyId: string}[]= [{facultyId: facultyId}];
 
 console.log(requestBody);
@@ -271,7 +271,20 @@ export const fetchJobEvents = async (jobId: any) => {
     },
   });
 };
-
+export const fetchApprovals = async (filter?: string) => {
+return apiCall(`/faculty-approvals`, {
+  queryParam:{
+    q:{
+      filterBy:{
+        salary:{
+          id:{
+            eq:[filter,filter]
+          }
+        }
+    }
+  }
+}})
+}
 export const fetchSeasonData = async (year:any,registered:boolean) => {
   return apiCall(`/registrations`, {
     queryParam: {
