@@ -249,12 +249,20 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     setrecruiterDropDown(false);
   };
 
+  const updateFacultyDropDown = (index, value) => {
+    setFacultyDropdown(prevState => {
+      const newState = [...prevState];
+      newState[index] = value;
+      return newState;
+    });
+  };
+
   const submitApproval = async (salaryIndex) => {
     const selected = selectedFaculties[salaryIndex] || [];
-    for (let i = 0; i < selected.length; i++) {
-      await postFacultyApproval(job.salaries[salaryIndex].id, selected[i]);
-    }
-
+    const res = await postFacultyApproval(job.salaries[salaryIndex].id, selected);
+    if(res) toast.success("Request Sent");
+    else toast.error("Error Sending Request");
+    updateFacultyDropDown(salaryIndex, false);
   };
 
   const getApprovals = async (salaryIndex) => {

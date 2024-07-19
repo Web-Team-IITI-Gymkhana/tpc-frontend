@@ -144,14 +144,14 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
 export const fetchFaculties = async () => {
   return apiCall("/faculties");
 };
-export const postFacultyApproval = async (salaryId: string, facultyId:string) => {
-  const requestBody: {facultyId: string}[]= [{facultyId: facultyId}];
+export const postFacultyApproval = async (salaryId: string, facultyIds:string[]) => {
+  const faculties = facultyIds.map(id => ({ facultyId: id }));
+  const requestBody: { facultyId: string }[] = faculties;
 
 console.log(requestBody);
   return apiCall(`/faculty-approvals/${salaryId}`, {
     method: "POST",
     body:requestBody,
-
   });
 }
 
