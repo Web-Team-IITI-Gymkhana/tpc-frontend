@@ -106,7 +106,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         setFacultyData(facultyData);
         setCompanyData(companyData);
         setRecruiterData(recruiterData);
-        console.log("job", jobDetailData);
         setRecruiterFormData({
           designation: jobDetailData.recruiterDetailsFilled.designation,
           landline: jobDetailData.recruiterDetailsFilled.landline,
@@ -261,7 +260,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const getApprovals = async (salaryIndex) => {
     setLoading(true);
     const approvals = await fetchApprovals(job.salaries[salaryIndex].id);
-    console.log("approvals", approvals);
     setFacultyApprovals(approvals);
     setLoading(false);
   };
