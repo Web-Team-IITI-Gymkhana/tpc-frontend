@@ -19,8 +19,9 @@ import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
 import { fetchCompany, fetchRecruiterData } from "@/helpers/api";
-import { assignCompany, postCompany, assignRecruiter, postRecruiter } from "@/helpers/api";
+import { assignCompany, assignRecruiter } from "@/helpers/api";
 import Select from "react-select";
+
 const currentStatusOptions = [
   "INITIALIZED",
   "SCHEDULED",
@@ -35,7 +36,6 @@ const currentStatusOptions = [
   "OFFER_REVOKED",
 ];
 
-
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
@@ -48,35 +48,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [recruiterDropDown, setrecruiterDropDown] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
-  const [toggleCompanyModal, setToggleCompanyModal] = useState(false);
-  const [toggleRecruiterModal, setToggleRecruiterModal] = useState(false);
-  const [companyFormData, setCompanyFormData] = useState({
-    name: '',
-    size: 0,
-    category: '',
-    yearOfEstablishment: '',
-    website: '',
-    annualTurnover: '',
-    socialMediaLink: '',
-    address: {
-      line1: '',
-      line2: '',
-      city: '',
-      state: '',
-      country: ''
-    },
-    domains: ['']
-  });
-  const [recruiterFormData, setRecruiterFormData] = useState({
-    designation: '',
-    landline: '',
-    companyId: '', 
-    user: {
-      name: '',
-      email: '',
-      contact: ''
-    }
-  });
   const newCurrentStatusOptions = currentStatusOptions.map((option) => ({
     value: option,
     label: option,
@@ -105,25 +76,28 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           user: {
             name: jobDetailData.recruiterDetailsFilled.name,
             email: jobDetailData.recruiterDetailsFilled.email,
-            contact: jobDetailData.recruiterDetailsFilled.contact
-          }
+            contact: jobDetailData.recruiterDetailsFilled.contact,
+          },
         });
         setCompanyFormData({
           name: jobDetailData.companyDetailsFilled.name,
           size: jobDetailData.companyDetailsFilled.size,
           category: jobDetailData.companyDetailsFilled.category,
-          yearOfEstablishment: jobDetailData.companyDetailsFilled.yearOfEstablishment,
+          yearOfEstablishment:
+            jobDetailData.companyDetailsFilled.yearOfEstablishment,
           website: jobDetailData.companyDetailsFilled.website,
-          annualTurnover: jobDetailData.companyDetailsFilled.annualTurnover || '',
-          socialMediaLink: jobDetailData.companyDetailsFilled.socialMediaLink || '',
+          annualTurnover:
+            jobDetailData.companyDetailsFilled.annualTurnover || "",
+          socialMediaLink:
+            jobDetailData.companyDetailsFilled.socialMediaLink || "",
           address: {
-            line1: jobDetailData.companyDetailsFilled.address.line1 || '',
-            line2: jobDetailData.companyDetailsFilled.address.line2 || '',
-            city: jobDetailData.companyDetailsFilled.address.city || '',
-            state: jobDetailData.companyDetailsFilled.address.state || '',
-            country: jobDetailData.companyDetailsFilled.address.country || ''
+            line1: jobDetailData.companyDetailsFilled.address.line1 || "",
+            line2: jobDetailData.companyDetailsFilled.address.line2 || "",
+            city: jobDetailData.companyDetailsFilled.address.city || "",
+            state: jobDetailData.companyDetailsFilled.address.state || "",
+            country: jobDetailData.companyDetailsFilled.address.country || "",
           },
-          domains: jobDetailData.companyDetailsFilled.domains || ['']
+          domains: jobDetailData.companyDetailsFilled.domains || [""],
         });
         const matchedCompany = companyData.find(
           (company) => company.id === jobDetailData.company.id,
@@ -151,43 +125,45 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
   const handleRecruiterFormChange = (e) => {
     const { name, value } = e.target;
-    const [mainKey, subKey] = name.split('.');
+    const [mainKey, subKey] = name.split(".");
 
     if (subKey) {
       setRecruiterFormData((prevFormData) => ({
         ...prevFormData,
         [mainKey]: {
           ...prevFormData[mainKey],
-          [subKey]: value
-        }
+          [subKey]: value,
+        },
       }));
     } else {
       setRecruiterFormData((prevFormData) => ({
         ...prevFormData,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
   const handleCompanyFormSubmit = async () => {
     try {
-      await postCompany([{
-        name: companyFormData.name,
-        category: companyFormData.category,
-        yearOfEstablishment: companyFormData.yearOfEstablishment,
-        website: companyFormData.website,
-        size: companyFormData.size,
-        annualTurnover: companyFormData.annualTurnover,
-        socialMediaLink: "companyFormData.socialMediaLink",
-        domains: companyFormData.domains,
-        address: {
-          line1: companyFormData.address.line1,
-          line2: companyFormData.address.line2,
-          city: companyFormData.address.city,
-          state: companyFormData.address.state,
-          country: companyFormData.address.country
-        }
-      }]);
+      await postCompany([
+        {
+          name: companyFormData.name,
+          category: companyFormData.category,
+          yearOfEstablishment: companyFormData.yearOfEstablishment,
+          website: companyFormData.website,
+          size: companyFormData.size,
+          annualTurnover: companyFormData.annualTurnover,
+          socialMediaLink: "companyFormData.socialMediaLink",
+          domains: companyFormData.domains,
+          address: {
+            line1: companyFormData.address.line1,
+            line2: companyFormData.address.line2,
+            city: companyFormData.address.city,
+            state: companyFormData.address.state,
+            country: companyFormData.address.country,
+          },
+        },
+      ]);
       toast.success("Company details updated successfully!");
       window.location.reload();
     } catch (error) {
@@ -197,16 +173,18 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
   const handleRecruiterFormSubmit = async () => {
     try {
-      await postRecruiter([{
-        designation: recruiterFormData.designation,
-        landline: recruiterFormData.landline,
-        companyId: recruiterFormData.companyId,
-        user: {
-          name: recruiterFormData.user.name,
-          email: recruiterFormData.user.email,
-          contact: recruiterFormData.user.contact
-        }
-      }]);
+      await postRecruiter([
+        {
+          designation: recruiterFormData.designation,
+          landline: recruiterFormData.landline,
+          companyId: recruiterFormData.companyId,
+          user: {
+            name: recruiterFormData.user.name,
+            email: recruiterFormData.user.email,
+            contact: recruiterFormData.user.contact,
+          },
+        },
+      ]);
       toast.success("Recruiter details updated successfully!");
       window.location.reload();
     } catch (error) {
@@ -215,9 +193,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
   const handleToggleModal = (type) => {
     if (type === "company") {
-      setToggleCompanyModal(prevState => !prevState);
+      setToggleCompanyModal((prevState) => !prevState);
     } else if (type === "recruiter") {
-      setToggleRecruiterModal(prevState => !prevState);
+      setToggleRecruiterModal((prevState) => !prevState);
     }
   };
   const toggleDropdown = (state: string) => {
@@ -228,9 +206,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
       setrecruiterDropDown(!recruiterDropDown);
       setcompanyDropDown(false);
     }
-
-
-
   };
 
   const handleCompanySelect = (company) => {
@@ -477,21 +452,34 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                               ))}
                             </div>
                             <div className="dropdown-item bg-gray-100 py-2 px-4  cursor-pointer rounded-b-md ">
-                              <Button onClick={() => handleToggleModal("company")}>Add Company</Button>
+                              <Button
+                                onClick={() => handleToggleModal("company")}
+                              >
+                                Add Company
+                              </Button>
                             </div>
                             <div className="fixed  z-30 w-screen h-screen flex items-center justify-center bg-gray-800 bg-opacity-75">
                               {toggleCompanyModal && (
                                 <div className="fixed inset-0 flex items-center justify-center z-30 bg-gray-800 bg-opacity-75">
                                   <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
                                     <div className="flex justify-between items-center p-4 border-b">
-                                      <h2 className="text-xl font-semibold">Edit Company Details</h2>
-                                      <button className="text-gray-500 text-lg font-extrabold hover:text-gray-700" onClick={()=>{handleToggleModal('company')}}>
+                                      <h2 className="text-xl font-semibold">
+                                        Edit Company Details
+                                      </h2>
+                                      <button
+                                        className="text-gray-500 text-lg font-extrabold hover:text-gray-700"
+                                        onClick={() => {
+                                          handleToggleModal("company");
+                                        }}
+                                      >
                                         X
                                       </button>
                                     </div>
                                     <div className="p-4">
                                       <div>
-                                        <label className="block text-lg font-semibold">Company Name:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Company Name:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
@@ -501,7 +489,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                         />
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Size:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Size:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
@@ -511,7 +501,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                         />
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Category:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Category:
+                                        </label>
                                         <select
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           name="category"
@@ -521,21 +513,29 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                           <option value="PSU">PSU</option>
                                           <option value="MNC">MNC</option>
                                           <option value="PUBLIC">PUBLIC</option>
-                                          <option value="GOVERNMENT">GOVERNMENT</option>
+                                          <option value="GOVERNMENT">
+                                            GOVERNMENT
+                                          </option>
                                         </select>
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Year of Establishment:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Year of Establishment:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
                                           name="yearOfEstablishment"
-                                          value={companyFormData.yearOfEstablishment}
+                                          value={
+                                            companyFormData.yearOfEstablishment
+                                          }
                                           onChange={handleCompanyFormChange}
                                         />
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Website:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Website:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
@@ -546,16 +546,17 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       </div>
                                     </div>
                                     <div className="flex justify-end p-4 border-t">
-                                      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={handleCompanyFormSubmit}>
+                                      <button
+                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                        onClick={handleCompanyFormSubmit}
+                                      >
                                         Submit
                                       </button>
                                     </div>
                                   </div>
                                 </div>
                               )}
-
                             </div>
-
                           </div>
                         )}
                       </div>
@@ -572,7 +573,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           className="ml-2"
                         >
                           {selectedCompany?.id ===
-                            "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                          "f47ac10b-58cc-4372-a567-0e02b2c3d479"
                             ? "Assign"
                             : "Change"}
                         </Button>
@@ -664,21 +665,34 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             ))}
                           </div>
                           <div className="dropdown-item bg-gray-100 py-2 px-4  cursor-pointer rounded-b-md ">
-                            <Button onClick={() => handleToggleModal("recruiter")}>Add Recruiter</Button>
+                            <Button
+                              onClick={() => handleToggleModal("recruiter")}
+                            >
+                              Add Recruiter
+                            </Button>
                           </div>
                           <div className="fixed  w-screen h-screen flex items-center justify-center bg-gray-800 bg-opacity-75">
                             {toggleRecruiterModal && (
                               <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
                                 <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
                                   <div className="flex justify-between items-center p-4 border-b">
-                                    <h2 className="text-xl font-semibold">Edit Recruiter Details</h2>
-                                    <button className="text-gray-500 text-lg  font-extrabold hover:text-gray-700" onClick={() => handleToggleModal("recruiter")}>
-                                     X
+                                    <h2 className="text-xl font-semibold">
+                                      Edit Recruiter Details
+                                    </h2>
+                                    <button
+                                      className="text-gray-500 text-lg  font-extrabold hover:text-gray-700"
+                                      onClick={() =>
+                                        handleToggleModal("recruiter")
+                                      }
+                                    >
+                                      X
                                     </button>
                                   </div>
                                   <div className="p-4">
                                     <div>
-                                      <label className="block text-lg font-semibold">Name:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Name:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -688,7 +702,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Designation:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Designation:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -698,7 +714,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Email:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Email:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -708,7 +726,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Contact:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Contact:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -718,7 +738,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Landline:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Landline:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -729,18 +751,17 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                     </div>
                                   </div>
                                   <div className="flex justify-end p-4 border-t">
-                                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={handleRecruiterFormSubmit}>
+                                    <button
+                                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                      onClick={handleRecruiterFormSubmit}
+                                    >
                                       Submit
                                     </button>
                                   </div>
                                 </div>
                               </div>
                             )}
-
-
-
                           </div>
-
                         </div>
                       )}
                     </div>
@@ -757,7 +778,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         className="ml-2"
                       >
                         {selectedRecruiter?.id ===
-                          "3a0a4d51-3085-4d39-8a0b-376e4e1e63a1"
+                        "3a0a4d51-3085-4d39-8a0b-376e4e1e63a1"
                           ? "Assign"
                           : "Change"}
                       </Button>
@@ -933,71 +954,71 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   <ul className="list-disc capitalize">
                     {editMode
                       ? formData.selectionProcedure.tests.map((test, index) => (
-                        <li key={index} className="my-2">
-                          Test Type:
-                          <select
-                            className="ml-4 my-2 capitalize"
-                            value={test.type}
-                            onChange={(e) => {
-                              const updatedtests =
-                                formData.selectionProcedure.tests.map(
-                                  (i, j) =>
-                                    j === index
-                                      ? { ...i, type: e.target.value }
-                                      : i,
-                                );
-                              setFormData((prev) => ({
-                                ...prev,
-                                selectionProcedure: {
-                                  ...prev.selectionProcedure,
-                                  tests: updatedtests,
-                                },
-                              }));
-                            }}
-                          >
-                            {jafDetails.testTypes.map((test, index) => (
-                              <option key={index}>{test}</option>
-                            ))}
-                          </select>
-                          <br />
-                          Test Duration:
-                          <input
-                            className="ml-4 my-2"
-                            type="number"
-                            name="testDuration"
-                            value={test.duration}
-                            onChange={(e) => {
-                              const updatedTests =
-                                formData.selectionProcedure.tests.map(
-                                  (t, i) =>
-                                    i === index
-                                      ? {
-                                        ...t,
-                                        duration: Number(e.target.value),
-                                      }
-                                      : t,
-                                );
-                              setFormData((prev) => ({
-                                ...prev,
-                                selectionProcedure: {
-                                  ...prev.selectionProcedure,
-                                  tests: updatedTests,
-                                },
-                              }));
-                            }}
-                          />
-                        </li>
-                      ))
+                          <li key={index} className="my-2">
+                            Test Type:
+                            <select
+                              className="ml-4 my-2 capitalize"
+                              value={test.type}
+                              onChange={(e) => {
+                                const updatedtests =
+                                  formData.selectionProcedure.tests.map(
+                                    (i, j) =>
+                                      j === index
+                                        ? { ...i, type: e.target.value }
+                                        : i,
+                                  );
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  selectionProcedure: {
+                                    ...prev.selectionProcedure,
+                                    tests: updatedtests,
+                                  },
+                                }));
+                              }}
+                            >
+                              {jafDetails.testTypes.map((test, index) => (
+                                <option key={index}>{test}</option>
+                              ))}
+                            </select>
+                            <br />
+                            Test Duration:
+                            <input
+                              className="ml-4 my-2"
+                              type="number"
+                              name="testDuration"
+                              value={test.duration}
+                              onChange={(e) => {
+                                const updatedTests =
+                                  formData.selectionProcedure.tests.map(
+                                    (t, i) =>
+                                      i === index
+                                        ? {
+                                            ...t,
+                                            duration: Number(e.target.value),
+                                          }
+                                        : t,
+                                  );
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  selectionProcedure: {
+                                    ...prev.selectionProcedure,
+                                    tests: updatedTests,
+                                  },
+                                }));
+                              }}
+                            />
+                          </li>
+                        ))
                       : job.selectionProcedure.tests.map((p, index) => (
-                        <li key={index} className="my-2">
-                          {Object.entries(p).map(([key, value]) => (
-                            <span key={key}>
-                              {key} : {value}
-                              <br />
-                            </span>
-                          ))}
-                        </li>
-                      ))}
+                          <li key={index} className="my-2">
+                            {Object.entries(p).map(([key, value]) => (
+                              <span key={key}>
+                                {key} : {value}
+                                <br />
+                              </span>
+                            ))}
+                          </li>
+                        ))}
                   </ul>
                   {editMode && (
                     <Button className="w-full" onClick={addNewTest}>
@@ -1013,72 +1034,72 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   <ul className="list-disc capitalize">
                     {editMode
                       ? formData.selectionProcedure.interviews.map(
-                        (interview, index) => (
-                          <li key={index} className="my-2">
-                            Interview Type:
-                            <select
-                              className="ml-4 my-2 capitalize"
-                              value={interview.type}
-                              onChange={(e) => {
-                                const updatedInterviews =
-                                  formData.selectionProcedure.interviews.map(
-                                    (i, j) =>
-                                      j === index
-                                        ? { ...i, type: e.target.value }
-                                        : i,
-                                  );
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  selectionProcedure: {
-                                    ...prev.selectionProcedure,
-                                    interviews: updatedInterviews,
-                                  },
-                                }));
-                              }}
-                            >
-                              {jafDetails.interviewTypes.map(
-                                (test, index) => (
-                                  <option key={index}>{test}</option>
-                                ),
-                              )}
-                            </select>
-                            <br />
-                            Interview Duration:
-                            <input
-                              className="ml-4 my-2"
-                              type="number"
-                              name="interviewDuration"
-                              value={interview.duration}
-                              onChange={(e) => {
-                                const updatedInterviews =
-                                  formData.selectionProcedure.interviews.map(
-                                    (i, j) =>
-                                      j === index
-                                        ? { ...i, duration: e.target.value }
-                                        : i,
-                                  );
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  selectionProcedure: {
-                                    ...prev.selectionProcedure,
-                                    interviews: updatedInterviews,
-                                  },
-                                }));
-                              }}
-                            />
-                          </li>
-                        ),
-                      )
-                      : job.selectionProcedure.interviews.map((p, index) => (
-                        <li key={index} className="my-2">
-                          {Object.entries(p).map(([key, value]) => (
-                            <span key={key}>
-                              {key} : {value}
+                          (interview, index) => (
+                            <li key={index} className="my-2">
+                              Interview Type:
+                              <select
+                                className="ml-4 my-2 capitalize"
+                                value={interview.type}
+                                onChange={(e) => {
+                                  const updatedInterviews =
+                                    formData.selectionProcedure.interviews.map(
+                                      (i, j) =>
+                                        j === index
+                                          ? { ...i, type: e.target.value }
+                                          : i,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      interviews: updatedInterviews,
+                                    },
+                                  }));
+                                }}
+                              >
+                                {jafDetails.interviewTypes.map(
+                                  (test, index) => (
+                                    <option key={index}>{test}</option>
+                                  ),
+                                )}
+                              </select>
                               <br />
-                            </span>
-                          ))}
-                        </li>
-                      ))}
+                              Interview Duration:
+                              <input
+                                className="ml-4 my-2"
+                                type="number"
+                                name="interviewDuration"
+                                value={interview.duration}
+                                onChange={(e) => {
+                                  const updatedInterviews =
+                                    formData.selectionProcedure.interviews.map(
+                                      (i, j) =>
+                                        j === index
+                                          ? { ...i, duration: e.target.value }
+                                          : i,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      interviews: updatedInterviews,
+                                    },
+                                  }));
+                                }}
+                              />
+                            </li>
+                          ),
+                        )
+                      : job.selectionProcedure.interviews.map((p, index) => (
+                          <li key={index} className="my-2">
+                            {Object.entries(p).map(([key, value]) => (
+                              <span key={key}>
+                                {key} : {value}
+                                <br />
+                              </span>
+                            ))}
+                          </li>
+                        ))}
                   </ul>
                   {editMode && (
                     <Button className="w-full" onClick={addNewInterview}>
