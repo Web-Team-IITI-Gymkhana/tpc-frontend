@@ -12,15 +12,39 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { StudentDataType } from "@/helpers/student/types";
-import { GetStudentData } from "@/helpers/student/api";
+import { GetStudentData, RegisterSeason } from "@/helpers/student/api";
 import toast from "react-hot-toast";
-import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import Loader from "@/components/Loader/loader";
 
 const ProfilePage = () => {
   const [studentData, setStudentData] = useState<StudentDataType | null>(null);
   const [totalPenalty, setTotalPenalty] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+
+  const handleRegister = async (seasonId: string, registered: boolean) => {
+    const res = await RegisterSeason(seasonId,registered);
+    if(res) {
+      if(registered) toast.success("Deregistered successfully");
+      else toast.success("Registered successfully");
+      setStudentData(prevState => {
+        if (!prevState) return null;
+    
+        const updatedRegistrations = prevState.registrations.map(registration => 
+          registration.season.id === seasonId 
+            ? { ...registration, registered: !registered } 
+            : registration
+        );
+    
+        return {
+          ...prevState,
+          registrations: updatedRegistrations
+        };
+      });
+    }
+    else{
+      toast.error("Some Error Occured");
+    }
+  }
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -168,6 +192,7 @@ const ProfilePage = () => {
                     <TableHead>Sr.</TableHead>
                     <TableHead>Year</TableHead>
                     <TableHead>Type</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -177,8 +202,9 @@ const ProfilePage = () => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{item.season.year}</TableCell>
                       <TableCell>{item.season.type}</TableCell>
+                      <TableCell>{item.registered ? "Registered" : "Not Registered"}</TableCell>
                       <TableCell>
-                        <Button>
+                        <Button onClick={() => handleRegister(item.season.id,item.registered)}>
                           {item.registered ? "Deregister" : "Register"}
                         </Button>
                       </TableCell>

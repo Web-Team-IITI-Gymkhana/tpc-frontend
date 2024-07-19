@@ -33,6 +33,14 @@ export const GetOffCampusOffers = async () => {
 export const GetResumes = async () => {
   return apiCall("/student-view/resume", { next: { tags: ["Resumes"] } });
 };
+export const RegisterSeason = async (seasonId: string, registered: boolean) => {
+  if(!registered){
+    return apiCall(`/student-view/registrations/${seasonId}`, { method:"PATCH", next: { tags: ["Registrations"] } });
+  }
+  else{
+    return apiCall(`/student-view/de-register/${seasonId}`, { method:"PATCH", next: { tags: ["Registrations"] } });
+  }
+};
 
 export const OpenResume = async (filename: string) => {
   OpenFile(`/student-view/resume/${filename}`);
