@@ -439,6 +439,7 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                         options={[
                           { value: "MALE", label: "Male" },
                           { value: "FEMALE", label: "Female" },
+                          { value: "OTHER", label: "Other" },
                         ]}
                       ></Select>
                     </Form.Item>
@@ -455,6 +456,9 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                         placeholder="Please select"
                         options={[
                           { value: "GENERAL", label: "General" },
+                          { value: "SC", label: "SC" },
+                          { value: "ST", label: "ST" },
+                          { value: "OBC", label: "OBC" },
                           { value: "PWD", label: "PWD" },
                         ]}
                       ></Select>

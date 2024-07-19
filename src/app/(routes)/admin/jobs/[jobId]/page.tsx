@@ -1188,7 +1188,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             {job.salaries?.map((salary, salaryIndex) => (
               <>
                 <div key={salaryIndex}>
-                  <div className="flex md:flex-row flex-col flex-wrap ">
+                  <div className="flex md:flex-row flex-col flex-wrap justify-between">
                     <div className="w-1/6">
                       <div className="font-semibold my-2">Base Salary</div>
                       {editMode ? (
@@ -1293,75 +1293,73 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       ) : (
                         <div>{salary.otherCompensations}</div>
                       )}
-                    </div>
-                    <div  className="w-1/6">
-                      <div className="font-semibold my-2">Minimum CPI</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="minCPI"
-                          value={formData.salaries[salaryIndex].minCPI}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, minCPI: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.minCPI}</div>
-                      )}
-                    </div>
-                    <div  className="w-1/6">
-                      <div className="font-semibold my-2">Tenth Marks</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="tenthMarks"
-                          value={formData.salaries[salaryIndex].tenthMarks}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, tenthMarks: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.tenthMarks}</div>
-                      )}
-                    </div>
-                    <div  className="w-1/6">
-                      <div className="font-semibold my-2">Twelfth Marks</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="twelfthMarks"
-                          value={formData.salaries[salaryIndex].twelthMarks}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, tweltthMarks: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.twelthMarks}</div>
-                      )}
-                    </div>
-
-
-
-
+                    </div>                    
                   </div>
+                  <div className="flex md:flex-row flex-col flex-wrap justify-between my-5">
+                      <div  className="w-1/6">
+                        <div className="font-semibold my-2">Minimum CPI</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="minCPI"
+                            value={formData.salaries[salaryIndex].minCPI}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, minCPI: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.minCPI}</div>
+                        )}
+                      </div>
+                      <div  className="w-1/6">
+                        <div className="font-semibold my-2">Tenth Marks</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="tenthMarks"
+                            value={formData.salaries[salaryIndex].tenthMarks}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, tenthMarks: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.tenthMarks}</div>
+                        )}
+                      </div>
+                      <div  className="w-1/6">
+                        <div className="font-semibold my-2">TwelthMarks Marks</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="twelthMarks"
+                            value={formData.salaries[salaryIndex].twelthMarks}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, twelthMarks: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.twelthMarks}</div>
+                        )}
+                      </div>
+                    </div>
                   {/* Genders */}
                   <div>
                     <h2 className="text-md font-semibold mt-4">Genders</h2>
@@ -1409,7 +1407,31 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       </div>
                     )}
                   </div>
-                  <div className="flex justify-end mt-2 mb-4"><Button color="primary" onClick={() => { setApprovalModal(!approvalModal); getApprovals(salaryIndex) }} >Current Approvals</Button></div>
+                  <Separator className="my-4" />
+                  <div className="flex justify-between mt-2 mb-4">
+                    <Button color="primary" onClick={() => { setApprovalModal(!approvalModal); getApprovals(salaryIndex) }} >Current Approvals</Button>
+                    <div className="flex justify-end">
+                      {facultyDropDown[salaryIndex] && (<button
+                        className="bg-blue-500 text-white p-2 mr-4 rounded  hover:bg-blue-600 transition duration-200"
+                        onClick={() => submitApproval(salaryIndex)}
+                      >
+                        Submit Request
+                      </button>)}
+                      <Button
+                        color="primary"
+                        className=""
+                        onClick={() => {
+                          setFacultyDropdown((prev) => {
+                            const newDropdownState = [...prev];
+                            newDropdownState[salaryIndex] = !newDropdownState[salaryIndex];
+                            return newDropdownState;
+                          });
+                        }}
+                      >
+                        Make Request
+                      </Button>
+                    </div>
+                  </div>
                   {approvalModal && (
                     <div className="fixed inset-0 flex items-center justify-center z-30 bg-gray-800 bg-opacity-10">
                       <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
@@ -1436,28 +1458,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         </div>
                       </div>
                     </div>
-                  )}
-                  <div className="flex justify-end">
-                    {facultyDropDown[salaryIndex] && (<button
-                      className="bg-blue-500 text-white p-2 mr-4 rounded  hover:bg-blue-600 transition duration-200"
-                      onClick={() => submitApproval(salaryIndex)}
-                    >
-                      Submit Request
-                    </button>)}
-                    <Button
-                      color="primary"
-                      className=""
-                      onClick={() => {
-                        setFacultyDropdown((prev) => {
-                          const newDropdownState = [...prev];
-                          newDropdownState[salaryIndex] = !newDropdownState[salaryIndex];
-                          return newDropdownState;
-                        });
-                      }}
-                    >
-                      Select Faculty
-                    </Button>
-                  </div>
+                  )}                
 
                   <div key={salaryIndex} className="flex flex-col">
                     <div className="relative">
@@ -1494,7 +1495,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       )}
                     </div>
                   </div>
-                  <Separator className="my-4" />
                 </div ></>
             ))}
           </div>
