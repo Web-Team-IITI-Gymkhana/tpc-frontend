@@ -5,8 +5,6 @@ import { companyDTO } from "@/dto/CompanyDto";
 import Table from "@/components/NewTableComponent/Table";
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader/loader";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 const hiddenColumns = ["id"];
 
@@ -30,11 +28,6 @@ const JobPage = () => {
   return (
     <div className="m-10">
       <h1 className="text-center font-bold text-3xl my-5 py-5">Companies</h1>
-      <div className="flex justify-end mb-4">
-        <Link href="/admin/companies/addCompany">
-          <Button>Add Company</Button>
-        </Link>
-      </div>
       <div>
         {loading && (
           <div className="h-48 flex justify-center items-center">
