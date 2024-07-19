@@ -591,3 +591,7 @@ export const patchSalaryData = async (salary: any) => {
     body: [toPatch],
   });
 };
+
+export const fetchComapnies = async () => {
+  return apiCall("/companies");
+};
