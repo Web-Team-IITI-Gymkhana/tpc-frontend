@@ -84,7 +84,7 @@ export const apiCall = async (
 
   const res = await fetch(requestUrl, req);
   if (method === "GET") {
-    if(res.ok) return await res.json();
+    if (res.ok) return await res.json();
     else throw new Error("Cannot fetch");
   } else return res.ok;
 };
@@ -226,8 +226,6 @@ export const fetchStudentDataById = async (id: any) => {
   return apiCall(`/students/${id}`);
 };
 
-
-
 export const fetchCompanyRecruiters = async (companyId: string | undefined) => {
   return apiCall(`/companies/${companyId}/recruiters/`, {
     next: { tags: ["AllRecruiters"] },
@@ -258,7 +256,7 @@ export const fetchJobEvents = async (jobId: any) => {
   });
 };
 
-export const fetchSeasonData = async (year:any,registered:boolean) => {
+export const fetchSeasonData = async (year: any, registered: boolean) => {
   return apiCall(`/registrations`, {
     queryParam: {
       q: {
@@ -272,7 +270,6 @@ export const fetchSeasonData = async (year:any,registered:boolean) => {
             eq: [registered],
           },
         },
-        
       },
     },
     next: { tags: ["AllStudents"] },
@@ -285,44 +282,44 @@ export const fetchRegistrationDataById = async (studentId: any) => {
     queryParam: {
       q: {
         filterBy: {
-          student:{
+          student: {
             id: {
               eq: [studentId],
             },
           },
-          }, 
-         
         },
-        
       },
+    },
     next: { tags: ["AllStudents"] },
   });
 };
-export const fetchRegistrationDataByIdAndSeason = async (studentId: any,type:any,year:boolean) => {
+export const fetchRegistrationDataByIdAndSeason = async (
+  studentId: any,
+  type: any,
+  year: boolean,
+) => {
   console.log(studentId);
   return apiCall(`/registrations`, {
     queryParam: {
       q: {
         filterBy: {
           season: {
-            type:{
+            type: {
               eq: [type],
             },
             year: {
               eq: [year],
             },
           },
-          
-          student:{
+
+          student: {
             id: {
               eq: [studentId],
             },
           },
-          }, 
-         
         },
-        
       },
+    },
     next: { tags: ["AllStudents"] },
   });
 };
@@ -351,8 +348,6 @@ export const promoteStudent = async (body: any, eventId: string) => {
     body: body,
   });
 };
-
-
 
 export const fetchRecruiterData = async (filter?: string) => {
   return apiCall(filter ? `/recruiters?${filter}` : "/recruiters", {
@@ -459,7 +454,6 @@ export const fetchRegistrations = async (
   });
 };
 
- 
 //OnClick Functions
 
 export const createJobEvent = async (
@@ -590,4 +584,8 @@ export const patchSalaryData = async (salary: any) => {
     method: "PATCH",
     body: [toPatch],
   });
+};
+
+export const fetchcompanies = async () => {
+  return apiCall("/companies");
 };
