@@ -129,7 +129,7 @@ const LogoutButton = () => {
             closed: { opacity: 0 },
             open: { opacity: 1 },
           }}
-          className="w-[13vw]"
+          className="w-[13vw] cursor-pointer"
         >
           Logout
         </motion.div>
