@@ -43,9 +43,9 @@ export const apiCall = async (
     redirect();
     return;
   }
-
+  console.log('baseUrl', baseUrl);
   let requestUrl = getUrl(path);
-
+  console.log('requestUrl', requestUrl);
   const headers: HeadersInit = {};
 
   const req = {
@@ -82,6 +82,7 @@ export const apiCall = async (
     req["next"] = next;
   }
 
+  console.log('requestUrl:22', requestUrl);
   const res = await fetch(requestUrl, req);
   if (method === "GET" || recieveResponse) {
     if (res.ok) return await res.json();
