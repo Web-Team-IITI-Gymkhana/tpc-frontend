@@ -141,6 +141,20 @@ export const PasswordlessLogin = async (accessToken: string | undefined) => {
   return { status: res.status, body };
 };
 
+export const fetchFaculties = async () => {
+  return apiCall("/faculties");
+};
+export const postFacultyApproval = async (salaryId: string, facultyIds:string[]) => {
+  const faculties = facultyIds.map(id => ({ facultyId: id }));
+  const requestBody: { facultyId: string }[] = faculties;
+
+console.log(requestBody);
+  return apiCall(`/faculty-approvals/${salaryId}`, {
+    method: "POST",
+    body:requestBody,
+  });
+}
+
 export const fetchAllSeasons = async () => {
   return apiCall("/seasons");
 };
@@ -255,7 +269,25 @@ export const fetchJobEvents = async (jobId: any) => {
   });
 };
 
+export const fetchApprovals = async (filter?: string) => {
+return apiCall(`/faculty-approvals`, {
+  queryParam:{
+    q:{
+      filterBy:{
+        salary:{
+          id:{
+            eq:[filter,filter]
+          }
+        }
+    }
+  }
+}})
+}
+
+
+
 export const fetchSeasonData = async (year: any, registered: boolean) => {
+
   return apiCall(`/registrations`, {
     queryParam: {
       q: {
