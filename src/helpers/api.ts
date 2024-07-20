@@ -83,7 +83,7 @@ export const apiCall = async (
   }
 
   const res = await fetch(requestUrl, req);
-  if (method === "GET") {
+  if (method === "GET" || recieveResponse) {
     if (res.ok) return await res.json();
     else throw new Error("Cannot fetch");
   } else return res.ok;
@@ -194,7 +194,6 @@ export const postCompany = async (
     method: "POST",
     body: companies,
   });
-  toast.success("Company created");
 };
 
 export const assignRecruiter = async (
