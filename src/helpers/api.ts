@@ -5,7 +5,6 @@ import toast, { Toaster } from "react-hot-toast";
 import { ResumePatchData } from "./types";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 interface ApiCallOptions {
   method?: string;
@@ -43,9 +42,10 @@ export const apiCall = async (
     redirect();
     return;
   }
-
+  console.log('baseUrl', baseUrl);
+  console.log('path', process.env);
   let requestUrl = getUrl(path);
-
+  console.log('requestUrl', requestUrl);
   const headers: HeadersInit = {};
 
   const req = {

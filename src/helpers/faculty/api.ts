@@ -1,6 +1,5 @@
 import { apiCall } from "../api";
 import { updateProfileFC } from "./types";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 export const fetchApprovals = async (filter: object | undefined) => {
   return apiCall("/faculty-view/approvals", {
