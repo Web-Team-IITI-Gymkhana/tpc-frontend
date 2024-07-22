@@ -49,6 +49,7 @@ export interface Resume {
   id: string;
   filepath: string;
   verified: boolean;
+  name: string;
 }
 
 export interface Salary {

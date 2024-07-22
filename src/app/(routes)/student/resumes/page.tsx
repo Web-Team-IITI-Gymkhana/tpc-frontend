@@ -127,7 +127,7 @@ const ResumePage = () => {
                         className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
                         onClick={() => handleOpenResume(item.filepath)}
                       >
-                        {item.filepath}
+                        {item.name}
                       </div>
                     </TableCell>
                     <TableCell>
