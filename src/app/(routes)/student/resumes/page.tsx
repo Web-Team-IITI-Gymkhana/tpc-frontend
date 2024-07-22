@@ -44,11 +44,16 @@ const ResumePage = () => {
   };
 
   const [file, setFile] = useState<File | null>(null);
+  const [resumeName, setName] = useState<string | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFile(event.target.files[0]);
     }
+  };
+  
+  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
   };
 
   const handleOpenResume = async (filename: string) => {
@@ -63,10 +68,15 @@ const ResumePage = () => {
       return;
     }
 
+    if (!resumeName) {
+      toast.error("Please enter a name.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("resume", file, file.name);
 
-    const data = await uploadResume(formData);
+    const data = await uploadResume(formData, resumeName);
 
     if (data) {
       toast.success("Uploaded Successfully");
@@ -168,6 +178,7 @@ const ResumePage = () => {
                   className="cursor-pointer text-black"
                   type="text"
                   required
+                  onChange={handleNameChange}
                 />
               </div>
               <div className="grid w-full max-w-sm items-center gap-1.5">
