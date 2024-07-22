@@ -32,7 +32,7 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
     try {
       const response = await fetchPenalties(requestBody);
 
-      if (response.ok) {
+      if (response) {
         toast.success("Penalty submitted successfully");
         onClose();
         setPenaltyValue("");
