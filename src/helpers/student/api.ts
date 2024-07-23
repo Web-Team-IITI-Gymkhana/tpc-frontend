@@ -75,7 +75,8 @@ export const ApplyJob = async (salaryId: string, resumeId: string) => {
   });
 };
 
-export const uploadResume = async (formData: FormData) => {
+export const uploadResume = async (formData: FormData, name: string) => {
+  formData.append("name", name);
   return apiCall("/student-view", {
     method: "POST",
     formData: formData,

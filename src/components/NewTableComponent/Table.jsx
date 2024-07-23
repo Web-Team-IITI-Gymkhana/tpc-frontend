@@ -73,9 +73,13 @@ const Table = ({ data, columns, type }) => {
     renderRowActionMenuItems: ({ row, table }) => (
       <Box>
         {type === "student" && (
-          <MenuItem key="edit" onClick={handleOpenModal}>
-            Add Penalty
-          </MenuItem>
+            <MenuItem
+            key="edit"
+            onClick={() => {
+              setId(row.original.id);
+              handleOpenModal();
+            }}
+          > Add Penalty</MenuItem>
         )}
         
         {type == "job" ? (
@@ -93,7 +97,7 @@ const Table = ({ data, columns, type }) => {
               setOpen(true);
             }}
           >
-            View Student
+            View Season
           </MenuItem>
           
           ) : (
