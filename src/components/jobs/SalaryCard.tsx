@@ -12,9 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Resume, Salary } from "@/helpers/student/types";
 import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
 import { Button } from "../ui/button";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import {
   Select,
   SelectContent,
@@ -342,7 +340,7 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
                                   alignItems: "center",
                                 }}
                               >
-                                {resume.filepath}
+                                {resume.name}
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   x="0px"
@@ -356,7 +354,7 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
                                 </svg>
                               </span>
                             ) : (
-                              resume.filepath
+                              resume.name
                             )}
                           </SelectItem>
                         ))}
