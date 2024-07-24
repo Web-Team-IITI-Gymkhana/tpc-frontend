@@ -6,16 +6,17 @@ export const LoginWithEmail = (params: { email: string }) => {
   const onClick = async () => {
     try {
       const { email } = params;
+      console.log(email);
       const response = await loginWithEmail(email);
+      
 
-      if (response.ok) {
+      if (response) {
         toast.success("Email has been sent");
-        // Optionally handle further actions upon successful response
       } else {
         toast.error("Cannot login");
       }
 
-      return response.ok;
+      return response;
     } catch (error) {
       toast.error("An error occurred while sending the email");
       return false;
