@@ -289,6 +289,16 @@ export interface CustomEvent {
   visibleToRecruiter: boolean;
 }
 
+export interface StudentEvent {
+  id: string;
+  roundNumber: number;
+  type: string;
+  metadata: string;
+  startDateTime: string;
+  endDateTime: string;
+  studentStatus: string;
+}
+
 export interface EventData {
   date: string;
   status: string;

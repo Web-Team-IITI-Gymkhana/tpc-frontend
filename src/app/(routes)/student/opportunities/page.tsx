@@ -38,7 +38,7 @@ const StudentPage = () => {
         {jobs &&
           jobs.map((job) => (
             <div key={job.id} className="my-3">
-              <JobCard jobItem={job} />
+              <JobCard jobItem={job} type="opportunity" />
             </div>
           ))}
       </div>
