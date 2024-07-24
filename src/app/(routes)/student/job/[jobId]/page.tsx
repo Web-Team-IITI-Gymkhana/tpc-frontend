@@ -44,6 +44,7 @@ function transformEvents(events: CustomEvent[]): EventData[] {
       date: eventDate.toLocaleDateString("en-GB"),
       status,
       title: event.type,
+      description: event.metadata
     };
   });
 

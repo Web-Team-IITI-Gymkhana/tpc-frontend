@@ -13,7 +13,7 @@ interface Event {
   date: string;
   status: string;
   title: string;
-  // description: string;
+  description: string;
   // bgColor: string;
   // textColor: string;
 }
@@ -543,7 +543,7 @@ const HorizontalTimeline: React.FC<Props> = ({ eventsData }) => {
                                 >
                                   {event.title}
                                   <Separator className="my-2" />
-                                  {event.status}
+                                  {event.description}
                                 </HoverCardContent>
                               </HoverCard>
                             </li>

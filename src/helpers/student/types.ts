@@ -293,6 +293,7 @@ export interface EventData {
   date: string;
   status: string;
   title: string;
+  description: string;
 }
 
 export interface CalenderEvent {
