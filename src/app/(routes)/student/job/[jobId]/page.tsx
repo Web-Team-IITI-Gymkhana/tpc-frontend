@@ -91,7 +91,7 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
-function getNextEvent(events) {
+function getNextEvent(events: StudentEvent[]) {
 
   const now = new Date();
 
