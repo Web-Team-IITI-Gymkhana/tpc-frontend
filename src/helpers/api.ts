@@ -534,6 +534,7 @@ export const loginWithEmail = async (email: string) => {
   return apiCall("/auth/passwordless", {
     method: "POST",
     body: { email },
+    isAuth: false,
   });
 };
 

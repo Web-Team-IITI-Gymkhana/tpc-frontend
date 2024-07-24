@@ -7,6 +7,8 @@ import {
 import { useState } from "react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { mkConfig, generateCsv, download } from "export-to-csv";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import copy from 'copy-to-clipboard';
 import { Box, Button } from "@mui/material";
 import { MenuItem } from "@mui/material";
 import StudentModal from "./StudentModal";
@@ -15,6 +17,7 @@ import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
 import SeasonModal from "./SeasonModal";
 import Link from "next/link";
+import toast from "react-hot-toast";
 const csvConfig = mkConfig({
   fieldSeparator: ",",
   decimalSeparator: ".",
@@ -48,6 +51,12 @@ const Table = ({ data, columns, type }) => {
     console.log(flattenData);
     const csv = generateCsv(csvConfig)(flattenData(data));
     download(csvConfig)(csv);
+  };
+
+  const handleCopyIds = (rows) => {
+    const ids = rows.map((row) => row.original.id).join(', ');
+    copy(ids);
+    toast.success(`Copied IDs`);
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -150,6 +159,15 @@ const Table = ({ data, columns, type }) => {
           startIcon={<FileDownloadIcon />}
         >
           Export Selected Rows
+        </Button>
+        <Button
+          disabled={
+            !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+          }
+          onClick={() => handleCopyIds(table.getSelectedRowModel().rows)}
+          startIcon={<ContentCopyIcon />}
+        >
+          Copy Selected IDs
         </Button>
       </Box>
     ),
