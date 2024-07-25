@@ -35,7 +35,7 @@ const StudentPage = () => {
           <Loader />
         </div>
       )}
-      {onCampusOffers.length > 0 &&
+      {onCampusOffers &&
         onCampusOffers.map((job) => (
           <div key={job.id} className="my-3">
             <OnCampusCard offerItem={job} salaryId={job.salary.id} />
