@@ -11,9 +11,10 @@ const url = (NextUrl: string) => {
 };
 interface Props {
   jobItem: Jobs;
+  type: string;
 }
 
-const JobCard = ({ jobItem }: Props) => {
+const JobCard = ({ jobItem, type}: Props) => {
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const handleViewDetails = () => {
     setShowDescription(!showDescription);
@@ -22,7 +23,21 @@ const JobCard = ({ jobItem }: Props) => {
   return (
     <div className="">
       <div className="rounded-xl bg-white text-black p-5">
-        <div className="font-semibold text-md ">{jobItem.company.name}</div>
+        {type === "opportunity"? (
+          <div className="font-semibold text-md"> {jobItem.company.name}</div>
+        ): (
+          <div className="flex justify-between">
+            <div className="font-semibold text-md mt-2">{jobItem.company.name}</div>
+            <div className="text-sm my-3">
+              <Link
+                href={url(`/student/job/${jobItem.id}`)}
+                className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+              >
+                View Details {">"}
+              </Link>
+            </div>
+          </div>
+        )}
         <div className="my-4">
           <Separator />
         </div>
@@ -62,17 +77,7 @@ const JobCard = ({ jobItem }: Props) => {
               <Separator />
             </div>
             <div>
-              <div className="flex justify-between">
-                <h1 className="text-lg font-semibold">About The Work</h1>
-                <div className="text-sm my-3">
-                  <Link
-                    href={url(`/student/job/${jobItem.id}`)}
-                    className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                  >
-                    View Details {">"}
-                  </Link>
-                </div>
-              </div>
+              <h1 className="text-lg font-semibold">About The Work</h1>
               <ul className="list-disc mx-10">
                 <li>
                   Build an application in Flutter and connect REST APIs to

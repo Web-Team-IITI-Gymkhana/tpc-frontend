@@ -12,6 +12,12 @@ export const GetJobById = async (jobId: string) => {
 export const GetJobs = async () => {
   return apiCall(`/student-view/jobs`, { next: { tags: ["AllJobs"] } });
 };
+export const GetEventsByJobId = async (jobId: string) => {
+  return apiCall(`/student-view/events/${jobId}`, { next: { tags: ["AllJobs"] } });
+};
+export const GetOpportuinites = async () => {
+  return apiCall(`/student-view/opportunities`, { next: { tags: ["AllJobs"] } });
+};
 export const GetSalaryById = async (salaryId: string) => {
   return apiCall(`/student-view/salaries/${salaryId}`, {
     next: { tags: ["Salaries"] },
