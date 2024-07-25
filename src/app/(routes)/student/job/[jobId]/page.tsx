@@ -17,8 +17,9 @@ import {
   CustomEvent,
   EventData,
   CalenderEvent,
+  StudentEvent,
 } from "@/helpers/student/types";
-import { GetJobById } from "@/helpers/student/api";
+import { GetEventsByJobId, GetJobById } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import Loader from "@/components/Loader/loader";
@@ -91,8 +92,68 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
+function getNextEvent(events: StudentEvent[]) {
+
+  const now = new Date();
+
+
+  let closestEvent = null;
+  let allEventsCompleted = true;
+
+  for (const event of events) {
+    const eventEnd = new Date(event.endDateTime);
+    if (eventEnd > now) {
+      allEventsCompleted = false;
+      if (!closestEvent || eventEnd < new Date(closestEvent.endDateTime)) {
+        closestEvent = event;
+      }
+    }
+  }
+
+
+  if (allEventsCompleted) {
+    return "Process Completed";
+  } else if (closestEvent) {
+    return `Upcoming Round ${closestEvent.roundNumber}: ${closestEvent.type}`;
+  } else {
+    return null;
+  }
+}
+
+function convertDate(date: string){
+  const dateString = new Date(date)
+  const formattedDateTime = dateString.toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+  });
+
+  return formattedDateTime
+}
+
+function getStatusClass(status) {
+  switch (status) {
+    case 'PENDING':
+      return 'text-yellow-500 font-semibold';
+    case 'CLEARED':
+      return 'text-green-500 font-semibold';
+    case 'REJECTED':
+      return 'text-red-500 font-semibold';
+    case 'NOT APPLIED':
+      return 'text-cyan-500 font-semibold';
+    default:
+      return '';
+  }
+}
+
 const JobPage = ({ params }: { params: { jobId: string } }) => {
   const [jobData, setJobData] = useState<Job | null>(null);
+  const [studentEvents, setStudentEvents] = useState<StudentEvent[]>([]);
+  const [closestEvent, setClosestEvent] = useState<string|null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -101,6 +162,10 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
         const data = await GetJobById(params.jobId);
         setJobData(data);
         storeCalenderEvents(data);
+
+        const res = await GetEventsByJobId(params.jobId);
+        setStudentEvents(res);
+        setClosestEvent(getNextEvent(res));
       } catch (error) {
         toast.error("Error fetching data:");
       } finally {
@@ -120,9 +185,20 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
       )}
       {jobData && (
         <>
-          <div className="font-semibold text-xl">
-            {jobData?.companyDetailsFilled.name}
-          </div>
+          {!closestEvent? (
+            <div className="font-semibold text-xl">
+              {jobData?.companyDetailsFilled.name}
+            </div>
+          ): (
+            <div className="flex justify-between">
+              <div className="font-semibold text-xl">
+                {jobData?.companyDetailsFilled.name}
+              </div>
+              <div className="text-orange-500 font-bold px-4 py-2 border rounded-full inline-block border-orange-500 text-sm">
+                {closestEvent}
+              </div>
+            </div>
+          )}
           <div className="text-gray-600 font-medium text-sm my-1">
             {jobData?.companyDetailsFilled.address.city},{" "}
             {jobData?.companyDetailsFilled.address.state},{" "}
@@ -218,7 +294,34 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter></TableFooter>
+          </Table>
+          <div className="my-4">
+            <Separator />
+          </div>
+          <h1 className="text-lg font-semibold my-2">Events</h1>
+          <Table className="overflow-hidden">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Round</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Start Date</TableHead>
+                <TableHead>End Date</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {studentEvents.map((event, index) => (
+                <TableRow key={index}>
+                  <TableCell>{event.roundNumber}</TableCell>
+                  <TableCell>{event.type}</TableCell>
+                  <TableCell>{convertDate(event.startDateTime)}</TableCell>
+                  <TableCell>{convertDate(event.endDateTime)}</TableCell>
+                  <TableCell className={getStatusClass(event.studentStatus)}>
+                    {event.studentStatus}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
           <div className="my-4">
             <Separator />
