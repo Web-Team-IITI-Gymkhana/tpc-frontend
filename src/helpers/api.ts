@@ -329,7 +329,6 @@ export const fetchRegistrationDataByIdAndSeason = async (
   type: any,
   year: boolean,
 ) => {
-  console.log(studentId);
   return apiCall(`/registrations`, {
     queryParam: {
       q: {
