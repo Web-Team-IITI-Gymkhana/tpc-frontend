@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Resume, Salary } from "@/helpers/student/types";
-import { ApplyJob, GetSalaryById } from "@/helpers/student/api";
+import { ApplyJob, GetSalaryById, OpenResume } from "@/helpers/student/api";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import {
@@ -69,6 +69,10 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
     } else {
       toast.error("Cannot Apply");
     }
+  };
+
+  const handleOpenResume = async (filename: string) => {
+    OpenResume(filename);
   };
 
   const [isopen, setIsopen] = useState(false);
@@ -295,15 +299,12 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
                         <TableRow key={index}>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>
-                            <Link
-                              className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                              target="_blank"
-                              href={url(
-                                `/resumes/file/${application.resume.filepath}`,
-                              )}
-                            >
-                              {application.resume.filepath}
-                            </Link>
+                          <div
+                            className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                            onClick={() => handleOpenResume(application.resume.filepath)}
+                          >
+                            {application.resume.filepath}
+                          </div>
                           </TableCell>
                           <TableCell>
                             {application.resume.verified
