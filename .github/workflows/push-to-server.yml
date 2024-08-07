@@ -20,6 +20,6 @@ jobs:
             git pull origin main
             docker stop tpc_portal-frontend-1
             docker rm tpc_portal-frontend-1
-            docker rmi tpc_portal_frontend
+            docker rmi tpc_portal-frontend || true
             cd ..
             docker compose up -d
