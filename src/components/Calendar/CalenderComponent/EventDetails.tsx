@@ -98,7 +98,7 @@ export default function EventDetails() {
             <span className="col-start-2 col-span-3  border-0 w-full font-medium">
               Visible to Recruiter :
             </span>
-            <span className="col-start-5 col-span-3 -ml-5  border-0 w-full font-medium text-gray-600">
+            <span className="col-start-5 col-span-3 ml-5  border-0 w-full font-medium text-gray-600">
               {visibilityStatus(checked)}
             </span>
             <span className="material-icons-outlined col-start-1 col-span-1 text-gray-400">
