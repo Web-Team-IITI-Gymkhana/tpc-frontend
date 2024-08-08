@@ -13,10 +13,14 @@ export const GetJobs = async () => {
   return apiCall(`/student-view/jobs`, { next: { tags: ["AllJobs"] } });
 };
 export const GetEventsByJobId = async (jobId: string) => {
-  return apiCall(`/student-view/events/${jobId}`, { next: { tags: ["AllJobs"] } });
+  return apiCall(`/student-view/events/${jobId}`, {
+    next: { tags: ["AllJobs"] },
+  });
 };
 export const GetOpportuinites = async () => {
-  return apiCall(`/student-view/opportunities`, { next: { tags: ["AllJobs"] } });
+  return apiCall(`/student-view/opportunities`, {
+    next: { tags: ["AllJobs"] },
+  });
 };
 export const GetSalaryById = async (salaryId: string) => {
   return apiCall(`/student-view/salaries/${salaryId}`, {
@@ -40,11 +44,16 @@ export const GetResumes = async () => {
   return apiCall("/student-view/resume", { next: { tags: ["Resumes"] } });
 };
 export const RegisterSeason = async (seasonId: string, registered: boolean) => {
-  if(!registered){
-    return apiCall(`/student-view/registrations/${seasonId}`, { method:"PATCH", next: { tags: ["Registrations"] } });
-  }
-  else{
-    return apiCall(`/student-view/de-register/${seasonId}`, { method:"PATCH", next: { tags: ["Registrations"] } });
+  if (!registered) {
+    return apiCall(`/student-view/registrations/${seasonId}`, {
+      method: "PATCH",
+      next: { tags: ["Registrations"] },
+    });
+  } else {
+    return apiCall(`/student-view/de-register/${seasonId}`, {
+      method: "PATCH",
+      next: { tags: ["Registrations"] },
+    });
   }
 };
 
@@ -95,4 +104,8 @@ export const deleteResume = async (filename: string) => {
     method: "DELETE",
     next: { tags: ["Resumes"] },
   });
+};
+
+export const fetchStudentEvents = async () => {
+  return apiCall("/student-view/events");
 };
