@@ -16,7 +16,7 @@ import { grey } from "@mui/material/colors";
 import { Button } from "@mui/material";
 import { fetchRegistrations } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
-import { fetchStudentDataById, fetchRegistrationDataById } from "@/helpers/api";
+import { fetchStudentDataById, fetchRegistrationDataById,fetchAllSeasons,postRegistration } from "@/helpers/api";
 import toast from "react-hot-toast";
 const redirect = () => {};
 const theme = createTheme({
@@ -82,6 +82,7 @@ const handleRegistration = async (
 export default function StudentModal({ open, setOpen, id }) {
   const [studentData, setStudentData] = useState(null);
   const [registrationData, setRegistrationData] = useState(null);
+  const [activeSeasons, setActiveSeasons] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchStudentData = async (id: any) => {
@@ -106,13 +107,54 @@ export default function StudentModal({ open, setOpen, id }) {
       setLoading(false);
     }
   };
+const fetchActiveSeasonsData = async (studentId: any) => {
+    setLoading(true);
+    try {
+      const data = await fetchAllSeasons();
+      const registrations=await fetchRegistrationDataById(studentId);
+      const activeSeasons = data.filter((season) => season.status === "ACTIVE");
+      const seasonids=registrations.map((registration:any)=>registration.season.id);
+      const displayedSeasons=activeSeasons.filter((season:any)=>!seasonids.includes(season.id));
+      setActiveSeasons(displayedSeasons);
+    } catch (error) {
+      toast.error("Error fetching active seasons data");
+    }
+  }
+  const createRegistration = async (studentId: string, seasonId: string,registered:boolean) => {
+    try {
+      const response = await postRegistration(studentId, seasonId,registered);
+      setActiveSeasons((prevData: any) =>
+        prevData.filter((season: any) => season.id !== seasonId),
+      );
+    const newRegistration = await fetchRegistrationDataById(studentId);
+    setRegistrationData(newRegistration);
+
+      if (!response) {
+        toast.error("Failed to create registration");
+        throw new Error("Failed to create registration");
+      }
+      toast.success("Registration created successfully");
+      return true;
+    } catch (error) {
+      toast.error("Error creating registration:", error.message);
+      alert(`Error creating registration: ${error.message}`);
+      return false;
+    }
+  }
+
+
+
 
   useEffect(() => {
     if (open && id) {
       fetchStudentData(id);
+      
       fetchRegistrationData(id);
+      fetchActiveSeasonsData(id);
+     
+
     }
-  }, [open, id]);
+  }, [open,id]);
 
   const handleClose = () => setOpen(false);
 
@@ -472,6 +514,57 @@ export default function StudentModal({ open, setOpen, id }) {
                       </TableBody>
                     </Table>
                   </TableContainer>
+                  <Typography
+                    variant="h5"
+                    component="h3"
+                    gutterBottom
+                    sx={{ mt: 2, mb: 2 }}
+                  >
+                    Active Seasons
+                  </Typography>
+                  <TableContainer
+                    component={Paper}
+                    elevation={3}
+                    sx={{ mb: 4 }}
+                  >
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                         
+                          <TableCell sx={{ fontWeight: "bold" }}>Year</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Type</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {activeSeasons
+                          ? activeSeasons.map((season) => (
+                              <TableRow key={season.id}>
+                               
+                                <TableCell>{season.year}</TableCell>
+                                <TableCell>{season.type}</TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() =>
+                                      createRegistration(
+                                        studentData.id,
+                                        season.id,
+                                        true,
+                                      )
+                                    }
+                                  >
+                                    Create Registration
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          : "N/A"}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                    
                   <Typography
                     variant="h5"
                     component="h3"
