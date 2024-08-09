@@ -3,6 +3,8 @@ import { ProfileFC, updateProfileFC } from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
 import { patchProfile } from "@/helpers/recruiter/api";
 import { getDomains } from "@/helpers/recruiter/api";
+import { MultiSelect } from "@/components/ui/multiselect";
+import TextField from "@mui/material/TextField";
 
 export const EditForm = (params: { profile: ProfileFC }) => {
   const { profile } = params;
@@ -40,73 +42,74 @@ export const EditForm = (params: { profile: ProfileFC }) => {
   };
 
   return (
-    <div className="text-black">
-      <div className="mt-8 p-8 rounded-lg bg-gray-100 leading-10 border-2 border-solid border-black">
-        <div>
-          <span className="font-semibold">Name: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={name}
-            onChange={(e) => {
-              updateName(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <span className="font-semibold">Designation: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={designation}
-            onChange={(e) => {
-              setDesignation(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <span className="font-semibold">Landline: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={landline}
-            onChange={(e) => {
-              setLandline(e.target.value);
-            }}
-          />
-        </div>
-        <div className="flex gap-8 mb-2">
-          <span className="font-semibold">Email: </span>
-          <input
-            className="rounded"
-            type="email"
-            value={email}
-            onChange={(e) => {
-              updateEmail(e.target.value);
-            }}
-          />
-        </div>
-        <div className="flex gap-8">
-          <span className="font-semibold">Contact: </span>
-          <input
-            type="text"
-            value={contact}
-            onChange={(e) => {
-              updateContact(e.target.value);
-            }}
-          />
-        </div>
+    <div className="flex flex-col gap-4">
+      <div>
+        <TextField
+          id="standard-basic"
+          label="Name"
+          variant="standard"
+          value={name}
+          onChange={(e) => {
+            updateName(e.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <TextField
+          id="standard-basic"
+          label="Designation"
+          variant="standard"
+          value={designation}
+          onChange={(e) => {
+            setDesignation(e.target.value);
+          }}
+        />
+      </div>
+      <div>
+        <TextField
+          id="standard-basic"
+          label="Landline"
+          variant="standard"
+          value={landline}
+          onChange={(e) => {
+            setLandline(e.target.value);
+          }}
+        />
+      </div>
+      <div className="flex gap-8 mb-2">
+        <TextField
+          id="standard-basic"
+          label="Email"
+          variant="standard"
+          type="email"
+          value={email}
+          onChange={(e) => {
+            updateEmail(e.target.value);
+          }}
+        />
+      </div>
+      <div className="flex gap-8">
+        <TextField
+          id="standard-basic"
+          label="Contact"
+          variant="standard"
+          type="text"
+          value={contact}
+          onChange={(e) => {
+            updateContact(e.target.value);
+          }}
+        />
+      </div>
 
-        <div className="mt-4">
-          <Button
-            className="w-full"
-            onClick={() => {
-              updateProfile();
-            }}
-          >
-            Update
-          </Button>
-        </div>
+      <div className="mt-4">
+        <Button
+          className="w-full"
+          onClick={() => {
+            updateProfile();
+          }}
+        >
+          Update
+        </Button>
       </div>
     </div>
   );
@@ -114,6 +117,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
 
 export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   const { profile } = params;
+  const [loading, setLoading] = useState<boolean>(true);
   const [companyName, setCompanyName] = useState<string>(
     profile.company.name ? profile.company.name : "",
   );
@@ -142,7 +146,8 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   useEffect(() => {
     const fetchDomains = async () => {
       const d = await getDomains();
-      setDomainsOptions(d);
+      setDomainsOptions(d.domains);
+      setLoading(false);
     };
     fetchDomains();
   }, []);
@@ -167,169 +172,171 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   };
 
   return (
-    <div className="text-black rounded-lg">
-      <div className="mt-8 p-8 rounded-lg bg-gray-100 leading-10 flex flex-col gap-4 w-max max-w-full border-2 border-black">
-        <div>
-          <span className="font-semibold">Company Name: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={companyName}
-            onChange={(e) => {
-              setCompanyName(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <span className="font-semibold">Domains: </span>
-          <select
-            value={domains}
-            multiple
-            onChange={(e) => {
-              const options = [...e.target.selectedOptions];
-              const values = options.map((option) => option.value);
-              setDomains(values);
-            }}
-          >
-            {domainOptions.map((domain, index) => (
-              <option key={index}>{domain}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <span className="font-semibold">Category: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <span className="font-semibold">Address: </span>
-          <ul className="ml-8">
-            <li>
-              <span>
-                City:{" "}
-                <input
-                  type="text"
-                  value={address.city}
-                  onChange={(e) => {
-                    setAddress({ ...address, city: e.target.value });
-                  }}
-                />
-              </span>
-            </li>
-            <li>
-              <span>
-                Line 1:{" "}
-                <input
-                  type="text"
-                  value={address.line1}
-                  onChange={(e) => {
-                    setAddress({ ...address, line1: e.target.value });
-                  }}
-                />
-              </span>
-            </li>
-            <li>
-              <span>
-                Line 2:{" "}
-                <input
-                  type="text"
-                  value={address.line2}
-                  onChange={(e) => {
-                    setAddress({ ...address, line2: e.target.value });
-                  }}
-                />
-              </span>
-            </li>
-            <li>
-              <span>
-                State:{" "}
-                <input
-                  type="text"
-                  value={address.state}
-                  onChange={(e) => {
-                    setAddress({ ...address, state: e.target.value });
-                  }}
-                />
-              </span>
-            </li>
-            <li>
-              <span>
-                Country:{" "}
-                <input
-                  type="text"
-                  value={address.country}
-                  onChange={(e) => {
-                    setAddress({ ...address, country: e.target.value });
-                  }}
-                />
-              </span>
-            </li>
-            <li>
-              <span>
-                Zip Code:{" "}
-                <input
-                  type="text"
-                  value={address.zipcode}
-                  onChange={(e) => {
-                    setAddress({ ...address, zipcode: e.target.value });
-                  }}
-                />
-              </span>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <span className="font-semibold">Size: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={size}
-            onChange={(e) => {
-              setSize(e.target.valueAsNumber);
-            }}
-          />
-        </div>
-        <div>
-          <span className="font-semibold">Year of Establishment: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={yearOfEstablishment}
-            onChange={(e) => {
-              setYearOfEstablishment(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <span className="font-semibold">Social Media Link: </span>
-          <input
-            className="rounded"
-            type="text"
-            value={socialMediaLink}
-            onChange={(e) => {
-              setSocialMediaLink(e.target.value);
-            }}
-          />
-        </div>
+    <>
+      {loading ? null : (
+        <div className="flex flex-col gap-4">
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Company Name"
+              variant="standard"
+              value={companyName}
+              onChange={(e) => {
+                setCompanyName(e.target.value);
+              }}
+            />
+          </div>
+          <div>
+            <span className="font-semibold">Domains: </span>
+            <MultiSelect
+              formData={domains}
+              setFormData={setDomains}
+              givenOptions={domainOptions.map((domain, index) => domain)}
+            />
+          </div>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Category"
+              variant="standard"
+              value={category}
+              onChange={(e) => {
+                setCategory(e.target.value);
+              }}
+            />
+          </div>
+          <div>
+            <span className="font-semibold">Address: </span>
+            <ul className="ml-8">
+              <li>
+                <span>
+                  <TextField
+                    id="standard-basic"
+                    label="City"
+                    variant="standard"
+                    value={address.city}
+                    onChange={(e) => {
+                      setAddress({ ...address, city: e.target.value });
+                    }}
+                  />
+                </span>
+              </li>
+              <li>
+                <span>
+                  <TextField
+                    id="standard-basic"
+                    label="Line 1"
+                    variant="standard"
+                    value={address.line1}
+                    onChange={(e) => {
+                      setAddress({ ...address, line1: e.target.value });
+                    }}
+                  />
+                </span>
+              </li>
+              <li>
+                <span>
+                  <TextField
+                    id="standard-basic"
+                    label="Line 2"
+                    variant="standard"
+                    value={address.line2}
+                    onChange={(e) => {
+                      setAddress({ ...address, line2: e.target.value });
+                    }}
+                  />
+                </span>
+              </li>
+              <li>
+                <span>
+                  <TextField
+                    id="standard-basic"
+                    label="State"
+                    variant="standard"
+                    value={address.state}
+                    onChange={(e) => {
+                      setAddress({ ...address, state: e.target.value });
+                    }}
+                  />
+                </span>
+              </li>
+              <li>
+                <span>
+                  <TextField
+                    id="standard-basic"
+                    label="Country"
+                    variant="standard"
+                    value={address.country}
+                    onChange={(e) => {
+                      setAddress({ ...address, country: e.target.value });
+                    }}
+                  />
+                </span>
+              </li>
+              <li>
+                <span>
+                  <TextField
+                    id="standard-basic"
+                    label="Zip Code"
+                    variant="standard"
+                    value={address.zipcode}
+                    onChange={(e) => {
+                      setAddress({ ...address, zipcode: e.target.value });
+                    }}
+                  />
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Size"
+              variant="standard"
+              value={size}
+              type="number"
+              onChange={(e) => {
+                // @ts-ignore
+                setSize(e.target.valueAsNumber);
+              }}
+            />
+          </div>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Year of Establishment"
+              variant="standard"
+              value={yearOfEstablishment}
+              onChange={(e) => {
+                setYearOfEstablishment(e.target.value);
+              }}
+            />
+          </div>
+          <div>
+            <TextField
+              id="standard-basic"
+              label="Social Media Link"
+              variant="standard"
+              value={socialMediaLink}
+              onChange={(e) => {
+                setSocialMediaLink(e.target.value);
+              }}
+            />
+          </div>
 
-        <div className="mt-4">
-          <Button
-            className="w-full"
-            onClick={() => {
-              updateCompanyProfile();
-            }}
-          >
-            Update
-          </Button>
+          <div className="mt-4">
+            <Button
+              className="w-full"
+              onClick={() => {
+                updateCompanyProfile();
+              }}
+            >
+              Update
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
