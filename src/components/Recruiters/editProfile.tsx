@@ -167,7 +167,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
     };
     const triggerUpdate = async () => {
       console.log(data);
-      const res = await patchProfile(data);
+      await patchProfile(data);
       window.location.reload();
     };
     triggerUpdate();

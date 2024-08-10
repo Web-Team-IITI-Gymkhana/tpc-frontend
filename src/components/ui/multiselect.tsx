@@ -5,14 +5,18 @@ export const MultiSelect = ({ givenOptions, formData, setFormData }) => {
     setFormData(selectedOptions.map((option) => option.value));
   };
 
+  console.log(formData);
+
+  const values = [];
+  formData.forEach((element) => {
+    values.push({ value: element, label: element });
+  });
+
+  console.log(values);
+
   const options = givenOptions.map((option) => ({
     value: option,
     label: option,
-  }));
-
-  const values = formData.forEach((element) => ({
-    value: element,
-    label: element,
   }));
 
   return (
