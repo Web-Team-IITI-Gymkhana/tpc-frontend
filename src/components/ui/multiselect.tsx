@@ -2,13 +2,7 @@ import Select from "react-select";
 
 export const MultiSelect = ({ givenOptions, formData, setFormData }) => {
   const handleChange = (selectedOptions) => {
-    const values = selectedOptions
-      ? selectedOptions.map((option) => option.value)
-      : [];
-    const updatedSalary = {
-      categories: values,
-    };
-    setFormData((prevData) => [...prevData, values]);
+    setFormData(selectedOptions.map((option) => option.value));
   };
 
   const options = givenOptions.map((option) => ({

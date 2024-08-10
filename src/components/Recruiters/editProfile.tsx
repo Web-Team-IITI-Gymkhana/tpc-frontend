@@ -5,6 +5,7 @@ import { patchProfile } from "@/helpers/recruiter/api";
 import { getDomains } from "@/helpers/recruiter/api";
 import { MultiSelect } from "@/components/ui/multiselect";
 import TextField from "@mui/material/TextField";
+import { CompanyDetailsLoader } from "./loaders";
 
 export const EditForm = (params: { profile: ProfileFC }) => {
   const { profile } = params;
@@ -165,6 +166,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
       },
     };
     const triggerUpdate = async () => {
+      console.log(data);
       const res = await patchProfile(data);
       window.location.reload();
     };
@@ -173,7 +175,9 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
 
   return (
     <>
-      {loading ? null : (
+      {loading ? (
+        <CompanyDetailsLoader />
+      ) : (
         <div className="flex flex-col gap-4">
           <div>
             <TextField

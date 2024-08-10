@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProfileFC } from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
 import PersonIcon from "@mui/icons-material/Person";
 import { EditForm, EditCompanyForm } from "./editProfile";
+import { fetchProfile } from "@/helpers/recruiter/api";
+import { ProfileLoader, ProfileNavLoader } from "./loaders";
 
 const ProfileDetails = ({ profile }: { profile: ProfileFC }) => {
   return (
@@ -71,12 +73,20 @@ const CompanyProfileCard = ({ profile }: { profile: ProfileFC }) => {
   );
 };
 
-const RecruiterProfile = (params: {
-  profile: ProfileFC;
-  setEdit: () => void;
-}) => {
+const RecruiterProfile = () => {
   const [view, setView] = useState<string>("PROFILE");
   const [edit, setEdit] = useState<boolean>(false);
+  const [data, setData] = useState<ProfileFC>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const profileData = async () => {
+      const jsonData = await fetchProfile();
+      setData(jsonData);
+      setLoading(false);
+    };
+    profileData();
+  }, []);
 
   const handleViewChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setView(e.target.value);
@@ -87,14 +97,18 @@ const RecruiterProfile = (params: {
       <div className="w-full lg:w-2/3 md:w-3/4">
         <div className="bg-white shadow-md rounded-lg overflow-hidden w-full">
           <div className="flex">
-            <div className="w-1/3 bg-gradient-to-r from-pink-500 to-orange-400 text-center text-white py-5">
+            <div className="w-1/3 bg-gradient-to-br from-gray-400 to-gray-900 text-center text-white py-5">
               <div className="mb-6">
                 <PersonIcon sx={{ fontSize: "6rem" }} />
               </div>
-              <h6 className="text-lg font-semibold">
-                {params.profile.user.name}
-              </h6>
-              <p>{params.profile.designation}</p>
+              {loading ? (
+                <ProfileNavLoader />
+              ) : (
+                <>
+                  <h6 className="text-lg font-semibold">{data.user.name}</h6>
+                  <p>{data.designation}</p>
+                </>
+              )}
             </div>
             <div className="w-2/3">
               <div className="p-5">
@@ -109,7 +123,7 @@ const RecruiterProfile = (params: {
                         onChange={handleViewChange}
                         className="peer hidden"
                       />
-                      <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-pink-500 peer-checked:to-orange-400 peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
+                      <span className="tracking-widest peer-checked:bg-gradient-to-br peer-checked:from-gray-400 peer-checked:to-gray-900 peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
                         Self
                       </span>
                     </label>
@@ -123,7 +137,7 @@ const RecruiterProfile = (params: {
                         onChange={handleViewChange}
                         className="peer hidden"
                       />
-                      <span className="tracking-widest peer-checked:bg-gradient-to-r peer-checked:from-pink-500 peer-checked:to-orange-400 peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
+                      <span className="tracking-widest peer-checked:bg-gradient-to-br peer-checked:from-gray-400 peer-checked:to-gray-900 peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
                         Company
                       </span>
                     </label>
@@ -134,16 +148,18 @@ const RecruiterProfile = (params: {
                     </Button>
                   )}
                 </div>
-                {view === "PROFILE" ? (
+                {loading ? (
+                  <ProfileLoader />
+                ) : view === "PROFILE" ? (
                   edit ? (
-                    <EditForm profile={params.profile} />
+                    <EditForm profile={data} />
                   ) : (
-                    <ProfileDetails profile={params.profile} />
+                    <ProfileDetails profile={data} />
                   )
                 ) : edit ? (
-                  <EditCompanyForm profile={params.profile} />
+                  <EditCompanyForm profile={data} />
                 ) : (
-                  <CompanyProfileCard profile={params.profile} />
+                  <CompanyProfileCard profile={data} />
                 )}
               </div>
             </div>
