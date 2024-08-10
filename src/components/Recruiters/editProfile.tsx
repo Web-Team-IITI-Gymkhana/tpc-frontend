@@ -5,7 +5,7 @@ import { patchProfile } from "@/helpers/recruiter/api";
 import { getDomains } from "@/helpers/recruiter/api";
 import { MultiSelect } from "@/components/ui/multiselect";
 import TextField from "@mui/material/TextField";
-import { CompanyDetailsLoader } from "./loaders";
+import { CompanyDetailsLoader } from "../Loader/loaders";
 
 export const EditForm = (params: { profile: ProfileFC }) => {
   const { profile } = params;

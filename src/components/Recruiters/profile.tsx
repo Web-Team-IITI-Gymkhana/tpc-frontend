@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import PersonIcon from "@mui/icons-material/Person";
 import { EditForm, EditCompanyForm } from "./editProfile";
 import { fetchProfile } from "@/helpers/recruiter/api";
-import { ProfileLoader, ProfileNavLoader } from "./loaders";
+import { ProfileLoader, ProfileNavLoader } from "../Loader/loaders";
 
 const ProfileDetails = ({ profile }: { profile: ProfileFC }) => {
   return (
