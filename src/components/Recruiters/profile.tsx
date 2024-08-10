@@ -9,7 +9,7 @@ import { ProfileLoader, ProfileNavLoader } from "../Loader/loaders";
 const ProfileDetails = ({ profile }: { profile: ProfileFC }) => {
   return (
     <>
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4 overflow-x-auto">
         <div>
           <span className="font-semibold">Landline: </span>
           {profile.landline}
@@ -112,7 +112,7 @@ const RecruiterProfile = () => {
             </div>
             <div className="w-2/3">
               <div className="p-5">
-                <div className="flex justify-between items-center mb-5 pb-2 border-b border-gray-300">
+                <div className="flex flex-wrap justify-between items-center mb-5 pb-2 border-b border-gray-300">
                   <div className="flex space-x-2 rounded-xl select-none">
                     <label className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer">
                       <input

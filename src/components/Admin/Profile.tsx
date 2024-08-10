@@ -53,7 +53,7 @@ const AdminProfile = () => {
                 {loading ? (
                   <ProfileLoader />
                 ) : (
-                  <div className="mb-4">
+                  <div className="mb-4 overflow-x-auto">
                     <div>
                       <span className="font-semibold">Email: </span>
                       <span>{profile.email}</span>
