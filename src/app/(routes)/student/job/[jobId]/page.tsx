@@ -286,11 +286,11 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             <TableBody>
               {jobData?.jobCoordinators.map((coordinator, index) => (
                 <TableRow key={index}>
-                  <TableCell>{coordinator.tpcMember.user.name}</TableCell>
+                  <TableCell>{coordinator.tpcMember.student.user.name}</TableCell>
                   <TableCell>{coordinator.role}</TableCell>
-                  <TableCell>{coordinator.tpcMember.department}</TableCell>
-                  <TableCell>{coordinator.tpcMember.user.email}</TableCell>
-                  <TableCell>{coordinator.tpcMember.user.contact}</TableCell>
+                  <TableCell>{coordinator.tpcMember.student.program.department}</TableCell>
+                  <TableCell>{coordinator.tpcMember.student.user.email}</TableCell>
+                  <TableCell>{coordinator.tpcMember.student.user.contact}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

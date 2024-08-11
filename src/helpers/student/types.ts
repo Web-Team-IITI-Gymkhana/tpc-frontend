@@ -1,3 +1,5 @@
+import { TPCMember } from "@/components/Admin/types";
+
 export interface OnCampusOffers {
   id: string;
   status: string;
@@ -237,17 +239,7 @@ export interface Job {
   jobCoordinators: {
     id: string;
     role: string;
-    tpcMember: {
-      id: string;
-      department: string;
-      role: string;
-      user: {
-        id: string;
-        email: string;
-        name: string;
-        contact: string;
-      };
-    };
+    tpcMember: TPCMember
   }[];
 
   events: {

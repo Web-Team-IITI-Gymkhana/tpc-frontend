@@ -1163,7 +1163,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   <div className="text-center font-semibold">
                     <PersonIcon sx={{ fontSize: 80 }} className="mx-auto" />
                     <br />
-                    {coordinator.tpcMember.user.name}
+                    {coordinator.tpcMember.student.user.name}
                   </div>
                   <div>
                     <div>
@@ -1172,15 +1172,15 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     </div>
                     <div>
                       <span className="font-semibold">Department : </span>
-                      {coordinator.tpcMember.department}
+                      {coordinator.tpcMember.student.program.department}
                     </div>
                     <div>
                       <span className="font-semibold">Email : </span>
-                      {coordinator.tpcMember.user.email}
+                      {coordinator.tpcMember.student.user.email}
                     </div>
                     <div>
                       <span className="font-semibold">Contact : </span>
-                      {coordinator.tpcMember.user.contact}
+                      {coordinator.tpcMember.student.user.contact}
                     </div>
                   </div>
                 </div>
@@ -1415,14 +1415,14 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       </div>
                     )}
                   </div>
-                  <Separator className="my-4" />
+                  {/* <Separator className="my-4" /> */}
                   <div className="flex justify-between mt-2 mb-4">
                     <Button color="primary" onClick={() => { setApprovalModal(!approvalModal); getApprovals(salaryIndex) }} >Current Approvals</Button>
                     <div className="flex justify-end">
                       {facultyDropDown[salaryIndex] && (<button
                         className="bg-blue-500 text-white p-2 mr-4 rounded  hover:bg-blue-600 transition duration-200"
                         onClick={() => submitApproval(salaryIndex)}
-                      >
+                        >
                         Submit Request
                       </button>)}
                       <Button
@@ -1440,6 +1440,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       </Button>
                     </div>
                   </div>
+                  <Separator className="my-8" />
                   {approvalModal && (
                     <div className="fixed inset-0 flex items-center justify-center z-30 bg-gray-800 bg-opacity-10">
                       <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">

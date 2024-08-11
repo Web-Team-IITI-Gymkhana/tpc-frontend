@@ -1,3 +1,5 @@
+import { TPCMember } from "@/components/Admin/types";
+
 export interface ApplicationFC {
   id: string;
   student: {
@@ -110,17 +112,7 @@ export interface JobDetailFC {
     {
       id: string;
       role: string;
-      tpcMember: {
-        id: string;
-        department: string;
-        role: string;
-        user: {
-          id: string;
-          email: string;
-          name: string;
-          contact: string;
-        };
-      };
+      tpcMember: TPCMember;
     },
   ];
   events: [
