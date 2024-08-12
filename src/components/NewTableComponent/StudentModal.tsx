@@ -122,7 +122,7 @@ const fetchActiveSeasonsData = async (studentId: any) => {
   }
   const createRegistration = async (studentId: string, seasonId: string,registered:boolean) => {
     try {
-      const response = await postRegistration(studentId, seasonId,registered);
+      const response = await postRegistration(studentId, seasonId,false);
       setActiveSeasons((prevData: any) =>
         prevData.filter((season: any) => season.id !== seasonId),
       );
