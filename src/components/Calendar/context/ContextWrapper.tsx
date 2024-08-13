@@ -4,6 +4,9 @@ import GlobalContext from "./GlobalContext";
 import { selectedDayEvent } from "./GlobalContext";
 import { fetchEvents } from "@/helpers/api";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+import jwt from "jsonwebtoken";
+import { fetchStudentEvents } from "@/helpers/student/api";
 
 export const labelsClasses = new Map([
   ["INTERVIEW", "green"],
@@ -57,10 +60,36 @@ export default function ContextWrapper(props: any) {
   useEffect(() => {
     async function fetchAndSetEvents() {
       try {
-        const data = await fetchEvents();
+        const accessToken = Cookies.get("accessToken");
+        let user = null;
+
+        if (accessToken) {
+          try {
+            const decoded = jwt.decode(accessToken);
+            user = decoded ? { role: decoded.role } : null;
+          } catch (error) {
+            console.error("JWT decoding error:", error);
+          }
+        }
+
+        let data;
+
+        switch (user.role) {
+          case "ADMIN":
+            data = await fetchEvents();
+            break;
+          case "RECRUITER":
+            data = await fetchStudentEvents();
+            break;
+          case "STUDENT":
+            data = await fetchStudentEvents();
+            break;
+        }
+
         dispatchCallEvents({ type: "fetch", payload: data });
       } catch (error) {
         toast.error("Failed to fetch events:");
+        console.log(error);
       }
     }
     fetchAndSetEvents();

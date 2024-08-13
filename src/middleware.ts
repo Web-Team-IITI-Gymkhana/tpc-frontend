@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
 
 const adminRoutes = [
   "/admin/company",
@@ -31,8 +32,17 @@ const recruiterRoutes = [
 const facultyRoutes = ["/faculty", "/faculty/profile"];
 
 export function middleware(request: NextRequest) {
-  const userCookie = request.cookies.get("user");
-  const user = userCookie ? JSON.parse(userCookie.value) : null;
+  const accessToken = request.cookies.get("accessToken");
+  let user = null;
+
+  if (accessToken) {
+    try {
+      const decoded = jwt.decode(accessToken.value);
+      user = decoded ? { role: decoded.role } : null;
+    } catch (error) {
+      console.error("JWT decoding error:", error);
+    }
+  }
 
   if (request.nextUrl.pathname === "/" && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
