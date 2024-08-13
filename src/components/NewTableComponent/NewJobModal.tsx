@@ -570,7 +570,7 @@ const JobModal = ({
                     <div className="text-center font-semibold">
                       <PersonIcon sx={{ fontSize: 80 }} className="mx-auto" />
                       <br />
-                      {coordinator.tpcMember.user.name}
+                      {coordinator.tpcMember.student.user.name}
                     </div>
                     <div>
                       <div>
@@ -579,15 +579,15 @@ const JobModal = ({
                       </div>
                       <div>
                         <span className="font-semibold">Department : </span>
-                        {coordinator.tpcMember.department}
+                        {coordinator.tpcMember.student.program.department}
                       </div>
                       <div>
                         <span className="font-semibold">Email : </span>
-                        {coordinator.tpcMember.user.email}
+                        {coordinator.tpcMember.student.user.email}
                       </div>
                       <div>
                         <span className="font-semibold">Contact : </span>
-                        {coordinator.tpcMember.user.contact}
+                        {coordinator.tpcMember.student.user.contact}
                       </div>
                     </div>
                   </div>

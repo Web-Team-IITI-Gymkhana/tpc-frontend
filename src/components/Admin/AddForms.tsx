@@ -12,7 +12,7 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
   const [role, setRole] = useState("PRIMARY");
   const [loading, setLoading] = useState(true);
   const options = tpcMembers?.map((member) => ({
-    label: `${member.user.name} ${member.user.email}`,
+    label: `${member.student.user.name} ${member.student.user.email}`,
     value: member.id,
   }));
   const jobRoleOptions = [
@@ -71,7 +71,7 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
               isSearchable
               className="mb-4 text-sm font-normal"
             />
-            {coordinator && coordinator.user.name}
+            {coordinator && coordinator.student.user.name}
           </div>
           {coordinator && (
             <div>
@@ -81,15 +81,15 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
               </div>
               <div>
                 <span className="font-semibold">Department : </span>
-                {coordinator.department}
+                {coordinator.student.program.department}
               </div>
               <div>
                 <span className="font-semibold">Email : </span>
-                {coordinator.user.email}
+                {coordinator.student.user.email}
               </div>
               <div>
                 <span className="font-semibold">Contact : </span>
-                {coordinator.user.contact}
+                {coordinator.student.user.contact}
               </div>
               <Select
                 options={jobRoleOptions}

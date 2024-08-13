@@ -1,27 +1,32 @@
-export interface JobCoordinatorFC {
+
+interface Program {
   id: string;
-  role: string;
-  tpcMember: {
-    id: string;
-    department: string;
-    role: string;
-    user: {
-      id: string;
-      email: string;
-      name: string;
-      contact: string;
-    };
-  };
+  branch: string;
+  course: string;
+  year: string;
+  department: string;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  contact: string;
+}
+
+interface Student {
+  id: string;
+  program: Program;
+  user: User;
 }
 
 export interface TPCMember {
   id: string;
-  department: string;
   role: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    contact: string;
-  };
+  student: Student; 
+}
+export interface JobCoordinatorFC {
+  id: string;
+  role: string;
+  tpcMember: TPCMember;
 }

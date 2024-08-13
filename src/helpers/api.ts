@@ -484,7 +484,18 @@ export const fetchRegistrations = async (
     ],
   });
 };
-
+export const postRegistration = async (studentID:string,seasonID:string,registered:boolean) => {
+  return apiCall("/registrations", {
+    method: "POST",
+    body: [
+      {
+        studentId:studentID,
+        seasonId:seasonID,
+        registered:registered,
+      },
+    ],
+  });
+};
 //OnClick Functions
 
 export const createJobEvent = async (
