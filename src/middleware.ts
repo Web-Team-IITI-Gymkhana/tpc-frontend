@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 
 const adminRoutes = [
   "/admin/company",
@@ -37,7 +37,7 @@ export function middleware(request: NextRequest) {
 
   if (accessToken) {
     try {
-      const decoded = jwt.decode(accessToken.value);
+      const decoded: any = jwtDecode(accessToken.value);
       user = decoded ? { role: decoded.role } : null;
     } catch (error) {
       console.error("JWT decoding error:", error);

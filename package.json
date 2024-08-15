@@ -46,7 +46,6 @@
     "formik-wizard-form": "^2.1.0",
     "framer-motion": "^10.16.4",
     "js-cookie": "^3.0.5",
-    "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.302.0",
     "material-icons": "^1.13.12",
