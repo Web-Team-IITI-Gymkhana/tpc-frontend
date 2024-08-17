@@ -1,13 +1,5 @@
-import axios from "axios";
 import { JobDetailFC, updateProfileFC, SalaryFC } from "./types";
 import { OpenFile, apiCall } from "../api";
-
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const url = (NextUrl: string) => {
-  return `${baseUrl}/api/v1${NextUrl}`;
-};
 
 export const fetchProfile = async () => {
   return apiCall(`/recruiter-view/recruiter`);
