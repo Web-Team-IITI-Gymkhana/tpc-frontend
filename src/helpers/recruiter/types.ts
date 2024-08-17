@@ -216,3 +216,21 @@ export interface ProfileFC {
     socialMediaLink: string;
   };
 }
+
+export interface CompanyPostFC {
+  name: string;
+  category: string;
+  yearOfEstablishment: string;
+  website: string;
+  size: 0;
+  annualTurnover: string;
+  socialMediaLink: string;
+  domains: string[];
+  address: {
+    line1: string;
+    line2: string;
+    city: string;
+    state: string;
+    country: string;
+  };
+}
