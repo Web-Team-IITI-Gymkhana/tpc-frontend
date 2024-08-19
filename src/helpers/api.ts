@@ -307,6 +307,20 @@ export const fetchSeasonData = async (year: any, registered: boolean) => {
     next: { tags: ["AllStudents"] },
   });
 };
+export const fetchSeasonDataById = async (id: any) => {
+  return apiCall(`/seasons`,
+    {
+      queryParam: {
+        q: {
+          filterBy: {
+            id: {
+              eq: [id],
+            },
+          },
+        },
+      },
+    });
+}
 
 export const fetchRegistrationDataById = async (studentId: any) => {
   console.log(studentId);
@@ -498,6 +512,11 @@ export const postRegistration = async (
         registered: registered,
       },
     ],
+  });
+};
+export const debarStudent = async (id) => {
+  return apiCall(`/registrations?id=${id}`, {
+    method: "DELETE",
   });
 };
 //OnClick Functions
