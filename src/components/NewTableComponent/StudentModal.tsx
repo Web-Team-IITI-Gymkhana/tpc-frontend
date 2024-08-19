@@ -16,9 +16,9 @@ import { grey } from "@mui/material/colors";
 import { Button } from "@mui/material";
 import { fetchRegistrations } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
-import { fetchStudentDataById, fetchRegistrationDataById,fetchAllSeasons,postRegistration } from "@/helpers/api";
+import { fetchStudentDataById, fetchRegistrationDataById, fetchAllSeasons,fetchSeasonDataById, postRegistration, debarStudent } from "@/helpers/api";
 import toast from "react-hot-toast";
-const redirect = () => {};
+const redirect = () => { };
 const theme = createTheme({
   palette: {
     primary: {
@@ -102,33 +102,34 @@ export default function StudentModal({ open, setOpen, id }) {
     try {
       const data = await fetchRegistrationDataById(studentId);
       setRegistrationData(data);
+
     } catch (error) {
     } finally {
       setLoading(false);
     }
   };
-const fetchActiveSeasonsData = async (studentId: any) => {
+  const fetchActiveSeasonsData = async (studentId: any) => {
     setLoading(true);
     try {
       const data = await fetchAllSeasons();
-      const registrations=await fetchRegistrationDataById(studentId);
+      const registrations = await fetchRegistrationDataById(studentId);
       const activeSeasons = data.filter((season) => season.status === "ACTIVE");
-      const seasonids=registrations.map((registration:any)=>registration.season.id);
-      const displayedSeasons=activeSeasons.filter((season:any)=>!seasonids.includes(season.id));
+      const seasonids = registrations.map((registration: any) => registration.season.id);
+      const displayedSeasons = activeSeasons.filter((season: any) => !seasonids.includes(season.id));
       setActiveSeasons(displayedSeasons);
     } catch (error) {
       toast.error("Error fetching active seasons data");
     }
   }
-  const createRegistration = async (studentId: string, seasonId: string,registered:boolean) => {
+  const createRegistration = async (studentId: string, seasonId: string, registered: boolean) => {
     try {
-      const response = await postRegistration(studentId, seasonId,false);
+      const response = await postRegistration(studentId, seasonId, false);
       setActiveSeasons((prevData: any) =>
         prevData.filter((season: any) => season.id !== seasonId),
       );
-    const newRegistration = await fetchRegistrationDataById(studentId);
-    setRegistrationData(newRegistration);
-
+      const newRegistration = await fetchRegistrationDataById(studentId);
+      setRegistrationData(newRegistration);
+ 
       if (!response) {
         toast.error("Failed to create registration");
         throw new Error("Failed to create registration");
@@ -148,13 +149,11 @@ const fetchActiveSeasonsData = async (studentId: any) => {
   useEffect(() => {
     if (open && id) {
       fetchStudentData(id);
-      
       fetchRegistrationData(id);
       fetchActiveSeasonsData(id);
-     
 
     }
-  }, [open,id]);
+  }, [open, id]);
 
   const handleClose = () => setOpen(false);
 
@@ -178,7 +177,29 @@ const fetchActiveSeasonsData = async (studentId: any) => {
       );
     }
   };
-
+  const handleDebar = async (registrationId: string, seasonId: string) => {
+    try {
+      const response = await debarStudent(registrationId);
+    
+      if (!response) {
+        toast.error("Failed to debar student");
+        throw new Error("Failed to debar student");
+      }
+      setRegistrationData((prevData: any) =>
+        prevData.filter((registration: any) => registration.id !== registrationId)
+      );
+      const seasonData = await fetchSeasonDataById(seasonId);
+      if(seasonData[0].status === "ACTIVE") {
+      setActiveSeasons((prevData: any) => [...prevData,...seasonData]);
+      }
+      toast.success("Student debarred successfully");
+      return true;
+    } catch (error) {
+      toast.error("Error debarring student:", error.message);
+      return false;
+    }
+  };
+  
   return (
     <ThemeProvider theme={theme}>
       <Modal
@@ -460,24 +481,24 @@ const fetchActiveSeasonsData = async (studentId: any) => {
                       <TableBody>
                         {studentData.resumes
                           ? studentData.resumes.map((resume) => (
-                              <TableRow key={resume.id}>
-                                <TableCell>{resume.id}</TableCell>
-                                <TableCell>
-                                  <Button
-                                    variant="contained"
-                                    color="primary"
-                                    href={resume.filepath}
-                                    target="_blank"
-                                    download
-                                  >
-                                    Download
-                                  </Button>
-                                </TableCell>
-                                <TableCell>
-                                  {resume.verified.toString()}
-                                </TableCell>
-                              </TableRow>
-                            ))
+                            <TableRow key={resume.id}>
+                              <TableCell>{resume.id}</TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  href={resume.filepath}
+                                  target="_blank"
+                                  download
+                                >
+                                  Download
+                                </Button>
+                              </TableCell>
+                              <TableCell>
+                                {resume.verified.toString()}
+                              </TableCell>
+                            </TableRow>
+                          ))
                           : "N/A"}
                       </TableBody>
                     </Table>
@@ -505,11 +526,11 @@ const fetchActiveSeasonsData = async (studentId: any) => {
                       <TableBody>
                         {studentData.penalties
                           ? studentData.penalties.map((penalty) => (
-                              <TableRow key={penalty.id}>
-                                <TableCell>{penalty.penalty}</TableCell>
-                                <TableCell>{penalty.reason}</TableCell>
-                              </TableRow>
-                            ))
+                            <TableRow key={penalty.id}>
+                              <TableCell>{penalty.penalty}</TableCell>
+                              <TableCell>{penalty.reason}</TableCell>
+                            </TableRow>
+                          ))
                           : "N/A"}
                       </TableBody>
                     </Table>
@@ -530,7 +551,7 @@ const fetchActiveSeasonsData = async (studentId: any) => {
                     <Table>
                       <TableHead>
                         <TableRow>
-                         
+
                           <TableCell sx={{ fontWeight: "bold" }}>Year</TableCell>
                           <TableCell sx={{ fontWeight: "bold" }}>Type</TableCell>
                           <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
@@ -539,32 +560,32 @@ const fetchActiveSeasonsData = async (studentId: any) => {
                       <TableBody>
                         {activeSeasons
                           ? activeSeasons.map((season) => (
-                              <TableRow key={season.id}>
-                               
-                                <TableCell>{season.year}</TableCell>
-                                <TableCell>{season.type}</TableCell>
-                                <TableCell>
-                                  <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() =>
-                                      createRegistration(
-                                        studentData.id,
-                                        season.id,
-                                        true,
-                                      )
-                                    }
-                                  >
-                                    Create Registration
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
+                            <TableRow key={season.id}>
+
+                              <TableCell>{season.year}</TableCell>
+                              <TableCell>{season.type}</TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() =>
+                                    createRegistration(
+                                      studentData.id,
+                                      season.id,
+                                      true,
+                                    )
+                                  }
+                                >
+                                  Create Registration
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
                           : "N/A"}
                       </TableBody>
                     </Table>
                   </TableContainer>
-                    
+
                   <Typography
                     variant="h5"
                     component="h3"
@@ -593,46 +614,61 @@ const fetchActiveSeasonsData = async (studentId: any) => {
                           <TableCell sx={{ fontWeight: "bold" }}>
                             Actions
                           </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Delete Registration
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {registrationData
                           ? registrationData.map((registration) => (
-                              <TableRow key={registration.id}>
-                                <TableCell>
-                                  {registration.season.year}
-                                </TableCell>
-                                <TableCell>
-                                  {registration.season.type}
-                                </TableCell>
-                                <TableCell>
+                            <TableRow key={registration.id}>
+                              <TableCell>
+                                {registration.season.year}
+                              </TableCell>
+                              <TableCell>
+                                {registration.season.type}
+                              </TableCell>
+                              <TableCell>
+                                {registration.registered
+                                  ? "Registered"
+                                  : "Not Registered"}
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="contained"
+                                  color={
+                                    registration.registered
+                                      ? "secondary"
+                                      : "primary"
+                                  }
+                                  onClick={() =>
+                                    handleStatusChange(
+                                      studentData.id,
+                                      registration.season.id,
+                                      registration.registered,
+                                    )
+                                  }
+                                >
                                   {registration.registered
-                                    ? "Registered"
-                                    : "Not Registered"}
-                                </TableCell>
-                                <TableCell>
-                                  <Button
-                                    variant="contained"
-                                    color={
-                                      registration.registered
-                                        ? "secondary"
-                                        : "primary"
-                                    }
-                                    onClick={() =>
-                                      handleStatusChange(
-                                        studentData.id,
-                                        registration.season.id,
-                                        registration.registered,
-                                      )
-                                    }
-                                  >
-                                    {registration.registered
-                                      ? "Deregister"
-                                      : "Register"}
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
+                                    ? "Deregister"
+                                    : "Register"}
+                                </Button>
+                           
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                  onClick={() =>
+                                    handleDebar(registration.id, registration.season.id)
+                                  }
+                                >
+                                  Debar
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
                           : "N/A"}
                       </TableBody>
                     </Table>
