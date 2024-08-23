@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import Select from "react-select";
 import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
-import { addSeason } from "@/helpers/api";
+import { addSeason,activateSeason } from "@/helpers/api";
 
 const hiddenColumns = [
   "id",
@@ -113,8 +113,13 @@ export const AddSeason = ({
     </Modal>
   );
 };
+interface AllSeasonsProps {
+  seasons: SeasonFC[];
+  setSeason: React.Dispatch<React.SetStateAction<SeasonFC[]>>;
+}
 
-export const AllSeasons = ({ seasons }: { seasons: [SeasonFC] }) => {
+export const AllSeasons: React.FC<AllSeasonsProps> = ({ seasons, setSeason }) => {
+  
   const [seasonYear, setSeasonYear] = useState<string>(null);
 
   const changeRegistered = (seasonYear: string) => {
@@ -123,6 +128,21 @@ export const AllSeasons = ({ seasons }: { seasons: [SeasonFC] }) => {
   const changeUnRegistered = (seasonYear: string) => {
     setSeasonYear(seasonYear);
   };
+
+  const handleStatus=async(seasonID:string,year:string,type:string,status:string,index) => {
+
+    try {
+      await activateSeason(seasonID,year,type,status==="ACTIVE"?"INACTIVE":"ACTIVE");
+      setSeason((prev) => {
+        const newSeason = [...prev];
+        newSeason[index].status = status==="ACTIVE"?"INACTIVE":"ACTIVE";
+        return newSeason;
+      });
+      toast.success("Successfully updated");
+    } catch {
+      toast.error("Some Error Occured");
+    }
+  }
 
   return (
     <div>
@@ -136,6 +156,8 @@ export const AllSeasons = ({ seasons }: { seasons: [SeasonFC] }) => {
               <th scope="col" className="px-6 py-3">
                 Year
               </th>
+              <th  scope="col" className="px-6 py-3">Status</th>
+             <th scope="col" className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -159,7 +181,8 @@ export const AllSeasons = ({ seasons }: { seasons: [SeasonFC] }) => {
                   {season.type}
                 </th>
                 <td className="px-6 py-4">{season.year}</td>
-               
+                <td className="px-6 py-4">{season.status}</td>
+               <td className="px-6 py-4" ><Button onClick={()=>{handleStatus(season.id,season.year,season.type,season.status,index)}}>{season.status==="ACTIVE"? "Deactivate":"Activate" }</Button></td>
                
               </tr>
             ))}

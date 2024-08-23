@@ -10,7 +10,7 @@ import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 
 const SeasonsPage = () => {
-  const [seasons, setData] = useState<[SeasonFC]>(null);
+  const [seasons, setData] = useState<SeasonFC[]>(null);
   const [loading, setLoading] = useState(true);
   const [addSeasonForm, setAddSeasonForm] = useState(false);
 
@@ -55,7 +55,7 @@ const SeasonsPage = () => {
       )}
       {seasons && (
         <div>
-          <AllSeasons seasons={seasons} />
+          <AllSeasons seasons={seasons} setSeason={setData} />
         </div>
       )}
     </div>
