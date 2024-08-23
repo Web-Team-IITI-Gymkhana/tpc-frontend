@@ -30,6 +30,7 @@ export interface SeasonFC {
   id: string;
   year: string;
   type: string;
+  status: string;
   applications?: [ApplicationFC];
 }
 
