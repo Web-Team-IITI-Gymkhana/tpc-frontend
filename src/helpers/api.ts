@@ -17,7 +17,7 @@ interface ApiCallOptions {
   recieveResponse?: boolean;
 }
 
-const redirect = () => {};
+const redirect = () => { };
 
 export const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
@@ -160,6 +160,14 @@ export const postFacultyApproval = async (
 
 export const fetchAllSeasons = async () => {
   return apiCall("/seasons");
+};
+
+export const activateSeason = async (seasonID: string, year: string, type: string, status: string) => {
+  const season = { id: seasonID, year: year, type: type, status: status }
+  return apiCall("/seasons",{
+    method:"PATCH",
+    body:[season],
+  });
 };
 
 export const fetchCompany = async () => {
@@ -498,6 +506,7 @@ export const fetchRegistrations = async (
     ],
   });
 };
+
 export const postRegistration = async (
   studentID: string,
   seasonID: string,
