@@ -306,7 +306,7 @@ export default function RecruiterSignup() {
         console.log(updatedFormData);
         const signupRes = await signupRecruiter(updatedFormData);
         if (signupRes) {
-          toast.success("Recruiter registered successfully");
+          toast.success("Successful! Please check your mail");
         } else {
           toast.error("Some error occured");
         }
@@ -321,7 +321,7 @@ export default function RecruiterSignup() {
       console.log(formData);
       const signupRes = await signupRecruiter(formData);
       if (signupRes) {
-        toast.success("Recruiter registered successfully");
+        toast.success("Please check your mail");
       } else {
         toast.error("Some error occured");
       }
