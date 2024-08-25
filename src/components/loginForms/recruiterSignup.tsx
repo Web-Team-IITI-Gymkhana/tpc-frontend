@@ -245,7 +245,7 @@ export default function RecruiterSignup() {
   const [companies, setCompanies] = useState([]);
   const [createCompany, setCreateCompany] = useState(false);
 
-  const [compantFormData, setCompanyFormData] = useState<CompanyPostFC>({
+  const [companyFormData, setCompanyFormData] = useState<CompanyPostFC>({
     name: "",
     category: "",
     yearOfEstablishment: "",
@@ -292,18 +292,43 @@ export default function RecruiterSignup() {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(compantFormData);
+  const handleSubmit = async () => {
+    console.log(companyFormData);
+
     if (createCompany) {
-      postCompany(compantFormData).then((data) => {
+      try {
+        const data = await postCompany(companyFormData);
         console.log(data);
-        setFormData((prev) => ({ ...prev, companyId: data[0] }));
-      });
+
+        const updatedFormData = { ...formData, companyId: data[0] };
+        setFormData(updatedFormData);
+
+        console.log(updatedFormData);
+        const signupRes = await signupRecruiter(updatedFormData);
+        if (signupRes) {
+          toast.success("Recruiter registered successfully");
+        } else {
+          toast.error("Some error occured");
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Error creating company or signing up");
+      }
+      return;
     }
-    signupRecruiter(formData).then((data) => {
-      console.log(data);
-      toast.success("Recruiter registered successfully");
-    });
+
+    try {
+      console.log(formData);
+      const signupRes = await signupRecruiter(formData);
+      if (signupRes) {
+        toast.success("Recruiter registered successfully");
+      } else {
+        toast.error("Some error occured");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error creating company or signing up");
+    }
   };
 
   return (
@@ -421,7 +446,7 @@ export default function RecruiterSignup() {
             {createCompany && (
               <Collapsible title="Create Company" defaultexpanded={true}>
                 <RecruiterForm
-                  formData={compantFormData}
+                  formData={companyFormData}
                   setFormData={setCompanyFormData}
                 />
               </Collapsible>
