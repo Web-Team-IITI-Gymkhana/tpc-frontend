@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { CompanyPostFC, JAFdetailsFC } from "@/helpers/recruiter/types";
 import { MultiSelect } from "../ui/multiselect";
 import Loader from "../Loader/loader";
+import Link from "next/link";
 
 export const RecruiterForm = ({
   formData,
@@ -455,10 +456,13 @@ export default function RecruiterSignup() {
         </form>
       </CardContent>
       <CardFooter>
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-1">
           <Button type="submit" onClick={handleSubmit}>
             Sign Up
           </Button>
+          <Link href={"/login/"}>
+            <Button variant="outline">Already Registered? Sign In</Button>
+          </Link>
         </div>
       </CardFooter>
     </Card>
