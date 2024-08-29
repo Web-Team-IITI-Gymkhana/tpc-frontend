@@ -66,6 +66,7 @@ export interface JobDetailFC {
   id: string;
   role: string;
   active: boolean;
+  registration: string;
   currentStatus: string;
   season: {
     id: string;
