@@ -358,6 +358,28 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 )}
               </div>
               <div className="flex flex-col">
+               
+                  <span className="font-semibold text-lg">Registration Status </span>
+                  {editMode ? (
+                  <input
+                  defaultChecked={job.registration==="OPEN" ? true : false}
+                    type="checkbox"
+                    name="registration"
+                    value={formData.registration}
+                    onChange={(e) => {
+                      setFormData((form) => ({
+                        ...form,
+                        registration: e.target.checked?"OPEN":"CLOSED",
+                      }));
+                    }}
+                  />
+                ) : (
+                  <span>{job.registration==="OPEN" ? "Open" : "Closed"}</span>
+                )}
+
+                
+              </div>
+              <div className="flex flex-col">
                 <span className="font-semibold text-lg">Current Status </span>
                 {editMode ? (
                   <Select
