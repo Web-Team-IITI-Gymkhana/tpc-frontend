@@ -589,6 +589,7 @@ export const patchJobData = async (jobId: string, changes: any) => {
     role: "string",
     active: true,
     currentStatus: "INITIALIZED",
+    registration: "string",
     noOfVacancies: 0,
     duration: 0,
     location: "string",
