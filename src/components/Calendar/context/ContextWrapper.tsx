@@ -5,7 +5,7 @@ import { selectedDayEvent } from "./GlobalContext";
 import { fetchEvents } from "@/helpers/api";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
-import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 import { fetchStudentEvents } from "@/helpers/student/api";
 
 export const labelsClasses = new Map([
@@ -65,7 +65,7 @@ export default function ContextWrapper(props: any) {
 
         if (accessToken) {
           try {
-            const decoded = jwt.decode(accessToken);
+            const decoded: any = jwtDecode(accessToken);
             user = decoded ? { role: decoded.role } : null;
           } catch (error) {
             console.error("JWT decoding error:", error);

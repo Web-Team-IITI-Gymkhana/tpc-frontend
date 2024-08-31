@@ -1,11 +1,10 @@
 import qs from "qs";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { ResumePatchData } from "./types";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 interface ApiCallOptions {
   method?: string;
@@ -506,7 +505,12 @@ export const fetchRegistrations = async (
     ],
   });
 };
-export const postRegistration = async (studentID: string, seasonID: string, registered: boolean) => {
+
+export const postRegistration = async (
+  studentID: string,
+  seasonID: string,
+  registered: boolean,
+) => {
   return apiCall("/registrations", {
     method: "POST",
     body: [
