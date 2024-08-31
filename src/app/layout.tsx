@@ -21,7 +21,7 @@ interface Props {
   auth: React.ReactNode;
 }
 
-const RouteLayout = async ({ children, auth }: Props) => {
+const RootLayout = async ({ children, auth }: Props) => {
   const className = inter.className;
 
   return (
@@ -43,4 +43,4 @@ const RouteLayout = async ({ children, auth }: Props) => {
   );
 };
 
-export default RouteLayout;
+export default RootLayout;
