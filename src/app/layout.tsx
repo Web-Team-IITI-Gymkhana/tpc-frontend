@@ -2,12 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ToggleProvider } from "@/contextProviders/ToggleProvider";
-import Sidebar from "@/components/Sidebar";
-import MainContent from "@/components/MainContent";
 import NextAuthProvider from "@/contextProviders/sessionProvider";
 import { Toaster } from "react-hot-toast";
-import { Providers } from "@/store/provider";
-import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +14,9 @@ export const metadata: Metadata = {
 
 interface Props {
   children: React.ReactNode;
-  auth: React.ReactNode;
 }
 
-const RootLayout = async ({ children, auth }: Props) => {
+const RootLayout = async ({ children }: Props) => {
   const className = inter.className;
 
   return (
@@ -32,10 +27,7 @@ const RootLayout = async ({ children, auth }: Props) => {
             {/* Page Content */}
             <Toaster />
 
-            <NextAuthProvider>
-              {children}
-              {auth}
-            </NextAuthProvider>
+            <NextAuthProvider>{children}</NextAuthProvider>
           </div>
         </ToggleProvider>
       </body>

@@ -1,6 +1,4 @@
 import "../globals.css";
-import Sidebar from "@/components/Sidebar";
-import MainContent from "@/components/MainContent";
 import { Providers } from "@/store/provider";
 import { Suspense } from "react";
 
@@ -8,7 +6,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const RouteLayout = async ({ children }: Props) => {
+const AuthLayout = async ({ children }: Props) => {
   return (
     <div className="flex-auto flex h-[92vh] ">
       <Providers>
@@ -28,4 +26,4 @@ const RouteLayout = async ({ children }: Props) => {
   );
 };
 
-export default RouteLayout;
+export default AuthLayout;
