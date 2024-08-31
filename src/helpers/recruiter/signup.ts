@@ -9,6 +9,7 @@ export async function signupRecruiter(data) {
     isAuth: false,
     method: "POST",
     body: data,
+    recieveResponse: true
   });
 }
 
