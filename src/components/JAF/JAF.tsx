@@ -11,6 +11,7 @@ import RecruiterDetails from "./RecruiterDetails";
 import SeasonDetails from "./SeasonDetails";
 import CompanyDetails from "./CompanyDetails";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 import Loader from "@/components/Loader/loader";
 
@@ -19,6 +20,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const { Step } = Steps;
 
 function JAF() {
+  const accessToken = Cookies.get("accessToken");
   const [finalValues, setFinalValues] = React.useState({});
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -77,7 +79,8 @@ function JAF() {
             attachment: "",
             skills: "",
             location: "",
-            noOfVacancies: "",
+            minNoOfHires: "",
+            expectedNoOfHires: "",
 
             offerLetterReleaseDate: "",
             joiningDate: "",
@@ -102,24 +105,6 @@ function JAF() {
           onSubmit={(values: any) => {
             const submitValues = {
               seasonId: values.seasonId,
-              company: {
-                name: values.compName,
-                website: values.website,
-                domains: values.domains,
-                category: values.category,
-                address: {
-                  line1: values.line1,
-                  line2: values.line2,
-                  city: values.city,
-                  state: values.state,
-                  zipCode: values.zipCode, //zipcode check
-                  country: values.country,
-                },
-                size: values.size,
-                yearOfEstablishment: values.yearOfEstablishment,
-                annualTurnover: values.annualTurnover,
-                socialMediaLink: values.socialMediaLink,
-              },
               recruiter: {
                 name: values.recName,
                 designation: values.designation,
@@ -151,50 +136,17 @@ function JAF() {
                   },
                 },
                 salaries: values.salaries,
-                // salaries: [
-                //   {
-                // salaryPeriod: values.salaryPeriod,//text
-                // criteria: {
-                //   programs: values.basicProgs,//dropdown from backend
-                //   genders: values.basicGenders,//dropdown from backend
-                //   categories: values.basicCategories,//dropdown from backend
-                //   minCPI: values.basicMinCPI,//number
-                //   tenthMarks: values.basicTenth,//number
-                //   twelvethMarks: values.basicTwelveth,//number
-                // },
-                // baseSalary: values.baseSalary,
-                // totalCTC: values.totalCTC,
-                // takeHomeSalary: values.takeHomeSalary,
-                // grossSalary: values.grossSalary,
-                // otherCompensations: values.otherCompensations,//textbox
-                //},
-                // ],
                 others: values.jobOthers, //other textarea
               },
             };
             axios
-              .post(`${baseUrl}/api/v1/jaf`, {
+            .post(
+              `${baseUrl}/api/v1/jaf`,
+              {
                 job: {
                   role: values.role,
                   seasonId: values.seasonId,
                   description: values.description,
-                  companyDetailsFilled: {
-                    name: values.compName,
-                    website: values.website,
-                    domains: values.domains,
-                    category: values.category,
-                    address: {
-                      line1: values.line1,
-                      line2: values.line2,
-                      city: values.city,
-                      state: values.state,
-                      country: values.country,
-                    },
-                    size: values.size,
-                    yearOfEstablishment: values.yearOfEstablishment,
-                    annualTurnover: values.annualTurnover,
-                    socialMediaLink: values.socialMediaLink,
-                  },
                   recruiterDetailsFilled: {
                     name: values.recName,
                     designation: values.designation,
@@ -206,7 +158,7 @@ function JAF() {
                   others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
-                  noOfVacancies: values.noOfVacancies,
+                  // noOfVacancies: values.noOfVacancies,
                   offerLetterReleaseDate: values.offerLetterReleaseDate,
                   joiningDate: values.joiningDate,
                   duration: values.duration,
@@ -225,14 +177,20 @@ function JAF() {
                   },
                 },
                 salaries: values.salaries,
-              })
-              .then((res) => {
-                toast.success("JAF Form filled successfully");
-                window.location.reload();
-              })
-              .catch((err) => {
-                toast.error("Cannot Submit");
-              });
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`, // Replace yourToken with the actual token
+                },
+              }
+            )
+            .then((res) => {
+              toast.success("JAF Form filled successfully");
+              window.location.reload();
+            })
+            .catch((err) => {
+              toast.error("Cannot Submit");
+            });
             setFinalValues(submitValues);
           }}
           validateOnNext
@@ -250,15 +208,6 @@ function JAF() {
                   [true],
                   "Please accept the terms and conditions to proceed",
                 ),
-              }),
-            },
-            {
-              component: CompanyDetails,
-              validationSchema: Yup.object().shape({
-                compName: Yup.string().required("Required"),
-                website: Yup.string()
-                  .url("Enter valid URL")
-                  .required("Required"),
               }),
             },
             {
@@ -296,7 +245,7 @@ function JAF() {
                     title="Season Details &nbsp;&nbsp;&nbsp;"
                     description="Season info"
                   />
-                  <Step title="Company Details" description="Company info" />
+                  {/* <Step title="Company Details" description="Company info" /> */}
                   <Step
                     title="Recruiter Details&nbsp;"
                     description="Recruited info"
@@ -317,14 +266,9 @@ function JAF() {
                     type="primary"
                     onClick={handleNext}
                   >
-                    {currentStepIndex === 3 ? "Finish" : "Next"}
+                    {currentStepIndex === 2 ? "Finish" : "Next"}
                   </Button>
                 </Row>
-                {/* <Row>
-                  <Col>
-                    <pre>{JSON.stringify(finalValues, null, 2)}</pre>
-                  </Col>
-                </Row> */}
               </Space>
             );
           }}

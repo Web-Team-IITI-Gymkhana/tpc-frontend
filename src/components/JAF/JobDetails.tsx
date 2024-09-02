@@ -47,6 +47,7 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
   const [form] = Form.useForm();
 
   const [testType, setTestType] = useState([]);
+  const [seasonType, setSeasonType] = useState("");
   const [interviewType, setInterviewType] = useState([]);
   const [programs, setPrograms] = useState<SelectProps["options"]>([]);
   let testTypeOptions: any = [];
@@ -65,6 +66,14 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
         interviewTypeOptions.push({ value: it, label: it });
       });
       setInterviewType(interviewTypeOptions);
+
+      const matchingSeason = res.data.seasons.find(
+        (season) => season.id === values.seasonId
+      );
+
+      if (matchingSeason) {
+        setSeasonType(matchingSeason.type);
+      }
       res.data.programs.map((it: any) => {
         programsOptions.push({
           value: it.id,
@@ -91,20 +100,42 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
         let objx: any = [];
         form.getFieldsValue().salaries.map((salary: any) => {
           const obj = {
-            salaryPeriod: salary.salaryPeriod, //text
-            programs: salary.programs ? salary.programs : [], //dropdown from backend
-            genders: salary.genders ? salary.genders : [], //dropdown from backend
-            categories: salary.categories ? salary.categories : [], //dropdown from backend
-            minCPI: salary.minCPI ? salary.minCPI : 0, //number
-            tenthMarks: salary.tenthMarks ? salary.tenthMarks : 0, //number
-            twelthMarks: salary.twelthMarks ? salary.twelthMarks : 0, //number
-            baseSalary: salary.baseSalary ? salary.baseSalary : 0,
-            totalCTC: salary.totalCTC ? salary.totalCTC : 0,
-            takeHomeSalary: salary.takeHomeSalary ? salary.takeHomeSalary : 0,
-            grossSalary: salary.grossSalary ? salary.grossSalary : 0,
-            otherCompensations: salary.otherCompensations
-              ? salary.otherCompensations
-              : 0, //textbox
+            salaryPeriod: salary.salaryPeriod || "", // text
+            programs: salary.programs || [], // dropdown from backend
+            genders: salary.genders || [], // dropdown from backend
+            categories: salary.categories || [], // dropdown from backend
+            isBacklogAllowed: salary.isBacklogAllowed || "", // dropdown from backend
+            minCPI: salary.minCPI || 0, // number
+            tenthMarks: salary.tenthMarks || 0, // number
+            twelthMarks: salary.twelthMarks || 0, // number
+            baseSalary: salary.baseSalary || 0,
+
+            //PLACEMENT
+            totalCTC: salary.totalCTC || 0,
+            takeHomeSalary: salary.takeHomeSalary || 0,
+            grossSalary: salary.grossSalary || 0,
+            joiningBonus: salary.joiningBonus || 0,
+            performanceBonus: salary.performanceBonus || 0,
+            relocation: salary.relocation || 0,
+            bondAmount: salary.bondAmount || 0,
+            esopAmount: salary.esopAmount || 0,
+            esopVestPeriod: salary.esopVestPeriod || "", // text
+            firstYearCTC: salary.firstYearCTC || 0,
+            retentionBonus: salary.retentionBonus || 0,
+            deductions: salary.deductions || 0,
+            medicalAllowance: salary.medicalAllowance || 0,
+            bondDuration: salary.bondDuration || "", // text
+            foreignCurrencyCTC: salary.foreignCurrencyCTC || 0,
+            foreignCurrencyCode: salary.foreignCurrencyCode || "", // text
+            otherCompensations: salary.otherCompensations || 0, // textbox
+            others: salary.others || "", // text
+          
+            // Internship-related fields
+            stipend: salary.stipend || 0,
+            foreignCurrencyStipend: salary.foreignCurrencyStipend || 0,
+            accommodation: salary.accommodation || 0,
+            tentativeCTC: salary.tentativeCTC || 0,
+            PPOConfirmationDate: salary.PPOConfirmationDate || null, // date
           };
           objx.push(obj);
         });
@@ -463,12 +494,22 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                         ]}
                       ></Select>
                     </Form.Item>
-                  </Col>
+                  </Col>                  
                   <Col span={12}>
-                    <Form.Item label="Min CPI" name={[field.name, "minCPI"]}>
-                      <Input placeholder="Min CPI" />
+                    <Form.Item
+                      label="Backlogs"
+                      name={[field.name, "isBacklogAllowed"]}
+                    >
+                      <Select
+                        placeholder="Please select"
+                        options={[
+                          { value: "PREVIOUS", label: "No Active Backlogs" },
+                          { value: "NEVER", label: "No Backlogs at All" },
+                          { value: "ACTIVE", label: "Doesn't Matter" },
+                        ]}
+                      ></Select>
                     </Form.Item>
-                  </Col>
+                  </Col>                  
                 </Row>
                 <Row gutter={24}>
                   <Col span={12}>
@@ -488,43 +529,218 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
                     </Form.Item>
                   </Col>
                 </Row>
-                <h2 className="text-sm ">Salary Details</h2>
                 <Row gutter={24}>
                   <Col span={12}>
-                    <Form.Item
-                      label="Base Salary"
-                      name={[field.name, "baseSalary"]}
-                    >
-                      <Input placeholder="Base Salary" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Total CTC"
-                      name={[field.name, "totalCTC"]}
-                    >
-                      <Input placeholder="Total CTC" />
+                    <Form.Item label="Min CPI" name={[field.name, "minCPI"]}>
+                      <Input placeholder="Min CPI" />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row gutter={24}>
-                  <Col span={12}>
+                {seasonType === "PLACEMENT" ? (
+                  <>
+                    <h2 className="text-sm">Placement Details</h2>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Base Salary"
+                          name={[field.name, "baseSalary"]}
+                        >
+                          <Input placeholder="Base Salary" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Total CTC"
+                          name={[field.name, "totalCTC"]}
+                        >
+                          <Input placeholder="Total CTC" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Take Home Salary"
+                          name={[field.name, "takeHomeSalary"]}
+                        >
+                          <Input placeholder="Take Home Salary" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Gross Salary"
+                          name={[field.name, "grossSalary"]}
+                        >
+                          <Input placeholder="Gross Salary" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Joining Bonus"
+                          name={[field.name, "joiningBonus"]}
+                        >
+                          <Input placeholder="Joining Bonus" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Performance Bonus"
+                          name={[field.name, "performanceBonus"]}
+                        >
+                          <Input placeholder="Performance Bonus" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Relocation"
+                          name={[field.name, "relocation"]}
+                        >
+                          <Input placeholder="Relocation" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Bond Amount"
+                          name={[field.name, "bondAmount"]}
+                        >
+                          <Input placeholder="Bond Amount" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="ESOP Amount"
+                          name={[field.name, "esopAmount"]}
+                        >
+                          <Input placeholder="ESOP Amount" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="ESOP Vest Period"
+                          name={[field.name, "esopVestPeriod"]}
+                        >
+                          <Input placeholder="ESOP Vest Period" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="First Year CTC"
+                          name={[field.name, "firstYearCTC"]}
+                        >
+                          <Input placeholder="First Year CTC" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Retention Bonus"
+                          name={[field.name, "retentionBonus"]}
+                        >
+                          <Input placeholder="Retention Bonus" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Deductions"
+                          name={[field.name, "deductions"]}
+                        >
+                          <Input placeholder="Deductions" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Medical Allowance"
+                          name={[field.name, "medicalAllowance"]}
+                        >
+                          <Input placeholder="Medical Allowance" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Bond Duration"
+                          name={[field.name, "bondDuration"]}
+                        >
+                          <Input placeholder="Bond Duration" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Foreign Currency CTC"
+                          name={[field.name, "foreignCurrencyCTC"]}
+                        >
+                          <Input placeholder="Foreign Currency CTC" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Foreign Currency Code"
+                          name={[field.name, "foreignCurrencyCode"]}
+                        >
+                          <Input placeholder="Foreign Currency Code" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-sm">Internship Details</h2>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Stipend"
+                          name={[field.name, "stipend"]}
+                        >
+                          <Input placeholder="Stipend" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Foreign Currency Stipend"
+                          name={[field.name, "foreignCurrencyStipend"]}
+                        >
+                          <Input placeholder="Foreign Currency Stipend" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Accommodation"
+                          name={[field.name, "accommodation"]}
+                        >
+                          <Input placeholder="Accommodation" />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Tentative CTC"
+                          name={[field.name, "tentativeCTC"]}
+                        >
+                          <Input placeholder="Tentative CTC" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
                     <Form.Item
-                      label="Take Home Salary"
-                      name={[field.name, "takeHomeSalary"]}
+                      label="PPO Confirmation Date"
+                      name={[field.name, "PPOConfirmationDate"]}
                     >
-                      <Input placeholder="Take Home Salary" />
+                      <Input type="date" />
                     </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Gross Salary"
-                      name={[field.name, "grossSalary"]}
-                    >
-                      <Input placeholder="Gross Salary" />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                  </>
+                )}
                 <Form.Item
                   label="Other Compensatons"
                   name={[field.name, "otherCompensations"]}
