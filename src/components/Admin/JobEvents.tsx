@@ -213,6 +213,7 @@ const PromoteStudent = ({
   }, [roundNumber]);
 
   const updateEvent = async () => {
+    console.log(studentIds);
     await promoteStudent({ studentIds }, eventId);
     toast.success("Successfully promoted!");
     onClose();
@@ -227,7 +228,7 @@ const PromoteStudent = ({
       <div className="bg-white p-8 rounded-xl">
         <div>
           Promote / Demote students :{" "}
-          {students.map((student) => `${student.name}, `)} to <br />
+          {students.map((student) => `${student.user.name}, `)} to <br />
           <label
             htmlFor="number-input"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -269,13 +270,11 @@ const MakeJobOfferModal = ({
   open,
   students,
   onClose,
-  events,
   lastEvent,
 }: {
   open: boolean;
   students: any[];
   onClose: () => void;
-  events: EventFC[];
   lastEvent: EventFC;
 }) => {
   const studentIds = students.map((student) => student.id);
@@ -351,7 +350,12 @@ const MakeJobOfferModal = ({
           </Typography>
           {salaries ? (
             <div className="max-w-full">
-              <Table data={salaries} columns={columns} type={"salary"} />
+              <Table
+                data={salaries}
+                columns={columns}
+                type={"salary"}
+                buttonText="Make Offer"
+              />
             </div>
           ) : (
             <div className="w-full flex justify-center">
@@ -445,7 +449,7 @@ export const Applications = ({
   eventId: string;
   events: EventFC[];
 }) => {
-  const [applications, setApplications] = useState<[ApplicationFC]>(null);
+  const [applications, setApplications] = useState<ApplicationFC[]>(null);
   var lastEvent: EventFC;
   events.forEach((event) => {
     if (lastEvent) {
@@ -460,13 +464,48 @@ export const Applications = ({
   const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
   const [seed, setSeed] = useState(0);
 
+  const columns = generateColumns([
+    {
+      student: {
+        rollNo: "string",
+        user: {
+          name: "string",
+          email: "string",
+        },
+      },
+      resume: {
+        resumeFile: "string",
+      },
+    },
+  ]);
+
   useEffect(() => {
     setLoading(true);
     setApplications(null);
     const fetchData = async () => {
       try {
         const jsonData: EventFC = await fetchEventById(eventId);
-        setApplications(jsonData.applications);
+        const applications = jsonData.applications.map((application) => ({
+          ...application,
+          resume: {
+            ...application.resume,
+            resumeFile: (
+              <Button
+                onClick={async () => {
+                  const resume = await getResumeFile(
+                    application.resume.filepath,
+                  );
+                }}
+              >
+                View Resume{" "}
+                {application.resume.verified && (
+                  <VerifiedIcon sx={{ marginLeft: "1rem" }} />
+                )}
+              </Button>
+            ),
+          },
+        }));
+        setApplications(applications);
       } catch (error) {
         toast.error("Some error occured");
       } finally {
@@ -487,7 +526,6 @@ export const Applications = ({
             setPromoteStudents([]);
             setSeed(seed + 1);
           }}
-          events={events}
           lastEvent={lastEvent}
         />
       ) : (
@@ -507,82 +545,16 @@ export const Applications = ({
         </div>
       )}
       {applications && (
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Roll Number
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Email
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Resume
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Promote
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {applications.map((application, index) => (
-              <tr
-                key={index}
-                className={`bg-white border-b cursor-pointer dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  {application.student.rollNo}
-                </th>
-                <td className="px-6 py-4">{application.student.user.name}</td>
-                <td className="px-6 py-4">{application.student.user.email}</td>
-                <td
-                  className="px-6 py-4"
-                  onClick={() => getResumeFile(application.resume.filepath)}
-                >
-                  {application.resume.filepath}{" "}
-                  {application.resume.verified && <VerifiedIcon />}
-                </td>
-                <td className="px-6 py-4">
-                  {lastEvent.id == eventId ? (
-                    <Button
-                      onClick={() => {
-                        setPromoteStudents([
-                          ...promoteStudents,
-                          {
-                            id: application.student.id,
-                            name: application.student.user.name,
-                          },
-                        ]);
-                      }}
-                    >
-                      Make Offer
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        setPromoteStudents([
-                          ...promoteStudents,
-                          {
-                            id: application.student.id,
-                            name: application.student.user.name,
-                          },
-                        ]);
-                      }}
-                    >
-                      Promote / Demote
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table
+          data={applications}
+          columns={columns}
+          type={"application"}
+          buttonText={lastEvent.id == eventId ? "Make Offer" : "Promote"}
+          buttonAction={(students) => {
+            console.log(students);
+            setPromoteStudents(students.map((student) => student.student));
+          }}
+        />
       )}
     </div>
   );
