@@ -95,9 +95,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         setData(jobDetailData);
         setFormData(jobDetailData);
         setFacultyData(facultyData);
-
-        console.log("jobDetailData", jobDetailData);
-
+        
       } catch (error) {
         toast.error("Error fetching data");
       } finally {
