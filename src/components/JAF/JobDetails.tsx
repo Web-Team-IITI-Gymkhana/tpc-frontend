@@ -155,18 +155,12 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            label="Descritption"
-            // required
-            // hasFeedback
-            // validateStatus={!!errors.designation ? "error" : ""}
-            // help={errors.designation ? `${errors.designation}`:""}
-          >
+          <Form.Item label="Duration">
             <Input
-              name="description"
-              placeholder="Descritption"
+              name="duration"
+              placeholder="Duration"
               onChange={handleChange}
-              value={values.description}
+              value={values.duration}
             />
           </Form.Item>
         </Col>
@@ -206,18 +200,6 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label="Vacancies">
-            <Input
-              name="noOfVacancies"
-              placeholder="Vacancies"
-              onChange={handleChange}
-              value={values.noOfVacancies}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={24}>
-        <Col span={12}>
           <Form.Item label="Offer Letter Date">
             <Input
               name="offerLetterReleaseDate"
@@ -226,18 +208,39 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
               value={values.offerLetterReleaseDate}
             />
           </Form.Item>
-        </Col>
+        </Col>       
+      </Row>
+      <Row gutter={24}>        
         <Col span={12}>
-          <Form.Item label="Duration">
+          <Form.Item label="Minimum number of Hires">
             <Input
-              name="duration"
-              placeholder="Duration"
+              name="minNoOfHires"
+              placeholder="Minimum number of Hires"
               onChange={handleChange}
-              value={values.duration}
+              value={values.minNoOfHires}
             />
           </Form.Item>
-        </Col>
+        </Col>        
+        <Col span={12}>
+          <Form.Item label="Expected number of Hires">
+            <Input
+              name="expectedNoOfHires"
+              placeholder="Expected number of Hires"
+              onChange={handleChange}
+              value={values.expectedNoOfHires}
+            />
+          </Form.Item>
+        </Col>        
       </Row>
+      <Form.Item label="Description">
+        <TextArea
+          rows={4}
+          name="description"
+          placeholder="Description"
+          onChange={handleChange}
+          value={values.description}
+        />
+      </Form.Item>
       <Row gutter={24}>
         <Col span={12}>
           <Form.Item label="Attachments">
