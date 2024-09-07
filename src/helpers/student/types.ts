@@ -136,6 +136,7 @@ export interface Salary {
 export interface Jobs {
   id: string;
   role: string;
+  description: string;
   active: boolean;
   currentStatus: string;
   location: string;
@@ -206,8 +207,6 @@ export interface Job {
     groupDiscussion: boolean;
     shortlistFromResume: boolean;
   };
-
-  description: string;
   skills: string;
   location: string;
   noOfVacancies: number;

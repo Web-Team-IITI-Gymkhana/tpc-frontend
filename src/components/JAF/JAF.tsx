@@ -141,7 +141,7 @@ function JAF() {
             };
             axios
             .post(
-              `${baseUrl}/api/v1/jaf`,
+              `${baseUrl}/api/v1/recruiter-view/jaf`,
               {
                 job: {
                   role: values.role,
