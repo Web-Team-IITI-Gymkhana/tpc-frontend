@@ -1,4 +1,4 @@
-import { FormikErrors, FormikValues, FormikHandlers } from "formik";
+import { FormikErrors, FormikValues, FormikHandlers, Formik, Field } from "formik";
 import {
   Form,
   Upload,
@@ -15,7 +15,12 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import dynamic from 'next/dynamic';
+import 'react-quill/dist/quill.snow.css';
+import './styles/CustomQuill.css';
 import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const { TextArea } = Input;
 
@@ -41,9 +46,10 @@ type StepProps = {
   errors: FormikErrors<FormikValues>;
   values: FormikValues;
   handleChange: FormikHandlers["handleChange"];
+  setFieldValue: (field: string, value: any) => void;
 };
 
-const JobDetails = ({ errors, values, handleChange }: StepProps) => {
+const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) => {
   const [form] = Form.useForm();
 
   const [testType, setTestType] = useState([]);
@@ -233,13 +239,16 @@ const JobDetails = ({ errors, values, handleChange }: StepProps) => {
         </Col>        
       </Row>
       <Form.Item label="Description">
-        <TextArea
-          rows={4}
-          name="description"
-          placeholder="Description"
-          onChange={handleChange}
-          value={values.description}
-        />
+        <Field name="description">
+          {({ field }) => (
+            <ReactQuill
+              value={values.description}
+              onChange={(content) => setFieldValue('description', content)}
+              placeholder="Enter the description here..."
+              className="custom-quill"
+            />
+          )}
+        </Field>
       </Form.Item>
       <Row gutter={24}>
         <Col span={12}>
