@@ -10,6 +10,7 @@ import { getJafDetails } from "@/helpers/recruiter/api";
 import { JAFdetailsFC } from "@/helpers/recruiter/types";
 import { patchJobData } from "@/helpers/api";
 import { patchSalaryData } from "@/helpers/api";
+import { Table, TableHead, TableRow, TableFooter, TableBody, TableCell, TableHeader } from "@/components/ui/table";
 import {
   CategorySelectList,
   GenderSelectList,
@@ -99,7 +100,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             fetchRecruiterData(),
             fetchFaculties(),
           ]);
-          
+
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
@@ -1218,9 +1219,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             {job.salaries?.map((salary, salaryIndex) => (
               <>
                 <div key={salaryIndex}>
-                  {job.season.type === 'PLACEMENT'? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
-                     <div>
+                  {job.season.type === 'PLACEMENT' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div>
                         <div className="font-semibold my-2">Base Salary</div>
                         {editMode ? (
                           <input
@@ -1659,163 +1660,143 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           <div>{salary.others}</div>
                         )}
                       </div>
+                    </div>
+                  ) :
+                    (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                      <div  >
+                        <div className="font-semibold my-2">Stipend</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="stipend"
+                            value={formData.salaries[salaryIndex].stipend}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, stipend: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.stipend}</div>
+                        )}
                       </div>
-                  ):
-                  (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
-                    <div  >
-                      <div className="font-semibold my-2">Stipend</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="stipend"
-                          value={formData.salaries[salaryIndex].stipend}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, stipend: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.stipend}</div>
-                      )}
-                    </div>
-                  
-                    <div  >
-                      <div className="font-semibold my-2">Foreign Currency Stipend</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="foreignCurrencyStipend"
-                          value={formData.salaries[salaryIndex].foreignCurrencyStipend}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, foreignCurrencyStipend: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.foreignCurrencyStipend}</div>
-                      )}
-                    </div>
-                  
-                    <div  >
-                      <div className="font-semibold my-2">Accommodation</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="accommodation"
-                          value={formData.salaries[salaryIndex].accomodation}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, accommodation: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.accomodation}</div>
-                      )}
-                    </div>
-                  
-                    <div  >
-                      <div className="font-semibold my-2">Tentative CTC</div>
-                      {editMode ? (
-                        <input
-                          type="text"
-                          name="tenetativeCTC"
-                          value={formData.salaries[salaryIndex].tenetativeCTC}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, tenetativeCTC: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{salary.tenetativeCTC}</div>
-                      )}
-                    </div>
-                  
-                    <div  >
-                      <div className="font-semibold my-2">PPO Confirmation Date</div>
-                      {editMode ? (
-                        <input
-                          type="date"
-                          name="PPOConfirmationDate"
-                          value={formData.salaries[salaryIndex].PPOConfirmationDate}
-                          onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, PPOConfirmationDate: e.target.value } : s
-                            );
-                            setFormData((prev) => ({
-                              ...prev,
-                              salaries: updatedSalaries,
-                            }));
-                          }}
-                        />
-                      ) : (
-                        <div>{String(salary.PPOConfirmationDate)}</div>
-                      )}
-                    </div>
-                  </div>)}
+
+                      <div  >
+                        <div className="font-semibold my-2">Foreign Currency Stipend</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="foreignCurrencyStipend"
+                            value={formData.salaries[salaryIndex].foreignCurrencyStipend}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, foreignCurrencyStipend: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.foreignCurrencyStipend}</div>
+                        )}
+                      </div>
+
+                      <div  >
+                        <div className="font-semibold my-2">Accommodation</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="accommodation"
+                            value={formData.salaries[salaryIndex].accomodation}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, accommodation: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.accomodation}</div>
+                        )}
+                      </div>
+
+                      <div  >
+                        <div className="font-semibold my-2">Tentative CTC</div>
+                        {editMode ? (
+                          <input
+                            type="text"
+                            name="tenetativeCTC"
+                            value={formData.salaries[salaryIndex].tenetativeCTC}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, tenetativeCTC: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{salary.tenetativeCTC}</div>
+                        )}
+                      </div>
+
+                      <div  >
+                        <div className="font-semibold my-2">PPO Confirmation Date</div>
+                        {editMode ? (
+                          <input
+                            type="date"
+                            name="PPOConfirmationDate"
+                            value={formData.salaries[salaryIndex].PPOConfirmationDate}
+                            onChange={(e) => {
+                              const updatedSalaries = formData.salaries.map((s, i) =>
+                                i === salaryIndex ? { ...s, PPOConfirmationDate: e.target.value } : s
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                salaries: updatedSalaries,
+                              }));
+                            }}
+                          />
+                        ) : (
+                          <div>{String(salary.PPOConfirmationDate)}</div>
+                        )}
+                      </div>
+                    </div>)}
                   <div className="w-full">
-  <div className="font-extrabold text-lg mt-6">Programs</div>
-  {editMode ? (
-      <table className="min-w-full bg-white">
-      <thead>
-        <tr>
-          <th className="py-2">S. No</th>
-          <th className="py-2">Branch</th>
-          <th className="py-2">Course</th>
-          <th className="py-2">Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        {salary.programs?.map((program, programIndex) => (
-          <tr key={programIndex}>
-            <td className="border px-4 py-2">{programIndex + 1}</td>
-            <td className="border justify-start px-4 py-2">{program.branch}</td>
-            <td className="border px-4 py-2">{program.course}</td>
-            <td className="border px-4 py-2">{program.year}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  ) : (
-    <table className="min-w-full bg-white">
-      <thead>
-        <tr>
-          <th className="py-2 px-4  text-left">Branch</th>
-          <th className="py-2">Course</th>
-          <th className="py-2">Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        {salary.programs?.map((program, programIndex) => (
-          <tr key={programIndex}>
-            <td className="border px-4 py-2">{program.branch}</td>
-            <td className="border px-4 py-2">{program.course}</td>
-            <td className="border px-4 py-2">{program.year}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )}
-</div>
+                    <div className="font-extrabold text-lg mt-6">Programs</div>
+
+                    <Table className="min-w-full bg-white">
+                      <TableHeader>
+                        <TableRow>
+                          <TableCell className="py-2 font-bold px-4">S. No</TableCell>
+                          <TableCell className="py-2 font-bold px-4">Branch</TableCell>
+                          <TableCell className="py-2 font-bold px-4">Course</TableCell>
+                          <TableCell className="py-2 font-bold px-4">Year</TableCell>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {salary.programs?.map((program, programIndex) => (
+                          <TableRow key={programIndex}>
+                            <TableCell className="border  px-4 py-2">{programIndex + 1}</TableCell>
+                            <TableCell className="border px-4 py-2">{program.branch}</TableCell>
+                            <TableCell className="border px-4 py-2">{program.course}</TableCell>
+                            <TableCell className="border px-4 py-2">{program.year}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                   <div className="flex md:flex-row flex-col flex-wrap justify-between my-5">
                     <div  >
                       <div className="font-semibold my-2">Minimum CPI</div>
@@ -1882,7 +1863,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-md font-semibold mt"> {salary.isBacklogAllowed? "Backlog allowed":"Backlog not allowed"}</h2>
+                    <h2 className="text-md font-semibold mt"> {salary.isBacklogAllowed ? "Backlog allowed" : "Backlog not allowed"}</h2>
                   </div>
                   {/* Genders */}
                   <div>
