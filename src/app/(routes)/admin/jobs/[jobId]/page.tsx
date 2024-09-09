@@ -18,8 +18,19 @@ import { fetchJobById } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
-import { fetchCompany, fetchRecruiterData, fetchFaculties, postFacultyApproval } from "@/helpers/api";
-import { assignCompany, postCompany, assignRecruiter, postRecruiter, fetchApprovals } from "@/helpers/api";
+import {
+  fetchCompany,
+  fetchRecruiterData,
+  fetchFaculties,
+  postFacultyApproval,
+} from "@/helpers/api";
+import {
+  assignCompany,
+  postCompany,
+  assignRecruiter,
+  postRecruiter,
+  fetchApprovals,
+} from "@/helpers/api";
 import Select from "react-select";
 const currentStatusOptions = [
   "INITIALIZED",
@@ -34,7 +45,6 @@ const currentStatusOptions = [
   "PROCESS_TERMINATED",
   "OFFER_REVOKED",
 ];
-
 
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
@@ -56,31 +66,31 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [toggleRecruiterModal, setToggleRecruiterModal] = useState(false);
   const [approvalModal, setApprovalModal] = useState(false);
   const [companyFormData, setCompanyFormData] = useState({
-    name: '',
+    name: "",
     size: 0,
-    category: '',
-    yearOfEstablishment: '',
-    website: '',
-    annualTurnover: '',
-    socialMediaLink: '',
+    category: "",
+    yearOfEstablishment: "",
+    website: "",
+    annualTurnover: "",
+    socialMediaLink: "",
     address: {
-      line1: '',
-      line2: '',
-      city: '',
-      state: '',
-      country: ''
+      line1: "",
+      line2: "",
+      city: "",
+      state: "",
+      country: "",
     },
-    domains: ['']
+    domains: [""],
   });
   const [recruiterFormData, setRecruiterFormData] = useState({
-    designation: '',
-    landline: '',
-    companyId: '',
+    designation: "",
+    landline: "",
+    companyId: "",
     user: {
-      name: '',
-      email: '',
-      contact: ''
-    }
+      name: "",
+      email: "",
+      contact: "",
+    },
   });
   const newCurrentStatusOptions = currentStatusOptions.map((option) => ({
     value: option,
@@ -90,15 +100,19 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const [jobDetailData, jafDetailsData, companyData, recruiterData, facultyData] =
-          await Promise.all([
-            fetchJobById(params.jobId),
-            getJafDetails(),
-            fetchCompany(),
-            fetchRecruiterData(),
-            fetchFaculties(),
-          ]);
+        const [
+          jobDetailData,
+          jafDetailsData,
+          companyData,
+          recruiterData,
+          facultyData,
+        ] = await Promise.all([
+          fetchJobById(params.jobId),
+          getJafDetails(),
+          fetchCompany(),
+          fetchRecruiterData(),
+          fetchFaculties(),
+        ]);
 
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
@@ -106,6 +120,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         setFacultyData(facultyData);
         setCompanyData(companyData);
         setRecruiterData(recruiterData);
+        console.log(jobDetailData);
         setRecruiterFormData({
           designation: jobDetailData.recruiterDetailsFilled.designation,
           landline: jobDetailData.recruiterDetailsFilled.landline,
@@ -113,25 +128,28 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           user: {
             name: jobDetailData.recruiterDetailsFilled.name,
             email: jobDetailData.recruiterDetailsFilled.email,
-            contact: jobDetailData.recruiterDetailsFilled.contact
-          }
+            contact: jobDetailData.recruiterDetailsFilled.contact,
+          },
         });
         setCompanyFormData({
           name: jobDetailData.companyDetailsFilled.name,
           size: jobDetailData.companyDetailsFilled.size,
           category: jobDetailData.companyDetailsFilled.category,
-          yearOfEstablishment: jobDetailData.companyDetailsFilled.yearOfEstablishment,
+          yearOfEstablishment:
+            jobDetailData.companyDetailsFilled.yearOfEstablishment,
           website: jobDetailData.companyDetailsFilled.website,
-          annualTurnover: jobDetailData.companyDetailsFilled.annualTurnover || '',
-          socialMediaLink: jobDetailData.companyDetailsFilled.socialMediaLink || '',
+          annualTurnover:
+            jobDetailData.companyDetailsFilled.annualTurnover || "",
+          socialMediaLink:
+            jobDetailData.companyDetailsFilled.socialMediaLink || "",
           address: {
-            line1: jobDetailData.companyDetailsFilled.address.line1 || '',
-            line2: jobDetailData.companyDetailsFilled.address.line2 || '',
-            city: jobDetailData.companyDetailsFilled.address.city || '',
-            state: jobDetailData.companyDetailsFilled.address.state || '',
-            country: jobDetailData.companyDetailsFilled.address.country || ''
+            line1: jobDetailData.companyDetailsFilled.address.line1 || "",
+            line2: jobDetailData.companyDetailsFilled.address.line2 || "",
+            city: jobDetailData.companyDetailsFilled.address.city || "",
+            state: jobDetailData.companyDetailsFilled.address.state || "",
+            country: jobDetailData.companyDetailsFilled.address.country || "",
           },
-          domains: jobDetailData.companyDetailsFilled.domains || ['']
+          domains: jobDetailData.companyDetailsFilled.domains || [""],
         });
 
         const matchedCompany = companyData.find(
@@ -144,6 +162,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
         setSelectedRecruiter(matchedRecruiter);
       } catch (error) {
         toast.error("Error fetching data");
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -161,43 +180,45 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
   const handleRecruiterFormChange = (e) => {
     const { name, value } = e.target;
-    const [mainKey, subKey] = name.split('.');
+    const [mainKey, subKey] = name.split(".");
 
     if (subKey) {
       setRecruiterFormData((prevFormData) => ({
         ...prevFormData,
         [mainKey]: {
           ...prevFormData[mainKey],
-          [subKey]: value
-        }
+          [subKey]: value,
+        },
       }));
     } else {
       setRecruiterFormData((prevFormData) => ({
         ...prevFormData,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
   const handleCompanyFormSubmit = async () => {
     try {
-      await postCompany([{
-        name: companyFormData.name,
-        category: companyFormData.category,
-        yearOfEstablishment: companyFormData.yearOfEstablishment,
-        website: companyFormData.website,
-        size: companyFormData.size,
-        annualTurnover: companyFormData.annualTurnover,
-        socialMediaLink: "companyFormData.socialMediaLink",
-        domains: companyFormData.domains,
-        address: {
-          line1: companyFormData.address.line1,
-          line2: companyFormData.address.line2,
-          city: companyFormData.address.city,
-          state: companyFormData.address.state,
-          country: companyFormData.address.country
-        }
-      }]);
+      await postCompany([
+        {
+          name: companyFormData.name,
+          category: companyFormData.category,
+          yearOfEstablishment: companyFormData.yearOfEstablishment,
+          website: companyFormData.website,
+          size: companyFormData.size,
+          annualTurnover: companyFormData.annualTurnover,
+          socialMediaLink: "companyFormData.socialMediaLink",
+          domains: companyFormData.domains,
+          address: {
+            line1: companyFormData.address.line1,
+            line2: companyFormData.address.line2,
+            city: companyFormData.address.city,
+            state: companyFormData.address.state,
+            country: companyFormData.address.country,
+          },
+        },
+      ]);
       toast.success("Company details updated successfully!");
       window.location.reload();
     } catch (error) {
@@ -207,16 +228,18 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
   const handleRecruiterFormSubmit = async () => {
     try {
-      await postRecruiter([{
-        designation: recruiterFormData.designation,
-        landline: recruiterFormData.landline,
-        companyId: recruiterFormData.companyId,
-        user: {
-          name: recruiterFormData.user.name,
-          email: recruiterFormData.user.email,
-          contact: recruiterFormData.user.contact
-        }
-      }]);
+      await postRecruiter([
+        {
+          designation: recruiterFormData.designation,
+          landline: recruiterFormData.landline,
+          companyId: recruiterFormData.companyId,
+          user: {
+            name: recruiterFormData.user.name,
+            email: recruiterFormData.user.email,
+            contact: recruiterFormData.user.contact,
+          },
+        },
+      ]);
       toast.success("Recruiter details updated successfully!");
       window.location.reload();
     } catch (error) {
@@ -225,9 +248,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
   const handleToggleModal = (type) => {
     if (type === "company") {
-      setToggleCompanyModal(prevState => !prevState);
+      setToggleCompanyModal((prevState) => !prevState);
     } else if (type === "recruiter") {
-      setToggleRecruiterModal(prevState => !prevState);
+      setToggleRecruiterModal((prevState) => !prevState);
     }
   };
   const toggleDropdown = (state: string) => {
@@ -250,7 +273,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const updateFacultyDropDown = (index, value) => {
-    setFacultyDropdown(prevState => {
+    setFacultyDropdown((prevState) => {
       const newState = [...prevState];
       newState[index] = value;
       return newState;
@@ -259,8 +282,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
   const submitApproval = async (salaryIndex) => {
     const selected = selectedFaculties[salaryIndex] || [];
-    const res = await postFacultyApproval(job.salaries[salaryIndex].id, selected);
-    if(res) toast.success("Request Sent");
+    const res = await postFacultyApproval(
+      job.salaries[salaryIndex].id,
+      selected,
+    );
+    if (res) toast.success("Request Sent");
     else toast.error("Error Sending Request");
     updateFacultyDropDown(salaryIndex, false);
   };
@@ -358,26 +384,25 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 )}
               </div>
               <div className="flex flex-col">
-               
-                  <span className="font-semibold text-lg">Registration Status </span>
-                  {editMode ? (
+                <span className="font-semibold text-lg">
+                  Registration Status{" "}
+                </span>
+                {editMode ? (
                   <input
-                  defaultChecked={job.registration==="OPEN" ? true : false}
+                    defaultChecked={job.registration === "OPEN" ? true : false}
                     type="checkbox"
                     name="registration"
                     value={formData.registration}
                     onChange={(e) => {
                       setFormData((form) => ({
                         ...form,
-                        registration: e.target.checked?"OPEN":"CLOSED",
+                        registration: e.target.checked ? "OPEN" : "CLOSED",
                       }));
                     }}
                   />
                 ) : (
-                  <span>{job.registration==="OPEN" ? "Open" : "Closed"}</span>
+                  <span>{job.registration === "OPEN" ? "Open" : "Closed"}</span>
                 )}
-
-                
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-lg">Current Status </span>
@@ -529,21 +554,34 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                               ))}
                             </div>
                             <div className="dropdown-item bg-gray-100 py-2 px-4  cursor-pointer rounded-b-md ">
-                              <Button onClick={() => handleToggleModal("company")}>Add Company</Button>
+                              <Button
+                                onClick={() => handleToggleModal("company")}
+                              >
+                                Add Company
+                              </Button>
                             </div>
                             <div className="fixed  z-30 w-screen h-screen flex items-center justify-center bg-gray-800 bg-opacity-75">
                               {toggleCompanyModal && (
                                 <div className="fixed inset-0 flex items-center justify-center z-30 bg-gray-800 bg-opacity-75">
                                   <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
                                     <div className="flex justify-between items-center p-4 border-b">
-                                      <h2 className="text-xl font-semibold">Edit Company Details</h2>
-                                      <button className="text-gray-500 text-lg font-extrabold hover:text-gray-700" onClick={() => { handleToggleModal('company') }}>
+                                      <h2 className="text-xl font-semibold">
+                                        Edit Company Details
+                                      </h2>
+                                      <button
+                                        className="text-gray-500 text-lg font-extrabold hover:text-gray-700"
+                                        onClick={() => {
+                                          handleToggleModal("company");
+                                        }}
+                                      >
                                         X
                                       </button>
                                     </div>
                                     <div className="p-4">
                                       <div>
-                                        <label className="block text-lg font-semibold">Company Name:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Company Name:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
@@ -553,7 +591,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                         />
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Size:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Size:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
@@ -563,7 +603,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                         />
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Category:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Category:
+                                        </label>
                                         <select
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           name="category"
@@ -573,21 +615,29 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                           <option value="PSU">PSU</option>
                                           <option value="MNC">MNC</option>
                                           <option value="PUBLIC">PUBLIC</option>
-                                          <option value="GOVERNMENT">GOVERNMENT</option>
+                                          <option value="GOVERNMENT">
+                                            GOVERNMENT
+                                          </option>
                                         </select>
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Year of Establishment:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Year of Establishment:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
                                           name="yearOfEstablishment"
-                                          value={companyFormData.yearOfEstablishment}
+                                          value={
+                                            companyFormData.yearOfEstablishment
+                                          }
                                           onChange={handleCompanyFormChange}
                                         />
                                       </div>
                                       <div className="mt-4">
-                                        <label className="block text-lg font-semibold">Website:</label>
+                                        <label className="block text-lg font-semibold">
+                                          Website:
+                                        </label>
                                         <input
                                           className="w-full p-2 border border-gray-300 rounded mt-1"
                                           type="text"
@@ -598,16 +648,17 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       </div>
                                     </div>
                                     <div className="flex justify-end p-4 border-t">
-                                      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={handleCompanyFormSubmit}>
+                                      <button
+                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                        onClick={handleCompanyFormSubmit}
+                                      >
                                         Submit
                                       </button>
                                     </div>
                                   </div>
                                 </div>
                               )}
-
                             </div>
-
                           </div>
                         )}
                       </div>
@@ -624,7 +675,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           className="ml-2"
                         >
                           {selectedCompany?.id ===
-                            "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                          "f47ac10b-58cc-4372-a567-0e02b2c3d479"
                             ? "Assign"
                             : "Change"}
                         </Button>
@@ -716,21 +767,34 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                             ))}
                           </div>
                           <div className="dropdown-item bg-gray-100 py-2 px-4  cursor-pointer rounded-b-md ">
-                            <Button onClick={() => handleToggleModal("recruiter")}>Add Recruiter</Button>
+                            <Button
+                              onClick={() => handleToggleModal("recruiter")}
+                            >
+                              Add Recruiter
+                            </Button>
                           </div>
                           <div className="fixed  w-screen h-screen flex items-center justify-center bg-gray-800 bg-opacity-75">
                             {toggleRecruiterModal && (
                               <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
                                 <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
                                   <div className="flex justify-between items-center p-4 border-b">
-                                    <h2 className="text-xl font-semibold">Edit Recruiter Details</h2>
-                                    <button className="text-gray-500 text-lg  font-extrabold hover:text-gray-700" onClick={() => handleToggleModal("recruiter")}>
+                                    <h2 className="text-xl font-semibold">
+                                      Edit Recruiter Details
+                                    </h2>
+                                    <button
+                                      className="text-gray-500 text-lg  font-extrabold hover:text-gray-700"
+                                      onClick={() =>
+                                        handleToggleModal("recruiter")
+                                      }
+                                    >
                                       X
                                     </button>
                                   </div>
                                   <div className="p-4">
                                     <div>
-                                      <label className="block text-lg font-semibold">Name:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Name:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -740,7 +804,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Designation:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Designation:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -750,7 +816,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Email:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Email:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -760,7 +828,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Contact:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Contact:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -770,7 +840,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                       />
                                     </div>
                                     <div className="mt-4">
-                                      <label className="block text-lg font-semibold">Landline:</label>
+                                      <label className="block text-lg font-semibold">
+                                        Landline:
+                                      </label>
                                       <input
                                         className="w-full p-2 border border-gray-300 rounded mt-1"
                                         type="text"
@@ -781,18 +853,17 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                                     </div>
                                   </div>
                                   <div className="flex justify-end p-4 border-t">
-                                    <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={handleRecruiterFormSubmit}>
+                                    <button
+                                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                      onClick={handleRecruiterFormSubmit}
+                                    >
                                       Submit
                                     </button>
                                   </div>
                                 </div>
                               </div>
                             )}
-
-
-
                           </div>
-
                         </div>
                       )}
                     </div>
@@ -809,7 +880,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         className="ml-2"
                       >
                         {selectedRecruiter?.id ===
-                          "3a0a4d51-3085-4d39-8a0b-376e4e1e63a1"
+                        "3a0a4d51-3085-4d39-8a0b-376e4e1e63a1"
                           ? "Assign"
                           : "Change"}
                       </Button>
@@ -985,71 +1056,71 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   <ul className="list-disc capitalize">
                     {editMode
                       ? formData.selectionProcedure.tests.map((test, index) => (
-                        <li key={index} className="my-2">
-                          Test Type:
-                          <select
-                            className="ml-4 my-2 capitalize"
-                            value={test.type}
-                            onChange={(e) => {
-                              const updatedtests =
-                                formData.selectionProcedure.tests.map(
-                                  (i, j) =>
-                                    j === index
-                                      ? { ...i, type: e.target.value }
-                                      : i,
-                                );
-                              setFormData((prev) => ({
-                                ...prev,
-                                selectionProcedure: {
-                                  ...prev.selectionProcedure,
-                                  tests: updatedtests,
-                                },
-                              }));
-                            }}
-                          >
-                            {jafDetails.testTypes.map((test, index) => (
-                              <option key={index}>{test}</option>
-                            ))}
-                          </select>
-                          <br />
-                          Test Duration:
-                          <input
-                            className="ml-4 my-2"
-                            type="number"
-                            name="testDuration"
-                            value={test.duration}
-                            onChange={(e) => {
-                              const updatedTests =
-                                formData.selectionProcedure.tests.map(
-                                  (t, i) =>
-                                    i === index
-                                      ? {
-                                        ...t,
-                                        duration: Number(e.target.value),
-                                      }
-                                      : t,
-                                );
-                              setFormData((prev) => ({
-                                ...prev,
-                                selectionProcedure: {
-                                  ...prev.selectionProcedure,
-                                  tests: updatedTests,
-                                },
-                              }));
-                            }}
-                          />
-                        </li>
-                      ))
+                          <li key={index} className="my-2">
+                            Test Type:
+                            <select
+                              className="ml-4 my-2 capitalize"
+                              value={test.type}
+                              onChange={(e) => {
+                                const updatedtests =
+                                  formData.selectionProcedure.tests.map(
+                                    (i, j) =>
+                                      j === index
+                                        ? { ...i, type: e.target.value }
+                                        : i,
+                                  );
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  selectionProcedure: {
+                                    ...prev.selectionProcedure,
+                                    tests: updatedtests,
+                                  },
+                                }));
+                              }}
+                            >
+                              {jafDetails.testTypes.map((test, index) => (
+                                <option key={index}>{test}</option>
+                              ))}
+                            </select>
+                            <br />
+                            Test Duration:
+                            <input
+                              className="ml-4 my-2"
+                              type="number"
+                              name="testDuration"
+                              value={test.duration}
+                              onChange={(e) => {
+                                const updatedTests =
+                                  formData.selectionProcedure.tests.map(
+                                    (t, i) =>
+                                      i === index
+                                        ? {
+                                            ...t,
+                                            duration: Number(e.target.value),
+                                          }
+                                        : t,
+                                  );
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  selectionProcedure: {
+                                    ...prev.selectionProcedure,
+                                    tests: updatedTests,
+                                  },
+                                }));
+                              }}
+                            />
+                          </li>
+                        ))
                       : job.selectionProcedure.tests.map((p, index) => (
-                        <li key={index} className="my-2">
-                          {Object.entries(p).map(([key, value]) => (
-                            <span key={key}>
-                              {key} : {value}
-                              <br />
-                            </span>
-                          ))}
-                        </li>
-                      ))}
+                          <li key={index} className="my-2">
+                            {Object.entries(p).map(([key, value]) => (
+                              <span key={key}>
+                                {key} : {value}
+                                <br />
+                              </span>
+                            ))}
+                          </li>
+                        ))}
                   </ul>
                   {editMode && (
                     <Button className="w-full" onClick={addNewTest}>
@@ -1065,72 +1136,72 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   <ul className="list-disc capitalize">
                     {editMode
                       ? formData.selectionProcedure.interviews.map(
-                        (interview, index) => (
-                          <li key={index} className="my-2">
-                            Interview Type:
-                            <select
-                              className="ml-4 my-2 capitalize"
-                              value={interview.type}
-                              onChange={(e) => {
-                                const updatedInterviews =
-                                  formData.selectionProcedure.interviews.map(
-                                    (i, j) =>
-                                      j === index
-                                        ? { ...i, type: e.target.value }
-                                        : i,
-                                  );
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  selectionProcedure: {
-                                    ...prev.selectionProcedure,
-                                    interviews: updatedInterviews,
-                                  },
-                                }));
-                              }}
-                            >
-                              {jafDetails.interviewTypes.map(
-                                (test, index) => (
-                                  <option key={index}>{test}</option>
-                                ),
-                              )}
-                            </select>
-                            <br />
-                            Interview Duration:
-                            <input
-                              className="ml-4 my-2"
-                              type="number"
-                              name="interviewDuration"
-                              value={interview.duration}
-                              onChange={(e) => {
-                                const updatedInterviews =
-                                  formData.selectionProcedure.interviews.map(
-                                    (i, j) =>
-                                      j === index
-                                        ? { ...i, duration: e.target.value }
-                                        : i,
-                                  );
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  selectionProcedure: {
-                                    ...prev.selectionProcedure,
-                                    interviews: updatedInterviews,
-                                  },
-                                }));
-                              }}
-                            />
-                          </li>
-                        ),
-                      )
-                      : job.selectionProcedure.interviews.map((p, index) => (
-                        <li key={index} className="my-2">
-                          {Object.entries(p).map(([key, value]) => (
-                            <span key={key}>
-                              {key} : {value}
+                          (interview, index) => (
+                            <li key={index} className="my-2">
+                              Interview Type:
+                              <select
+                                className="ml-4 my-2 capitalize"
+                                value={interview.type}
+                                onChange={(e) => {
+                                  const updatedInterviews =
+                                    formData.selectionProcedure.interviews.map(
+                                      (i, j) =>
+                                        j === index
+                                          ? { ...i, type: e.target.value }
+                                          : i,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      interviews: updatedInterviews,
+                                    },
+                                  }));
+                                }}
+                              >
+                                {jafDetails.interviewTypes.map(
+                                  (test, index) => (
+                                    <option key={index}>{test}</option>
+                                  ),
+                                )}
+                              </select>
                               <br />
-                            </span>
-                          ))}
-                        </li>
-                      ))}
+                              Interview Duration:
+                              <input
+                                className="ml-4 my-2"
+                                type="number"
+                                name="interviewDuration"
+                                value={interview.duration}
+                                onChange={(e) => {
+                                  const updatedInterviews =
+                                    formData.selectionProcedure.interviews.map(
+                                      (i, j) =>
+                                        j === index
+                                          ? { ...i, duration: e.target.value }
+                                          : i,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      interviews: updatedInterviews,
+                                    },
+                                  }));
+                                }}
+                              />
+                            </li>
+                          ),
+                        )
+                      : job.selectionProcedure.interviews.map((p, index) => (
+                          <li key={index} className="my-2">
+                            {Object.entries(p).map(([key, value]) => (
+                              <span key={key}>
+                                {key} : {value}
+                                <br />
+                              </span>
+                            ))}
+                          </li>
+                        ))}
                   </ul>
                   {editMode && (
                     <Button className="w-full" onClick={addNewInterview}>
@@ -1213,7 +1284,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
             <div className=" flex justify-between">
               <div className="font-semibold text-lg mb-4">Salaries</div>
-
             </div>
             {job.salaries?.map((salary, salaryIndex) => (
               <>
@@ -1227,8 +1297,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           name="baseSalary"
                           value={formData.salaries[salaryIndex].baseSalary}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, baseSalary: e.target.value } : s
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, baseSalary: e.target.value }
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -1240,7 +1313,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         <div>{salary.baseSalary}</div>
                       )}
                     </div>
-                    <div  className="w-1/6">
+                    <div className="w-1/6">
                       <div className="font-semibold my-2">CTC</div>
                       {editMode ? (
                         <input
@@ -1248,8 +1321,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           name="totalCTC"
                           value={formData.salaries[salaryIndex].totalCTC}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, totalCTC: e.target.value } : s
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, totalCTC: e.target.value }
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -1261,7 +1337,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         <div>{salary.totalCTC}</div>
                       )}
                     </div>
-                    <div  className="w-1/6">
+                    <div className="w-1/6">
                       <div className="font-semibold my-2">Take Home Salary</div>
                       {editMode ? (
                         <input
@@ -1269,8 +1345,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           name="takeHomeSalary"
                           value={formData.salaries[salaryIndex].takeHomeSalary}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, takeHomeSalary: e.target.value } : s
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, takeHomeSalary: e.target.value }
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -1282,7 +1361,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         <div>{salary.takeHomeSalary}</div>
                       )}
                     </div>
-                    <div  className="w-1/6">
+                    <div className="w-1/6">
                       <div className="font-semibold my-2">Gross Salary</div>
                       {editMode ? (
                         <input
@@ -1290,8 +1369,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                           name="grossSalary"
                           value={formData.salaries[salaryIndex].grossSalary}
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, grossSalary: e.target.value } : s
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, grossSalary: e.target.value }
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -1303,16 +1385,23 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         <div>{salary.grossSalary}</div>
                       )}
                     </div>
-                    <div  className="w-1/6">
-                      <div className="font-semibold my-2">Other Compensations</div>
+                    <div className="w-1/6">
+                      <div className="font-semibold my-2">
+                        Other Compensations
+                      </div>
                       {editMode ? (
                         <input
                           type="text"
                           name="otherCompensations"
-                          value={formData.salaries[salaryIndex].otherCompensations}
+                          value={
+                            formData.salaries[salaryIndex].otherCompensations
+                          }
                           onChange={(e) => {
-                            const updatedSalaries = formData.salaries.map((s, i) =>
-                              i === salaryIndex ? { ...s, otherCompensations: e.target.value } : s
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, otherCompensations: e.target.value }
+                                  : s,
                             );
                             setFormData((prev) => ({
                               ...prev,
@@ -1323,73 +1412,103 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       ) : (
                         <div>{salary.otherCompensations}</div>
                       )}
-                    </div>                    
+                    </div>
                   </div>
                   <div className="flex md:flex-row flex-col flex-wrap justify-between my-5">
-                      <div  className="w-1/6">
-                        <div className="font-semibold my-2">Minimum CPI</div>
-                        {editMode ? (
-                          <input
-                            type="text"
-                            name="minCPI"
-                            value={formData.salaries[salaryIndex].minCPI}
-                            onChange={(e) => {
-                              const updatedSalaries = formData.salaries.map((s, i) =>
-                                i === salaryIndex ? { ...s, minCPI: e.target.value } : s
-                              );
-                              setFormData((prev) => ({
-                                ...prev,
-                                salaries: updatedSalaries,
-                              }));
-                            }}
-                          />
-                        ) : (
-                          <div>{salary.minCPI}</div>
-                        )}
-                      </div>
-                      <div  className="w-1/6">
-                        <div className="font-semibold my-2">Tenth Marks</div>
-                        {editMode ? (
-                          <input
-                            type="text"
-                            name="tenthMarks"
-                            value={formData.salaries[salaryIndex].tenthMarks}
-                            onChange={(e) => {
-                              const updatedSalaries = formData.salaries.map((s, i) =>
-                                i === salaryIndex ? { ...s, tenthMarks: e.target.value } : s
-                              );
-                              setFormData((prev) => ({
-                                ...prev,
-                                salaries: updatedSalaries,
-                              }));
-                            }}
-                          />
-                        ) : (
-                          <div>{salary.tenthMarks}</div>
-                        )}
-                      </div>
-                      <div  className="w-1/6">
-                        <div className="font-semibold my-2">TwelthMarks Marks</div>
-                        {editMode ? (
-                          <input
-                            type="text"
-                            name="twelthMarks"
-                            value={formData.salaries[salaryIndex].twelthMarks}
-                            onChange={(e) => {
-                              const updatedSalaries = formData.salaries.map((s, i) =>
-                                i === salaryIndex ? { ...s, twelthMarks: e.target.value } : s
-                              );
-                              setFormData((prev) => ({
-                                ...prev,
-                                salaries: updatedSalaries,
-                              }));
-                            }}
-                          />
-                        ) : (
-                          <div>{salary.twelthMarks}</div>
-                        )}
-                      </div>
+                    <div className="w-1/6">
+                      <div className="font-semibold my-2">Minimum CPI</div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="minCPI"
+                          value={formData.salaries[salaryIndex].minCPI}
+                          onChange={(e) => {
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, minCPI: e.target.value }
+                                  : s,
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              salaries: updatedSalaries,
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <div>{salary.minCPI}</div>
+                      )}
                     </div>
+                    <div className="w-1/6">
+                      <div className="font-semibold my-2">Tenth Marks</div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="tenthMarks"
+                          value={formData.salaries[salaryIndex].tenthMarks}
+                          onChange={(e) => {
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, tenthMarks: e.target.value }
+                                  : s,
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              salaries: updatedSalaries,
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <div>{salary.tenthMarks}</div>
+                      )}
+                    </div>
+                    <div className="w-1/6">
+                      <div className="font-semibold my-2">
+                        TwelthMarks Marks
+                      </div>
+                      {editMode ? (
+                        <input
+                          type="text"
+                          name="twelthMarks"
+                          value={formData.salaries[salaryIndex].twelthMarks}
+                          onChange={(e) => {
+                            const updatedSalaries = formData.salaries.map(
+                              (s, i) =>
+                                i === salaryIndex
+                                  ? { ...s, twelthMarks: e.target.value }
+                                  : s,
+                            );
+                            setFormData((prev) => ({
+                              ...prev,
+                              salaries: updatedSalaries,
+                            }));
+                          }}
+                        />
+                      ) : (
+                        <div>{salary.twelthMarks}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Programs */}
+
+                  <div>
+                    <h2 className="text-md font-semibold mt-4">Programs</h2>
+                    <div className="flex flex-wrap !text-md">
+                      {salary.programs?.map((program, programIndex) => (
+                        <div key={programIndex} className="mx-2 my-2">
+                          {editMode ? null : (
+                            <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                              {program.department} - {program.course} -{" "}
+                              {program.year}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Genders */}
                   <div>
                     <h2 className="text-md font-semibold mt-4">Genders</h2>
@@ -1398,7 +1517,8 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         givenOptions={jafDetails.genders}
                         formData={formData}
                         setFormData={setFormData}
-                        salaryIndex={salaryIndex} />
+                        salaryIndex={salaryIndex}
+                      />
                     ) : (
                       <div className="flex flex-wrap !text-md">
                         {salary.genders?.map((gender, genderIndex) => (
@@ -1422,7 +1542,8 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                         givenOptions={jafDetails.categories}
                         formData={formData}
                         setFormData={setFormData}
-                        salaryIndex={salaryIndex} />
+                        salaryIndex={salaryIndex}
+                      />
                     ) : (
                       <div className="flex flex-wrap !text-md">
                         {salary.categories?.map((category, categoryIndex) => (
@@ -1439,21 +1560,32 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   </div>
                   {/* <Separator className="my-4" /> */}
                   <div className="flex justify-between mt-2 mb-4">
-                    <Button color="primary" onClick={() => { setApprovalModal(!approvalModal); getApprovals(salaryIndex) }} >Current Approvals</Button>
+                    <Button
+                      color="primary"
+                      onClick={() => {
+                        setApprovalModal(!approvalModal);
+                        getApprovals(salaryIndex);
+                      }}
+                    >
+                      Current Approvals
+                    </Button>
                     <div className="flex justify-end">
-                      {facultyDropDown[salaryIndex] && (<button
-                        className="bg-blue-500 text-white p-2 mr-4 rounded  hover:bg-blue-600 transition duration-200"
-                        onClick={() => submitApproval(salaryIndex)}
+                      {facultyDropDown[salaryIndex] && (
+                        <button
+                          className="bg-blue-500 text-white p-2 mr-4 rounded  hover:bg-blue-600 transition duration-200"
+                          onClick={() => submitApproval(salaryIndex)}
                         >
-                        Submit Request
-                      </button>)}
+                          Submit Request
+                        </button>
+                      )}
                       <Button
                         color="primary"
                         className=""
                         onClick={() => {
                           setFacultyDropdown((prev) => {
                             const newDropdownState = [...prev];
-                            newDropdownState[salaryIndex] = !newDropdownState[salaryIndex];
+                            newDropdownState[salaryIndex] =
+                              !newDropdownState[salaryIndex];
                             return newDropdownState;
                           });
                         }}
@@ -1467,72 +1599,113 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     <div className="fixed inset-0 flex items-center justify-center z-30 bg-gray-800 bg-opacity-10">
                       <div className="bg-white rounded-lg shadow-lg w-3/4 md:w-1/2 lg:w-1/3">
                         <div className="flex justify-between items-center p-4 border-b">
-                          <h2 className="text-xl font-semibold">Current Approvals</h2>
-                          <button className="text-gray-500 text-lg font-extrabold hover:text-gray-700" onClick={() => setApprovalModal(!approvalModal)}>
+                          <h2 className="text-xl font-semibold">
+                            Current Approvals
+                          </h2>
+                          <button
+                            className="text-gray-500 text-lg font-extrabold hover:text-gray-700"
+                            onClick={() => setApprovalModal(!approvalModal)}
+                          >
                             X
                           </button>
                         </div>
-                        <div className="p-4 web overflow-auto" style={{ maxHeight: "75vh" }}>
+                        <div
+                          className="p-4 web overflow-auto"
+                          style={{ maxHeight: "75vh" }}
+                        >
                           {loading ? (
                             <Loader />
                           ) : (
                             facultyApprovals.map((approval, salaryIndex) => (
-                              <div key={approval.id} className="border-b border-gray-300 py-2">
-                                <h3 className="text-lg font-semibold">{approval?.faculty.user.name}</h3>
-                                <p className="text-gray-600"><strong>Department:</strong> {approval.faculty.department}</p>
-                                <p className="text-gray-600"><strong>Email:</strong> {approval.faculty?.user.email}</p>
-                                <p className="text-gray-600"><strong>Contact:</strong> {approval.faculty?.user.contact}</p>
-                                <p className="text-gray-600"><strong>Status:</strong> {approval.status}</p>
+                              <div
+                                key={approval.id}
+                                className="border-b border-gray-300 py-2"
+                              >
+                                <h3 className="text-lg font-semibold">
+                                  {approval?.faculty.user.name}
+                                </h3>
+                                <p className="text-gray-600">
+                                  <strong>Department:</strong>{" "}
+                                  {approval.faculty.department}
+                                </p>
+                                <p className="text-gray-600">
+                                  <strong>Email:</strong>{" "}
+                                  {approval.faculty?.user.email}
+                                </p>
+                                <p className="text-gray-600">
+                                  <strong>Contact:</strong>{" "}
+                                  {approval.faculty?.user.contact}
+                                </p>
+                                <p className="text-gray-600">
+                                  <strong>Status:</strong> {approval.status}
+                                </p>
                               </div>
                             ))
                           )}
                         </div>
                       </div>
                     </div>
-                  )}                
+                  )}
 
                   <div key={salaryIndex} className="flex flex-col">
                     <div className="relative">
-
                       {facultyDropDown[salaryIndex] && (
-                        <><div className="absolute right-0 mt-2 mb-3 w-60 bg-white border border-gray-300 max-h-60 overflow-auto rounded shadow-lg z-10">
-                          {facultyData.map((faculty) => (
-                            <label
-                              key={faculty.id}
-                              className="flex items-center p-2 bg-gray-100 hover:bg-gray-200 transition duration-200"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedFaculties[salaryIndex]?.includes(faculty.id) || false}
-                                onChange={() => {
-                                  setSelectedFaculties((prev) => {
-                                    const newSelectedFaculties = [...prev];
-                                    if (!newSelectedFaculties[salaryIndex]) {
-                                      newSelectedFaculties[salaryIndex] = [];
-                                    }
-                                    if (newSelectedFaculties[salaryIndex].includes(faculty.id)) {
-                                      newSelectedFaculties[salaryIndex] = newSelectedFaculties[salaryIndex].filter((id) => id !== faculty.id);
-                                    } else {
-                                      newSelectedFaculties[salaryIndex].push(faculty.id);
-                                    }
-                                    return newSelectedFaculties;
-                                  });
-                                }}
-                                className="form-checkbox h-4 w-4 text-blue-600" />
-                              <span className="ml-2 text-gray-700">{faculty.user.name}</span>
-                            </label>
-                          ))}
-                        </div></>
+                        <>
+                          <div className="absolute right-0 mt-2 mb-3 w-60 bg-white border border-gray-300 max-h-60 overflow-auto rounded shadow-lg z-10">
+                            {facultyData.map((faculty) => (
+                              <label
+                                key={faculty.id}
+                                className="flex items-center p-2 bg-gray-100 hover:bg-gray-200 transition duration-200"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    selectedFaculties[salaryIndex]?.includes(
+                                      faculty.id,
+                                    ) || false
+                                  }
+                                  onChange={() => {
+                                    setSelectedFaculties((prev) => {
+                                      const newSelectedFaculties = [...prev];
+                                      if (!newSelectedFaculties[salaryIndex]) {
+                                        newSelectedFaculties[salaryIndex] = [];
+                                      }
+                                      if (
+                                        newSelectedFaculties[
+                                          salaryIndex
+                                        ].includes(faculty.id)
+                                      ) {
+                                        newSelectedFaculties[salaryIndex] =
+                                          newSelectedFaculties[
+                                            salaryIndex
+                                          ].filter((id) => id !== faculty.id);
+                                      } else {
+                                        newSelectedFaculties[salaryIndex].push(
+                                          faculty.id,
+                                        );
+                                      }
+                                      return newSelectedFaculties;
+                                    });
+                                  }}
+                                  className="form-checkbox h-4 w-4 text-blue-600"
+                                />
+                                <span className="ml-2 text-gray-700">
+                                  {faculty.user.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
-                </div ></>
+                </div>
+              </>
             ))}
           </div>
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 };
 

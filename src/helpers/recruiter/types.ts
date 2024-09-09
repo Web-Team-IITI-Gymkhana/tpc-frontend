@@ -1,4 +1,5 @@
 import { TPCMember } from "@/components/Admin/types";
+import { Program } from "@/dto/StudentDto";
 import { ReactNode } from "react";
 
 export interface ApplicationFC {
@@ -47,21 +48,13 @@ export interface JAFdetailsFC {
       year: string;
     },
   ];
-  programs: [
-    {
-      id: string;
-      branch: string;
-      course: string;
-      year: string;
-      department: string;
-    },
-  ];
-  genders: [string];
-  categories: [string];
-  testTypes: [string];
-  domains: [string];
-  interviewTypes: [string];
-  countries: [string];
+  programs: Program;
+  genders: string[];
+  categories: string[];
+  testTypes: string[];
+  domains: string[];
+  interviewTypes: string[];
+  countries: string[];
 }
 
 export interface JobDetailFC {
@@ -129,7 +122,7 @@ export interface JobDetailFC {
       visibleToRecruiter: true;
     },
   ];
-  salaries: [SalaryFC];
+  salaries: SalaryFC[];
 }
 
 export interface SalaryFC {
@@ -140,10 +133,10 @@ export interface SalaryFC {
   otherCompensations: number;
   totalCTC: number;
   salaryPeriod: string;
-  genders: [string];
-  programs: [string];
-  facultyApprovals: [string];
-  categories: [string];
+  genders: string[];
+  programs: Program[];
+  facultyApprovals: string[];
+  categories: string[];
   minCPI: number;
   tenthMarks: number;
   twelthMarks: number;
@@ -204,7 +197,7 @@ export interface ProfileFC {
   };
   company: {
     name: string;
-    domains: [string];
+    domains: string[];
     category: string;
     address: {
       city: string;
