@@ -25,6 +25,7 @@ const recruiterRoutes = [
   "/recruiter/jobs",
   "/recruiter/events",
   "/recruiter/profile",
+  "/JAF",
   /^\/recruiter\/jobs\/[a-zA-Z0-9\-]+$/,
   /^\/recruiter\/events\/[a-zA-Z0-9\-]+$/,
 ];
