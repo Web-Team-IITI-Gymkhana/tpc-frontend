@@ -4,6 +4,8 @@ import { Separator } from "../ui/separator";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Jobs } from "@/helpers/student/types";
+import DOMPurify from 'dompurify';
+import "./styles/JobDescription.css"
 const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
 const url = (NextUrl: string) => {
@@ -15,6 +17,7 @@ interface Props {
 }
 
 const JobCard = ({ jobItem, type}: Props) => {
+  const cleanHTML = DOMPurify.sanitize(jobItem.description);
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const handleViewDetails = () => {
     setShowDescription(!showDescription);
@@ -76,69 +79,10 @@ const JobCard = ({ jobItem, type}: Props) => {
             <div className="my-4">
               <Separator />
             </div>
-            <div>
-              <h1 className="text-lg font-semibold">About The Work</h1>
-              <ul className="list-disc mx-10">
-                <li>
-                  Build an application in Flutter and connect REST APIs to
-                  provide a seamless experience to users
-                </li>
-                <li>
-                  Take ownership of the application and work alongside backend
-                  and database engineers to deliver tasks based on timeline
-                </li>
-                <li>Work with 3rd party services to integrate in app</li>
-                <li>
-                  Attend daily standup calls to discuss team updates and next
-                  tasks
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h1 className="text-lg font-semibold my-2">Skill(s) Required</h1>
-              <div className="flex flex-wrap !text-md">
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  Algorithms
-                </div>
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  Android
-                </div>
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  Data Structures
-                </div>
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  Firebase
-                </div>
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  iOS
-                </div>
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  Flutter
-                </div>
-                <div className="mx-2 border-2 p-2 !text-md rounded-full my-2 bg-gray-100 text-gray-600 font-medium">
-                  REST API
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h1 className="text-lg font-semibold my-2">Who can apply</h1>
-              <ul className="list-disc mx-10">
-                <li> are available for the work from home job/internship</li>
-                <li>
-                  can work from 8:00 pm - 2:00 am Indian Standard Time (as the
-                  company is based outside of India & their local work timings
-                  are 9:30 am - 3:30 pm Eastern Standard Time)
-                </li>
-                <li>
-                  can start the work from home job/internship between 4th Jan24
-                  and 8th Feb24
-                </li>
-                <li> are available for duration of 3 months</li>
-                <li> have relevant skills and interests</li>
-              </ul>
-            </div>
+            <div
+              className="job-description"
+              dangerouslySetInnerHTML={{ __html: cleanHTML }}
+            />
             <div className="flex justify-between my-3">
               <Button>
                 <Link href={`/student/job/salary/${jobItem.id}`}>Salaries</Link>

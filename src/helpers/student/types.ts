@@ -57,12 +57,32 @@ export interface Resume {
 export interface Salary {
   id: string;
   salaryPeriod: string;
-  others: string;
-  baseSalary: number;
-  totalCTC: number;
-  takeHomeSalary: number;
-  grossSalary: number;
-  otherCompensations: number;
+  baseSalary?: number;
+  totalCTC?: number;
+  takeHomeSalary?: number;
+  grossSalary?: number;
+  joiningBonus?: number;
+  performanceBonus?: number;
+  relocation?: number;
+  bondAmount?: number;
+  esopAmount?: number;
+  esopVestPeriod?: string;
+  firstYearCTC?: number;
+  retentionBonus?: number;
+  deductions?: number;
+  medicalAllowance?: number;
+  bondDuration?: string;
+  foreignCurrencyCTC?: number;
+  foreignCurrencyCode?: string;
+  otherCompensations?: number;
+  others?: string;
+  
+  // Internship-specific fields
+  stipend?: number;
+  foreignCurrencyStipend?: number;
+  accomodation?: number;
+  tenetativeCTC?: number;
+  PPOConfirmationDate?: string;
   job: {
     id: string;
     role: string;
@@ -136,6 +156,7 @@ export interface Salary {
 export interface Jobs {
   id: string;
   role: string;
+  description: string;
   active: boolean;
   currentStatus: string;
   location: string;
@@ -206,8 +227,6 @@ export interface Job {
     groupDiscussion: boolean;
     shortlistFromResume: boolean;
   };
-
-  description: string;
   skills: string;
   location: string;
   noOfVacancies: number;
