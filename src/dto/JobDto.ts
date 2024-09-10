@@ -80,5 +80,5 @@ const recruitmentDTO = [
   },
 ];
 
-export type { RecruitmentDTO };
+export type { RecruitmentDTO, SeasonDTO, CompanyDTO, RecruiterDTO, UserDTO };
 export { recruitmentDTO };

@@ -1,3 +1,13 @@
+interface Salary {
+  id: string;
+  totalCTC: number;
+  salaryPeriod: string;
+  genders: string[];
+  programs: string[];
+  facultyApprovals: string[];
+  categories: string[];
+}
+
 const salaryDto = {
   id: "string",
   baseSalary: 0,
@@ -34,5 +44,7 @@ const salaryDto = {
     ],
   },
 };
+
+export type { Salary };
 
 export { salaryDto };

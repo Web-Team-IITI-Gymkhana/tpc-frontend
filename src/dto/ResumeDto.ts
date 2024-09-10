@@ -6,7 +6,7 @@ interface Resume {
   id: string;
   filepath: string;
   verified: boolean;
-  student: DTO;
+  student?: DTO;
 }
 
 interface ResumeTableData {
