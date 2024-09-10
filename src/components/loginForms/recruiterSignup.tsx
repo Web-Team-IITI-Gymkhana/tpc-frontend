@@ -308,7 +308,7 @@ export default function RecruiterSignup() {
         setFormData(updatedFormData);
 
         const signupRes = await signupRecruiter(updatedFormData);
-        if (signupRes) {
+        if (signupRes.success) {
           toast.success("Successful! Please check your mail");
         } else {
           toast.error("Some error occured");

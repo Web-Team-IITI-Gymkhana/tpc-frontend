@@ -9,31 +9,48 @@ import Loader from "@/components/Loader/loader";
 
 interface Salary {
   id: string;
-  salaryPeriod: string;
-  programs: string[];
-  genders: string[];
-  categories: string[];
-  minCPI: number;
-  tenthMarks: number;
-  twelthMarks: number;
+  salaryPeriod?: string;
   facultyApprovals: string[];
-  baseSalary: number;
-  totalCTC: number;
-  takeHomeSalary: number;
-  grossSalary: number;
-  otherCompensations: number;
+  baseSalary?: number;
+  totalCTC?: number;
+  takeHomeSalary?: number;
+  grossSalary?: number;
+  joiningBonus?: number;
+  performanceBonus?: number;
+  relocation?: number;
+  bondAmount?: number;
+  esopAmount?: number;
+  esopVestPeriod?: string;
+  firstYearCTC?: number;
+  retentionBonus?: number;
+  deductions?: number;
+  medicalAllowance?: number;
+  bondDuration?: string;
+  foreignCurrencyCTC?: number;
+  foreignCurrencyCode?: string;
+  otherCompensations?: number;
+  others?: string;
+  
+  // Internship-specific fields
+  stipend?: number;
+  foreignCurrencyStipend?: number;
+  accommodation?: number;
+  tentativeCTC?: number;
+  PPOConfirmationDate?: Date;
 }
 
 const SalaryPage = ({ params }: { params: { jobId: string } }) => {
   const [salaryData, setSalaryData] = useState<Salary[]>([]);
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
+  const [seasonType, setSeasonType] = useState<string>("");
 
   useEffect(() => {
     const fetchSalaryData = async () => {
       try {
         const data = await GetJobById(params.jobId);
         setSalaryData(data.salaries);
+        setSeasonType(data.season.type);
 
         const res = await GetResumes();
         setResumes(res);
@@ -58,7 +75,7 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
       {salaryData &&
         salaryData.map((item, index) => (
           <div key={index} className="my-3">
-            <SalaryCard salaryId={item.id} resumes={resumes} />
+            <SalaryCard salaryId={item.id} resumes={resumes} seasonType={seasonType} />
           </div>
         ))}
     </div>

@@ -1,4 +1,5 @@
 import { TPCMember } from "@/components/Admin/types";
+import { ReactNode } from "react";
 
 export interface ApplicationFC {
   id: string;
@@ -23,6 +24,7 @@ export interface ApplicationFC {
     id: string;
     filepath: string;
     verified: boolean;
+    resumeFile?: ReactNode;
   };
 }
 

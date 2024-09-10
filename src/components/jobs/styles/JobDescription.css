@@ -1,0 +1,25 @@
+.job-description {
+    background-color: #fff;
+    max-width: 800px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+  }
+  
+  .job-description p {
+    margin-bottom: 10px;
+  }
+  
+  .job-description ul, .job-description ol {
+    margin: 10px 0;
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  .job-description ol {
+    list-style-type: decimal;
+  }
+  
+  .job-description li {
+    margin-bottom: 5px;
+  }
+  

@@ -2,6 +2,7 @@
 
 // Define the User type
 type User = {
+  id: string;
   name: string;
   email: string;
   contact: string;
