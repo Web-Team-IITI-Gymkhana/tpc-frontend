@@ -75,10 +75,32 @@ export interface JobDetailFC {
     year: string;
     type: string;
   };
-  company: {
-    id: string;
+ company: {
     name: string;
+    domains: string[];
+    category: string;
+    address: {
+        city: string;
+        line1: string;
+        line2: string;
+        state: string;
+        country: string;
+    };
+    size: number;
+    yearOfEstablishment: string;
+    annualTurnover: string;
+    socialMediaLink: string;
+};
+recruiter : {
+  designation: string;
+  id: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    contact: string;
   };
+};
   selectionProcedure: {
     selectionMode: string;
     shortlistFromResume: true;
