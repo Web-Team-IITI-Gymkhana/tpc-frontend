@@ -68,7 +68,7 @@ export interface JobDetailFC {
     year: string;
     type: string;
   };
- company: {
+  company: {
     name: string;
     domains: string[];
     category: string;
@@ -83,17 +83,17 @@ export interface JobDetailFC {
     yearOfEstablishment: string;
     annualTurnover: string;
     socialMediaLink: string;
-};
-recruiter : {
-  designation: string;
-  id: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    contact: string;
   };
-};
+  recruiter : {
+    designation: string;
+    id: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      contact: string;
+    };
+  };
   selectionProcedure: {
     selectionMode: string;
     shortlistFromResume: true;
