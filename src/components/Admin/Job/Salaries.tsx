@@ -342,12 +342,12 @@ const Salaries = ({
               {editMode ? (
                 <input
                   type="text"
-                  name="accommodation"
-                  value={formData.salaries[index].accommodation}
-                  onChange={(e) => handleChange(e, index, "accommodation")}
+                  name="accomodation"
+                  value={formData.salaries[index].accomodation}
+                  onChange={(e) => handleChange(e, index, "accomodation")}
                 />
               ) : (
-                <div>{salary.accommodation}</div>
+                <div>{salary.accomodation}</div>
               )}
             </div>
 

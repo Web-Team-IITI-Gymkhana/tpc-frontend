@@ -284,11 +284,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 >
                   <Button variant="default">Events and Applications</Button>
                 </Link>
-                {!job.active && (
-                  <Button onClick={handleEditClick}>
-                    {editMode ? "Save Application" : "Edit Application"}
-                  </Button>
-                )}
+                <Button onClick={handleEditClick}>
+                  {editMode ? "Save Application" : "Edit Application"}
+                </Button>
               </div>
             </div>
 
