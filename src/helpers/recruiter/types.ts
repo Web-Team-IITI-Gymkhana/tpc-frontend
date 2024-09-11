@@ -149,12 +149,6 @@ export interface JobDetailFC {
 
 export interface SalaryFC {
   id: string;
-  baseSalary: string;
-  takeHomeSalary: number;
-  grossSalary: number;
-  otherCompensations: number;
-  totalCTC: number;
-  salaryPeriod: string;
   genders: string[];
   programs: Program[];
   facultyApprovals: string[];
@@ -162,6 +156,35 @@ export interface SalaryFC {
   minCPI: number;
   tenthMarks: number;
   twelthMarks: number;
+
+  // PLACEMENT
+  baseSalary?: number;
+  totalCTC?: number;
+  takeHomeSalary?: number;
+  grossSalary?: number;
+  joiningBonus?: number;
+  performanceBonus?: number;
+  relocation?: number;
+  bondAmount?: number;
+  esopAmount?: number;
+  esopVestPeriod?: string;
+  firstYearCTC?: number;
+  retentionBonus?: number;
+  deductions?: number;
+  medicalAllowance?: number;
+  bondDuration?: string;
+  foreignCurrencyCTC?: number;
+  foreignCurrencyCode?: string;
+  otherCompensations?: number;
+  salaryPeriod?: string;
+  others?: string;
+
+  // INTERNSHIP
+  stipend?: number;
+  foreignCurrencyStipend?: number;
+  accomodation?: number;
+  tenetativeCTC?: number;
+  PPOConfirmationDate?: Date;
 }
 
 export interface JobsFC {
