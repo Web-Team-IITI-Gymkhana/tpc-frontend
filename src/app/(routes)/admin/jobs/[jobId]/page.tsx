@@ -128,6 +128,19 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     setLoading(false);
   };
 
+  const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>, index: number, field: string) => {
+    console.log("Event:", e);
+    console.log("Index:", index);
+    console.log("Field:", field);
+    
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      salaries: prevFormData.salaries.map((salary, i) =>
+        i === index ? { ...salary, [field]: e.target.value } : salary
+      ),
+    }));
+  };
+
   const handleEditClick = () => {
     if (editMode) {
       handleSubmit();
@@ -141,8 +154,20 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const handleSubmit = async () => {
-    await patchJobData(job.id, formData);
-    formData.salaries.map((salary, index) => patchSalaryData(salary));
+
+    const updatedFormData = {
+      ...formData,
+      salaries: formData.salaries.map(salary => ({
+        ...salary,
+        programs: salary.programs.map(program => program.id),
+      })),
+    };
+  
+
+    await patchJobData(job.id, updatedFormData);
+    await Promise.all(updatedFormData.salaries.map(salary => patchSalaryData(salary)));
+  
+
     setEditMode(false);
     window.location.reload();
   };
@@ -490,14 +515,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           <Salaries
             salaries={job.salaries}
             editMode={editMode}
-            handleChange={(e, index, field) =>
-              setFormData({
-                ...formData,
-                salaries: formData.salaries.map((salary, i) =>
-                  i === index ? { ...salary, [field]: e.target.value } : salary,
-                ),
-              })
-            }
+            handleChange={handleChange2}
+            seasonType={job.season.type}
+            formData={formData}
             setApprovalModal={setApprovalModal}
             approvalModal={approvalModal}
             getApprovals={getApprovals}
