@@ -13,12 +13,13 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
   return (
     <Form layout="vertical">
       <h1 className="text-xl">Recruiter Details</h1>
+      <h3 className="text-lg my-3">Point of Contact</h3>
       <Row gutter={24}>
         <Col span={12}>
-          <Form.Item label="Recruiter Name">
+          <Form.Item label="Name">
             <Input
               name="recName"
-              placeholder="Recruiter Name"
+              placeholder="Name"
               onChange={handleChange}
               value={values.recName}
             />
