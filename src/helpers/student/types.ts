@@ -187,7 +187,7 @@ export interface Job {
   active: boolean;
   currentStatus: string;
 
-  companyDetailsFilled: {
+  company: {
     name: string;
     size: number;
     address: {
@@ -237,11 +237,6 @@ export interface Job {
     id: string;
     year: string;
     type: string;
-  };
-
-  company: {
-    id: string;
-    name: string;
   };
 
   recruiter: {

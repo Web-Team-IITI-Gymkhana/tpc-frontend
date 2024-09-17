@@ -70,7 +70,7 @@ const transformEventsCalender = (jobData: Job): CalenderEvent[] => {
     label: "red",
     timeFrom: event.startDateTime,
     timeTo: event.endDateTime,
-    title: jobData.companyDetailsFilled.name,
+    title: jobData.company.name,
   }));
 };
 
@@ -187,12 +187,12 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
         <>
           {!closestEvent? (
             <div className="font-semibold text-xl">
-              {jobData?.companyDetailsFilled.name}
+              {jobData?.company.name}
             </div>
           ): (
             <div className="flex justify-between">
               <div className="font-semibold text-xl">
-                {jobData?.companyDetailsFilled.name}
+                {jobData?.company.name}
               </div>
               <div className="text-orange-500 font-bold px-4 py-2 border rounded-full inline-block border-orange-500 text-sm">
                 {closestEvent}
@@ -200,9 +200,9 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             </div>
           )}
           <div className="text-gray-600 font-medium text-sm my-1">
-            {jobData?.companyDetailsFilled.address.city},{" "}
-            {jobData?.companyDetailsFilled.address.state},{" "}
-            {jobData?.companyDetailsFilled.address.country}
+            {jobData?.company.address.city},{" "}
+            {jobData?.company.address.state},{" "}
+            {jobData?.company.address.country}
           </div>
           <div className="my-4">
             <Separator />
@@ -212,7 +212,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
               <div className="text-gray-500 font-semibold my-2">Website</div>{" "}
               <a
                 className="text-blue-500"
-                href={jobData?.companyDetailsFilled.website}
+                href={jobData?.company.website}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -222,26 +222,26 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             <div>
               <div className="text-gray-500 font-semibold my-2">Domain</div>{" "}
               <div>
-                {jobData?.companyDetailsFilled.domains.length === 0
+                {jobData?.company.domains.length === 0
                   ? "Not Available"
-                  : jobData?.companyDetailsFilled.domains[0]}
+                  : jobData?.company.domains[0]}
               </div>
             </div>
             <div>
               <div className="text-gray-500 font-semibold my-2">Category</div>{" "}
-              <div>{jobData?.companyDetailsFilled.category}</div>
+              <div>{jobData?.company.category}</div>
             </div>
             <div>
               <div className="text-gray-500 font-semibold my-2">
                 Company Size
               </div>{" "}
-              <div>{formatNumber(jobData?.companyDetailsFilled.size ?? 0)}</div>
+              <div>{(jobData?.company.size)? formatNumber(jobData?.company.size): ""}</div>
             </div>
             <div>
               <div className="text-gray-500 font-semibold my-2">
                 Established
               </div>{" "}
-              <div>{jobData?.companyDetailsFilled.yearOfEstablishment}</div>
+              <div>{jobData?.company.yearOfEstablishment}</div>
             </div>
           </div>
           <div className="my-4">
