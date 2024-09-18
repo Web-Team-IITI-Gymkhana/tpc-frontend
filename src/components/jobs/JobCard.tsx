@@ -55,9 +55,9 @@ const JobCard = ({ jobItem, type}: Props) => {
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">
-              Current Status
+              Duration
             </div>{" "}
-            <div>{jobItem.currentStatus}</div>
+            <div>{jobItem.duration}</div>
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Location</div>{" "}

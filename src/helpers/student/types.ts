@@ -156,6 +156,7 @@ export interface Salary {
 export interface Jobs {
   id: string;
   role: string;
+  duration: string;
   description: string;
   active: boolean;
   currentStatus: string;
