@@ -77,7 +77,7 @@ function JAF() {
             role: "",
             description: "",
             attachment: "",
-            skills: "",
+            skills: [],
             location: "",
             minNoOfHires: "",
             expectedNoOfHires: "",

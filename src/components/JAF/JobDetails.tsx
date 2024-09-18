@@ -12,6 +12,7 @@ import {
   Button,
   UploadProps,
   SelectProps,
+  List,
 } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -52,6 +53,9 @@ type StepProps = {
 const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) => {
   const [form] = Form.useForm();
 
+  const [skills, setSkills] = useState([]);
+  const [skillInput, setSkillInput] = useState("");
+
   const [testType, setTestType] = useState([]);
   const [seasonType, setSeasonType] = useState("");
   const [interviewType, setInterviewType] = useState([]);
@@ -61,6 +65,25 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
   const programsOptions: SelectProps["options"] = [];
 
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const handleSkillChange = (e) => {
+    setSkillInput(e.target.value);
+  };
+
+  const addSkill = () => {
+    if (skillInput) {
+      const updatedSkills = [...skills, skillInput];
+      setSkills(updatedSkills);
+      setSkillInput("");
+      setFieldValue("skills", updatedSkills);
+    }
+  };
+
+  const removeSkill = (skillToRemove) => {
+    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
+    setSkills(updatedSkills);
+    setFieldValue("skills", updatedSkills);
+  };
 
   useEffect(() => {
     axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
@@ -102,7 +125,6 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       onValuesChange={() => {
         values.interviews = form.getFieldsValue().interviews;
         values.tests = form.getFieldsValue().tests;
-        console.log(form.getFieldsValue().salaries);
         let objx: any = [];
         form.getFieldsValue().salaries.map((salary: any) => {
           const obj = {
@@ -174,12 +196,12 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
 
       <Row gutter={24}>
         <Col span={12}>
-          <Form.Item label="Skill">
+        <Form.Item label="Offer Letter Date">
             <Input
-              name="skills"
-              placeholder="Skill"
+              name="offerLetterReleaseDate"
+              placeholder="Offer Letter Date"
               onChange={handleChange}
-              value={values.skills}
+              value={values.offerLetterReleaseDate}
             />
           </Form.Item>
         </Col>
@@ -206,12 +228,12 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label="Offer Letter Date">
+        <Form.Item label="Expected number of Hires">
             <Input
-              name="offerLetterReleaseDate"
-              placeholder="Offer Letter Date"
+              name="expectedNoOfHires"
+              placeholder="Expected number of Hires"
               onChange={handleChange}
-              value={values.offerLetterReleaseDate}
+              value={values.expectedNoOfHires}
             />
           </Form.Item>
         </Col>       
@@ -228,17 +250,47 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
           </Form.Item>
         </Col>        
         <Col span={12}>
-          <Form.Item label="Expected number of Hires">
-            <Input
-              name="expectedNoOfHires"
-              placeholder="Expected number of Hires"
-              onChange={handleChange}
-              value={values.expectedNoOfHires}
-            />
-          </Form.Item>
+          
         </Col>        
       </Row>
-      <Form.Item label="Description">
+      <Row gutter={24}>        
+        <Col span={24}>
+        <Form.Item label="Skills">
+          <Input
+            name="skills"
+            placeholder="Enter a skill"
+            value={skillInput}
+            onChange={handleSkillChange}
+          />
+        </Form.Item>
+        <Button type="primary" onClick={addSkill}>
+          Add Skill
+        </Button>
+
+        <List
+          header={<div>Skills</div>}
+          bordered
+          dataSource={skills}
+          renderItem={(item) => (
+            <List.Item
+              actions={[
+                <Button
+                  type="link"
+                  onClick={() => removeSkill(item)}
+                  style={{ color: "red" }}
+                >
+                  Remove
+                </Button>,
+              ]}
+            >
+              {item}
+            </List.Item>
+          )}
+          style={{ marginTop: "20px" }}
+        />
+        </Col>     
+      </Row>
+      <Form.Item label="Description" className="my-3">
         <Field name="description">
           {({ field }) => (
             <ReactQuill
