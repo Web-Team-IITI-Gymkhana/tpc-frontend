@@ -18,6 +18,8 @@ interface Props {
 
 const RootLayout = async ({ children }: Props) => {
   const className = inter.className;
+  // const AllSeasons = await fetchAllSeasons(cookies()?.get("accessToken")?.value);
+  // console.log(AllSeasons);
   return (
     <html lang="en">
       <body className={className}>
@@ -27,7 +29,16 @@ const RootLayout = async ({ children }: Props) => {
             <Toaster />
 
             <NextAuthProvider>
-              <div>{children}</div>
+              <div className="flex-auto flex h-[92vh] ">
+                {/* sidebar and main content share this space */}
+                <Suspense fallback={<>Loading...</>}>
+                  <Sidebar />
+                </Suspense>
+                <MainContent>
+                  <Providers>{children}</Providers>
+                </MainContent>
+              </div>
+              {auth}
             </NextAuthProvider>
           </div>
         </ToggleProvider>

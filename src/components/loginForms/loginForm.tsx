@@ -1,13 +1,16 @@
 //this will be used to create the login page.
 "use client";
 import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import GoogleLogin from "./googleLogin";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
-import { Input, InputAdornment, TextField } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { login } from "@/helpers/api";
 
 const LoginForm = () => {
-  const [email, setemail] = useState<String | null>(null);
+  const [email, setemail] = useState<string | null>(null);
+  const [role, setrole] = useState<string | null>("STUDENT");
+  const router = useRouter();
   return (
     <>
       <div className="overflow-auto rounded-md max-h-[90vh] max-w-screen shadow-lg text-black">
@@ -43,7 +46,24 @@ const LoginForm = () => {
 
                   <div className="md:col-span-5 text-right">
                     <div className="items-center flex justify-center flex-col gap-4">
-                      <div className="flex flex-col gap-4">
+                      <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={async () => {
+                          if (email == null || email.length == 0) {
+                            toast.error("Email is required");
+                            return;
+                          }
+                          try {
+                            await login(email, role);
+                          } catch (err) {
+                            alert(err);
+                            toast.error("Some error occurred");
+                          }
+                        }}
+                      >
+                        Request Access
+                      </button>
+                      <div className="flex flex-row gap-4">
                         <LoginWithEmail email={email} />
                         <GoogleLogin />
                       </div>

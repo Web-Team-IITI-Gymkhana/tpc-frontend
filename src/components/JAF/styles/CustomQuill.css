@@ -1,0 +1,16 @@
+.custom-quill .ql-container {
+    height: 150px; /* Adjust the height of the content area */
+    min-width: 600px;   /* Set the width of the editor */
+    background-color: white; /* Set background color */
+  }
+  
+  .custom-quill .ql-editor {
+    min-height: 100px; /* Ensure the text area is fully visible */
+    background-color: white; /* Ensure the text editor area is white */
+  }
+  
+  .custom-quill .ql-toolbar {
+    background-color: #f0f0f0; /* Optionally set the toolbar background color */
+    border: none; /* Optional: remove border if desired */
+  }
+  

@@ -1,17 +1,13 @@
 // dto.ts
 
+import { Program } from "./SalaryDto";
+
 // Define the User type
 type User = {
+  id: string;
   name: string;
   email: string;
   contact: string;
-};
-
-// Define the Program type
-type Program = {
-  course: string;
-  branch: string;
-  year: number;
 };
 
 // Define the main DTO type

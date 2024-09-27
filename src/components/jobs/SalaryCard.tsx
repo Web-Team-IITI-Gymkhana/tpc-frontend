@@ -31,10 +31,11 @@ const url = (NextUrl: string) => {
 
 interface Props {
   salaryId: string;
+  seasonType: string;
   resumes: Resume[];
 }
 
-export default function SalaryCard({ salaryId, resumes }: Props) {
+export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
   const [salaryData, setSalaryData] = useState<Salary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -96,6 +97,19 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
     }
   }
 
+  function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      timeZoneName: 'short',
+    });
+  }
+
   return (
     <div id="main-container" className="">
       {loading && (
@@ -123,7 +137,7 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
           </div>
           <div className="">
             <div className="text-gray-500 font-semibold my-2 text-sm">
-              CTC Offered: {formatNumber(salaryData?.totalCTC)}
+              {seasonType==="PLACEMENT"? `CTC Offered: ${formatNumber(salaryData?.totalCTC)}`: `Stipend: ${formatNumber(salaryData?.stipend)}`}
             </div>
           </div>
 
@@ -131,50 +145,168 @@ export default function SalaryCard({ salaryId, resumes }: Props) {
             <Separator />
           </div>
 
-          <div
-            className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2"
-            onClick={handleViewDetails}
-            style={{ cursor: "pointer" }}
-          >
-            <div>
-              <div className="text-gray-500 font-semibold my-2 pr-2">Role</div>
-              <div className="">{salaryData?.job.role}</div>
-            </div>
-            <div className="md:ml-2 lg:ml-6">
-              <div className="text-gray-500 font-semibold my-2">
-                Base Salary
+          {seasonType==="PLACEMENT"? (
+            <>
+              <div
+                className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2"
+                onClick={handleViewDetails}
+                style={{ cursor: "pointer" }}
+              >
+                <div>
+                  <div className="text-gray-500 font-semibold my-2 pr-2">Role</div>
+                  <div className="">{salaryData?.job.role}</div>
+                </div>
+                <div className="md:ml-2 lg:ml-6">
+                  <div className="text-gray-500 font-semibold my-2">Base Salary</div>
+                  <div>{(salaryData?.baseSalary) ? formatNumber(salaryData?.baseSalary) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Take Home Salary</div>
+                  <div>{(salaryData?.takeHomeSalary) ? formatNumber(salaryData?.takeHomeSalary) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Gross Salary</div>
+                  <div>{(salaryData?.grossSalary) ? formatNumber(salaryData?.grossSalary) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Other Compensations</div>
+                  <div>{(salaryData?.otherCompensations) ? formatNumber(salaryData?.otherCompensations) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Duration</div>
+                  <div>{salaryData?.salaryPeriod || ""}</div>
+                </div>
               </div>
-              <div>{formatNumber(salaryData?.baseSalary)}</div>
-            </div>
-            <div className="">
-              <div className="text-gray-500 font-semibold my-2">
-                Take Home Salary
-              </div>{" "}
-              <div>{formatNumber(salaryData?.takeHomeSalary)}</div>
-            </div>
-            <div className="">
-              <div className="text-gray-500 font-semibold my-2">
-                Gross Salary
-              </div>{" "}
-              <div>{formatNumber(salaryData?.grossSalary)}</div>
-            </div>
-            <div className="">
-              <div className="text-gray-500 font-semibold my-2">
-                Other Compensations
-              </div>{" "}
-              <div>{formatNumber(salaryData?.otherCompensations)}</div>
-            </div>
-            <div className="">
-              <div className="text-gray-500 font-semibold my-2">Duration</div>{" "}
-              <div>{salaryData.salaryPeriod}</div>
-            </div>
-          </div>
+            </>
+          
+          ): (
+            <>
+              <div
+                className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2"
+                onClick={handleViewDetails}
+                style={{ cursor: "pointer" }}
+              >
+                <div>
+                  <div className="text-gray-500 font-semibold my-2 pr-2">Role</div>
+                  <div>{salaryData?.job.role || ""}</div>
+                </div>
+                <div className="md:ml-2 lg:ml-6">
+                  <div className="text-gray-500 font-semibold my-2">
+                    Foreign Currency Stipend
+                  </div>
+                  <div>{salaryData?.foreignCurrencyStipend || ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Accommodation</div>
+                  <div>{(salaryData?.accomodation) ? formatNumber(salaryData?.accomodation) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Tentative CTC</div>
+                  <div>{(salaryData?.tenetativeCTC) ? formatNumber(salaryData?.tenetativeCTC) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">PPO Confirmation Date</div>
+                  <div>{(salaryData?.PPOConfirmationDate) ? formatDate(salaryData?.PPOConfirmationDate) : ""}</div>
+                </div>
+                <div className="">
+                  <div className="text-gray-500 font-semibold my-2">Duration</div>
+                  <div>{salaryData?.salaryPeriod || ""}</div>
+                </div>
+              </div>
+            </>
+
+          )}
 
           {isopen && (
             <>
               <div className="my-4">
                 <Separator />
               </div>
+              {seasonType==="PLACEMENT" && (
+                <>
+                  <div
+                    className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2"
+                    onClick={handleViewDetails}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div>
+                      <div className="text-gray-500 font-semibold my-2 pr-2">Joining Bonus</div>
+                      <div>{(salaryData?.joiningBonus) ? formatNumber(salaryData?.joiningBonus) : ""}</div>
+                    </div>
+                    <div className="md:ml-2 lg:ml-6">
+                      <div className="text-gray-500 font-semibold my-2">Performance Bonus</div>
+                      <div>{(salaryData?.performanceBonus) ? formatNumber(salaryData?.performanceBonus) : ""}</div>
+                    </div>
+                    <div className="">
+                      <div className="text-gray-500 font-semibold my-2">Relocation</div>
+                      <div>{(salaryData?.relocation) ? formatNumber(salaryData?.relocation) : ""}</div>
+                    </div>
+                    <div className="">
+                      <div className="text-gray-500 font-semibold my-2">Bond Amount</div>
+                      <div>{(salaryData?.bondAmount) ? formatNumber(salaryData?.bondAmount) : ""}</div>
+                    </div>
+                  </div>
+                
+                  <div className="my-4">
+                    <Separator />
+                  </div>
+                
+                  <div
+                    className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2"
+                    onClick={handleViewDetails}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div>
+                      <div className="text-gray-500 font-semibold my-2 pr-2">ESOP Amount</div>
+                      <div>{(salaryData?.esopAmount) ? formatNumber(salaryData?.esopAmount) : ""}</div>
+                    </div>
+                    <div className="md:ml-2 lg:ml-6">
+                      <div className="text-gray-500 font-semibold my-2">ESOP Vest Period</div>
+                      <div>{salaryData?.esopVestPeriod || ""}</div>
+                    </div>
+                    <div className="">
+                      <div className="text-gray-500 font-semibold my-2">First Year CTC</div>
+                      <div>{(salaryData?.firstYearCTC) ? formatNumber(salaryData?.firstYearCTC) : ""}</div>
+                    </div>
+                    <div className="">
+                      <div className="text-gray-500 font-semibold my-2">Retention Bonus</div>
+                      <div>{(salaryData?.retentionBonus) ? formatNumber(salaryData?.retentionBonus) : ""}</div>
+                    </div>
+                  </div>
+                
+                  <div className="my-4">
+                    <Separator />
+                  </div>
+                
+                  <div
+                    className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2"
+                    onClick={handleViewDetails}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div>
+                      <div className="text-gray-500 font-semibold my-2 pr-2">Deductions</div>
+                      <div>{(salaryData?.deductions) ? formatNumber(salaryData?.deductions) : ""}</div>
+                    </div>
+                    <div className="md:ml-2 lg:ml-6">
+                      <div className="text-gray-500 font-semibold my-2">Medical Allowance</div>
+                      <div>{(salaryData?.medicalAllowance) ? formatNumber(salaryData?.medicalAllowance) : ""}</div>
+                    </div>
+                    <div className="">
+                      <div className="text-gray-500 font-semibold my-2">Bond Duration</div>
+                      <div>{salaryData?.bondDuration || ""}</div>
+                    </div>
+                    <div className="">
+                      <div className="text-gray-500 font-semibold my-2">Retention Bonus</div>
+                      <div>{`${salaryData?.foreignCurrencyCTC || ""} ${salaryData?.foreignCurrencyCode || ""}`}</div>
+                    </div>
+                  </div>
+                
+                  <div className="my-4">
+                    <Separator />
+                  </div>
+                </>
+              
+              )}
               <div className="my-4 mt-6">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 text-sm mx-2">
                   <div>

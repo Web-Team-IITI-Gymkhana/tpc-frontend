@@ -1,4 +1,6 @@
 import { TPCMember } from "@/components/Admin/types";
+import { Program } from "@/dto/StudentDto";
+import { ReactNode } from "react";
 
 export interface ApplicationFC {
   id: string;
@@ -23,6 +25,7 @@ export interface ApplicationFC {
     id: string;
     filepath: string;
     verified: boolean;
+    resumeFile?: ReactNode;
   };
 }
 
@@ -45,27 +48,20 @@ export interface JAFdetailsFC {
       year: string;
     },
   ];
-  programs: [
-    {
-      id: string;
-      branch: string;
-      course: string;
-      year: string;
-      department: string;
-    },
-  ];
-  genders: [string];
-  categories: [string];
-  testTypes: [string];
-  domains: [string];
-  interviewTypes: [string];
-  countries: [string];
+  programs: Program;
+  genders: string[];
+  categories: string[];
+  testTypes: string[];
+  domains: string[];
+  interviewTypes: string[];
+  countries: string[];
 }
 
 export interface JobDetailFC {
   id: string;
   role: string;
   active: boolean;
+  registration: string;
   currentStatus: string;
   season: {
     id: string;
@@ -73,8 +69,30 @@ export interface JobDetailFC {
     type: string;
   };
   company: {
-    id: string;
     name: string;
+    domains: string[];
+    category: string;
+    address: {
+        city: string;
+        line1: string;
+        line2: string;
+        state: string;
+        country: string;
+    };
+    size: number;
+    yearOfEstablishment: string;
+    annualTurnover: string;
+    socialMediaLink: string;
+  };
+  recruiter : {
+    designation: string;
+    id: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      contact: string;
+    };
   };
   selectionProcedure: {
     selectionMode: string;
@@ -126,24 +144,47 @@ export interface JobDetailFC {
       visibleToRecruiter: true;
     },
   ];
-  salaries: [SalaryFC];
+  salaries: SalaryFC[];
 }
 
 export interface SalaryFC {
   id: string;
-  baseSalary: string;
-  takeHomeSalary: number;
-  grossSalary: number;
-  otherCompensations: number;
-  totalCTC: number;
-  salaryPeriod: string;
-  genders: [string];
-  programs: [string];
-  facultyApprovals: [string];
-  categories: [string];
+  genders: string[];
+  programs: Program[];
+  facultyApprovals: string[];
+  categories: string[];
   minCPI: number;
   tenthMarks: number;
   twelthMarks: number;
+
+  // PLACEMENT
+  baseSalary?: number;
+  totalCTC?: number;
+  takeHomeSalary?: number;
+  grossSalary?: number;
+  joiningBonus?: number;
+  performanceBonus?: number;
+  relocation?: number;
+  bondAmount?: number;
+  esopAmount?: number;
+  esopVestPeriod?: string;
+  firstYearCTC?: number;
+  retentionBonus?: number;
+  deductions?: number;
+  medicalAllowance?: number;
+  bondDuration?: string;
+  foreignCurrencyCTC?: number;
+  foreignCurrencyCode?: string;
+  otherCompensations?: number;
+  salaryPeriod?: string;
+  others?: string;
+
+  // INTERNSHIP
+  stipend?: number;
+  foreignCurrencyStipend?: number;
+  accomodation?: number;
+  tenetativeCTC?: number;
+  PPOConfirmationDate?: Date;
 }
 
 export interface JobsFC {
@@ -201,7 +242,7 @@ export interface ProfileFC {
   };
   company: {
     name: string;
-    domains: [string];
+    domains: string[];
     category: string;
     address: {
       city: string;

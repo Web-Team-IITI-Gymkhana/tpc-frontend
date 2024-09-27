@@ -18,7 +18,6 @@ import {
   SelectGroup,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import Collapsible from "@/components/ui/collapsible";
 import {
   getCompanies,
   postCompany,
@@ -30,8 +29,15 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { CompanyPostFC, JAFdetailsFC } from "@/helpers/recruiter/types";
 import { MultiSelect } from "../ui/multiselect";
-import Loader from "../Loader/loader";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const Collapsible = dynamic(() => import("@/components/ui/collapsible"), {
+  ssr: false,
+});
+const Loader = dynamic(() => import("../Loader/loader"), {
+  ssr: false,
+});
 
 export const RecruiterForm = ({
   formData,
@@ -294,32 +300,26 @@ export default function RecruiterSignup() {
   };
 
   const handleSubmit = async () => {
-    console.log(companyFormData);
-
     if (createCompany) {
       try {
         const data = await postCompany(companyFormData);
-        console.log(data);
 
         const updatedFormData = { ...formData, companyId: data[0] };
         setFormData(updatedFormData);
 
-        console.log(updatedFormData);
         const signupRes = await signupRecruiter(updatedFormData);
-        if (signupRes) {
+        if (signupRes.success) {
           toast.success("Successful! Please check your mail");
         } else {
           toast.error("Some error occured");
         }
       } catch (error) {
-        console.log(error);
         toast.error("Error creating company or signing up");
       }
       return;
     }
 
     try {
-      console.log(formData);
       const signupRes = await signupRecruiter(formData);
       if (signupRes) {
         toast.success("Please check your mail");
@@ -327,13 +327,12 @@ export default function RecruiterSignup() {
         toast.error("Some error occured");
       }
     } catch (error) {
-      console.log(error);
       toast.error("Error creating company or signing up");
     }
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto bg-opacity-50 backdrop-filter backdrop-blur mt-36">
       <CardHeader>
         <CardTitle className="text-3xl font-bold">
           Recruiter Registration
@@ -443,16 +442,15 @@ export default function RecruiterSignup() {
               />
             </div>
           </div>
-          <div>
-            {createCompany && (
-              <Collapsible title="Create Company" defaultexpanded={true}>
-                <RecruiterForm
-                  formData={companyFormData}
-                  setFormData={setCompanyFormData}
-                />
-              </Collapsible>
-            )}
-          </div>
+
+          {createCompany && (
+            <Collapsible title="Create Company" defaultexpanded={true}>
+              <RecruiterForm
+                formData={companyFormData}
+                setFormData={setCompanyFormData}
+              />
+            </Collapsible>
+          )}
         </form>
       </CardContent>
       <CardFooter>
