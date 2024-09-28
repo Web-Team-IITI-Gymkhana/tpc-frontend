@@ -3,7 +3,6 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { JobDetailFC } from "@/helpers/recruiter/types";
 import { getJobDetail } from "@/helpers/recruiter/api";
-import loadingImg from "@/../public/loadingSpinner.svg";
 import { JobEvents } from "@/components/Recruiters/Events";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
@@ -37,7 +36,7 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
       )}
       {job && (
         <div>
-          <JobEvents events={job.events} />
+          <JobEvents events={job.events} jobId={params.jobId} />
         </div>
       )}
     </div>
