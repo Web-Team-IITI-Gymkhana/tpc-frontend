@@ -108,3 +108,11 @@ export const patchSalaryData = async (salary: SalaryFC) => {
     body: toPatch,
   });
 };
+
+export const postFeedback = async (jobId: string, feedback: string, studentIds: string[]) => {
+  const data = studentIds.map((id) => ({ jobId, studentId: id, remarks: feedback }));
+  return apiCall(`/recruiter-view/feedbacks`, {
+    method: "POST",
+    body: data,
+  });
+}
