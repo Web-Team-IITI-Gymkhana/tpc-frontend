@@ -71,6 +71,10 @@ export const OpenInterviewExpirience = async (filename: string) => {
   OpenFile(`/student-view/interview-experiences/${filename}`);
 };
 
+export const OpenJD = async (filename: string) => {
+  OpenFile(`/student-view/jd/${filename}`);
+};
+
 export const GetStudentData = async () => {
   return apiCall("/student-view", { next: { tags: ["Students"] } });
 };

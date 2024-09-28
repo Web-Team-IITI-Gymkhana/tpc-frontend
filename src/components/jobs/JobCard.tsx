@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Jobs } from "@/helpers/student/types";
 import DOMPurify from 'dompurify';
 import "./styles/JobDescription.css"
+import { OpenJD } from "@/helpers/student/api";
 const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
 const url = (NextUrl: string) => {
@@ -21,6 +22,10 @@ const JobCard = ({ jobItem, type}: Props) => {
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const handleViewDetails = () => {
     setShowDescription(!showDescription);
+  };
+
+  const handleOpenJD = async (filename: string) => {
+    OpenJD(filename);
   };
 
   return (
@@ -70,8 +75,8 @@ const JobCard = ({ jobItem, type}: Props) => {
             </div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">Recruiter</div>{" "}
-            <div>{jobItem.recruiter.user.name}</div>
+            <div className="text-gray-500 font-semibold my-2">Attachment</div>{" "}
+            <div onClick={() => handleOpenJD(jobItem.attachment)} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">{jobItem.attachment? "Link": ""}</div>
           </div>
         </div>
         {showDescription && (

@@ -157,6 +157,7 @@ export interface Jobs {
   id: string;
   role: string;
   duration: string;
+  attachment: string;
   description: string;
   active: boolean;
   currentStatus: string;
