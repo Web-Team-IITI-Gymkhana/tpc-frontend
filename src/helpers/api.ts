@@ -415,6 +415,10 @@ export const getResumeFile = async (fileName: string) => {
   OpenFile(`/resumes/file/${fileName}`);
 };
 
+export const OpenJD = async (fileName: string) => {
+  OpenFile(`/jobs/jd/${fileName}`);
+};
+
 export const patchResumeVerify = async (changes: ResumePatchData[]) => {
   return apiCall(`/resumes`, {
     method: "PATCH",

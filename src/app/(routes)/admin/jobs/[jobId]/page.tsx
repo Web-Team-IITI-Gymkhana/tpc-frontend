@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { getJafDetails } from "@/helpers/recruiter/api";
 import { JAFdetailsFC } from "@/helpers/recruiter/types";
-import { patchJobData } from "@/helpers/api";
+import { OpenJD, patchJobData } from "@/helpers/api";
 import { patchSalaryData } from "@/helpers/api";
 import {
   CategorySelectList,
@@ -103,6 +103,10 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     };
     fetchData();
   }, [params.jobId]);
+
+  const handleOpenJD = async (filename: string) => {
+    OpenJD(filename);
+  };
 
 
   const updateFacultyDropDown = (index, value) => {
@@ -361,16 +365,14 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 </div>
                 <div>
                   <div className="font-semibold my-2">Attachment</div>{" "}
-                  {editMode ? (
-                    <input
-                      type="text"
-                      name="attachment"
-                      value={formData.attachment}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <div>{job.attachment}</div>
-                  )}
+                  <div
+                      className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                      onClick={() =>
+                        handleOpenJD(job.attachment)
+                      }
+                    >
+                      Link
+                    </div>
                 </div>
               </div>
             </div>

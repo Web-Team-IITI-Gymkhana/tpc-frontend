@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { JobDetailFC } from "@/helpers/recruiter/types";
-import { getJobDetail } from "@/helpers/recruiter/api";
+import { getJobDetail, OpenJD } from "@/helpers/recruiter/api";
 import loadingImg from "@/../public/loadingSpinner.svg";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import PersonIcon from "@mui/icons-material/Person";
@@ -56,6 +56,10 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleOpenJD = async (filename: string) => {
+    OpenJD(filename);
   };
 
   const handleSubmit = async () => {
@@ -208,16 +212,12 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 </div>
                 <div>
                   <div className="font-semibold my-2">Attachment</div>{" "}
-                  {editMode ? (
-                    <input
-                      type="text"
-                      name="attachment"
-                      value={formData.attachment}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <div>{job.attachment}</div>
-                  )}
+                  <div
+                      className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                      onClick={() =>
+                        handleOpenJD(job.attachment)
+                      }
+                    >{job.attachment? "Link": ""}</div>
                 </div>
               </div>
             </div>
