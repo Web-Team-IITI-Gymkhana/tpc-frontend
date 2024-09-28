@@ -25,24 +25,6 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const { TextArea } = Input;
 
-const props: UploadProps = {
-  name: "attachment",
-  action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
-  headers: {
-    authorization: "authorization-text",
-  },
-  onChange(info: any) {
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-
 type StepProps = {
   errors: FormikErrors<FormikValues>;
   values: FormikValues;
@@ -50,11 +32,21 @@ type StepProps = {
   setFieldValue: (field: string, value: any) => void;
 };
 
+const getBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) => {
   const [form] = Form.useForm();
 
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
+  const [fileList, setFileList] = useState([]);
 
   const [testType, setTestType] = useState([]);
   const [seasonType, setSeasonType] = useState("");
@@ -68,6 +60,28 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
 
   const handleSkillChange = (e) => {
     setSkillInput(e.target.value);
+  };
+
+  const handleFileChange = async (info: any) => {
+    if (info.file.status !== 'uploading') {
+      console.log('Uploading:', info.file, info.fileList);
+    }
+    if (info.file.status === "done") {
+      const file = info.file.originFileObj;
+      try {
+        const base64String = await getBase64(file);
+        console.log(`Base64 string length: ${base64String.length}`);
+        console.log(`Base64 string: ${base64String.substring(0, 50)}...`);
+        setFieldValue("attachment", base64String);
+        message.success(`${info.file.name} file uploaded successfully`);
+      } catch (error) {
+        message.error("File conversion to Base64 failed.");
+      }
+    } else if (info.file.status === "error") {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+    
+    setFileList(info.fileList);
   };
 
   const addSkill = () => {
@@ -305,7 +319,10 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       <Row gutter={24}>
         <Col span={12}>
           <Form.Item label="Attachments">
-            <Upload {...props}>
+          <Upload
+            fileList={fileList} 
+            onChange={handleFileChange}
+          >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
           </Form.Item>

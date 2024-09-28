@@ -115,7 +115,7 @@ function JAF() {
               job: {
                 role: values.role,
                 description: values.description,
-                //attachment: values.attachment,//file
+                attachment: values.attachment,//file
                 skills: values.skills,
                 location: values.location,
                 noOfVacancies: values.noOfVacancies,
@@ -154,7 +154,7 @@ function JAF() {
                     contact: "+91 " + values.phoneNumber,
                     landline: values.landline,
                   },
-                  //attachment: values.attachment,//file
+                  attachment: values.attachment,//file
                   others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
