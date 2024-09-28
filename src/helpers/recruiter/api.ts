@@ -36,6 +36,10 @@ export const getResume = (filename: string) => {
   OpenFile(`/recruiter-view/resume/${filename}`);
 };
 
+export const OpenJD = (filename: string) => {
+  OpenFile(`/recruiter-view/jd/${filename}`);
+};
+
 export const patchJobData = async (jobId: string, changes: JobDetailFC) => {
   const patchFormat = {
     role: "string",
