@@ -35,6 +35,7 @@ const facultyRoutes = ["/faculty", "/faculty/profile"];
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken");
   let user = null;
+  const prod = process.env.NEXT_PUBLIC_PROD;
 
   if (accessToken) {
     try {
@@ -45,6 +46,9 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  if (request.nextUrl.pathname === "/devlogin" && (prod === "TRUE")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
   if (request.nextUrl.pathname === "/" && !user) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
