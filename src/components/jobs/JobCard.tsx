@@ -76,7 +76,7 @@ const JobCard = ({ jobItem, type}: Props) => {
           </div>
           <div>
             <div className="text-gray-500 font-semibold my-2">Attachment</div>{" "}
-            <div onClick={() => handleOpenJD(jobItem.attachment)} className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">{jobItem.attachment? "Link": ""}</div>
+            <div onClick={() => handleOpenJD(jobItem.attachment)} className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">{jobItem.attachment? "Link": ""}</div>
           </div>
         </div>
         {showDescription && (
