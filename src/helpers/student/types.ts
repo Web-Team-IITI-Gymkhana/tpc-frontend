@@ -268,6 +268,14 @@ export interface Job {
     visibleToRecruiter: boolean;
   }[];
 
+  feedbacks: {
+    id: string;
+    studentId: string;
+    jobId: string;
+    remarks: string;
+    createdAt: string;
+  }[];
+
   salaries: {
     id: string;
     salaryPeriod: string;

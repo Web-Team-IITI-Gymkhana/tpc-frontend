@@ -92,6 +92,30 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
+function timeAgo(dateString: string): string {
+  const date: Date = new Date(dateString);
+  const now: Date = new Date();
+  const secondsAgo: number = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  const units: { name: string; seconds: number }[] = [
+    { name: 'year', seconds: 31536000 },
+    { name: 'month', seconds: 2592000 },
+    { name: 'day', seconds: 86400 },
+    { name: 'hour', seconds: 3600 },
+    { name: 'minute', seconds: 60 },
+    { name: 'second', seconds: 1 }
+  ];
+
+  for (let unit of units) {
+    const interval: number = Math.floor(secondsAgo / unit.seconds);
+    if (interval >= 1) {
+      return interval === 1 ? `a ${unit.name} ago` : `${interval} ${unit.name}s ago`;
+    }
+  }
+
+  return 'now';
+}
+
 function getNextEvent(events: StudentEvent[]) {
 
   const now = new Date();
@@ -177,184 +201,208 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
   }, [params.jobId]);
 
   return (
-    <div className="m-10 bg-white p-5 border-2 rounded-xl">
-      {loading && (
-        <div className="h-screen w-full flex justify-center items-center">
-          <Loader />
-        </div>
-      )}
-      {jobData && (
-        <>
-          {!closestEvent? (
-            <div className="font-semibold text-xl">
-              {jobData?.company.name}
-            </div>
-          ): (
-            <div className="flex justify-between">
+    <>
+      <div className="m-10 bg-white p-5 border-2 rounded-xl">
+        {loading && (
+          <div className="h-screen w-full flex justify-center items-center">
+            <Loader />
+          </div>
+        )}
+        {jobData && (
+          <>
+            {!closestEvent? (
               <div className="font-semibold text-xl">
                 {jobData?.company.name}
               </div>
-              <div className="text-orange-500 font-bold px-4 py-2 border rounded-full inline-block border-orange-500 text-sm">
-                {closestEvent}
+            ): (
+              <div className="flex justify-between">
+                <div className="font-semibold text-xl">
+                  {jobData?.company.name}
+                </div>
+                <div className="text-orange-500 font-bold px-4 py-2 border rounded-full inline-block border-orange-500 text-sm">
+                  {closestEvent}
+                </div>
               </div>
+            )}
+            <div className="text-gray-600 font-medium text-sm my-1">
+              {jobData?.company.address.city},{" "}
+              {jobData?.company.address.state},{" "}
+              {jobData?.company.address.country}
             </div>
-          )}
-          <div className="text-gray-600 font-medium text-sm my-1">
-            {jobData?.company.address.city},{" "}
-            {jobData?.company.address.state},{" "}
-            {jobData?.company.address.country}
-          </div>
-          <div className="my-4">
-            <Separator />
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2">
-            <div>
-              <div className="text-gray-500 font-semibold my-2">Website</div>{" "}
-              <a
-                className="text-blue-500"
-                href={jobData?.company.website}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Link
-              </a>
+            <div className="my-4">
+              <Separator />
             </div>
-            <div>
-              <div className="text-gray-500 font-semibold my-2">Domain</div>{" "}
+            <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2">
               <div>
-                {jobData?.company.domains.length === 0
-                  ? "Not Available"
-                  : jobData?.company.domains[0]}
+                <div className="text-gray-500 font-semibold my-2">Website</div>{" "}
+                <a
+                  className="text-blue-500"
+                  href={jobData?.company.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Link
+                </a>
+              </div>
+              <div>
+                <div className="text-gray-500 font-semibold my-2">Domain</div>{" "}
+                <div>
+                  {jobData?.company.domains.length === 0
+                    ? "Not Available"
+                    : jobData?.company.domains[0]}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-500 font-semibold my-2">Category</div>{" "}
+                <div>{jobData?.company.category}</div>
+              </div>
+              <div>
+                <div className="text-gray-500 font-semibold my-2">
+                  Company Size
+                </div>{" "}
+                <div>{(jobData?.company.size)? formatNumber(jobData?.company.size): ""}</div>
+              </div>
+              <div>
+                <div className="text-gray-500 font-semibold my-2">
+                  Established
+                </div>{" "}
+                <div>{jobData?.company.yearOfEstablishment}</div>
               </div>
             </div>
-            <div>
-              <div className="text-gray-500 font-semibold my-2">Category</div>{" "}
-              <div>{jobData?.company.category}</div>
+            <div className="my-4">
+              <Separator />
             </div>
-            <div>
-              <div className="text-gray-500 font-semibold my-2">
-                Company Size
-              </div>{" "}
-              <div>{(jobData?.company.size)? formatNumber(jobData?.company.size): ""}</div>
-            </div>
-            <div>
-              <div className="text-gray-500 font-semibold my-2">
-                Established
-              </div>{" "}
-              <div>{jobData?.company.yearOfEstablishment}</div>
-            </div>
-          </div>
-          <div className="my-4">
-            <Separator />
-          </div>
-          <h1 className="text-lg font-semibold my-2">Recruiter</h1>
-          <Table className="overflow-hidden">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Mobile Number</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>{jobData?.recruiterDetailsFilled.name}</TableCell>
-                <TableCell>
-                  {jobData?.recruiterDetailsFilled.designation}
-                </TableCell>
-                <TableCell>{jobData?.recruiterDetailsFilled.email}</TableCell>
-                <TableCell>{jobData?.recruiterDetailsFilled.contact}</TableCell>
-              </TableRow>
-            </TableBody>
-            <TableFooter></TableFooter>
-          </Table>
-          <div className="my-4">
-            <Separator />
-          </div>
-          <h1 className="text-lg font-semibold my-2">Job Coordinators</h1>
-          <Table className="overflow-hidden">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Mobile Number</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {jobData?.jobCoordinators.map((coordinator, index) => (
-                <TableRow key={index}>
-                  <TableCell>{coordinator.tpcMember.student.user.name}</TableCell>
-                  <TableCell>{coordinator.role}</TableCell>
-                  <TableCell>{coordinator.tpcMember.student.program.department}</TableCell>
-                  <TableCell>{coordinator.tpcMember.student.user.email}</TableCell>
-                  <TableCell>{coordinator.tpcMember.student.user.contact}</TableCell>
+            <h1 className="text-lg font-semibold my-2">Recruiter</h1>
+            <Table className="overflow-hidden">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Designation</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Mobile Number</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="my-4">
-            <Separator />
-          </div>
-          <h1 className="text-lg font-semibold my-2">Events</h1>
-          <Table className="overflow-hidden">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Round</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {studentEvents.map((event, index) => (
-                <TableRow key={index}>
-                  <TableCell>{event.roundNumber}</TableCell>
-                  <TableCell>{event.type}</TableCell>
-                  <TableCell>{convertDate(event.startDateTime)}</TableCell>
-                  <TableCell>{convertDate(event.endDateTime)}</TableCell>
-                  <TableCell className={getStatusClass(event.studentStatus)}>
-                    {event.studentStatus}
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell>{jobData?.recruiterDetailsFilled.name}</TableCell>
+                  <TableCell>
+                    {jobData?.recruiterDetailsFilled.designation}
                   </TableCell>
+                  <TableCell>{jobData?.recruiterDetailsFilled.email}</TableCell>
+                  <TableCell>{jobData?.recruiterDetailsFilled.contact}</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="my-4">
-            <Separator />
-          </div>
-          <HorizontalTimeline eventsData={transformEvents(jobData.events)} />
-          <div className="my-7">
-            <Separator />
-          </div>
-          <div>
-            <div className="flex justify-between">
-              <div>
-                <Button>
-                  <a
-                    href={`/student/job/salary/${params.jobId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Salary
-                  </a>
-                </Button>
-              </div>
-              <div>
-                <Button>
-                  <a href={"/events"} target="_blank" rel="noopener noreferrer">
-                    Events
-                  </a>
-                </Button>
+              </TableBody>
+              <TableFooter></TableFooter>
+            </Table>
+            <div className="my-4">
+              <Separator />
+            </div>
+            <h1 className="text-lg font-semibold my-2">Job Coordinators</h1>
+            <Table className="overflow-hidden">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Mobile Number</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {jobData?.jobCoordinators.map((coordinator, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{coordinator.tpcMember.student.user.name}</TableCell>
+                    <TableCell>{coordinator.role}</TableCell>
+                    <TableCell>{coordinator.tpcMember.student.program.department}</TableCell>
+                    <TableCell>{coordinator.tpcMember.student.user.email}</TableCell>
+                    <TableCell>{coordinator.tpcMember.student.user.contact}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="my-4">
+              <Separator />
+            </div>
+            <h1 className="text-lg font-semibold my-2">Events</h1>
+            <Table className="overflow-hidden">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Round</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Start Date</TableHead>
+                  <TableHead>End Date</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {studentEvents.map((event, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{event.roundNumber}</TableCell>
+                    <TableCell>{event.type}</TableCell>
+                    <TableCell>{convertDate(event.startDateTime)}</TableCell>
+                    <TableCell>{convertDate(event.endDateTime)}</TableCell>
+                    <TableCell className={getStatusClass(event.studentStatus)}>
+                      {event.studentStatus}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="my-4">
+              <Separator />
+            </div>
+            {/* <HorizontalTimeline eventsData={transformEvents(jobData.events)} />
+            <div className="my-7">
+              <Separator />
+            </div> */}
+            <div>
+              <div className="flex justify-between">
+                <div>
+                  <Button>
+                    <a
+                      href={`/student/job/salary/${params.jobId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Salary
+                    </a>
+                  </Button>
+                </div>
+                <div>
+                  <Button>
+                    <a href={"/events"} target="_blank" rel="noopener noreferrer">
+                      Events
+                    </a>
+                  </Button>
+                </div>
               </div>
             </div>
+          </>
+        )}
+      </div>
+
+      {jobData && (
+        <>
+          <div className="m-10 bg-white p-5 border-2 rounded-xl">
+            <div className="font-semibold text-xl">
+              FEEDBACKS
+            </div>
+            <div className="my-4">
+              <Separator />
+            </div>
+            {jobData.feedbacks.map((feedback, index) => (
+              <div key={index} className="my-4 p-5 bg-gray-500 bg-opacity-20 rounded-md">
+                <h1 className="text-lg">{jobData.recruiter.user.name} ({timeAgo(feedback.createdAt)})</h1>
+                <div className="mx-3">
+                  {feedback.remarks}
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}
-    </div>
+
+    </>
   );
 };
 
