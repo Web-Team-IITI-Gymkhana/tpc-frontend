@@ -119,7 +119,7 @@ export interface JobDetailFC {
   };
   description: string;
   attachment: string;
-  skills: string;
+  skills: string[];
   offerLetterReleaseDate: string;
   joiningDate: string;
   location: string;
