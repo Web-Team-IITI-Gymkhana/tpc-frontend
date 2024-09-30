@@ -88,6 +88,23 @@ const JobCard = ({ jobItem, type}: Props) => {
               className="job-description"
               dangerouslySetInnerHTML={{ __html: cleanHTML }}
             />
+            <div className="my-4">
+              <Separator />
+            </div>
+            <div className="font-semibold text-md"> Skills </div>
+            <div className="flex flex-wrap !text-md">
+              {jobItem.skills.map((skill, index) => (
+                <div key={index} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {skill}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="my-4">
+              <Separator />
+            </div>
+
             <div className="flex justify-between my-3">
               <Button>
                 <Link href={`/student/job/salary/${jobItem.id}`}>Salaries</Link>
