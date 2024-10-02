@@ -15,7 +15,7 @@ import { patchSalaryData } from "@/helpers/recruiter/api";
 import {
   CategorySelectList,
   GenderSelectList,
-} from "@/components/Recruiters/jobEdit";
+} from "@/components/Recruiters//JobPage/jobEdit";
 import Loader from "@/components/Loader/loader";
 import Salaries from "@/components/Recruiters/Salaries";
 

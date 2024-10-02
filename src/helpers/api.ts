@@ -16,7 +16,7 @@ interface ApiCallOptions {
   recieveResponse?: boolean;
 }
 
-const redirect = () => { };
+const redirect = () => {};
 
 export const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
@@ -161,11 +161,16 @@ export const fetchAllSeasons = async () => {
   return apiCall("/seasons");
 };
 
-export const activateSeason = async (seasonID: string, year: string, type: string, status: string) => {
-  const season = { id: seasonID, year: year, type: type, status: status }
-  return apiCall("/seasons",{
-    method:"PATCH",
-    body:[season],
+export const activateSeason = async (
+  seasonID: string,
+  year: string,
+  type: string,
+  status: string,
+) => {
+  const season = { id: seasonID, year: year, type: type, status: status };
+  return apiCall("/seasons", {
+    method: "PATCH",
+    body: [season],
   });
 };
 
@@ -315,19 +320,18 @@ export const fetchSeasonData = async (year: any, registered: boolean) => {
   });
 };
 export const fetchSeasonDataById = async (id: any) => {
-  return apiCall(`/seasons`,
-    {
-      queryParam: {
-        q: {
-          filterBy: {
-            id: {
-              eq: [id],
-            },
+  return apiCall(`/seasons`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          id: {
+            eq: [id],
           },
         },
       },
-    });
-}
+    },
+  });
+};
 
 export const fetchRegistrationDataById = async (studentId: any) => {
   console.log(studentId);
@@ -667,4 +671,8 @@ export const patchSalaryData = async (salary: any) => {
 
 export const fetchcompanies = async () => {
   return apiCall("/companies");
+};
+
+export const fetchClashes = async (jobId: string) => {
+  return apiCall(`/clashes/${jobId}`);
 };
