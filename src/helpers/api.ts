@@ -545,6 +545,27 @@ export const createJobEvent = async (
   });
 };
 
+export const updateEvent = async (
+  body:
+[
+   {
+    id: string;
+    jobId: string;
+    roundNumber: number;
+    type: string;
+    metadata: string;
+    startDateTime: string;
+    endDateTime: string;
+    visibleToRecruiter: boolean;
+  }]
+) => {
+  return apiCall(`/events`, {
+    method: "PATCH",
+    body: body,
+  });
+};
+
+
 export const login = async (email: string, role: string) => {
   const response = await apiCall("/auth/login/", {
     method: "POST",

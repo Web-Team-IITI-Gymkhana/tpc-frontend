@@ -11,6 +11,7 @@ import {
   getStudentSalaryOffers,
   postOnCampusOffer,
   promoteStudent,
+  updateEvent
 } from "@/helpers/api";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
@@ -32,6 +33,210 @@ const options = typeOptions.map((option) => ({
   value: option,
   label: option,
 }));
+
+export const EditEvent = ({
+  open,
+  setOpen,
+  eventId,
+  jobId
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  eventId: string;
+  jobId: string;
+}) => {
+  const [formValues, setFormValues] = useState({
+    id: "",
+    jobId: "",
+    roundNumber: 0,
+    type: "",
+    metadata: "",
+    startDateTime: "",
+    endDateTime: "",
+    visibleToRecruiter: false,
+  });
+const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (eventId && open) {
+      fetchEventData();
+
+    }
+
+  }, [eventId, open]);
+
+  const fetchEventData = async () => {
+    try {
+      const eventData = await fetchEventById(eventId);
+      setFormValues({
+        id: eventData.id,
+        jobId: jobId,
+        roundNumber: eventData.roundNumber,
+        type: eventData.type,
+        metadata: eventData.metadata,
+        startDateTime: new Date(eventData.startDateTime).toISOString().slice(0, 16),
+        endDateTime: new Date(eventData.endDateTime).toISOString().slice(0, 16),
+        visibleToRecruiter: eventData.visibleToRecruiter,
+      });
+      setLoading(false);
+    } catch {
+      toast.error("Failed to fetch event details.");
+    }
+  };
+
+  const handleClose = () => setOpen(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.currentTarget;
+    setFormValues({
+      ...formValues,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+
+  const convertToISOFormat = (date: string) => {
+    return new Date(date).toISOString();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+
+      const updatedValues = {
+        ...formValues,
+        startDateTime: convertToISOFormat(formValues.startDateTime),
+        endDateTime: convertToISOFormat(formValues.endDateTime),
+      };
+
+      await updateEvent([updatedValues]);
+      toast.success("Successfully updated the event");
+      window.location.reload();
+    } catch (error: any) {
+      console.error("API Error:", error.response?.data || error.message);
+    }
+    
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      className="!text-black flex justify-center items-center"
+    >
+      
+      <div className="p-4 bg-white rounded-xl md:w-1/3 w-11/12">
+      {loading && (
+        <div className="w-full flex justify-center">
+          <CircularProgress />
+          </div>
+          )}
+
+        {!loading &&(  <form className="max-w-sm mx-auto p-8" onSubmit={handleSubmit}>
+          <div className="mb-5">
+            <label
+              htmlFor="roundNumber"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Round Number
+            </label>
+            <input
+              type="number"
+              name="roundNumber"
+              value={formValues.roundNumber}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="0"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="type"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Type
+            </label>
+            <Select
+              name="type"
+              value={{ value: formValues.type, label: formValues.type }}
+              options={options} // Add appropriate options here
+              onChange={(value: any) => {
+                setFormValues({ ...formValues, type: value.value });
+              }}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="metadata"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Metadata
+            </label>
+            <input
+              type="text"
+              name="metadata"
+              value={formValues.metadata}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="startDateTime"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Start Date
+            </label>
+            <input
+              type="datetime-local"
+              name="startDateTime"
+              value={formValues.startDateTime}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="endDateTime"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              End Date
+            </label>
+            <input
+              type="datetime-local"
+              name="endDateTime"
+              value={formValues.endDateTime}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="flex items-start mb-5">
+            <label className="inline-flex items-center mb-5 cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                name="visibleToRecruiter"
+                checked={formValues.visibleToRecruiter}
+                onChange={handleChange}
+              />
+              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                Visible To Recruiters
+              </span>
+            </label>
+          </div>
+          <Button type="submit">Update Event</Button>
+        </form>
+        )}
+      </div>
+    </Modal>
+  );
+};
 
 export const AddEvent = ({
   open,
@@ -368,7 +573,7 @@ const MakeJobOfferModal = ({
   );
 };
 
-export const JobEvents = ({ events }: { events: [EventFC] }) => {
+export const JobEvents = ({ events, editEventID, setEditEventId }: { events: EventFC[], editEventID: string, setEditEventId: (id: string) => void }) => {
   const [eventId, setEventId] = useState<string>(null);
 
   const changeApplications = (eventId: string) => {
@@ -408,6 +613,7 @@ export const JobEvents = ({ events }: { events: [EventFC] }) => {
                     : `bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-600`
                 } border-b dark:border-gray-700`}
                 onClick={() => {
+                  setEditEventId(event.id);
                   changeApplications(event.id);
                 }}
               >
