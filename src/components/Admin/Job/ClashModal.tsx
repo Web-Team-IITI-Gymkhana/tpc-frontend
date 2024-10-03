@@ -126,6 +126,25 @@ const OnCampusModal: React.FC<OnCampusModalProps> = ({ onCampusEvent }) => {
           <strong>Course:</strong> {onCampusEvent.course}
         </p>
       </div>
+      <h3 className="text-black mb-2">Salary Details</h3>
+      <div className="text-black">
+        <p>
+          <strong>Base Salary:</strong> {onCampusEvent.baseSalary}
+        </p>
+        <p>
+          <strong>Gross Salary:</strong> {onCampusEvent.grossSalary}
+        </p>
+        <p>
+          <strong>Other Compensations:</strong>{" "}
+          {onCampusEvent.otherCompensations}
+        </p>
+        <p>
+          <strong>Total CTC:</strong> {onCampusEvent.totalCTC}
+        </p>
+        <p>
+          <strong>Take Home Salary:</strong> {onCampusEvent.takeHomeSalary}
+        </p>
+      </div>
     </div>
   );
 };
