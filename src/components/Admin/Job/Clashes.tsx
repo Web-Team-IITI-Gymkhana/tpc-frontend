@@ -4,11 +4,11 @@ import Modal from "@mui/material/Modal";
 import TableComponent from "@/components/NewTableComponent/Table";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { Button } from "@/components/ui/button";
-import ClashModal from "./ClashModal";
+import { EventModal, OffCampusModal, OnCampusModal } from "./ClashModal";
 
 const eventColumns = [
   {
-    viewEvent: "View",
+    viewMore: "View",
     name: "string",
     email: "string",
     course: "string",
@@ -26,21 +26,23 @@ const eventColumns = [
 
 const Clashes = ({ clashes }: { clashes: ClashesFC }) => {
   const [selectedClash, setSelectedClash] = useState<any>(null);
+  const [modalType, setModalType] = useState<string>("");
 
-  const formatClashes = (clashesEvent: any) => {
+  const formatClashes = (clashesEvent: any, modalType: string) => {
     return clashesEvent.map((clash) => ({
       ...clash,
       startDateTime: new Date(clash.startDateTime).toLocaleString(),
       cstartDateTime: new Date(clash.cstartDateTime).toLocaleString(),
       endDateTime: new Date(clash.endDateTime).toLocaleString(),
       cendDateTime: new Date(clash.cendDateTime).toLocaleString(),
-      viewEvent: (
+      viewMore: (
         <Button
           onClick={() => {
             setSelectedClash(clash);
+            setModalType(modalType);
           }}
         >
-          View Event
+          View More
         </Button>
       ),
     }));
@@ -55,9 +57,9 @@ const Clashes = ({ clashes }: { clashes: ClashesFC }) => {
   };
 
   const formattedClashes = {
-    event: formatClashes(clashes.event),
-    onCampus: formatClashes(clashes.onCampus),
-    offCampus: formatClashes(clashes.offCampus),
+    event: formatClashes(clashes.event, "event"),
+    onCampus: formatClashes(clashes.onCampus, "onCampus"),
+    offCampus: formatClashes(clashes.offCampus, "offCampus"),
   };
 
   return (
@@ -69,7 +71,15 @@ const Clashes = ({ clashes }: { clashes: ClashesFC }) => {
         aria-describedby="Event Details"
         className="flex justify-center items-center"
       >
-        <ClashModal event={selectedClash} />
+        <>
+          {modalType === "event" && <EventModal event={selectedClash} />}
+          {modalType === "onCampus" && (
+            <OnCampusModal onCampusEvent={selectedClash} />
+          )}
+          {modalType === "offCampus" && (
+            <OffCampusModal offCampusEvent={selectedClash} />
+          )}
+        </>
       </Modal>
 
       <div className="font-semibold text-lg mb-4">Clashes</div>
