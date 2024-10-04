@@ -8,21 +8,23 @@ import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { getJafDetails } from "@/helpers/recruiter/api";
 import { JAFdetailsFC } from "@/helpers/recruiter/types";
-import { OpenJD, patchJobData } from "@/helpers/api";
+import { fetchClashes, OpenJD, patchJobData } from "@/helpers/api";
 import { patchSalaryData } from "@/helpers/api";
-import {
-  CategorySelectList,
-  GenderSelectList,
-} from "@/components/Recruiters/jobEdit";
 import { fetchJobById } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 import JobCoordinatorForm from "@/components/Admin/AddForms";
-import {  fetchRecruiterData, fetchFaculties, postFacultyApproval } from "@/helpers/api";
-import {  postCompany, postRecruiter, fetchApprovals } from "@/helpers/api";
+import {
+  fetchRecruiterData,
+  fetchFaculties,
+  postFacultyApproval,
+} from "@/helpers/api";
+import { postCompany, postRecruiter, fetchApprovals } from "@/helpers/api";
 import Select from "react-select";
 import Salaries from "@/components/Admin/Job/Salaries";
 import SelectionProcedure from "@/components/Admin/Job/SelectionProcedure";
+import Clashes from "@/components/Admin/Job/Clashes";
+import { ClashesFC } from "@/dto/Clashes";
 const currentStatusOptions = [
   "INITIALIZED",
   "SCHEDULED",
@@ -39,6 +41,7 @@ const currentStatusOptions = [
 
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
+  const [clashes, setClashes] = useState<ClashesFC>(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(null);
@@ -83,18 +86,25 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [jobDetailData, jafDetailsData, recruiterData, facultyData] =
-          await Promise.all([
-            fetchJobById(params.jobId),
-            getJafDetails(),
-            fetchRecruiterData(),
-            fetchFaculties(),
-          ]);
+        const [
+          jobDetailData,
+          jafDetailsData,
+          recruiterData,
+          facultyData,
+          clashes,
+        ] = await Promise.all([
+          fetchJobById(params.jobId),
+          getJafDetails(),
+          fetchRecruiterData(),
+          fetchFaculties(),
+          fetchClashes(params.jobId),
+        ]);
 
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
         setFacultyData(facultyData);
+        setClashes(clashes);
       } catch (error) {
         toast.error("Error fetching data");
       } finally {
@@ -108,7 +118,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     OpenJD(filename);
   };
 
-
   const updateFacultyDropDown = (index, value) => {
     setFacultyDropdown((prevState) => {
       const newState = [...prevState];
@@ -119,7 +128,10 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
 
   const submitApproval = async (salaryIndex) => {
     const selected = selectedFaculties[salaryIndex] || [];
-    const res = await postFacultyApproval(job.salaries[salaryIndex].id, selected);
+    const res = await postFacultyApproval(
+      job.salaries[salaryIndex].id,
+      selected,
+    );
     if (res) toast.success("Request Sent");
     else toast.error("Error Sending Request");
     updateFacultyDropDown(salaryIndex, false);
@@ -132,15 +144,19 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
     setLoading(false);
   };
 
-  const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>, index: number, field: string) => {
+  const handleChange2 = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    field: string,
+  ) => {
     console.log("Event:", e);
     console.log("Index:", index);
     console.log("Field:", field);
-    
-    setFormData(prevFormData => ({
+
+    setFormData((prevFormData) => ({
       ...prevFormData,
       salaries: prevFormData.salaries.map((salary, i) =>
-        i === index ? { ...salary, [field]: e.target.value } : salary
+        i === index ? { ...salary, [field]: e.target.value } : salary,
       ),
     }));
   };
@@ -158,19 +174,18 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const handleSubmit = async () => {
-
     const updatedFormData = {
       ...formData,
-      salaries: formData.salaries.map(salary => ({
+      salaries: formData.salaries.map((salary) => ({
         ...salary,
-        programs: salary.programs.map(program => program.id),
+        programs: salary.programs.map((program) => program.id),
       })),
     };
-  
 
     await patchJobData(job.id, updatedFormData);
-    await Promise.all(updatedFormData.salaries.map(salary => patchSalaryData(salary)));
-  
+    await Promise.all(
+      updatedFormData.salaries.map((salary) => patchSalaryData(salary)),
+    );
 
     setEditMode(false);
     window.location.reload();
@@ -243,7 +258,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 )}
               </div>
               <div className="flex flex-col">
-                <span className="font-semibold text-lg">Registration Status </span>
+                <span className="font-semibold text-lg">
+                  Registration Status{" "}
+                </span>
                 {editMode ? (
                   <input
                     defaultChecked={job.registration === "OPEN" ? true : false}
@@ -365,13 +382,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 <div>
                   <div className="font-semibold my-2">Attachment</div>{" "}
                   <div
-                      className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                      onClick={() =>
-                        handleOpenJD(job.attachment)
-                      }
-                    >
-                      Link
-                    </div>
+                    className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                    onClick={() => handleOpenJD(job.attachment)}
+                  >
+                    Link
+                  </div>
                 </div>
               </div>
             </div>
@@ -431,7 +446,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 <div className="flex items-center">
                   <div>{job.recruiter.user.name}</div>
                 </div>
-
               </div>
               <div className="flex flex-col flex-1">
                 <div className="font-semibold my-2">Designation</div>
@@ -529,6 +543,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             setFacultyDropdown={setFacultyDropdown}
             loading={loading}
           />
+          {clashes ? <Clashes clashes={clashes} /> : <Loader />}
         </div>
       )}
     </div>

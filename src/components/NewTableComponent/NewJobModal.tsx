@@ -13,7 +13,7 @@ import { patchSalaryData } from "@/helpers/recruiter/api";
 import {
   CategorySelectList,
   GenderSelectList,
-} from "@/components/Recruiters/jobEdit";
+} from "@/components/Recruiters/JobPage/jobEdit";
 import { fetchJobById } from "@/helpers/api";
 import Modal from "@mui/material/Modal";
 import toast from "react-hot-toast";
