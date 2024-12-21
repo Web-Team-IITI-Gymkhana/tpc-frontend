@@ -13,6 +13,7 @@ const nextConfig = {
     }
     return config;
   },
+  basePath: process.env.BASE_PATH,
 };
 
 module.exports = nextConfig;
