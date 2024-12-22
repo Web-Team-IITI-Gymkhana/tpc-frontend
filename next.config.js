@@ -14,7 +14,7 @@ const nextConfig = {
     return config;
   },
   basePath: process.env.BASE_PATH,
-  assetPrefix: process.env.BASE_PATH,
+  assetPrefix: "/portal",
 };
 
 module.exports = nextConfig;
