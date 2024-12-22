@@ -46,25 +46,26 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname === "/devlogin" && (prod === "TRUE")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const redirectTo = (path: string) => NextResponse.redirect(new URL(`${process.env.BASE_PATH}${path}`, request.url));
+
+  if (request.nextUrl.pathname === "/devlogin" && prod === "TRUE") {
+    return redirectTo("/login");
   }
   if (request.nextUrl.pathname === "/" && !user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "STUDENT") {
-    return NextResponse.redirect(new URL("/student/profile", request.url));
+    return redirectTo("/student/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "ADMIN") {
-    return NextResponse.redirect(new URL("admin/profile", request.url));
+    return redirectTo("/admin/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "RECRUITER") {
-    return NextResponse.redirect(new URL("/recruiter/profile", request.url));
+    return redirectTo("/recruiter/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "FACULTY") {
-    return NextResponse.redirect(new URL("/faculty", request.url));
+    return redirectTo("/faculty");
   }
-
   if (
     user?.role !== "ADMIN" &&
     adminRoutes.some((route) =>
@@ -73,7 +74,7 @@ export function middleware(request: NextRequest) {
         : route.test(request.nextUrl.pathname),
     )
   ) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login");
   }
   if (
     user?.role !== "STUDENT" &&
@@ -83,7 +84,7 @@ export function middleware(request: NextRequest) {
         : route.test(request.nextUrl.pathname),
     )
   ) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login");
   }
   if (
     user?.role !== "RECRUITER" &&
@@ -93,14 +94,14 @@ export function middleware(request: NextRequest) {
         : route.test(request.nextUrl.pathname),
     )
   ) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login");
   }
   if (
     user?.role !== "FACULTY" &&
     facultyRoutes.includes(request.nextUrl.pathname) &&
     request.url.includes("/faculty")
   ) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return redirectTo("/login");
   }
 
   return NextResponse.next();
