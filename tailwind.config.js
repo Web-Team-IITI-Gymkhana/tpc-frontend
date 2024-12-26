@@ -33,5 +33,16 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms"), function({ addUtilities }) {
+    const newUtilities = {
+      ".no-scrollbar::-webkit-scrollbar" : {
+        display:"none",
+      },
+      ".no-scrollbar" : {
+        "-ms-overflow-style": "none",
+        "scrollbar-width" : "nonw",
+      },
+    };
+    addUtilities(newUtilities);
+  }],
 };
