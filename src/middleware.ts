@@ -46,7 +46,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  const redirectTo = (path: string) => NextResponse.redirect(new URL(`${process.env.BASE_PATH}${path}`, request.url));
+  const redirectTo = (path: string) => NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_BASE_PATH}${path}`, request.url));
 
   if (request.nextUrl.pathname === "/devlogin" && prod === "TRUE") {
     return redirectTo("/login");
