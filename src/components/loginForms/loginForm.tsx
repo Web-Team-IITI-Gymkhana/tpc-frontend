@@ -47,7 +47,7 @@ const LoginForm = () => {
                     <div className="items-center flex justify-center flex-col gap-4">
                       <div className="flex flex-col gap-4">
                         {/* <LoginWithEmail email={email} /> */}
-                        <GoogleLogin />
+                        {/* <GoogleLogin /> */}
                       </div>
                     </div>
                   </div>
