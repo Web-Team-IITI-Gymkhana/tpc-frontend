@@ -48,7 +48,7 @@ export function middleware(request: NextRequest) {
 
   const redirectTo = (path: string) => {
     const newUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}${path}`
-    console.log(newUrl);
+    console.log(process.env.NEXT_PUBLIC_FRONTEND_URL);
 
     return NextResponse.redirect(new URL(newUrl));
   };
