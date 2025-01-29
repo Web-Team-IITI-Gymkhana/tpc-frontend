@@ -28,12 +28,17 @@ function StatItem({ label, value, onClick }: StatItemProps) {
 
 interface SidebarProps {
   view: 'reports' | 'trends'
+  setSeasonType: (type: "placement" | "internship") => void
+  setSeasonYear: (year: number) => void
+  setYearRange: (range: [number, number]) => void
+  seasonYear: number
+  seasonType: "placement" | "internship"
+  yearRange: [number, number]
 }
 
-export function Sidebar({ view }: SidebarProps) {
+export function Sidebar({ view, setSeasonType, setSeasonYear, setYearRange, seasonYear, seasonType, yearRange }: SidebarProps) {
   const [batch, setBatch] = useState('2025')
   const [department, setDepartment] = useState('placements')
-  const [yearRange, setYearRange] = useState([2020, 2024])
   const [selectedTypes, setSelectedTypes] = useState(['placements'])
 
   if (view === 'trends') {
@@ -61,16 +66,18 @@ export function Sidebar({ view }: SidebarProps) {
           <div>
             <label className="text-sm font-medium mb-2 block">Type</label>
             <Select
-              value={selectedTypes.join(',')}
-              onValueChange={(value) => setSelectedTypes(value.split(','))}
+              value={seasonType}
+              // value={selectedTypes.join(',')}
+              // onValueChange={(value) => setSelectedTypes(value.split(','))}
+              onValueChange={(value) => setSeasonType(value as "placement" | "internship")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="placements">Placements</SelectItem>
-                <SelectItem value="internships">Internships</SelectItem>
-                <SelectItem value="placements,internships">Both</SelectItem>
+                <SelectItem value='placement'>Placements</SelectItem>
+                <SelectItem value='internship'>Internships</SelectItem>
+                {/* <SelectItem value="placements,internships">Both</SelectItem> */}
               </SelectContent>
             </Select>
           </div>
@@ -104,7 +111,7 @@ export function Sidebar({ view }: SidebarProps) {
               <SelectContent>
                 <SelectItem value="placements">Placements</SelectItem>
                 <SelectItem value="internships">Internships</SelectItem>
-                <SelectItem value="placements,internships">Both</SelectItem>
+                {/* <SelectItem value="placements,internships">Both</SelectItem> */}
               </SelectContent>
             </Select>
         </div>
