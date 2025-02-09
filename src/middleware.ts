@@ -7,6 +7,7 @@ const adminRoutes = "/admin";
 const studentRoutes = "/student";
 
 const recruiterRoutes = "/recruiter";
+const recruiterAuthRoutes = ["/recruiter/signin", "/recruiter/signup"];
 
 const facultyRoutes = "/faculty";
 
@@ -65,7 +66,7 @@ export function middleware(request: NextRequest) {
   if (
     user?.role !== "RECRUITER" &&
     request.nextUrl.pathname.startsWith(recruiterRoutes)
-    && request.nextUrl.pathname !== "/recruiter/signin"
+    && !recruiterAuthRoutes.includes(request.nextUrl.pathname)
   ) {
     return redirectTo("/recruiter/signin");
   }
