@@ -65,6 +65,7 @@ export function middleware(request: NextRequest) {
   if (
     user?.role !== "RECRUITER" &&
     request.nextUrl.pathname.startsWith(recruiterRoutes)
+    && request.nextUrl.pathname !== "/recruiter/signin"
   ) {
     return redirectTo("/recruiter/signin");
   }
