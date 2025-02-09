@@ -32,7 +32,6 @@ const JobPage = () => {
         ...d,
         active: d.active ? "Active" : "Inactive",
       }));
-      console.log(newData);
       setAllJobs(newData);
       setLoading(false);
     };
