@@ -315,7 +315,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               <div className="font-semibold text-lg my-4">Skills</div>
               <div className="flex flex-wrap gap-4">
                 <div className="flex flex-wrap !text-md">
-                  {job.skills.map((skill, index) => (
+                  {job.skills?.map((skill, index) => (
                     <div key={index} className="mx-2 my-2">
                       <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
                         {skill}
