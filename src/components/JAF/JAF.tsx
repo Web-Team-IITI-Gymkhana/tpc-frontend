@@ -76,7 +76,7 @@ function JAF() {
 
             role: "",
             description: "",
-            attachment: "",
+            attachments: [],
             skills: [],
             location: "",
             minNoOfHires: "",
@@ -147,14 +147,14 @@ function JAF() {
                   role: values.role,
                   seasonId: values.seasonId,
                   description: values.description,
-                  recruiterDetailsFilled: {
+                  recruiterDetailsFilled: [{
                     name: values.recName,
                     designation: values.designation,
                     email: values.email,
                     contact: "+91 " + values.phoneNumber,
                     landline: values.landline,
-                  },
-                  attachment: values.attachment,//file
+                  }],
+                  attachments: values.attachments,//file
                   others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
