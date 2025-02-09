@@ -20,6 +20,7 @@ const JobPage = () => {
   const columns = generateColumns(recruitmentDTO);
   const [loading, setLoading] = useState(true);
   const [allJobs, setAllJobs] = useState();
+  console.log(columns);
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
   );
@@ -31,6 +32,7 @@ const JobPage = () => {
         ...d,
         active: d.active ? "Active" : "Inactive",
       }));
+      console.log(newData);
       setAllJobs(newData);
       setLoading(false);
     };
