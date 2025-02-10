@@ -48,7 +48,7 @@ function JAF() {
 
   return (
     <div className="flex flex-col w-full justify-start gap-20 p-10 align-center">
-      <div className="ml-auto mr-auto">
+      <div className="ml-auto mr-auto w-full">
         <FormikWizard
           initialValues={{
             seasonId: "",
@@ -68,11 +68,21 @@ function JAF() {
             annualTurnover: "",
             socialMediaLink: "",
 
-            recName: "",
-            designation: "",
-            email: "",
-            phoneNumber: "",
-            landline: "",
+            recName1: "",
+            designation1: "",
+            email1: "",
+            phoneNumber1: "",
+            landline1: "",
+            recName2: "",
+            designation2: "",
+            email2: "",
+            phoneNumber2: "",
+            landline2: "",
+            recName3: "",
+            designation3: "",
+            email3: "",
+            phoneNumber3: "",
+            landline3: "",
 
             role: "",
             description: "",
@@ -103,15 +113,17 @@ function JAF() {
             jobOthers: "",
           }}
           onSubmit={(values: any) => {
+            const recruiters = [1, 2, 3].map((index) => ({
+              name: values[`recName${index}`],
+              designation: values[`designation${index}`],
+              email: values[`email${index}`],
+              contact: values[`phoneNumber${index}`] ? "+91 " + values[`phoneNumber${index}`] : "",
+              landline: values[`landline${index}`],
+            })).filter(recruiter => recruiter.name || recruiter.designation || recruiter.email || recruiter.contact || recruiter.landline);
+
             const submitValues = {
               seasonId: values.seasonId,
-              recruiter: {
-                name: values.recName,
-                designation: values.designation,
-                email: values.email,
-                contact: "+91 " + values.phoneNumber, //with country code default +91 8793849280
-                landline: values.landline,
-              },
+              recruiters,
               job: {
                 role: values.role,
                 description: values.description,
@@ -123,7 +135,7 @@ function JAF() {
                 joiningDate: values.joiningDate, //date
                 duration: values.duration,
                 selectionProcedure: {
-                  selectionMode: values.selectionMode, //dropdown - online/offline
+                  selectionMode: values.selectionMode, //dropdown - online/offline/hybrid
                   shortlistFromResume: values.shortlistFromResume,
                   groupDiscussion: values.groupDiscussion,
                   tests: values.tests, // type - dropdown, duration
@@ -147,14 +159,8 @@ function JAF() {
                   role: values.role,
                   seasonId: values.seasonId,
                   description: values.description,
-                  recruiterDetailsFilled: [{
-                    name: values.recName,
-                    designation: values.designation,
-                    email: values.email,
-                    contact: "+91 " + values.phoneNumber,
-                    landline: values.landline,
-                  }],
-                  attachments: values.attachments,//file
+                  recruiterDetailsFilled: submitValues.recruiters,
+                  attachment: values.attachment,//file
                   others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
@@ -213,13 +219,17 @@ function JAF() {
             {
               component: RecruiterDetails,
               validationSchema: Yup.object().shape({
-                designation: Yup.string().required("Required"),
-                phoneNumber: Yup.string()
+                designation1: Yup.string().required("Required"),
+                phoneNumber1: Yup.string()
                   .matches(phoneRegExp, "Phone number is not valid")
                   .required("Required"),
-                email: Yup.string()
+                email1: Yup.string()
                   .email("Enter valid email")
                   .required("Required"),
+                email2: Yup.string().email("Enter valid email"),
+                phoneNumber2: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
+                email3: Yup.string().email("Enter valid email"),
+                phoneNumber3: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
               }),
             },
             {
