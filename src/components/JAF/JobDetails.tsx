@@ -70,9 +70,11 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       const file = info.file.originFileObj;
       try {
         const base64String = await getBase64(file);
+        const files=values.attachments;
         console.log(`Base64 string length: ${base64String.length}`);
         console.log(`Base64 string: ${base64String.substring(0, 50)}...`);
-        setFieldValue("attachment", base64String);
+        files.push(base64String);
+        setFieldValue("attachments", files);
         message.success(`${info.file.name} file uploaded successfully`);
       } catch (error) {
         message.error("File conversion to Base64 failed.");
@@ -212,6 +214,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         <Col span={12}>
         <Form.Item label="Offer Letter Date">
             <Input
+              type="date"
               name="offerLetterReleaseDate"
               placeholder="Offer Letter Date"
               onChange={handleChange}
@@ -222,6 +225,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         <Col span={12}>
           <Form.Item label="Tentative Joining Date">
             <Input
+              type="date"
               name="joiningDate"
               placeholder="Tentative Joining Date"
               onChange={handleChange}
@@ -244,6 +248,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         <Col span={12}>
         <Form.Item label="Expected number of Hires">
             <Input
+              type="number"
               name="expectedNoOfHires"
               placeholder="Expected number of Hires"
               onChange={handleChange}
@@ -256,6 +261,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         <Col span={12}>
           <Form.Item label="Minimum number of Hires">
             <Input
+              type="number"
               name="minNoOfHires"
               placeholder="Minimum number of Hires"
               onChange={handleChange}
@@ -479,6 +485,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         <Col span={12}>
           <Form.Item label="Number Of Members">
             <Input
+              type="number"
               name="numberOfMembers"
               placeholder="Number Of Members"
               onChange={handleChange}
@@ -489,6 +496,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         <Col span={12}>
           <Form.Item label="Number Of Rooms">
             <Input
+              type="number"
               name="numberOfRooms"
               placeholder="Number Of Rooms"
               onChange={handleChange}
@@ -627,7 +635,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Base Salary"
                           name={[field.name, "baseSalary"]}
                         >
-                          <Input placeholder="Base Salary" />
+                          <Input type="number" placeholder="Base Salary" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -635,7 +643,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Total CTC"
                           name={[field.name, "totalCTC"]}
                         >
-                          <Input placeholder="Total CTC" />
+                          <Input type="number" placeholder="Total CTC" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -645,7 +653,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Take Home Salary"
                           name={[field.name, "takeHomeSalary"]}
                         >
-                          <Input placeholder="Take Home Salary" />
+                          <Input type="number" placeholder="Take Home Salary" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -653,7 +661,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Gross Salary"
                           name={[field.name, "grossSalary"]}
                         >
-                          <Input placeholder="Gross Salary" />
+                          <Input type="number" placeholder="Gross Salary" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -663,7 +671,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Joining Bonus"
                           name={[field.name, "joiningBonus"]}
                         >
-                          <Input placeholder="Joining Bonus" />
+                          <Input type="number" placeholder="Joining Bonus" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -671,7 +679,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Performance Bonus"
                           name={[field.name, "performanceBonus"]}
                         >
-                          <Input placeholder="Performance Bonus" />
+                          <Input type="number" placeholder="Performance Bonus" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -681,7 +689,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Relocation"
                           name={[field.name, "relocation"]}
                         >
-                          <Input placeholder="Relocation" />
+                          <Input type="number" placeholder="Relocation" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -689,7 +697,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Bond Amount"
                           name={[field.name, "bondAmount"]}
                         >
-                          <Input placeholder="Bond Amount" />
+                          <Input type="number" placeholder="Bond Amount" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -699,7 +707,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="ESOP Amount"
                           name={[field.name, "esopAmount"]}
                         >
-                          <Input placeholder="ESOP Amount" />
+                          <Input type="number" placeholder="ESOP Amount" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -717,7 +725,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="First Year CTC"
                           name={[field.name, "firstYearCTC"]}
                         >
-                          <Input placeholder="First Year CTC" />
+                          <Input type="number" placeholder="First Year CTC" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -725,7 +733,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Retention Bonus"
                           name={[field.name, "retentionBonus"]}
                         >
-                          <Input placeholder="Retention Bonus" />
+                          <Input type="number" placeholder="Retention Bonus" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -735,7 +743,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Deductions"
                           name={[field.name, "deductions"]}
                         >
-                          <Input placeholder="Deductions" />
+                          <Input type="number" placeholder="Deductions" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -743,7 +751,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Medical Allowance"
                           name={[field.name, "medicalAllowance"]}
                         >
-                          <Input placeholder="Medical Allowance" />
+                          <Input type="number" placeholder="Medical Allowance" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -761,7 +769,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Foreign Currency CTC"
                           name={[field.name, "foreignCurrencyCTC"]}
                         >
-                          <Input placeholder="Foreign Currency CTC" />
+                          <Input type="number" placeholder="Foreign Currency CTC" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -771,7 +779,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Foreign Currency Code"
                           name={[field.name, "foreignCurrencyCode"]}
                         >
-                          <Input placeholder="Foreign Currency Code" />
+                          <Input placeholder="Foreign Currency Code" maxLength={3} />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -785,7 +793,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Stipend"
                           name={[field.name, "stipend"]}
                         >
-                          <Input placeholder="Stipend" />
+                          <Input type="number" placeholder="Stipend" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -803,7 +811,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Accommodation"
                           name={[field.name, "accommodation"]}
                         >
-                          <Input placeholder="Accommodation" />
+                          <Input type="number" placeholder="Accommodation" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -811,7 +819,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Tentative CTC"
                           name={[field.name, "tentativeCTC"]}
                         >
-                          <Input placeholder="Tentative CTC" />
+                          <Input type="number" placeholder="Tentative CTC" />
                         </Form.Item>
                       </Col>
                     </Row>
