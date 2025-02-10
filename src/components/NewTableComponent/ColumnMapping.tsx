@@ -9,11 +9,21 @@ export default function generateColumns(dto: any): ColumnDef<any>[] {
   function generateColumnsRecursive(data: any, prefix = "") {
     Object.entries(data).forEach(([key, value]) => {
       const accessorKey = prefix ? `${prefix}.${key}` : key;
-      const header = customHeaders[accessorKey] || key.charAt(0).toUpperCase() + key.slice(1);
+      let header =
+        customHeaders[accessorKey] ||
+        key.charAt(0).toUpperCase() + key.slice(1);
 
       if (typeof value === "object" && value !== null) {
         generateColumnsRecursive(value, accessorKey);
       } else {
+        if (prefix) {
+          const prefixParts = prefix.split(".");
+          const formattedPrefix = prefixParts
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(" ");
+          header = `${formattedPrefix} ${header}`;
+        }
+
         const column: ColumnDef<any> = {
           accessorKey,
           header,
@@ -24,7 +34,6 @@ export default function generateColumns(dto: any): ColumnDef<any>[] {
       }
     });
   }
-
 
   function getColumnSize(key: string): number {
     const sizes: { [key: string]: number } = {
