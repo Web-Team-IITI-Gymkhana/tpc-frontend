@@ -257,6 +257,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   >
                     <option>ONLINE</option>
                     <option>OFFLINE</option>
+                    <option>HYBRID</option>
                   </select>
                 ) : (
                   <div>{job.selectionProcedure.selectionMode}</div>

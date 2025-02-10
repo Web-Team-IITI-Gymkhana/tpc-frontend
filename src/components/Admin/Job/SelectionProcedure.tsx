@@ -13,6 +13,7 @@ const SelectionProcedure = ({ selectionProcedure, editMode, handleChange }) => (
           >
             <option>ONLINE</option>
             <option>OFFLINE</option>
+            <option>HYBRID</option>
           </select>
         ) : (
           <div>{selectionProcedure.selectionMode}</div>

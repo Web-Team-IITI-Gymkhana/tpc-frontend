@@ -350,6 +350,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
               options={[
                 { value: "ONLINE", label: "Online" },
                 { value: "OFFLINE", label: "Offline" },
+                { value: "HYBRID", label: "Hybrid" },
               ]}
             ></Select>
           </Form.Item>

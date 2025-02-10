@@ -13,83 +13,70 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
   return (
     <Form layout="vertical">
       <h1 className="text-xl">Recruiter Details</h1>
-      <h3 className="text-lg my-3">Point of Contact</h3>
+      <h3 className="text-lg my-3">Point of Contacts</h3>
       <Row gutter={24}>
-        <Col span={12}>
-          <Form.Item label="Name">
-            <Input
-              name="recName"
-              placeholder="Name"
-              onChange={handleChange}
-              value={values.recName}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            label="Designation"
-            required
-            hasFeedback
-            validateStatus={!!errors.designation ? "error" : ""}
-            help={errors.designation ? `${errors.designation}` : ""}
-          >
-            <Input
-              name="designation"
-              placeholder="Designation"
-              onChange={handleChange}
-              value={values.designation}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={24}>
-        <Col span={12}>
-          <Form.Item
-            label="Email"
-            required
-            validateStatus={!!errors.email ? "error" : ""}
-            help={errors.email ? `${errors.email}` : ""}
-          >
-            <Input
-              name="email"
-              placeholder="Email"
-              onChange={handleChange}
-              value={values.email}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            label="Phone"
-            required
-            validateStatus={!!errors.phoneNumber ? "error" : ""}
-            help={errors.phoneNumber ? `${errors.phoneNumber}` : ""}
-          >
-            {/* <Input style={{ width: '20%' }} defaultValue="+91" name="code" />
-            <Input style={{ width: '80%' }} placeholder="Phone Number" name="number"/> */}
-            <Input
-              name="phoneNumber"
-              placeholder="Phone"
-              onChange={handleChange}
-              value={values.phoneNumber}
-              addonBefore="+91"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={24}>
-        <Col span={12}>
-          <Form.Item label="Landline">
-            <Input
-              name="landline"
-              placeholder="Landline"
-              onChange={handleChange}
-              value={values.landline}
-            />
-          </Form.Item>
-        </Col>
+        {[1, 2, 3].map((index) => (
+          <Col span={8} key={index} style={{ border: '0px 0px 0px 2 px', padding: '0 65px' }}>
+            <h3 className="text-md my-3">{index === 1 ? "Head HR" : `Point of Contact ${index - 1}`}</h3>
+            <Form.Item label={`Name`}>
+              <Input
+                name={`recName${index}`}
+                placeholder="Name"
+                onChange={handleChange}
+                value={values[`recName${index}`]}
+              />
+            </Form.Item>
+            <Form.Item
+              label={`Designation`}
+              required={index === 1}
+              hasFeedback={index === 1}
+              validateStatus={index === 1 && !!errors[`designation${index}`] ? "error" : ""}
+              help={index === 1 && errors[`designation${index}`] ? `${errors[`designation${index}`]}` : ""}
+            >
+              <Input
+                name={`designation${index}`}
+                placeholder="Designation"
+                onChange={handleChange}
+                value={values[`designation${index}`]}
+              />
+            </Form.Item>
+            <Form.Item
+              label={`Email`}
+              required={index === 1}
+              validateStatus={index === 1 && !!errors[`email${index}`] ? "error" : ""}
+              help={index === 1 && errors[`email${index}`] ? `${errors[`email${index}`]}` : ""}
+            >
+              <Input
+                name={`email${index}`}
+                placeholder="Email"
+                onChange={handleChange}
+                value={values[`email${index}`]}
+              />
+            </Form.Item>
+            <Form.Item
+              label={`Phone`}
+              required={index === 1}
+              validateStatus={index === 1 && !!errors[`phoneNumber${index}`] ? "error" : ""}
+              help={index === 1 && errors[`phoneNumber${index}`] ? `${errors[`phoneNumber${index}`]}` : ""}
+            >
+              <Input
+                name={`phoneNumber${index}`}
+                placeholder="Phone"
+                onChange={handleChange}
+                value={values[`phoneNumber${index}`]}
+                addonBefore="+91"
+              />
+            </Form.Item>
+            <Form.Item label={`Landline`}>
+              <Input
+                name={`landline${index}`}
+                placeholder="Landline"
+                onChange={handleChange}
+                value={values[`landline${index}`]}
+              />
+            </Form.Item>
+          </Col>
+        ))}
       </Row>
     </Form>
   );
