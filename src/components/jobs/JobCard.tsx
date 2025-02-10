@@ -9,9 +9,6 @@ import "./styles/JobDescription.css"
 import { OpenJD } from "@/helpers/student/api";
 const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
-const url = (NextUrl: string) => {
-  return `${baseUrl}${NextUrl}`;
-};
 interface Props {
   jobItem: Jobs;
   type: string;
@@ -38,7 +35,7 @@ const JobCard = ({ jobItem, type}: Props) => {
             <div className="font-semibold text-md mt-2">{jobItem.company.name}</div>
             <div className="text-sm my-3">
               <Link
-                href={url(`/student/job/${jobItem.id}`)}
+                href={`/student/job/${jobItem.id}`}
                 className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
               >
                 View Details {">"}

@@ -2,35 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
-const adminRoutes = [
-  "/admin/company",
-  "/admin/students",
-  "/admin/job",
-  /^\/admin\/jobs\/events\/[a-zA-Z0-9\-]+$/,
-];
+const adminRoutes = "/admin";
 
-const studentRoutes = [
-  "/student/jobs",
-  "/student/offCampus",
-  "/student/onCampus",
-  "/student/interviewExperiences",
-  "/student/profile",
-  "/student/resumes",
-  /^\/student\/job\/[a-zA-Z0-9\-]+$/,
-  /^\/student\/job\/salary\/[a-zA-Z0-9\-]+$/,
-];
+const studentRoutes = "/student";
 
-const recruiterRoutes = [
-  "/recruiter",
-  "/recruiter/jobs",
-  "/recruiter/events",
-  "/recruiter/profile",
-  "/JAF",
-  /^\/recruiter\/jobs\/[a-zA-Z0-9\-]+$/,
-  /^\/recruiter\/events\/[a-zA-Z0-9\-]+$/,
-];
+const recruiterRoutes = "/recruiter";
+const recruiterAuthRoutes = ["/recruiter/signin", "/recruiter/signup"];
 
-const facultyRoutes = ["/faculty", "/faculty/profile"];
+const facultyRoutes = "/faculty";
 
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken");
@@ -47,7 +26,8 @@ export function middleware(request: NextRequest) {
   }
 
   const redirectTo = (path: string) => {
-    const newUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}${process.env.NEXT_PUBLIC_BASE_PATH}${path}`
+    const newUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}${process.env.NEXT_PUBLIC_BASE_PATH}${path}`;
+    console.log(process.env.NEXT_PUBLIC_FRONTEND_URL);
     console.log(newUrl);
 
     return NextResponse.redirect(new URL(newUrl));
@@ -73,38 +53,26 @@ export function middleware(request: NextRequest) {
   }
   if (
     user?.role !== "ADMIN" &&
-    adminRoutes.some((route) =>
-      typeof route === "string"
-        ? request.nextUrl.pathname === route
-        : route.test(request.nextUrl.pathname),
-    )
+      request.nextUrl.pathname.startsWith(adminRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
     user?.role !== "STUDENT" &&
-    studentRoutes.some((route) =>
-      typeof route === "string"
-        ? request.nextUrl.pathname === route
-        : route.test(request.nextUrl.pathname),
-    )
+    request.nextUrl.pathname.startsWith(studentRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
     user?.role !== "RECRUITER" &&
-    recruiterRoutes.some((route) =>
-      typeof route === "string"
-        ? request.nextUrl.pathname === route
-        : route.test(request.nextUrl.pathname),
-    )
+    request.nextUrl.pathname.startsWith(recruiterRoutes)
+    && !recruiterAuthRoutes.includes(request.nextUrl.pathname)
   ) {
-    return redirectTo("/login");
+    return redirectTo("/recruiter/signin");
   }
   if (
     user?.role !== "FACULTY" &&
-    facultyRoutes.includes(request.nextUrl.pathname) &&
-    request.url.includes("/faculty")
+    request.nextUrl.pathname.startsWith(facultyRoutes)
   ) {
     return redirectTo("/login");
   }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader/loader";
-import Dashboard from "@/components/dashboard/dashboard"
+import Dashboard from "@/components/dashboard-1/dashboard"
 
 const DashboardPage = () => {
     return (
