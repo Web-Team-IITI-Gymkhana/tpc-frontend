@@ -458,7 +458,7 @@ export default function RecruiterSignup() {
           <Button type="submit" onClick={handleSubmit}>
             Sign Up
           </Button>
-          <Link href={"/recruiter/signin/"}>
+          <Link href={"/signinrecruiter/"}>
             <Button variant="outline">Already Registered? Sign In</Button>
           </Link>
         </div>
