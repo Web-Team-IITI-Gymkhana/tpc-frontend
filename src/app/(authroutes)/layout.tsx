@@ -14,7 +14,7 @@ const AuthLayout = async ({ children }: Props) => {
           {/* sidebar and main content share this space */}
           <Suspense fallback={<>Loading...</>}></Suspense>
           <Providers>
-            <div className="w-screen min-h-screen h-max bg-[url(/images/iiti_bg.JPG)] bg-cover bg-fixed bg-center bg-no-repeat absolute">
+            <div className="w-screen min-h-screen h-max bg-[url(/portal/images/iiti_bg.JPG)] bg-cover bg-fixed bg-center bg-no-repeat absolute">
               <div className="w-full min-h-full h-max bg-gradient-to-b from-black/40 to-black/90 bg-opacity-50 absolute">
                 {children}
               </div>
