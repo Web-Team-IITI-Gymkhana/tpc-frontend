@@ -235,7 +235,7 @@ function JAF() {
             {
               component: JobDetails,
               validationSchema: Yup.object().shape({
-                designation: Yup.string().required("Designation is required"),
+                // designation: Yup.string().required("Designation is required"),
               }),
             },
           ]}
