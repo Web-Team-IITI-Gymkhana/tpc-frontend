@@ -242,7 +242,7 @@ export interface Job {
     type: string;
   };
 
-  recruiter: {
+  recruiter?: {
     id: string;
     designation: string;
     user: {
