@@ -310,6 +310,25 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               </div>
             </div>
 
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col flex-1">
+                  <div className="font-semibold my-2">Description</div>
+                  {editMode ? (
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: job.description }}
+                    ></div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div>
               <div className="font-semibold text-lg my-4">Skills</div>
               <div className="flex flex-wrap gap-4">
