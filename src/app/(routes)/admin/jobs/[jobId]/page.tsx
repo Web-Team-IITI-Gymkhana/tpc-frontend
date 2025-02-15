@@ -99,7 +99,6 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           fetchFaculties(),
           fetchClashes(params.jobId),
         ]);
-
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
@@ -380,13 +379,18 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold my-2">Attachment</div>{" "}
-                  <div
-                    className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                    onClick={() => handleOpenJD(job.attachment)}
-                  >
-                    Link
-                  </div>
+                  <div className="font-semibold my-2">Attachments</div>{" "}
+                  {job.attachments?.map((attachment, index) => (
+                    <div
+                      className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                      onClick={() => handleOpenJD(attachment)}
+                      key={index}
+                    >
+                      {attachment.length > 20
+                        ? `${attachment.slice(0, 20)}...`
+                        : attachment}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
