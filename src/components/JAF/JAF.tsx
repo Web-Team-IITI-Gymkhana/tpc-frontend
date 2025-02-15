@@ -48,7 +48,6 @@ function JAF() {
 
   return (
     <div className="flex flex-col w-full justify-start gap-20 p-10 align-center">
-      <div className="ml-auto mr-auto w-full">
         <FormikWizard
           initialValues={{
             seasonId: "",
@@ -284,7 +283,6 @@ function JAF() {
           }}
         </FormikWizard>
       </div>
-    </div>
   );
 }
 
