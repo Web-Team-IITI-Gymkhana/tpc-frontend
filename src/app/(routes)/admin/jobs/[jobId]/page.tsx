@@ -100,6 +100,8 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           fetchClashes(params.jobId),
         ]);
 
+        console.log(jobDetailData);
+
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
@@ -308,6 +310,25 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 <Button onClick={handleEditClick}>
                   {editMode ? "Save Application" : "Edit Application"}
                 </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col flex-1">
+                  <div className="font-semibold my-2">Description</div>
+                  {editMode ? (
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: job.description }}
+                    ></div>
+                  )}
+                </div>
               </div>
             </div>
 
