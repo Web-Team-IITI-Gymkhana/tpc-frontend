@@ -23,6 +23,7 @@ import { GetEventsByJobId, GetJobById } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import Loader from "@/components/Loader/loader";
+import Link from "next/link";
 function transformEvents(events: CustomEvent[]): EventData[] {
   const currentDate = new Date();
 
@@ -272,31 +273,6 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             <div className="my-4">
               <Separator />
             </div>
-            <h1 className="text-lg font-semibold my-2">Recruiter</h1>
-            <Table className="overflow-hidden">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Designation</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Mobile Number</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>{jobData?.recruiterDetailsFilled.name}</TableCell>
-                  <TableCell>
-                    {jobData?.recruiterDetailsFilled.designation}
-                  </TableCell>
-                  <TableCell>{jobData?.recruiterDetailsFilled.email}</TableCell>
-                  <TableCell>{jobData?.recruiterDetailsFilled.contact}</TableCell>
-                </TableRow>
-              </TableBody>
-              <TableFooter></TableFooter>
-            </Table>
-            <div className="my-4">
-              <Separator />
-            </div>
             <h1 className="text-lg font-semibold my-2">Job Coordinators</h1>
             <Table className="overflow-hidden">
               <TableHeader>
@@ -359,20 +335,13 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
               <div className="flex justify-between">
                 <div>
                   <Button>
-                    <a
+                    <Link
                       href={`/student/job/salary/${params.jobId}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       Salary
-                    </a>
-                  </Button>
-                </div>
-                <div>
-                  <Button>
-                    <a href={"/events"} target="_blank" rel="noopener noreferrer">
-                      Events
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               </div>
