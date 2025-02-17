@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Image from 'next/image';
 import { Jobs } from "@/helpers/student/types";
 import DOMPurify from 'dompurify';
 import "./styles/JobDescription.css"
@@ -47,7 +48,7 @@ const JobCard = ({ jobItem, type}: Props) => {
           <Separator />
         </div>
         <div
-          className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2"
+          className="grid md:grid-cols-2 lg:grid-cols-4 text-sm mx-2"
           onClick={handleViewDetails}
           style={{ cursor: "pointer" }}
         >
@@ -71,19 +72,16 @@ const JobCard = ({ jobItem, type}: Props) => {
               {jobItem.season.type} {jobItem.season.year}
             </div>
           </div>
-          <div>
-            <div className="text-gray-500 font-semibold my-2">Attachment</div>{" "}
-            <div onClick={() => handleOpenJD(jobItem.attachment)} className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out">{jobItem.attachment? "Link": ""}</div>
-          </div>
         </div>
         {showDescription && (
           <div className="mt-4">
             <div className="my-4">
               <Separator />
             </div>
+            <div className="font-semibold text-md"> Description </div>
             <div
-              className="job-description"
-              dangerouslySetInnerHTML={{ __html: cleanHTML }}
+              className="job-description my-2"
+              dangerouslySetInnerHTML={{ __html: jobItem.description }}
             />
             <div className="my-4">
               <Separator />
@@ -101,6 +99,22 @@ const JobCard = ({ jobItem, type}: Props) => {
             <div className="my-4">
               <Separator />
             </div>
+            {jobItem.attachments.length > 0 && (
+              <>
+                <div className="font-semibold text-md"> Attachments </div>
+                <div className="flex flex-wrap !text-md">
+                  {jobItem.attachments.map((attachment, index) => (
+                    <div className="mx-2 my-2 cursor-pointer" key={index} onClick={() => handleOpenJD(attachment)}>
+                      <Image src={"/file.png"} alt="" width={150} height={150} />
+                      <div className="text-center text-blue-500 font-semibold cursor-pointer hover:text-blue-600">{`Attachment (${index})`}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="my-4">
+                  <Separator /> 
+                </div>
+              </>
+            )}
 
             <div className="flex justify-between my-3">
               <Button>

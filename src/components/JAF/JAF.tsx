@@ -126,7 +126,7 @@ function JAF() {
               job: {
                 role: values.role,
                 description: values.description,
-                attachment: values.attachment,//file
+                attachments: values.attachment,//file
                 skills: values.skills,
                 location: values.location,
                 noOfVacancies: values.noOfVacancies,
@@ -159,7 +159,7 @@ function JAF() {
                   seasonId: values.seasonId,
                   description: values.description,
                   recruiterDetailsFilled: submitValues.recruiters,
-                  attachment: values.attachment,//file
+                  attachments: values.attachments,//file
                   others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
