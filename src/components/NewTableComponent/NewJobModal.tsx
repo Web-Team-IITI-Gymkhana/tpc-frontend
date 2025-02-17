@@ -237,7 +237,7 @@ const JobModal = ({
                         onChange={handleChange}
                       />
                     ) : (
-                      <div>{job.attachment}</div>
+                      <div>{job.attachments}</div>
                     )}
                   </div>
                 </div>

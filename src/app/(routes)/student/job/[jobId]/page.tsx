@@ -23,6 +23,7 @@ import { GetEventsByJobId, GetJobById } from "@/helpers/student/api";
 import toast from "react-hot-toast";
 import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import Loader from "@/components/Loader/loader";
+import Link from "next/link";
 function transformEvents(events: CustomEvent[]): EventData[] {
   const currentDate = new Date();
 
@@ -232,7 +233,7 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             <div className="my-4">
               <Separator />
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 text-sm mx-2">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 text-sm mx-2">
               <div>
                 <div className="text-gray-500 font-semibold my-2">Website</div>{" "}
                 <a
@@ -243,14 +244,6 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
                 >
                   Link
                 </a>
-              </div>
-              <div>
-                <div className="text-gray-500 font-semibold my-2">Domain</div>{" "}
-                <div>
-                  {jobData?.company.domains.length === 0
-                    ? "Not Available"
-                    : jobData?.company.domains[0]}
-                </div>
               </div>
               <div>
                 <div className="text-gray-500 font-semibold my-2">Category</div>{" "}
@@ -272,57 +265,53 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             <div className="my-4">
               <Separator />
             </div>
-            <h1 className="text-lg font-semibold my-2">Recruiter</h1>
-            <Table className="overflow-hidden">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Designation</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Mobile Number</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>{jobData?.recruiterDetailsFilled.name}</TableCell>
-                  <TableCell>
-                    {jobData?.recruiterDetailsFilled.designation}
-                  </TableCell>
-                  <TableCell>{jobData?.recruiterDetailsFilled.email}</TableCell>
-                  <TableCell>{jobData?.recruiterDetailsFilled.contact}</TableCell>
-                </TableRow>
-              </TableBody>
-              <TableFooter></TableFooter>
-            </Table>
-            <div className="my-4">
-              <Separator />
-            </div>
-            <h1 className="text-lg font-semibold my-2">Job Coordinators</h1>
-            <Table className="overflow-hidden">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Mobile Number</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {jobData?.jobCoordinators.map((coordinator, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{coordinator.tpcMember.student.user.name}</TableCell>
-                    <TableCell>{coordinator.role}</TableCell>
-                    <TableCell>{coordinator.tpcMember.student.program.department}</TableCell>
-                    <TableCell>{coordinator.tpcMember.student.user.email}</TableCell>
-                    <TableCell>{coordinator.tpcMember.student.user.contact}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="my-4">
-              <Separator />
-            </div>
+            {jobData?.company.domains.length > 0 && (
+              <>
+                <div className="font-semibold text-md"> Domains </div>
+                  <div className="flex flex-wrap !text-md">
+                    {jobData.company.domains.map((domain, index) => (
+                      <div key={index} className="mx-2 my-2">
+                        <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                          {domain}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="my-4">
+                    <Separator />
+                  </div>
+              </>
+            )}
+            {jobData?.jobCoordinators.length > 0 && (
+              <>
+                <h1 className="text-lg font-semibold my-2">Job Coordinators</h1>
+                <Table className="overflow-hidden">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Mobile Number</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {jobData.jobCoordinators.map((coordinator, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{coordinator.tpcMember.student.user.name}</TableCell>
+                        <TableCell>{coordinator.role}</TableCell>
+                        <TableCell>{coordinator.tpcMember.student.program.department}</TableCell>
+                        <TableCell>{coordinator.tpcMember.student.user.email}</TableCell>
+                        <TableCell>{coordinator.tpcMember.student.user.contact}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="my-4">
+                  <Separator />
+                </div>
+              </>
+            )}
             <h1 className="text-lg font-semibold my-2">Events</h1>
             <Table className="overflow-hidden">
               <TableHeader>
@@ -351,28 +340,17 @@ const JobPage = ({ params }: { params: { jobId: string } }) => {
             <div className="my-4">
               <Separator />
             </div>
-            {/* <HorizontalTimeline eventsData={transformEvents(jobData.events)} />
-            <div className="my-7">
-              <Separator />
-            </div> */}
             <div>
               <div className="flex justify-between">
                 <div>
                   <Button>
-                    <a
+                    <Link
                       href={`/student/job/salary/${params.jobId}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       Salary
-                    </a>
-                  </Button>
-                </div>
-                <div>
-                  <Button>
-                    <a href={"/events"} target="_blank" rel="noopener noreferrer">
-                      Events
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               </div>

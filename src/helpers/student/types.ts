@@ -157,7 +157,7 @@ export interface Jobs {
   id: string;
   role: string;
   duration: string;
-  attachment: string;
+  attachments: string[];
   skills: string[];
   description: string;
   active: boolean;
@@ -242,7 +242,7 @@ export interface Job {
     type: string;
   };
 
-  recruiter: {
+  recruiter?: {
     id: string;
     designation: string;
     user: {

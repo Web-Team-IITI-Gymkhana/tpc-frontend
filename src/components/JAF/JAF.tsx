@@ -48,7 +48,6 @@ function JAF() {
 
   return (
     <div className="flex flex-col w-full justify-start gap-20 p-10 align-center">
-      <div className="ml-auto mr-auto w-full">
         <FormikWizard
           initialValues={{
             seasonId: "",
@@ -127,7 +126,7 @@ function JAF() {
               job: {
                 role: values.role,
                 description: values.description,
-                attachment: values.attachment,//file
+                attachments: values.attachment,//file
                 skills: values.skills,
                 location: values.location,
                 noOfVacancies: values.noOfVacancies,
@@ -160,7 +159,7 @@ function JAF() {
                   seasonId: values.seasonId,
                   description: values.description,
                   recruiterDetailsFilled: submitValues.recruiters,
-                  attachment: values.attachment,//file
+                  attachments: values.attachments,//file
                   others: values.jobOthers,
                   skills: values.skills,
                   location: values.location,
@@ -235,7 +234,7 @@ function JAF() {
             {
               component: JobDetails,
               validationSchema: Yup.object().shape({
-                designation: Yup.string().required("Designation is required"),
+                // designation: Yup.string().required("Designation is required"),
               }),
             },
           ]}
@@ -284,7 +283,6 @@ function JAF() {
           }}
         </FormikWizard>
       </div>
-    </div>
   );
 }
 

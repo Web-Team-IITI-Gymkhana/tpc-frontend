@@ -63,6 +63,7 @@ export interface JobDetailFC {
   active: boolean;
   registration: string;
   currentStatus: string;
+  attachments: string[];
   season: {
     id: string;
     year: string;
@@ -73,18 +74,18 @@ export interface JobDetailFC {
     domains: string[];
     category: string;
     address: {
-        city: string;
-        line1: string;
-        line2: string;
-        state: string;
-        country: string;
+      city: string;
+      line1: string;
+      line2: string;
+      state: string;
+      country: string;
     };
     size: number;
     yearOfEstablishment: string;
     annualTurnover: string;
     socialMediaLink: string;
   };
-  recruiter : {
+  recruiter: {
     designation: string;
     id: string;
     user: {
@@ -118,7 +119,6 @@ export interface JobDetailFC {
     others: string;
   };
   description: string;
-  attachment: string;
   skills: string[];
   offerLetterReleaseDate: string;
   joiningDate: string;

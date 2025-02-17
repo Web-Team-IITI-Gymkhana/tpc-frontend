@@ -57,6 +57,12 @@ const recruitmentDTO = [
       },
       designation: "string",
     },
+    recruiterDetailsFilled: [{
+      designation: "string",
+      email: "string",
+      phoneNumber: "string",
+      landline: "string",
+    }],
     id: "string",
     role: "string",
     active: "boolean",
