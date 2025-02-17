@@ -71,10 +71,9 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       try {
         const base64String = await getBase64(file);
         const files=values.attachments;
-        console.log(`Base64 string length: ${base64String.length}`);
-        console.log(`Base64 string: ${base64String.substring(0, 50)}...`);
         files.push(base64String);
         setFieldValue("attachments", files);
+        console.log(values.attachments);
         message.success(`${info.file.name} file uploaded successfully`);
       } catch (error) {
         message.error("File conversion to Base64 failed.");
