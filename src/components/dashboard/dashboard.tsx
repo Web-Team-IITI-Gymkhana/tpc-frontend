@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { DataRibbon } from "./data-ribbon";
@@ -86,5 +87,6 @@ export default function Dashboard() {
         />
       </div>
     </div>
+  )
   )
 }
