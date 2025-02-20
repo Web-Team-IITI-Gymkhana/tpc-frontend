@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useState, useEffect } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { DataRibbon } from "./data-ribbon";
 import { ChartSection } from "./chart-section";
-import { DataRibbonStatsFC, ChartDataFC } from "@/helpers/analytics-dashboard/types";
-import { getRibbonStats } from "@/helpers/analytics-dashboard/api";
+import { SeasonDataFC } from "@/helpers/analytics-dashboard/types";
+import { getSeasonStats } from "@/helpers/analytics-dashboard/api";
 import Loading from "../common/loading";
 import axios from "axios";
 
@@ -15,51 +14,62 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState<"reports" | "trends">("reports");
   const [season, setSeason] = useState<string>("");
   const [yearRange, setYearRange] = useState<[number, number]>([new Date().getFullYear() - 5, new Date().getFullYear()]);
-  const [ribbonStats, setRibbonStats] = useState<DataRibbonStatsFC | null>(null)
-  const [chartData, setChartData] = useState<ChartDataFC | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [seasonData, setSeasonData] = useState<SeasonDataFC | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const [optionsx, setOptionsx] = useState([]);
   let options: any = [];
   useEffect(() => {
     axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
-      res.data.seasons.map((season: any) => {
-        const seasonString = `${season.type} ${season.year}`
-        options.push({ value: season.id, label: seasonString });
+      const newOptions = res.data.seasons.map((season: any) => {
+        const seasonString = `${season.type} ${season.year}`;
+        return { value: season.id, label: seasonString, type: season.type, year: season.year };
       });
-      setOptionsx(options);
-      if(options.length > 0){
-      setSeason(options[0].value);
-    }
+
+      // Sort the options
+      newOptions.sort((a: any, b: any) => {
+        if (a.year !== b.year) {
+          return b.year - a.year;
+        }
+        if (a.type === b.type) {
+          return 0;
+        }
+        return a.type === "Placement" ? -1 : 1;
+      });
+
+      setOptionsx(newOptions);
+      if (newOptions.length > 0) {
+        setSeason(newOptions[0].value);
+      }
+      setIsLoading(false);
     })
     .catch((err) => {
       console.log(err);
-    }
-    );
+    });
   }, []);
 
-  // useEffect(() => {
-  //   async function fetchSeasonData() {
-  //     setIsLoading(true)
-  //     try {
-  //       const { ribbonStats, chartData } = await getRibbonStats({
-  //         year: seasonYear,
-  //         type: seasonType
-  //       })
-        
-  //       setRibbonStats(ribbonStats)
-  //       setError(null)
-  //     } catch (err) {
-  //       setError('Failed to load season data')
-  //       console.error(err)
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
+  useEffect(() => {
+    async function fetchSeasonData() {
+      setIsLoading(true)
+      try {
+        let data = await getSeasonStats(season);
+        setSeasonData(data);
+        console.log(seasonData);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load season data')
+        console.error(err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    if(season !== "") {
+      fetchSeasonData();
+    }
+  }, [season])
 
-  //   fetchSeasonData()
-  // }, [seasonYear, seasonType])
+  
 
   if (isLoading) {
     return Loading();
@@ -74,7 +84,7 @@ export default function Dashboard() {
       <Header currentView={currentView} onViewChange={setCurrentView} />
       <div className="flex h-screen overflow-y-auto bg-background">
         <main className="flex-1 overflow-y-auto p-6 no-scrollbar">
-          {/* <DataRibbon stats={ribbonStats} /> */}
+          {/* <DataRibbon stats={seasonData} /> */}
           <ChartSection />
         </main>
         <Sidebar 
@@ -87,6 +97,5 @@ export default function Dashboard() {
         />
       </div>
     </div>
-  )
   )
 }
