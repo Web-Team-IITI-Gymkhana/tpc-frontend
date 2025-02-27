@@ -45,7 +45,6 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
   const [form] = Form.useForm();
 
   const [skills, setSkills] = useState([]);
-  const [skillInput, setSkillInput] = useState("");
   const [fileList, setFileList] = useState([]);
 
   const [testType, setTestType] = useState([]);
@@ -57,10 +56,6 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
   const programsOptions: SelectProps["options"] = [];
 
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  const handleSkillChange = (e) => {
-    setSkillInput(e.target.value);
-  };
 
   const handleFileChange = async (info: any) => {
     if (info.file.status !== 'uploading') {
@@ -83,22 +78,12 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
     }
     
     setFileList(info.fileList);
-  };
+  };  
 
-  const addSkill = () => {
-    if (skillInput) {
-      const updatedSkills = [...skills, skillInput];
-      setSkills(updatedSkills);
-      setSkillInput("");
-      setFieldValue("skills", updatedSkills);
-    }
-  };
-
-  const removeSkill = (skillToRemove) => {
-    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
-    setSkills(updatedSkills);
-    setFieldValue("skills", updatedSkills);
-  };
+  const handleSkillChange = (newSkills: string[]) => {
+    setSkills(newSkills);
+    setFieldValue("skills", newSkills); 
+  }
 
   useEffect(() => {
     axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
@@ -275,38 +260,14 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       <Row gutter={24}>        
         <Col span={24}>
         <Form.Item label="Skills">
-          <Input
-            name="skills"
-            placeholder="Enter a skill"
-            value={skillInput}
+          <Select
+            mode="tags"
+            style={{ width: "100%" }}
+            placeholder="Enter a skill and press Enter"
+            value={skills}
             onChange={handleSkillChange}
           />
         </Form.Item>
-        <Button type="primary" onClick={addSkill}>
-          Add Skill
-        </Button>
-
-        <List
-          header={<div>Skills</div>}
-          bordered
-          dataSource={skills}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button
-                  type="link"
-                  onClick={() => removeSkill(item)}
-                  style={{ color: "red" }}
-                >
-                  Remove
-                </Button>,
-              ]}
-            >
-              {item}
-            </List.Item>
-          )}
-          style={{ marginTop: "20px" }}
-        />
         </Col>     
       </Row>
       <Form.Item label="Description" className="my-3">
@@ -534,12 +495,6 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                   />
                 }
               >
-                <Form.Item
-                  label="Salary Period"
-                  name={[field.name, "salaryPeriod"]}
-                >
-                  <Input placeholder="Salary Period" />
-                </Form.Item>
                 <h2 className="text-sm ">Criteria</h2>
                 <Row gutter={24}>
                   <Col span={12}>
