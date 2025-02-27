@@ -10,12 +10,14 @@ import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
 import { jwtDecode } from "jwt-decode";
+import TpcMemberDashboard from "./SideBar/Roles/tpcMember";
 const Sidebar = () => {
   const isSmallScreen = useMediaQuery({ query: "(max-width: 768px)" });
   const context = useContext(ToggleContext);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
   const [isStudent, setIsStudent] = useState<boolean>(false);
+  const [isTpcMember, setIsTpcMember] = useState<boolean>(false);
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
 
@@ -29,6 +31,7 @@ const Sidebar = () => {
     setIsAdmin(user?.role === "ADMIN");
     setIsRecruiter(user?.role === "RECRUITER");
     setIsStudent(user?.role === "STUDENT");
+    setIsTpcMember(user?.role === "TPC_MEMBER");
   }, []);
 
   return (
@@ -134,7 +137,6 @@ const Sidebar = () => {
                 <Link href={`/${role}/profile`}>Profile</Link>
               </motion.div>
             </div>
-            {/* <CompanyDropDown userRole={userRole} /> */}
           </div>
           <hr />
           <NavButtonGroup loggedIn={isLoggedIn} />
@@ -142,6 +144,7 @@ const Sidebar = () => {
         {isAdmin && <AdminDashboard />}
         {isStudent && <StudentDashboard />}
         {isRecruiter && <RecruiterDashboard />}
+        {isTpcMember && <TpcMemberDashboard />}
       </div>
     </motion.div>
   );
