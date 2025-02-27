@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
 const adminRoutes = "/admin";
+const dashBoardRoutes = "/admin/dashboard";
 
 const studentRoutes = "/student";
 
@@ -39,7 +40,7 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === "/" && !user) {
     return redirectTo("/login");
   }
-  if (request.nextUrl.pathname === "/" && user?.role === "STUDENT") {
+  if (request.nextUrl.pathname === "/" && (user?.role === "STUDENT" || user?.role === "TPC_MEMBER")) {
     return redirectTo("/student/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "ADMIN") {
@@ -52,13 +53,19 @@ export function middleware(request: NextRequest) {
     return redirectTo("/faculty");
   }
   if (
-    user?.role !== "ADMIN" &&
+    (user?.role !== "ADMIN" && user?.role !== "TPC_MEMBER") &&
       request.nextUrl.pathname.startsWith(adminRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
-    user?.role !== "STUDENT" &&
+    user?.role !== "ADMIN" &&
+      request.nextUrl.pathname.startsWith(dashBoardRoutes)
+  ) {
+    return redirectTo("/login");
+  }
+  if (
+    (user?.role !== "STUDENT" && user?.role !== "TPC_MEMBER") &&
     request.nextUrl.pathname.startsWith(studentRoutes)
   ) {
     return redirectTo("/login");
