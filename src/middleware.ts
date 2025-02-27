@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 const adminRoutes = "/admin";
 
 const studentRoutes = "/student";
+const tpcMemberRoutes = "/tpcMember";
 
 const recruiterRoutes = "/recruiter";
 const recruiterAuthRoutes = ["/recruiter/signin", "/recruiter/signup"];
@@ -42,6 +43,9 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === "/" && user?.role === "STUDENT") {
     return redirectTo("/student/profile");
   }
+  if (request.nextUrl.pathname === "/" && user?.role === "TPC_MEMBER") {
+    return redirectTo("/tpcMember/profile");
+  }
   if (request.nextUrl.pathname === "/" && user?.role === "ADMIN") {
     return redirectTo("/admin/profile");
   }
@@ -60,6 +64,12 @@ export function middleware(request: NextRequest) {
   if (
     user?.role !== "STUDENT" &&
     request.nextUrl.pathname.startsWith(studentRoutes)
+  ) {
+    return redirectTo("/login");
+  }
+  if (
+    user?.role !== "TPC_MEMBER" &&
+    request.nextUrl.pathname.startsWith(tpcMemberRoutes)
   ) {
     return redirectTo("/login");
   }
