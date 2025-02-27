@@ -105,7 +105,7 @@ const JobCard = ({ jobItem, type}: Props) => {
                 <div className="flex flex-wrap !text-md">
                   {jobItem.attachments.map((attachment, index) => (
                     <div className="mx-2 my-2 cursor-pointer" key={index} onClick={() => handleOpenJD(attachment)}>
-                      <Image src={"/file.png"} alt="" width={150} height={150} />
+                      <Image src={"/portal/images/file.png"} alt="" width={150} height={150} />
                       <div className="text-center text-blue-500 font-semibold cursor-pointer hover:text-blue-600">{`Attachment (${index})`}</div>
                     </div>
                   ))}
