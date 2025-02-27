@@ -45,7 +45,6 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
   const [form] = Form.useForm();
 
   const [skills, setSkills] = useState([]);
-  const [skillInput, setSkillInput] = useState("");
   const [fileList, setFileList] = useState([]);
 
   const [testType, setTestType] = useState([]);
@@ -79,22 +78,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
     }
     
     setFileList(info.fileList);
-  };
-
-  const addSkill = () => {
-    if (skillInput) {
-      const updatedSkills = [...skills, skillInput];
-      setSkills(updatedSkills);
-      setSkillInput("");
-      setFieldValue("skills", updatedSkills);
-    }
-  };
-
-  const removeSkill = (skillToRemove) => {
-    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
-    setSkills(updatedSkills);
-    setFieldValue("skills", updatedSkills);
-  };
+  };  
 
   const handleSkillChange = (newSkills: string[]) => {
     setSkills(newSkills);
