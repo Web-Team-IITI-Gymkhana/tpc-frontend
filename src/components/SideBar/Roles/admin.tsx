@@ -293,6 +293,28 @@ const AdminDashboard = () => {
             {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
           </div>
         </Link>
+        <Link href={"/admin/dashboard"}>
+          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer">
+            <div className="flex justify-start gap-[1vw]">
+              <div className="w-[2vw]">
+                <img width="20" height="20" src="/images/dashboard.png" alt="dashboard"/>
+              </div>
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { opacity: 0 },
+                  open: { opacity: 1 },
+                }}
+                className="w-[13vw]"
+              >
+                Dashboard
+              </motion.div>
+            </div>
+            {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
+          </div>
+        </Link>
       </div>
     </>
   );
