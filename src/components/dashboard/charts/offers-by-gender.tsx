@@ -3,13 +3,12 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const data = [
-  { gender: 'Male', offers: 300 },
-  { gender: 'Female', offers: 200 },
-  { gender: 'Other', offers: 20 },
-]
+interface OffersByGenderProps {
+  viewType: 'chart' | 'table'
+  data: { gender: string, offers: number }[]
+}
 
-export function OffersByGender({ viewType }: { viewType: 'chart' | 'table' }) {
+export function OffersByGender({ viewType, data }: OffersByGenderProps) {
   if (viewType === 'table') {
     return (
       <Table>

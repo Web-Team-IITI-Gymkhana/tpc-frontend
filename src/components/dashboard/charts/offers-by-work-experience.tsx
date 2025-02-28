@@ -3,16 +3,14 @@
 import { Pie, PieChart, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const data = [
-  { experience: 'Fresher', offers: 300 },
-  { experience: '0-2 years', offers: 150 },
-  { experience: '2-5 years', offers: 50 },
-  { experience: '5+ years', offers: 20 },
-]
+interface OffersByWorkExperienceProps {
+  viewType: 'chart' | 'table'
+  data: { experience: string, offers: number }[]
+}
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
 
-export function OffersByWorkExperience({ viewType }: { viewType: 'chart' | 'table' }) {
+export function OffersByWorkExperience({ viewType, data }: OffersByWorkExperienceProps) {
   if (viewType === 'table') {
     return (
       <Table>
