@@ -3,17 +3,12 @@
 import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const data = [
-  { cgpa: '6.0-6.5', offers: 20 },
-  { cgpa: '6.5-7.0', offers: 40 },
-  { cgpa: '7.0-7.5', offers: 80 },
-  { cgpa: '7.5-8.0', offers: 120 },
-  { cgpa: '8.0-8.5', offers: 160 },
-  { cgpa: '8.5-9.0', offers: 80 },
-  { cgpa: '9.0-10.0', offers: 20 },
-]
+interface OffersByAcademicsProps {
+  viewType: 'chart' | 'table'
+  data: { cgpa: string, offers: number }[]
+}
 
-export function OffersByAcademics({ viewType }: { viewType: 'chart' | 'table' }) {
+export function OffersByAcademics({ viewType, data }: OffersByAcademicsProps) {
   if (viewType === 'table') {
     return (
       <Table>

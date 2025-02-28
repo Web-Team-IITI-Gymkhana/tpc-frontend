@@ -3,15 +3,12 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const data = [
-  { course: 'Computer Science', offers: 150 },
-  { course: 'Electrical Engineering', offers: 100 },
-  { course: 'Mechanical Engineering', offers: 80 },
-  { course: 'Civil Engineering', offers: 60 },
-  { course: 'Chemical Engineering', offers: 40 },
-]
+interface OffersByCourseProps {
+  viewType: 'chart' | 'table'
+  data: { course: string, offers: number }[]
+}
 
-export function OffersByCourse({ viewType }: { viewType: 'chart' | 'table' }) {
+export function OffersByCourse({ viewType, data }: OffersByCourseProps) {
   if (viewType === 'table') {
     return (
       <Table>

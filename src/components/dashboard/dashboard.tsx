@@ -10,6 +10,26 @@ import axios from "axios";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+function validateSeasonData(data: SeasonDataFC): boolean {
+  if (!data) return false;
+
+  const fieldsToCheck = [
+    data.overallStats,
+    data.departmentWiseStats,
+    data.categoryWiseStats,
+    data.genderWiseStats,
+    data.courseWiseStats,
+  ];
+
+  for (const field of fieldsToCheck) {
+    if (!field || Object.keys(field).length === 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<"reports" | "trends">("reports");
   const [season, setSeason] = useState<string>("");
@@ -54,9 +74,13 @@ export default function Dashboard() {
       setIsLoading(true)
       try {
         let data = await getSeasonStats(season);
-        setSeasonData(data);
-        console.log(seasonData);
-        setError(null);
+        console.log(data);  
+        if (data === null || !validateSeasonData(data)) {
+          setError('Unable to fetch the data');
+        } else {
+          setSeasonData(data);
+          setError(null);
+        }
       } catch (err) {
         setError('Failed to load season data')
         console.error(err)
@@ -84,8 +108,8 @@ export default function Dashboard() {
       <Header currentView={currentView} onViewChange={setCurrentView} />
       <div className="flex h-screen overflow-y-auto bg-background">
         <main className="flex-1 overflow-y-auto p-6 no-scrollbar">
-          {/* <DataRibbon stats={seasonData} /> */}
-          <ChartSection />
+          <DataRibbon stats={seasonData} />
+          <ChartSection stats = {seasonData}/>
         </main>
         <Sidebar 
           view={currentView} 

@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { DataRibbonStatsFC } from '@/helpers/analytics-dashboard/types'
+import { SeasonDataFC } from '@/helpers/analytics-dashboard/types'
 
 interface StatCardProps {
   value: string | number
@@ -51,66 +51,56 @@ function StatCard({ value, label, subtext, info, className }: StatCardProps) {
   )
 }
 
-export function DataRibbon({ stats }: { stats: DataRibbonStatsFC }) {
+export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
+  const overallStats = stats.overallStats;
+
   return (
     <div className="mb-6 space-y-4  max-w-full overflow-x-scroll no-scrollbar">
       <div className="flex space-x-4 pb-4 md:pb-0">
         <StatCard
-          value={`${stats.placementPercentage}%`}
+          value={`${overallStats.placementPercentage}%`}
           label="Placement Percentage"
-          subtext={`${stats.placedStudentsCount} students placed out of ${stats.totalRegisteredStudentsCount} students`}
+          subtext={`${overallStats.placedStudentsCount} students placed out of ${overallStats.totalRegisteredStudentsCount} students`}
           info="Current placement rate for eligible students"
         />
         <StatCard
-          value={stats.totalOffers}
+          value={overallStats.totalOffers}
           label="Total Offers"
-          subtext={`${stats.totalOffers} offers were given by ${stats.totalCompaniesOffering} companies`}
+          subtext={`${overallStats.totalOffers} offers were given by ${overallStats.totalCompaniesOffering} companies`}
           info="Total number of offers made to students"
         />
         <StatCard
-          value={stats.highestPackage}
+          value={overallStats.highestPackage}
           label="Highest Package"
-          // subtext="18 students received this package"
           info="Highest annual package offered this season"
         />
         <StatCard
-          value={stats.meanPackage}
+          value={overallStats.meanPackage}
           label="Average Package"
           info="Mean annual package across all offers"
         />
         <StatCard
-          value={stats.totalRegisteredStudentsCount}
+          value={overallStats.totalRegisteredStudentsCount}
           label="Eligible"
           info="Number of students eligible for placements"
         />
-        {/* <StatCard
-          value="12"
-          label="Not Eligible"
-          info="Number of students not eligible for placements"
-        /> */}
         <StatCard
-          value={stats.totalCompaniesOffering}
-          label="Companies Offered"
-          // subtext="11 companies visited"
-          info="Number of companies that have made offers"
-        />
-        <StatCard
-          value={stats.unplacedPercentage}
+          value={overallStats.unplacedPercentage}
           label="Total Unplaced Students"
           info="Percentage of eligible students yet to be placed"
         />
         <StatCard
-          value={stats.lowestPackage}
+          value={overallStats.lowestPackage}
           label="Lowest Package"
           info="Lowest annual package offered this season"
         />
         <StatCard
-          value={stats.medianPackage}
+          value={overallStats.medianPackage}
           label="Median"
           info="Middle value of all packages offered"
         />
         <StatCard
-          value={stats.modePackage}
+          value={overallStats.modePackage}
           label="Mode"
           info="Most frequently offered package"
         />

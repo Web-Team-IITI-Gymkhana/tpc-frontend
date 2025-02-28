@@ -3,16 +3,14 @@
 import { Pie, PieChart, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const data = [
-  { category: 'Engineering', offers: 300 },
-  { category: 'Management', offers: 150 },
-  { category: 'Sciences', offers: 100 },
-  { category: 'Arts', offers: 50 },
-]
+interface OffersByCourseCategoryProps {
+  viewType: 'chart' | 'table'
+  data: { category: string, offers: number }[]
+}
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
 
-export function OffersByCourseCategory({ viewType }: { viewType: 'chart' | 'table' }) {
+export function OffersByCourseCategory({ viewType, data }: OffersByCourseCategoryProps) {
   if (viewType === 'table') {
     return (
       <Table>
