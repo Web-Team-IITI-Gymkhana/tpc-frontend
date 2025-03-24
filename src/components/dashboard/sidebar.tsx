@@ -133,15 +133,15 @@ export function Sidebar({
           </Select> */}
         </div>
 
-        <div>
+        {/* <div>
           <h1 className="text-lg font-bold">Statistics</h1>
-        </div>
+        </div> */}
 
         {/* <div className="text-sm text-gray-500">
           From 24 Nov 2024 to 24 Dec 2024
         </div> */}
 
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <div className="bg-white rounded-lg border p-4">
             <h3 className="font-medium mb-2">Offer Details</h3>
             <div className="space-y-1">
@@ -217,7 +217,7 @@ export function Sidebar({
               <StatItem label="No Offers" value="0" onClick={() => {}} />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </aside>
   );

@@ -8,7 +8,10 @@ interface OffersByAcademicsProps {
   data: { cgpa: string, offers: number }[]
 }
 
-export function OffersByAcademics({ viewType, data }: OffersByAcademicsProps) {
+export function OffersByAcademics({ viewType, data = [] }: OffersByAcademicsProps) {
+  // Ensure data is an array
+  const safeData = Array.isArray(data) ? data : []
+
   if (viewType === 'table') {
     return (
       <Table>
@@ -19,7 +22,7 @@ export function OffersByAcademics({ viewType, data }: OffersByAcademicsProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item) => (
+          {safeData.map((item) => (
             <TableRow key={item.cgpa}>
               <TableCell>{item.cgpa}</TableCell>
               <TableCell>{item.offers}</TableCell>
@@ -32,7 +35,7 @@ export function OffersByAcademics({ viewType, data }: OffersByAcademicsProps) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data}>
+      <LineChart data={safeData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="cgpa" />
         <YAxis />

@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-interface CourseStats {
+interface CategoryStats {
   totalRegisteredStudentsCount: number
   placedStudentsCount: number
   placementPercentage: number
@@ -17,13 +17,13 @@ interface CourseStats {
   totalCompaniesOffering: number
 }
 
-interface CourseWiseStats {
-  [key: string]: CourseStats
+interface CategoryWiseStats {
+  [key: string]: CategoryStats
 }
 
-interface OffersByCourseProps {
+interface OffersByCategoryProps {
   viewType: 'chart' | 'table'
-  data: CourseWiseStats
+  data: CategoryWiseStats
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -49,7 +49,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function OffersByCourse({ viewType, data = {} }: OffersByCourseProps) {
+export function OffersByCategory({ viewType, data = {} }: OffersByCategoryProps) {
   const transformedData = Object.entries(data).map(([course, stats]) => ({
     course,
     placementPercentage: stats.placementPercentage,

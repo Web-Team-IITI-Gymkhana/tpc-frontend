@@ -8,7 +8,10 @@ interface OffersByIndustryTypeProps {
   data: { industry: string, offers: number }[]
 }
 
-export function OffersByIndustryType({ viewType, data }: OffersByIndustryTypeProps) {
+export function OffersByIndustryType({ viewType, data = [] }: OffersByIndustryTypeProps) {
+  // Ensure data is an array
+  const safeData = Array.isArray(data) ? data : []
+
   if (viewType === 'table') {
     return (
       <Table>
@@ -19,7 +22,7 @@ export function OffersByIndustryType({ viewType, data }: OffersByIndustryTypePro
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item) => (
+          {safeData.map((item) => (
             <TableRow key={item.industry}>
               <TableCell>{item.industry}</TableCell>
               <TableCell>{item.offers}</TableCell>
@@ -32,7 +35,7 @@ export function OffersByIndustryType({ viewType, data }: OffersByIndustryTypePro
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data}>
+      <BarChart data={safeData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="industry" />
         <YAxis />

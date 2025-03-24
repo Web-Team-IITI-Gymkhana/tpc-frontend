@@ -103,7 +103,12 @@ export default function Dashboard() {
     return <div>Error: {error}</div>
   }
 
+  while(seasonData === null) {
+    return Loading();
+  }
+
   return (
+    console.log(seasonData),
     <div>
       <Header currentView={currentView} onViewChange={setCurrentView} />
       <div className="flex h-screen overflow-y-auto bg-background">

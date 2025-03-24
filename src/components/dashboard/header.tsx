@@ -29,7 +29,7 @@ export function Header({ currentView, onViewChange }: NavHeaderProps) {
 
   const viewOptions: ViewOption[] = [
     { label: "Reports", value: "reports" },
-    { label: "Trends", value: "trends" },
+    // { label: "Trends", value: "trends" },
   ];
 
   return (

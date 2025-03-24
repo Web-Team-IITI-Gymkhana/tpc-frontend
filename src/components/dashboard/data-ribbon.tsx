@@ -55,7 +55,7 @@ export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
   const overallStats = stats.overallStats;
 
   return (
-    <div className="mb-6 space-y-4  max-w-full overflow-x-scroll no-scrollbar">
+    <div className="mb-6 space-y-4  max-w-full overflow-x-scroll">
       <div className="flex space-x-4 pb-4 md:pb-0">
         <StatCard
           value={`${overallStats.placementPercentage}%`}

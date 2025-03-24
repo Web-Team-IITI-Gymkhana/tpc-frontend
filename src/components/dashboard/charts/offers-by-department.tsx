@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-interface CourseStats {
+interface DepartmentStats {
   totalRegisteredStudentsCount: number
   placedStudentsCount: number
   placementPercentage: number
@@ -17,13 +17,13 @@ interface CourseStats {
   totalCompaniesOffering: number
 }
 
-interface CourseWiseStats {
-  [key: string]: CourseStats
+interface DepartmentWiseStats {
+  [key: string]: DepartmentStats
 }
 
-interface OffersByCourseProps {
+interface OffersByDepartmentProps {
   viewType: 'chart' | 'table'
-  data: CourseWiseStats
+  data: DepartmentWiseStats
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -49,9 +49,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function OffersByCourse({ viewType, data = {} }: OffersByCourseProps) {
-  const transformedData = Object.entries(data).map(([course, stats]) => ({
-    course,
+export function OffersByDepartment({ viewType, data = {} }: OffersByDepartmentProps) {
+  const transformedData = Object.entries(data).map(([department, stats]) => ({
+    department,
     placementPercentage: stats.placementPercentage,
     stats
   }));
@@ -61,7 +61,7 @@ export function OffersByCourse({ viewType, data = {} }: OffersByCourseProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Course</TableHead>
+            <TableHead>Department</TableHead>
             <TableHead>Total Students</TableHead>
             <TableHead>Placed Students</TableHead>
             <TableHead>Placement %</TableHead>
@@ -76,9 +76,9 @@ export function OffersByCourse({ viewType, data = {} }: OffersByCourseProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Object.entries(data).map(([course, stats]) => (
-            <TableRow key={course}>
-              <TableCell>{course}</TableCell>
+          {Object.entries(data).map(([department, stats]) => (
+            <TableRow key={department}>
+              <TableCell>{department}</TableCell>
               <TableCell>{stats.totalRegisteredStudentsCount}</TableCell>
               <TableCell>{stats.placedStudentsCount}</TableCell>
               <TableCell>{stats.placementPercentage.toFixed(2)}%</TableCell>
@@ -110,7 +110,7 @@ export function OffersByCourse({ viewType, data = {} }: OffersByCourseProps) {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
-          dataKey="course" 
+          dataKey="department" 
           interval={0}
           angle={-45}
           textAnchor="end"
