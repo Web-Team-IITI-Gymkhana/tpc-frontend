@@ -38,7 +38,7 @@ export function ChartSection({ stats }: { stats: SeasonDataFC }) {
     { type: 'course', title: 'Offers by Courses', component: OffersByCourse, data: stats.courseWiseStats },
     { type: 'department', title: 'Offers by Departments', component: OffersByDepartment, data: stats.departmentWiseStats },
     { type: 'gender', title: 'Offers by Gender', component: OffersByGender, data: stats.genderWiseStats },
-    { type: 'academics', title: 'Offers by Academics', component: OffersByAcademics, data: stats.overallStats },
+    { type: 'academics', title: 'Offers by Academics', component: OffersByAcademics, data: stats.academicWiseStats},
     { type: 'category', title: 'Offers by Category', component: OffersByCategory, data: stats.categoryWiseStats },
     // { type: 'industryType', title: 'Offers by Industry Type', component: OffersByIndustryType, data: stats.overallStats }
   ]

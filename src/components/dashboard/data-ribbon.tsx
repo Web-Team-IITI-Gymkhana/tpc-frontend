@@ -85,7 +85,7 @@ export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
           info="Number of students eligible for placements"
         />
         <StatCard
-          value={overallStats.unplacedPercentage}
+          value={`${overallStats.unplacedPercentage}%`}
           label="Total Unplaced Students"
           info="Percentage of eligible students yet to be placed"
         />
@@ -96,12 +96,12 @@ export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
         />
         <StatCard
           value={overallStats.medianPackage}
-          label="Median"
+          label="Median Package"
           info="Middle value of all packages offered"
         />
         <StatCard
           value={overallStats.modePackage}
-          label="Mode"
+          label="Mode Package"
           info="Most frequently offered package"
         />
       </div>

@@ -105,7 +105,7 @@ export function OffersByCourse({ viewType, data = {} }: OffersByCourseProps) {
           top: 20,
           right: 30,
           left: 20,
-          bottom: 100
+          bottom: 15
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />

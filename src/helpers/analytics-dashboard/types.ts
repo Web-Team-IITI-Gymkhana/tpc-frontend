@@ -39,10 +39,23 @@ interface CourseWiseStatsFC {
   BTech_MTech: StatsFC;
 }
 
+interface AcademicWiseStatsFC {
+  "0-1": StatsFC;
+  "1-2": StatsFC;
+  "2-3": StatsFC;
+  "3-4": StatsFC;
+  "4-5": StatsFC;
+  "5-6": StatsFC;
+  "6-7": StatsFC;
+  "7-8": StatsFC;
+  "8-9": StatsFC;
+  "9-10": StatsFC;
+}
 export interface SeasonDataFC {
   overallStats: StatsFC;
   departmentWiseStats: DepartmentWiseStatsFC;
   categoryWiseStats: CategoryWiseStatsFC;
   genderWiseStats: GenderWiseStatsFC;
   courseWiseStats: CourseWiseStatsFC;
+  academicWiseStats: AcademicWiseStatsFC;
 }

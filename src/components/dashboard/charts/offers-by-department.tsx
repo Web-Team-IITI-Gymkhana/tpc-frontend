@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const stats = payload[0].payload.stats;
     return (
       <div className="bg-white p-4 rounded-lg shadow-lg border">
-        <h3 className="font-bold">{label}</h3>
+        <h3 className="font-bold">`CPI : {label}</h3>
         <p>Total Registered Students: {stats.totalRegisteredStudentsCount}</p>
         <p>Placed Students: {stats.placedStudentsCount}</p>
         <p>Placement %: {stats.placementPercentage.toFixed(2)}%</p>
@@ -105,7 +105,7 @@ export function OffersByDepartment({ viewType, data = {} }: OffersByDepartmentPr
           top: 20,
           right: 30,
           left: 20,
-          bottom: 100
+          bottom: 120
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />

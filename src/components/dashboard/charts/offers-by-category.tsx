@@ -50,8 +50,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function OffersByCategory({ viewType, data = {} }: OffersByCategoryProps) {
-  const transformedData = Object.entries(data).map(([course, stats]) => ({
-    course,
+  const transformedData = Object.entries(data).map(([category, stats]) => ({
+    category,
     placementPercentage: stats.placementPercentage,
     stats
   }));
@@ -105,12 +105,11 @@ export function OffersByCategory({ viewType, data = {} }: OffersByCategoryProps)
           top: 20,
           right: 30,
           left: 20,
-          bottom: 100
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
-          dataKey="course" 
+          dataKey="category" 
           interval={0}
           angle={-45}
           textAnchor="end"
