@@ -1,9 +1,9 @@
 'use client'
 
-import { Bar, BarChart,  Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-interface AcademicStats {
+interface CategoryStats {
   totalRegisteredStudentsCount: number
   placedStudentsCount: number
   placementPercentage: number
@@ -17,13 +17,13 @@ interface AcademicStats {
   totalCompaniesOffering: number
 }
 
-interface AcademicWiseStats {
-  [key: string]: AcademicStats
+interface CategoryWiseStats {
+  [key: string]: CategoryStats
 }
 
-interface OffersByAcademicsProps {
+interface OffersByCategoryProps {
   viewType: 'chart' | 'table'
-  data: AcademicWiseStats
+  data: CategoryWiseStats
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -31,7 +31,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const stats = payload[0].payload.stats;
     return (
       <div className="bg-white p-4 rounded-lg shadow-lg border">
-        <h3 className="font-bold">{`CPI : ${label}`}</h3>
+        <h3 className="font-bold">{label}</h3>
         <p>Total Registered Students: {stats.totalRegisteredStudentsCount}</p>
         <p>Placed Students: {stats.placedStudentsCount}</p>
         <p>Placement %: {stats.placementPercentage.toFixed(2)}%</p>
@@ -49,9 +49,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function OffersByAcademics({ viewType, data = {} }: OffersByAcademicsProps) {
-  const transformedData = Object.entries(data).map(([cpi, stats]) => ({
-    cpi,
+export function OffersByCategory({ viewType, data = {} }: OffersByCategoryProps) {
+  const transformedData = Object.entries(data).map(([category, stats]) => ({
+    category,
     placementPercentage: stats.placementPercentage,
     stats
   }));
@@ -99,12 +99,17 @@ export function OffersByAcademics({ viewType, data = {} }: OffersByAcademicsProp
 
   return (
     <ResponsiveContainer width="100%" height={400}>
-      <LineChart 
+      <BarChart 
         data={transformedData}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+        }}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
-          dataKey="cpi" 
+          dataKey="category" 
           interval={0}
           angle={-45}
           textAnchor="end"
@@ -124,8 +129,12 @@ export function OffersByAcademics({ viewType, data = {} }: OffersByAcademicsProp
           }}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Line type="monotone" dataKey="placementPercentage" stroke="#8884d8" />
-      </LineChart>
+        <Bar 
+          dataKey="placementPercentage" 
+          fill="#82ca9d" 
+          name="Placement %"
+        />
+      </BarChart>
     </ResponsiveContainer>
   )
 }

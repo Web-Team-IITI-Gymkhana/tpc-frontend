@@ -295,9 +295,23 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/dashboard"}>
           <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer">
-            <div className="flex justify-start gap-[1vw]">
+          <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
-                <img width="20" height="20" src="/portal/images/dashboard.png" alt="dashboard"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 32 32"
+                width="20"
+                height="20"
+              >
+                <path
+                  fill="currentColor"
+                  d="M24 21h2v5h-2zm-4-5h2v10h-2zm-9 10a5.006 5.006 0 0 1-5-5h2a3 3 0 1 0 3-3v-2a5 5 0 0 1 0 10"
+                ></path>
+                <path
+                  fill="currentColor"
+                  d="M28 2H4a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h24a2.003 2.003 0 0 0 2-2V4a2 2 0 0 0-2-2m0 9H14V4h14ZM12 4v7H4V4ZM4 28V13h24l.002 15Z"
+                ></path>
+              </svg>
               </div>
               <motion.div
                 initial={{ opacity: 1 }}
