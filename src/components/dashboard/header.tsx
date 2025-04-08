@@ -3,6 +3,7 @@
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { convertToCSV, convertToExcel } from "@/lib/csv-utils";
 
 interface NavItem {
   label: string;
@@ -18,9 +19,10 @@ interface ViewOption {
 interface NavHeaderProps {
   currentView: "reports" | "trends";
   onViewChange: (view: "reports" | "trends") => void;
+  data?: any; // Add this prop for the data to be downloaded
 }
 
-export function Header({ currentView, onViewChange }: NavHeaderProps) {
+export function Header({ currentView, onViewChange, data }: NavHeaderProps) {
   const navItems: NavItem[] = [
     { label: "College Reports", href: "#", active: true },
     { label: "Leaderboard", href: "#" },
@@ -31,6 +33,24 @@ export function Header({ currentView, onViewChange }: NavHeaderProps) {
     { label: "Reports", value: "reports" },
     // { label: "Trends", value: "trends" },
   ];
+
+  const handleDownload = () => {
+    if (!data) return;
+
+    const blob = convertToExcel(data);
+    if (!blob) return;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `placement-stats-${new Date().toISOString().split('T')[0]}.xlsx`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="border-b mb-2">
@@ -55,7 +75,12 @@ export function Header({ currentView, onViewChange }: NavHeaderProps) {
             ))}
           </div>
           <div>
-            <Button variant="outline" size="icon" >
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={handleDownload}
+              disabled={!data}
+            >
               <Download className="h-4 w-4" />
             </Button>
           </div>
