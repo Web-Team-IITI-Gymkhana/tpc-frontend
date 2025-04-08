@@ -116,17 +116,7 @@ export default function Dashboard() {
         <main className="flex-1 overflow-y-auto p-6 no-scrollbar">
           <DataRibbon stats={seasonData} />
           <ChartSection stats = {seasonData}/>
-          <DataRibbon stats={seasonData} />
-          <ChartSection stats = {seasonData}/>
         </main>
-        <Sidebar 
-          view={currentView} 
-          season={season}
-          setSeason={setSeason}
-          options={optionsx}
-          setYearRange={setYearRange}
-          yearRange={yearRange}
-        />
         <Sidebar 
           view={currentView} 
           season={season}
