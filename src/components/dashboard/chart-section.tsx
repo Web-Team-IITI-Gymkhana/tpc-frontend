@@ -19,11 +19,16 @@ type ViewType = 'chart' | 'table'
 interface ChartConfig {
   type: ChartType
   title: string
-  component: React.ComponentType<{ viewType: ViewType, data: any }>
+  component: React.ComponentType<{ viewType: ViewType, data: any, seasonType: string }>
   data: any
 }
 
-export function ChartSection({ stats }: { stats: SeasonDataFC }) {
+interface ChartProps {
+  stats: SeasonDataFC;
+  seasonType: string;
+}
+
+export function ChartSection({ stats, seasonType }: ChartProps) {
   // Individual view state for each chart
   const [viewTypes, setViewTypes] = useState<Record<ChartType, ViewType>>({
     course: 'chart',
@@ -70,7 +75,7 @@ export function ChartSection({ stats }: { stats: SeasonDataFC }) {
             </Button>
           </CardHeader>
           <CardContent>
-            <ChartComponent viewType={viewTypes[type]} data={data} />
+            <ChartComponent viewType={viewTypes[type]} data={data} seasonType = {seasonType}/>
           </CardContent>
         </Card>
       ))}
