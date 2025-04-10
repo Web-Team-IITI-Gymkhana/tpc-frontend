@@ -116,6 +116,7 @@ export default function Dashboard() {
     )
   }
 
+  console.log(seasonData);
   return (
     console.log(seasonData),
     <div>
