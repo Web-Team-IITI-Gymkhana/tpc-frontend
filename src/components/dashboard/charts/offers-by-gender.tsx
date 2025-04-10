@@ -24,9 +24,13 @@ interface GenderWiseStats {
 interface OffersByGenderProps {
   viewType: 'chart' | 'table'
   data: GenderWiseStats
+  seasonType: string
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, seasonType }: any) => {
+  const packageLabel = seasonType === "PLACEMENT" ? "Package" : "Stipend";
+  const typeLabel = seasonType === "PLACEMENT" ? "Placement" : "Internship";
+
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -34,13 +38,13 @@ const CustomTooltip = ({ active, payload }: any) => {
         <p className="font-bold">{`Gender: ${data.gender}`}</p>
         <p>{`Total Registered Students: ${data.totalRegisteredStudentsCount}`}</p>
         <p>{`Placed Students: ${data.placedStudentsCount}`}</p>
-        <p>{`Placement %: ${data.placementPercentage.toFixed(2)}%`}</p>
-        <p>{`Unplaced %: ${data.unplacedPercentage.toFixed(2)}%`}</p>
-        <p>{`Highest Package: ₹${data.highestPackage.toFixed(2)}L`}</p>
-        <p>{`Lowest Package: ₹${data.lowestPackage.toFixed(2)}L`}</p>
-        <p>{`Mean Package: ₹${data.meanPackage.toFixed(2)}L`}</p>
-        <p>{`Median Package: ₹${data.medianPackage.toFixed(2)}L`}</p>
-        <p>{`Mode Package: ₹${data.modePackage.toFixed(2)}L`}</p>
+        <p>{`${typeLabel} %: ${data.placementPercentage.toFixed(2)}%`}</p>
+        <p>{`Un${typeLabel.toLowerCase()} %: ${data.unplacedPercentage.toFixed(2)}%`}</p>
+        <p>{`Highest ${packageLabel}: ₹${data.highestPackage.toFixed(2)}`}</p>
+        <p>{`Lowest ${packageLabel}: ₹${data.lowestPackage.toFixed(2)}`}</p>
+        <p>{`Mean ${packageLabel}: ₹${data.meanPackage.toFixed(2)}`}</p>
+        <p>{`Median ${packageLabel}: ₹${data.medianPackage.toFixed(2)}`}</p>
+        <p>{`Mode ${packageLabel}: ₹${data.modePackage.toFixed(2)}`}</p>
         <p>{`Total Offers: ${data.totalOffers}`}</p>
         <p>{`Total Companies Offering: ${data.totalCompaniesOffering}`}</p>
       </div>
@@ -49,7 +53,10 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export function OffersByGender({ viewType, data = {} }: OffersByGenderProps) {
+export function OffersByGender({ viewType, data = {}, seasonType }: OffersByGenderProps) {
+  const packageLabel = seasonType === "PLACEMENT" ? "Package" : "Stipend";
+  const typeLabel = seasonType === "PLACEMENT" ? "Placement" : "Internship";
+
   const transformedData = Object.entries(data).map(([gender, stats]) => ({
     gender,
     placementPercentage: stats.placementPercentage,
@@ -64,13 +71,13 @@ export function OffersByGender({ viewType, data = {} }: OffersByGenderProps) {
             <TableHead>Gender</TableHead>
             <TableHead>Total Students</TableHead>
             <TableHead>Placed Students</TableHead>
-            <TableHead>Placement %</TableHead>
-            <TableHead>Unplaced %</TableHead>
-            <TableHead>Highest Package (₹L)</TableHead>
-            <TableHead>Lowest Package (₹L)</TableHead>
-            <TableHead>Mean Package (₹L)</TableHead>
-            <TableHead>Median Package (₹L)</TableHead>
-            <TableHead>Mode Package (₹L)</TableHead>
+            <TableHead>{`${typeLabel} %`}</TableHead>
+            <TableHead>{`Un${typeLabel.toLowerCase()} %`}</TableHead>
+            <TableHead>{`Highest ${packageLabel}`}</TableHead>
+            <TableHead>{`Lowest ${packageLabel}`}</TableHead>
+            <TableHead>{`Mean ${packageLabel}`}</TableHead>
+            <TableHead>{`Median ${packageLabel}`}</TableHead>
+            <TableHead>{`Mode ${packageLabel}`}</TableHead>
             <TableHead>Total Offers</TableHead>
             <TableHead>Companies Offering</TableHead>
           </TableRow>
@@ -102,9 +109,9 @@ export function OffersByGender({ viewType, data = {} }: OffersByGenderProps) {
       <BarChart data={transformedData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="gender" />
-        <YAxis label={{ value: 'Placement %', angle: -90, position: 'insideLeft' }} />
-        <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="placementPercentage" fill="#82ca9d" name="Placement %" />
+        <YAxis label={{ value: `${typeLabel} %`, angle: -90, position: 'insideLeft' }} />
+        <Tooltip content={<CustomTooltip seasonType={seasonType} />} />
+        <Bar dataKey="placementPercentage" fill="#82ca9d" name={`${typeLabel} %`} />
       </BarChart>
     </ResponsiveContainer>
   )

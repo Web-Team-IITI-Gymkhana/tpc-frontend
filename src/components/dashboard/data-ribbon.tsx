@@ -51,17 +51,30 @@ function StatCard({ value, label, subtext, info, className }: StatCardProps) {
   )
 }
 
-export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
+interface DataRibbonProps {
+  stats: SeasonDataFC;
+  seasonType: string;
+}
+
+export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
   const overallStats = stats.overallStats;
+  let packageLabel = "Stipend";
+  if (seasonType === "PLACEMENT") {
+    packageLabel = "Package";
+  }
+  let typeLabel = "Internship";
+  if (seasonType === "PLACEMENT") {
+    typeLabel = "Placement";
+  }
 
   return (
     <div className="mb-6 space-y-4  max-w-full overflow-x-scroll">
       <div className="flex space-x-4 pb-4 md:pb-0">
         <StatCard
           value={`${overallStats.placementPercentage}%`}
-          label="Placement Percentage"
+          label={`${typeLabel} Percentage`}
           subtext={`${overallStats.placedStudentsCount} students placed out of ${overallStats.totalRegisteredStudentsCount} students`}
-          info="Current placement rate for eligible students"
+          info={`Current ${typeLabel} rate for eligible students`}
         />
         <StatCard
           value={overallStats.totalOffers}
@@ -71,18 +84,23 @@ export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
         />
         <StatCard
           value={overallStats.highestPackage}
-          label="Highest Package"
-          info="Highest annual package offered this season"
+          label={`Highest ${packageLabel}`}
+          info={`Highest ${packageLabel.toLowerCase()} offered this season`}
         />
         <StatCard
           value={overallStats.meanPackage}
-          label="Average Package"
-          info="Mean annual package across all offers"
+          label={`Average ${packageLabel}`}
+          info={`Mean ${packageLabel.toLowerCase()} across all offers`}
         />
         <StatCard
           value={overallStats.totalRegisteredStudentsCount}
-          label="Eligible"
-          info="Number of students eligible for placements"
+          label="Total Eligible Students"
+          info={`Number of students eligible for ${typeLabel.toLowerCase()}`}
+        />
+        <StatCard
+          value={overallStats.placedStudentsCount}
+          label="Total Placed Students"
+          info="Number of students placed"
         />
         <StatCard
           value={`${overallStats.unplacedPercentage}%`}
@@ -91,18 +109,18 @@ export function DataRibbon({ stats }: { stats: SeasonDataFC }) {
         />
         <StatCard
           value={overallStats.lowestPackage}
-          label="Lowest Package"
-          info="Lowest annual package offered this season"
+          label={`Lowest ${packageLabel}`}
+          info={`Lowest ${packageLabel.toLowerCase()} offered this season`}
         />
         <StatCard
           value={overallStats.medianPackage}
-          label="Median Package"
-          info="Middle value of all packages offered"
+          label={`Median ${packageLabel}`}
+          info={`Middle value of all ${packageLabel.toLowerCase()}s offered`}
         />
         <StatCard
           value={overallStats.modePackage}
-          label="Mode Package"
-          info="Most frequently offered package"
+          label={`Mode ${packageLabel}`}
+          info={`Most frequently offered ${packageLabel.toLowerCase()}`}
         />
       </div>
     </div>

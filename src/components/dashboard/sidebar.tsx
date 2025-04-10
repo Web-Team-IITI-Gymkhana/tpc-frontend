@@ -35,7 +35,9 @@ function StatItem({ label, value, onClick }: StatItemProps) {
 interface SidebarProps {
   view: "reports" | "trends";
   season: string;
+  seasonType: string;
   setSeason: (season: string) => void;
+  setSeasonType: (seasonType: string) => void;
   options: any[];
   setYearRange: (range: [number, number]) => void;
   yearRange: [number, number];
@@ -44,7 +46,9 @@ interface SidebarProps {
 export function Sidebar({
   view,
   season,
+  seasonType,
   setSeason,
+  setSeasonType,
   options,
   setYearRange,
   yearRange,
@@ -105,18 +109,27 @@ export function Sidebar({
       <div className="p-4 space-y-4">
         <div className="space-y-2 border rounded-lg p-4">
           <p className="text-gray-500">Select Season :</p>
-          <Select value={season} onValueChange={setSeason}>
+            <Select
+            value={season}
+            onValueChange={(value) => {
+              const selectedOption = options.find((option) => option.value === value);
+              setSeason(value);
+              if (selectedOption) {
+              setSeasonType(selectedOption.type);
+              }
+            }}
+            >
             <SelectTrigger>
               <SelectValue placeholder="Select Season" />
             </SelectTrigger>
             <SelectContent>
               {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
               ))}
             </SelectContent>
-          </Select>
+            </Select>
 
           {/* <Select
             value={selectedTypes.join(",")}

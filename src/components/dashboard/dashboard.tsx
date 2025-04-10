@@ -6,6 +6,7 @@ import { ChartSection } from "./chart-section";
 import { SeasonDataFC } from "@/helpers/analytics-dashboard/types";
 import { getSeasonStats } from "@/helpers/analytics-dashboard/api";
 import Loading from "../common/loading";
+import Loader from "../Loader/loader";
 import axios from "axios";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -33,6 +34,7 @@ function validateSeasonData(data: SeasonDataFC): boolean {
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<"reports" | "trends">("reports");
   const [season, setSeason] = useState<string>("");
+  const [seasonType, setSeasonType] = useState<string>("");
   const [yearRange, setYearRange] = useState<[number, number]>([new Date().getFullYear() - 5, new Date().getFullYear()]);
   const [seasonData, setSeasonData] = useState<SeasonDataFC | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -61,6 +63,7 @@ export default function Dashboard() {
       setOptionsx(newOptions);
       if (newOptions.length > 0) {
         setSeason(newOptions[0].value);
+        setSeasonType(newOptions[0].type);
       }
       setIsLoading(false);
     })
@@ -88,7 +91,7 @@ export default function Dashboard() {
         setIsLoading(false)
       }
     }
-    if(season !== "") {
+    if(season !== "" && seasonType !== "") {
       fetchSeasonData();
     }
   }, [season])
@@ -96,7 +99,9 @@ export default function Dashboard() {
   
 
   if (isLoading) {
-    return Loading();
+    return <div className="flex items-center justify-center min-h-screen">
+    <Loader />
+  </div>
   }
 
   if (error) {
@@ -104,23 +109,28 @@ export default function Dashboard() {
   }
 
   while(seasonData === null) {
-    return Loading();
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader />
+      </div>
+    )
   }
 
-  console.log(seasonData);
   return (
     console.log(seasonData),
     <div>
     <Header currentView={currentView} onViewChange={setCurrentView} data = {seasonData}/>
       <div className="flex h-screen overflow-y-auto bg-background">
         <main className="flex-1 overflow-y-auto p-6 no-scrollbar">
-          <DataRibbon stats={seasonData} />
-          <ChartSection stats = {seasonData}/>
+          <DataRibbon stats={seasonData} seasonType = {seasonType}/>
+          <ChartSection stats = {seasonData} seasonType = {seasonType}/>
         </main>
         <Sidebar 
           view={currentView} 
           season={season}
+          seasonType={seasonType}
           setSeason={setSeason}
+          setSeasonType={setSeasonType}
           options={optionsx}
           setYearRange={setYearRange}
           yearRange={yearRange}
