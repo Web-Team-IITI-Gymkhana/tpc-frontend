@@ -77,7 +77,6 @@ export default function Dashboard() {
       setIsLoading(true)
       try {
         let data = await getSeasonStats(season);
-        console.log(data);  
         if (data === null || !validateSeasonData(data)) {
           setError('Unable to fetch the data');
         } else {
@@ -116,9 +115,7 @@ export default function Dashboard() {
     )
   }
 
-  console.log(seasonData);
   return (
-    console.log(seasonData),
     <div>
     <Header currentView={currentView} onViewChange={setCurrentView} data = {seasonData}/>
       <div className="flex h-screen overflow-y-auto bg-background">
