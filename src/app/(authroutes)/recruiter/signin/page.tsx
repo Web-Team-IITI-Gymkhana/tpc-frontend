@@ -30,7 +30,7 @@ const LoginForm = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center gap-3 items-center">
               <LoginWithEmail email={email} />
               <Link href={"/recruiter/signup/"}>
                 <Button variant="outline">Sign Up</Button>
