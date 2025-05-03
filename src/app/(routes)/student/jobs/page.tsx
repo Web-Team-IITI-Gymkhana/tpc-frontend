@@ -35,12 +35,17 @@ const StudentPage = () => {
             <Loader />
           </div>
         )}
-        {jobs &&
+        {jobs ? (
           jobs.map((job) => (
             <div key={job.id} className="my-3">
               <JobCard jobItem={job} type="job" />
             </div>
-          ))}
+          ))
+        ) : (
+          <div className="h-screen w-full flex justify-center items-center">
+            <h1 className="text-2xl font-bold">No Jobs Available</h1>
+          </div>
+        )}
       </div>
     </div>
   );
