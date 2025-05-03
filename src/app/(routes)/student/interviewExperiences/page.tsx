@@ -42,7 +42,7 @@ const InterviewExpiriencePage = () => {
     if (interviewExpirienceData.length == 0) {
       fetchInterviewExpiriences();
     }
-  });
+  }, []);
 
   return (
     <>

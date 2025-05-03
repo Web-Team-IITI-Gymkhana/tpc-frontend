@@ -62,15 +62,19 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   const handleOpenJD = async (filename: string) => {
     OpenJD(filename);
   };
-  const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>, index: number, field: string) => {
+  const handleChange2 = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    field: string,
+  ) => {
     console.log("Event:", e);
     console.log("Index:", index);
     console.log("Field:", field);
-    
-    setFormData(prevFormData => ({
+
+    setFormData((prevFormData) => ({
       ...prevFormData,
       salaries: prevFormData.salaries.map((salary, i) =>
-        i === index ? { ...salary, [field]: e.target.value } : salary
+        i === index ? { ...salary, [field]: e.target.value } : salary,
       ),
     }));
   };
@@ -135,7 +139,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 )}
               </div>
               <div className="flex flex-col">
-                <span className="font-semibold text-lg">Activity </span>
+                <span className="font-semibold text-lg">Active </span>
                 <span>{job.active ? "Active" : "Inactive"}</span>
               </div>
               <div className="flex flex-col">
@@ -224,7 +228,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   )}
                 </div>
                 <div>
-                <div className="font-semibold my-2">Attachments</div>{" "}
+                  <div className="font-semibold my-2">Attachments</div>{" "}
                   {job.attachments?.map((attachment, index) => (
                     <div
                       className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"

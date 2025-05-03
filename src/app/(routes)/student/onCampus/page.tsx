@@ -4,7 +4,6 @@ import { GetOnCampusOffers } from "@/helpers/student/api";
 import { OnCampusOffers } from "@/helpers/student/types";
 import OnCampusCard from "@/components/jobs/OnCampusCard";
 import toast from "react-hot-toast";
-import loadingImg from "@/components/Faculty/loadingSpinner.svg";
 import Loader from "@/components/Loader/loader";
 const StudentPage = () => {
   const [onCampusOffers, setOnCampusOffers] = useState<OnCampusOffers[]>([]);

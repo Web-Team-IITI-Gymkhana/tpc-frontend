@@ -31,6 +31,7 @@ import { CompanyPostFC, JAFdetailsFC } from "@/helpers/recruiter/types";
 import { MultiSelect } from "../ui/multiselect";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
 const Collapsible = dynamic(() => import("@/components/ui/collapsible"), {
   ssr: false,
@@ -251,6 +252,7 @@ export const RecruiterForm = ({
 export default function RecruiterSignup() {
   const [companies, setCompanies] = useState([]);
   const [createCompany, setCreateCompany] = useState(false);
+  const router = useRouter();
 
   const [companyFormData, setCompanyFormData] = useState<CompanyPostFC>({
     name: "",
@@ -310,6 +312,7 @@ export default function RecruiterSignup() {
         const signupRes = await signupRecruiter(updatedFormData);
         if (signupRes.success) {
           toast.success("Successful! Please check your mail");
+          router.push("/recruiter/signin");
         } else {
           toast.error("Some error occured");
         }
