@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { LoginWithEmail } from "@/components/loginForms/loginWithEmail";
-
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("");
 
@@ -31,6 +32,9 @@ const LoginForm = () => {
             </div>
             <div className="flex justify-center">
               <LoginWithEmail email={email} />
+              <Link href={"/recruiter/signup/"}>
+                <Button variant="outline">Sign Up</Button>
+              </Link>
             </div>
           </div>
         </CardContent>
