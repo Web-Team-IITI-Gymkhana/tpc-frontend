@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TableIcon, BarChartIcon } from 'lucide-react'
+import { TableIcon, BarChartIcon, PieChartIcon } from 'lucide-react'
 import { OffersByCourse } from './charts/offers-by-course'
 import { OffersByDepartment } from './charts/offers-by-department'
 import { OffersByGender } from './charts/offers-by-gender'
@@ -14,7 +14,7 @@ import { OffersByIndustryType } from './charts/offers-by-industry-type'
 import { SeasonDataFC } from '@/helpers/analytics-dashboard/types'
 
 type ChartType = 'course' | 'department' | 'gender' | 'academics' | 'category' | 'industryType'
-type ViewType = 'chart' | 'table'
+type ViewType = 'chart' | 'pie' | 'table'
 
 interface ChartConfig {
   type: ChartType
@@ -62,20 +62,41 @@ export function ChartSection({ stats, seasonType }: ChartProps) {
         <Card key={type} className="w-full">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{title}</CardTitle>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => toggleView(type)}
-            >
-              {viewTypes[type] === 'chart' ? (
-                <TableIcon className="h-4 w-4" />
-              ) : (
+            <div className="flex gap-2">
+              <Button 
+                variant={viewTypes[type] === 'chart' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => setViewTypes(prev => ({
+                  ...prev,
+                  [type]: 'chart'
+                }))}
+              >
                 <BarChartIcon className="h-4 w-4" />
-              )}
-            </Button>
+              </Button>
+              <Button 
+                variant={viewTypes[type] === 'pie' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => setViewTypes(prev => ({
+                  ...prev,
+                  [type]: 'pie'
+                }))}
+              >
+                <PieChartIcon className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant={viewTypes[type] === 'table' ? 'default' : 'outline'} 
+                size="icon"
+                onClick={() => setViewTypes(prev => ({
+                  ...prev,
+                  [type]: 'table'
+                }))}
+              >
+                <TableIcon className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            <ChartComponent viewType={viewTypes[type]} data={data} seasonType = {seasonType}/>
+            <ChartComponent viewType={viewTypes[type]} data={data} seasonType={seasonType}/>
           </CardContent>
         </Card>
       ))}
