@@ -22,7 +22,7 @@ interface GenderWiseStats {
 }
 
 interface OffersByGenderProps {
-  viewType: 'chart' | 'table'
+  viewType: 'chart' | 'pie' | 'table'
   data: GenderWiseStats
   seasonType: string
 }
@@ -103,6 +103,16 @@ export function OffersByGender({ viewType, data = {}, seasonType }: OffersByGend
       </Table>
     )
   }
+
+    // Pie Chart View
+
+    else if (viewType === 'pie') {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-500">Pie chart view is not implemented yet.</p>
+        </div>
+      )
+    }
 
   return (
     <ResponsiveContainer width="100%" height={300}>

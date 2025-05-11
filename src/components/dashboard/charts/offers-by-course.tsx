@@ -22,7 +22,7 @@ interface CourseWiseStats {
 }
 
 interface OffersByCourseProps {
-  viewType: 'chart' | 'table'
+  viewType: 'chart' | 'pie' | 'table'
   data: CourseWiseStats
   seasonType: string
 }
@@ -101,6 +101,16 @@ export function OffersByCourse({ viewType, data = {}, seasonType }: OffersByCour
           ))}
         </TableBody>
       </Table>
+    )
+  }
+
+  // Pie Chart View
+
+  else if (viewType === 'pie') {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-gray-500">Pie chart view is not implemented yet.</p>
+      </div>
     )
   }
 

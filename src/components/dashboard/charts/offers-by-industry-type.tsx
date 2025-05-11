@@ -4,7 +4,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContaine
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface OffersByIndustryTypeProps {
-  viewType: 'chart' | 'table'
+  viewType: 'chart' | 'pie' | 'table'
   data: { industry: string, offers: number }[]
 }
 
@@ -32,6 +32,16 @@ export function OffersByIndustryType({ viewType, data = [] }: OffersByIndustryTy
       </Table>
     )
   }
+
+    // Pie Chart View
+
+    else if (viewType === 'pie') {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-500">Pie chart view is not implemented yet.</p>
+        </div>
+      )
+    }
 
   return (
     <ResponsiveContainer width="100%" height={300}>

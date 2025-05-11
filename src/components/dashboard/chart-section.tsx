@@ -48,14 +48,6 @@ export function ChartSection({ stats, seasonType }: ChartProps) {
     // { type: 'industryType', title: 'Offers by Industry Type', component: OffersByIndustryType, data: stats.overallStats }
   ]
 
-  // Toggle view for a specific chart
-  const toggleView = (chartType: ChartType) => {
-    setViewTypes(prev => ({
-      ...prev,
-      [chartType]: prev[chartType] === 'chart' ? 'table' : 'chart'
-    }))
-  }
-
   return (
     <div className="space-y-6">
       {charts.map(({ type, title, component: ChartComponent, data }) => (
