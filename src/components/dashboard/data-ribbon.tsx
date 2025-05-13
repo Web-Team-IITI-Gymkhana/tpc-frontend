@@ -94,8 +94,8 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
         />
         <StatCard
           value={overallStats.totalRegisteredStudentsCount}
-          label="Total Eligible Students"
-          info={`Number of students eligible for ${typeLabel.toLowerCase()}`}
+          label="Total Regestered Students"
+          info={`Number of students regestered for ${typeLabel.toLowerCase()}`}
         />
         <StatCard
           value={overallStats.placedStudentsCount}
