@@ -1,7 +1,14 @@
 'use client'
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+const COLORS = [
+  '#FF8042', // For unplaced students
+  '#0088FE', // Male
+  '#00C49F', // Female
+  '#FFBB28'  // Other
+];
 
 interface GenderStats {
   totalRegisteredStudentsCount: number
@@ -22,7 +29,7 @@ interface GenderWiseStats {
 }
 
 interface OffersByGenderProps {
-  viewType: 'chart' | 'table'
+  viewType: 'chart' | 'pie' | 'table'
   data: GenderWiseStats
   seasonType: string
 }
@@ -103,6 +110,100 @@ export function OffersByGender({ viewType, data = {}, seasonType }: OffersByGend
       </Table>
     )
   }
+
+    // Pie Chart View
+
+    else if (viewType === 'pie') {
+      const totalStudents = Object.values(data).reduce(
+        (sum, stats) => sum + stats.totalRegisteredStudentsCount, 0
+      );
+    
+      const pieData = Object.entries(data).map(([gender, stats]) => ({
+        name: gender,
+        value: stats.placedStudentsCount,
+        stats
+      }));
+    
+      // Add unplaced students as first segment
+      const totalPlaced = Object.values(data).reduce(
+        (sum, stats) => sum + stats.placedStudentsCount, 0
+      );
+      const unplacedCount = totalStudents - totalPlaced;
+      pieData.unshift({
+        name: 'Unplaced',
+        value: unplacedCount,
+        stats: {
+          totalRegisteredStudentsCount: totalStudents,
+          placedStudentsCount: unplacedCount,
+          placementPercentage: 0,
+          unplacedPercentage: 100,
+          highestPackage: 0,
+          lowestPackage: 0,
+          meanPackage: 0,
+          medianPackage: 0,
+          modePackage: 0,
+          totalOffers: 0,
+          totalCompaniesOffering: 0
+        }
+      });
+    
+      const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) => {
+        const RADIAN = Math.PI / 180;
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    
+        return percent > 0.0 ? (
+          <text
+            x={x}
+            y={y}
+            fill="black"
+            textAnchor={x > cx ? 'start' : 'end'}
+            dominantBaseline="central"
+          >
+            {`${name} (${(percent * 100).toFixed(1)}%)`}
+          </text>
+        ) : null;
+      };
+    
+      return (
+        <div className="w-full h-[500px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={CustomLabel}
+                outerRadius={200}
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-white p-2 rounded-lg shadow-lg border">
+                        <p className="font-bold">{data.name}</p>
+                        <p>Students: {data.value}</p>
+                        <p>Percentage: {((data.value / totalStudents) * 100).toFixed(2)}%</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
 
   return (
     <ResponsiveContainer width="100%" height={300}>
