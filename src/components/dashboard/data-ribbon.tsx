@@ -71,7 +71,7 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
     <div className="mb-6 space-y-4  max-w-full overflow-x-scroll">
       <div className="flex space-x-4 pb-4 md:pb-0">
         <StatCard
-          value={`${overallStats.placementPercentage}%`}
+          value={`${overallStats.placementPercentage.toFixed(2)}%`}
           label={`${typeLabel} Percentage`}
           subtext={`${overallStats.placedStudentsCount} students placed out of ${overallStats.totalRegisteredStudentsCount} students`}
           info={`Current ${typeLabel} rate for eligible students`}
@@ -83,12 +83,12 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
           info="Total number of offers made to students"
         />
         <StatCard
-          value={overallStats.highestPackage}
+          value={overallStats.highestPackage.toFixed(2)}
           label={`Highest ${packageLabel}`}
           info={`Highest ${packageLabel.toLowerCase()} offered this season`}
         />
         <StatCard
-          value={overallStats.meanPackage}
+          value={overallStats.meanPackage.toFixed(2)}
           label={`Average ${packageLabel}`}
           info={`Mean ${packageLabel.toLowerCase()} across all offers`}
         />
@@ -103,22 +103,22 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
           info="Number of students placed"
         />
         <StatCard
-          value={`${overallStats.unplacedPercentage}%`}
+          value={`${overallStats.unplacedPercentage.toFixed(2)}%`}
           label="Total Unplaced Students"
           info="Percentage of eligible students yet to be placed"
         />
         <StatCard
-          value={overallStats.lowestPackage}
+          value={overallStats.lowestPackage.toFixed(2)}
           label={`Lowest ${packageLabel}`}
           info={`Lowest ${packageLabel.toLowerCase()} offered this season`}
         />
         <StatCard
-          value={overallStats.medianPackage}
+          value={overallStats.medianPackage.toFixed(2)}
           label={`Median ${packageLabel}`}
           info={`Middle value of all ${packageLabel.toLowerCase()}s offered`}
         />
         <StatCard
-          value={overallStats.modePackage}
+          value={overallStats.modePackage.toFixed(2)}
           label={`Mode ${packageLabel}`}
           info={`Most frequently offered ${packageLabel.toLowerCase()}`}
         />
