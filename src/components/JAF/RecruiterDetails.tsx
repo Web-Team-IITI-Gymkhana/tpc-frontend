@@ -16,9 +16,31 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
       <h3 className="text-lg my-3">Point of Contacts</h3>
       <Row gutter={24}>
         {[1, 2, 3].map((index) => (
-          <Col span={8} key={index} style={{ border: '0px 0px 0px 2 px', padding: '0 65px' }}>
-            <h3 className="text-md my-3">{index === 1 ? "Head HR" : `Point of Contact ${index - 1}`}</h3>
-            <Form.Item label={`Name`}>
+          <Col
+            span={8}
+            key={index}
+            style={{ border: "0px 0px 0px 2 px", padding: "0 65px" }}
+          >
+            <h3 className="text-md my-3">
+              {index === 1 ? "Head HR" : `Point of Contact ${index - 1}`}
+            </h3>
+            <Form.Item
+              style={{ marginBottom: "35px" }}
+              required={
+                index === 1 ||
+                values[`recName${index}`] ||
+                values[`designation${index}`] ||
+                values[`email${index}`] ||
+                values[`phoneNumber${index}`] ||
+                values[`landline${index}`]
+              }
+              label={`Name`}
+              hasFeedback={true}
+              validateStatus={!!errors[`recName${index}`] ? "error" : ""}
+              help={
+                errors[`recName${index}`] ? `${errors[`recName${index}`]}` : ""
+              }
+            >
               <Input
                 name={`recName${index}`}
                 placeholder="Name"
@@ -28,10 +50,22 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
             </Form.Item>
             <Form.Item
               label={`Designation`}
-              required={index === 1}
-              hasFeedback={index === 1}
-              validateStatus={index === 1 && !!errors[`designation${index}`] ? "error" : ""}
-              help={index === 1 && errors[`designation${index}`] ? `${errors[`designation${index}`]}` : ""}
+              style={{ marginBottom: "35px" }}
+              required={
+                index === 1 ||
+                values[`recName${index}`] ||
+                values[`designation${index}`] ||
+                values[`email${index}`] ||
+                values[`phoneNumber${index}`] ||
+                values[`landline${index}`]
+              }
+              hasFeedback={true}
+              validateStatus={!!errors[`designation${index}`] ? "error" : ""}
+              help={
+                errors[`designation${index}`]
+                  ? `${errors[`designation${index}`]}`
+                  : ""
+              }
             >
               <Input
                 name={`designation${index}`}
@@ -42,9 +76,18 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
             </Form.Item>
             <Form.Item
               label={`Email`}
-              required={index === 1}
-              validateStatus={index === 1 && !!errors[`email${index}`] ? "error" : ""}
-              help={index === 1 && errors[`email${index}`] ? `${errors[`email${index}`]}` : ""}
+              style={{ marginBottom: "35px" }}
+              hasFeedback={true}
+              required={
+                index === 1 ||
+                values[`recName${index}`] ||
+                values[`designation${index}`] ||
+                values[`email${index}`] ||
+                values[`phoneNumber${index}`] ||
+                values[`landline${index}`]
+              }
+              validateStatus={!!errors[`email${index}`] ? "error" : ""}
+              help={errors[`email${index}`] ? `${errors[`email${index}`]}` : ""}
             >
               <Input
                 name={`email${index}`}
@@ -55,9 +98,22 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
             </Form.Item>
             <Form.Item
               label={`Phone`}
-              required={index === 1}
-              validateStatus={index === 1 && !!errors[`phoneNumber${index}`] ? "error" : ""}
-              help={index === 1 && errors[`phoneNumber${index}`] ? `${errors[`phoneNumber${index}`]}` : ""}
+              style={{ marginBottom: "35px" }}
+              hasFeedback={true}
+              required={
+                index === 1 ||
+                values[`recName${index}`] ||
+                values[`designation${index}`] ||
+                values[`email${index}`] ||
+                values[`phoneNumber${index}`] ||
+                values[`landline${index}`]
+              }
+              validateStatus={!!errors[`phoneNumber${index}`] ? "error" : ""}
+              help={
+                errors[`phoneNumber${index}`]
+                  ? `${errors[`phoneNumber${index}`]}`
+                  : ""
+              }
             >
               <Input
                 name={`phoneNumber${index}`}
@@ -67,7 +123,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                 addonBefore="+91"
               />
             </Form.Item>
-            <Form.Item label={`Landline`}>
+            <Form.Item label={`Landline`} hasFeedback={true}>
               <Input
                 name={`landline${index}`}
                 placeholder="Landline"
