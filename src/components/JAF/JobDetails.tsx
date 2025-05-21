@@ -1,4 +1,10 @@
-import { FormikErrors, FormikValues, FormikHandlers, Formik, Field } from "formik";
+import {
+  FormikErrors,
+  FormikValues,
+  FormikHandlers,
+  Formik,
+  Field,
+} from "formik";
 import {
   Form,
   Upload,
@@ -16,14 +22,20 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import dynamic from 'next/dynamic';
-import 'react-quill/dist/quill.snow.css';
-import './styles/CustomQuill.css';
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+import "./styles/CustomQuill.css";
 import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const { TextArea } = Input;
+
+const toErrorString = (err: unknown): string | undefined => {
+  if (typeof err === "string") return err; // plain message
+  if (Array.isArray(err)) return err.join(", "); // ["A","B"] → "A, B"
+  return undefined; // nested object → ignore
+};
 
 type StepProps = {
   errors: FormikErrors<FormikValues>;
@@ -41,7 +53,12 @@ const getBase64 = (file: File): Promise<string> => {
   });
 };
 
-const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) => {
+const JobDetails = ({
+  errors,
+  values,
+  handleChange,
+  setFieldValue,
+}: StepProps) => {
   const [form] = Form.useForm();
 
   const [skills, setSkills] = useState([]);
@@ -58,14 +75,14 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const handleFileChange = async (info: any) => {
-    if (info.file.status !== 'uploading') {
-      console.log('Uploading:', info.file, info.fileList);
+    if (info.file.status !== "uploading") {
+      console.log("Uploading:", info.file, info.fileList);
     }
     if (info.file.status === "done") {
       const file = info.file.originFileObj;
       try {
         const base64String = await getBase64(file);
-        const files=values.attachments;
+        const files = values.attachments;
         files.push(base64String);
         setFieldValue("attachments", files);
         console.log(values.attachments);
@@ -76,14 +93,14 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
     } else if (info.file.status === "error") {
       message.error(`${info.file.name} file upload failed.`);
     }
-    
+
     setFileList(info.fileList);
-  };  
+  };
 
   const handleSkillChange = (newSkills: string[]) => {
     setSkills(newSkills);
-    setFieldValue("skills", newSkills); 
-  }
+    setFieldValue("skills", newSkills);
+  };
 
   useEffect(() => {
     axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
@@ -97,7 +114,7 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       setInterviewType(interviewTypeOptions);
 
       const matchingSeason = res.data.seasons.find(
-        (season) => season.id === values.seasonId
+        (season) => season.id === values.seasonId,
       );
 
       if (matchingSeason) {
@@ -123,159 +140,191 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
         salaries: [{}],
       }}
       onValuesChange={() => {
-        values.interviews = form.getFieldsValue().interviews;
-        values.tests = form.getFieldsValue().tests;
-        let objx: any = [];
-        form.getFieldsValue().salaries.map((salary: any) => {
-          const obj = {
-            salaryPeriod: salary.salaryPeriod || "", // text
-            programs: salary.programs || [], // dropdown from backend
-            genders: salary.genders || [], // dropdown from backend
-            categories: salary.categories || [], // dropdown from backend
-            isBacklogAllowed: salary.isBacklogAllowed || "", // dropdown from backend
-            minCPI: salary.minCPI || 0, // number
-            tenthMarks: salary.tenthMarks || 0, // number
-            twelthMarks: salary.twelthMarks || 0, // number
-            baseSalary: salary.baseSalary || 0,
-
-            //PLACEMENT
-            totalCTC: salary.totalCTC || 0,
-            takeHomeSalary: salary.takeHomeSalary || 0,
-            grossSalary: salary.grossSalary || 0,
-            joiningBonus: salary.joiningBonus || 0,
-            performanceBonus: salary.performanceBonus || 0,
-            relocation: salary.relocation || 0,
-            bondAmount: salary.bondAmount || 0,
-            esopAmount: salary.esopAmount || 0,
-            esopVestPeriod: salary.esopVestPeriod || "", // text
-            firstYearCTC: salary.firstYearCTC || 0,
-            retentionBonus: salary.retentionBonus || 0,
-            deductions: salary.deductions || 0,
-            medicalAllowance: salary.medicalAllowance || 0,
-            bondDuration: salary.bondDuration || "", // text
-            foreignCurrencyCTC: salary.foreignCurrencyCTC || 0,
-            foreignCurrencyCode: salary.foreignCurrencyCode || "", // text
-            otherCompensations: salary.otherCompensations || 0, // textbox
-            others: salary.others || "", // text
-          
-            // Internship-related fields
-            stipend: salary.stipend || 0,
-            foreignCurrencyStipend: salary.foreignCurrencyStipend || 0,
-            accommodation: salary.accommodation || 0,
-            tentativeCTC: salary.tentativeCTC || 0,
-            PPOConfirmationDate: salary.PPOConfirmationDate || null, // date
-          };
-          objx.push(obj);
-        });
-        values.salaries = objx;
+        setFieldValue("interviews", form.getFieldsValue().interviews);
+        setFieldValue("tests", form.getFieldsValue().tests);
+        const norm = form.getFieldsValue().salaries.map((s: any) => ({
+          salaryPeriod: s.salaryPeriod ?? "",
+          programs: s.programs ?? [],
+          genders: s.genders ?? [],
+          categories: s.categories ?? [],
+          isBacklogAllowed: s.isBacklogAllowed ?? "",
+          minCPI: s.minCPI ?? 0,
+          tenthMarks: s.tenthMarks ?? 0,
+          twelthMarks: s.twelthMarks ?? 0,
+          baseSalary: s.baseSalary ?? 0,
+          totalCTC: s.totalCTC ?? 0,
+          takeHomeSalary: s.takeHomeSalary ?? 0,
+          grossSalary: s.grossSalary ?? 0,
+          joiningBonus: s.joiningBonus ?? 0,
+          performanceBonus: s.performanceBonus ?? 0,
+          relocation: s.relocation ?? 0,
+          bondAmount: s.bondAmount ?? 0,
+          esopAmount: s.esopAmount ?? 0,
+          esopVestPeriod: s.esopVestPeriod ?? "",
+          firstYearCTC: s.firstYearCTC ?? 0,
+          retentionBonus: s.retentionBonus ?? 0,
+          deductions: s.deductions ?? 0,
+          medicalAllowance: s.medicalAllowance ?? 0,
+          bondDuration: s.bondDuration ?? "",
+          foreignCurrencyCTC: s.foreignCurrencyCTC ?? 0,
+          foreignCurrencyCode: s.foreignCurrencyCode ?? "",
+          otherCompensations: s.otherCompensations ?? 0,
+          others: s.others ?? "",
+          stipend: s.stipend ?? 0,
+          foreignCurrencyStipend: s.foreignCurrencyStipend ?? 0,
+          accommodation: s.accommodation ?? 0,
+          tentativeCTC: s.tentativeCTC ?? 0,
+          PPOConfirmationDate: s.PPOConfirmationDate ?? null,
+        }));
+        setFieldValue("salaries", norm);
       }}
     >
       <h1 className="text-xl">Job Details</h1>
       <Row gutter={24}>
+        {/* Job Title (required) */}
         <Col span={12}>
-          <Form.Item label="Job Title">
+          <Form.Item
+            label="Job Title"
+            required
+            hasFeedback
+            validateStatus={toErrorString(errors.role) ? "error" : undefined}
+            help={toErrorString(errors.role)}
+          >
             <Input
               name="role"
               placeholder="Job Title"
-              onChange={handleChange}
               value={values.role}
+              onChange={handleChange}
             />
           </Form.Item>
         </Col>
+
+        {/* Duration (optional) */}
         <Col span={12}>
           <Form.Item label="Duration">
             <Input
               name="duration"
-              placeholder="Duration"
-              onChange={handleChange}
+              placeholder="e.g. 6 months"
               value={values.duration}
+              onChange={handleChange}
             />
           </Form.Item>
         </Col>
       </Row>
-
       <Row gutter={24}>
         <Col span={12}>
-        <Form.Item label="Offer Letter Date">
+          <Form.Item label="Offer Letter Date">
             <Input
               type="date"
               name="offerLetterReleaseDate"
-              placeholder="Offer Letter Date"
-              onChange={handleChange}
               value={values.offerLetterReleaseDate}
+              onChange={handleChange}
             />
           </Form.Item>
         </Col>
+
         <Col span={12}>
           <Form.Item label="Tentative Joining Date">
             <Input
               type="date"
               name="joiningDate"
-              placeholder="Tentative Joining Date"
-              onChange={handleChange}
               value={values.joiningDate}
+              onChange={handleChange}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={24}>
+        {/* Location (required) */}
+        <Col span={12}>
+          <Form.Item
+            label="Location"
+            required
+            hasFeedback
+            validateStatus={
+              toErrorString(errors.location) ? "error" : undefined
+            }
+            help={toErrorString(errors.location)}
+          >
+            <Input
+              name="location"
+              placeholder="City / Remote"
+              value={values.location}
+              onChange={handleChange}
+            />
+          </Form.Item>
+        </Col>
+
+        {/* Expected hires (optional but numeric) */}
+        <Col span={12}>
+          <Form.Item
+            label="Expected number of Hires"
+            validateStatus={
+              toErrorString(errors.expectedNoOfHires) ? "error" : undefined
+            }
+            help={toErrorString(errors.expectedNoOfHires)}
+          >
+            <Input
+              type="number"
+              name="expectedNoOfHires"
+              value={values.expectedNoOfHires}
+              onChange={handleChange}
+              min={0}
             />
           </Form.Item>
         </Col>
       </Row>
       <Row gutter={24}>
         <Col span={12}>
-          <Form.Item label="Location">
-            <Input
-              name="location"
-              placeholder="Location"
-              onChange={handleChange}
-              value={values.location}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-        <Form.Item label="Expected number of Hires">
-            <Input
-              type="number"
-              name="expectedNoOfHires"
-              placeholder="Expected number of Hires"
-              onChange={handleChange}
-              value={values.expectedNoOfHires}
-            />
-          </Form.Item>
-        </Col>       
-      </Row>
-      <Row gutter={24}>        
-        <Col span={12}>
-          <Form.Item label="Minimum number of Hires">
+          <Form.Item
+            label="Minimum number of Hires"
+            validateStatus={
+              toErrorString(errors.minNoOfHires) ? "error" : undefined
+            }
+            help={toErrorString(errors.minNoOfHires)}
+          >
             <Input
               type="number"
               name="minNoOfHires"
-              placeholder="Minimum number of Hires"
-              onChange={handleChange}
               value={values.minNoOfHires}
+              onChange={handleChange}
+              min={0}
             />
           </Form.Item>
-        </Col>        
-        <Col span={12}>
-          
-        </Col>        
+        </Col>
       </Row>
-      <Row gutter={24}>        
+
+      <Row gutter={24}>
         <Col span={24}>
-        <Form.Item label="Skills">
-          <Select
-            mode="tags"
-            style={{ width: "100%" }}
-            placeholder="Enter a skill and press Enter"
-            value={skills}
-            onChange={handleSkillChange}
-          />
-        </Form.Item>
-        </Col>     
+          <Form.Item
+            label="Skills"
+            validateStatus={toErrorString(errors.skills) ? "error" : undefined}
+            help={toErrorString(errors.skills)}
+          >
+            <Select
+              mode="tags"
+              style={{ width: "100%" }}
+              placeholder="Enter a skill and press Enter"
+              value={values.skills}
+              onChange={(newSkills) => {
+                setFieldValue("skills", newSkills);
+                setSkills(newSkills);
+              }}
+            />
+          </Form.Item>
+        </Col>
       </Row>
-      <Form.Item label="Description" className="my-3">
+      <Form.Item
+        label="Description"
+        className="my-3"
+        validateStatus={toErrorString(errors.description) ? "error" : undefined}
+        help={toErrorString(errors.description)}
+      >
         <Field name="description">
-          {({ field }) => (
+          {() => (
             <ReactQuill
               value={values.description}
-              onChange={(content) => setFieldValue('description', content)}
+              onChange={(html) => setFieldValue("description", html)}
               placeholder="Enter the description here..."
               className="custom-quill"
             />
@@ -284,82 +333,90 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
       </Form.Item>
       <Row gutter={24}>
         <Col span={12}>
-          <Form.Item label="Attachments">
-          <Upload
-            fileList={fileList} 
-            onChange={handleFileChange}
+          <Form.Item
+            label="Attachments"
+            validateStatus={
+              toErrorString(errors.attachments) ? "error" : undefined
+            }
+            help={toErrorString(errors.attachments)}
           >
+            <Upload fileList={fileList} onChange={handleFileChange}>
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
           </Form.Item>
         </Col>
       </Row>
-      <Form.Item label="Other Details">
+      <Form.Item
+        label="Other Details"
+        validateStatus={toErrorString(errors.others) ? "error" : undefined}
+        help={toErrorString(errors.others)}
+      >
         <TextArea
           rows={4}
-          name="other"
-          placeholder="Other Details"
+          name="others"
           onChange={handleChange}
-          value={values.other}
+          value={values.others}
         />
       </Form.Item>
+      {/* ───────── Selection Procedure ───────── */}
       <h1 className="text-xl">Selection Procedure</h1>
       <Row gutter={24}>
+        {/* Selection Mode (required) */}
         <Col span={8}>
-          <Form.Item label="Selection Mode">
+          <Form.Item
+            label="Selection Mode"
+            required
+            hasFeedback
+            validateStatus={
+              toErrorString(errors.selectionMode) ? "error" : undefined
+            }
+            help={toErrorString(errors.selectionMode)}
+          >
             <Select
+              value={values.selectionMode || undefined}
               placeholder="Please select"
-              onChange={(value) => (values.selectionMode = value)}
-              defaultValue={
-                values.selectionMode ? `${values.selectionMode}` : null
-              }
+              onChange={(val) => setFieldValue("selectionMode", val)}
               options={[
                 { value: "ONLINE", label: "Online" },
                 { value: "OFFLINE", label: "Offline" },
                 { value: "HYBRID", label: "Hybrid" },
               ]}
-            ></Select>
+            />
           </Form.Item>
         </Col>
+
+        {/* Booleans: required by DTO, but no asterisk needed */}
         <Col span={8} className="mt-auto mb-auto">
-          <div>
-            <Checkbox
-              onChange={(e) => (values.shortlistFromResume = e.target.checked)}
-              name="shortlistFromResume"
-              value={values.shortlistFromResume}
-            >
-              Shortlist From Resume
-            </Checkbox>
-          </div>
+          <Checkbox
+            checked={values.shortlistFromResume}
+            onChange={(e) =>
+              setFieldValue("shortlistFromResume", e.target.checked)
+            }
+          >
+            Shortlist From Resume
+          </Checkbox>
         </Col>
+
         <Col span={8} className="mt-auto mb-auto">
-          <div>
-            <Checkbox
-              onChange={(e) => (values.groupDiscussion = e.target.checked)}
-              name="groupDiscussion"
-              value={values.groupDiscussion}
-            >
-              Group Discussion
-            </Checkbox>
-          </div>
+          <Checkbox
+            checked={values.groupDiscussion}
+            onChange={(e) => setFieldValue("groupDiscussion", e.target.checked)}
+          >
+            Group Discussion
+          </Checkbox>
         </Col>
       </Row>
+      {/* ───────── Tests ───────── */}
       <h2 className="text-sm">Tests</h2>
       <Form.List name="tests">
         {(fields, { add, remove }) => (
-          <div style={{ display: "flex", rowGap: 16, flexDirection: "column" }}>
+          <>
             {fields.map((field) => (
               <Card
                 size="small"
                 title={`Test ${field.name + 1}`}
                 key={field.key}
-                extra={
-                  <CloseOutlined
-                    onClick={() => {
-                      remove(field.name);
-                    }}
-                  />
-                }
+                extra={<CloseOutlined onClick={() => remove(field.name)} />}
               >
                 <Row gutter={24}>
                   <Col span={12}>
@@ -387,26 +444,22 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
             <Button type="dashed" onClick={() => add()} block>
               + Add Test
             </Button>
-          </div>
+
+          
+          </>
         )}
       </Form.List>
-
+      {/* ───────── Interviews ───────── */}
       <h2 className="text-sm mt-10">Interviews</h2>
       <Form.List name="interviews">
         {(fields, { add, remove }) => (
-          <div style={{ display: "flex", rowGap: 16, flexDirection: "column" }}>
+          <>
             {fields.map((field) => (
               <Card
                 size="small"
                 title={`Interview ${field.name + 1}`}
                 key={field.key}
-                extra={
-                  <CloseOutlined
-                    onClick={() => {
-                      remove(field.name);
-                    }}
-                  />
-                }
+                extra={<CloseOutlined onClick={() => remove(field.name)} />}
               >
                 <Row gutter={24}>
                   <Col span={12}>
@@ -437,47 +490,66 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
             <Button type="dashed" onClick={() => add()} block>
               + Add Interview
             </Button>
-          </div>
+
+           
+          </>
         )}
       </Form.List>
+      {/* ───────── Requirements (optional) ───────── */}
       <h2 className="text-sm mt-10">Requirements</h2>
       <Row gutter={24}>
         <Col span={12}>
-          <Form.Item label="Number Of Members">
+          <Form.Item
+            label="Number Of Members"
+            validateStatus={
+              toErrorString(errors.numberOfMembers) ? "error" : undefined
+            }
+            help={toErrorString(errors.numberOfMembers)}
+          >
             <Input
               type="number"
               name="numberOfMembers"
               placeholder="Number Of Members"
-              onChange={handleChange}
               value={values.numberOfMembers}
+              onChange={handleChange}
+              min={0}
             />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label="Number Of Rooms">
+          <Form.Item
+            label="Number Of Rooms"
+            validateStatus={
+              toErrorString(errors.numberOfRooms) ? "error" : undefined
+            }
+            help={toErrorString(errors.numberOfRooms)}
+          >
             <Input
               type="number"
               name="numberOfRooms"
               placeholder="Number Of Rooms"
-              onChange={handleChange}
               value={values.numberOfRooms}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Form.Item label="Other Requirements">
-            <TextArea
-              rows={4}
-              name="otherRequirements"
-              placeholder="Other Requirements"
               onChange={handleChange}
-              value={values.otherRequirements}
+              min={0}
             />
           </Form.Item>
         </Col>
       </Row>
+      <Form.Item
+        label="Other Requirements"
+        validateStatus={
+          toErrorString(errors.otherRequirements) ? "error" : undefined
+        }
+        help={toErrorString(errors.otherRequirements)}
+      >
+        <TextArea
+          rows={4}
+          name="otherRequirements"
+          placeholder="Other Requirements"
+          value={values.otherRequirements}
+          onChange={handleChange}
+        />
+      </Form.Item>
       <h1 className="text-xl">Salary</h1>
       <Form.List name="salaries">
         {(fields, { add, remove }) => (
@@ -538,11 +610,13 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                         ]}
                       ></Select>
                     </Form.Item>
-                  </Col>                  
+                  </Col>
                   <Col span={12}>
                     <Form.Item
                       label="Backlogs"
                       name={[field.name, "isBacklogAllowed"]}
+                      required // ← shows the red asterisk
+                      rules={[{ required: true, message: "Required" }]} // validation & inline help
                     >
                       <Select
                         placeholder="Please select"
@@ -551,9 +625,9 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           { value: "NEVER", label: "No Backlogs at All" },
                           { value: "ACTIVE", label: "Doesn't Matter" },
                         ]}
-                      ></Select>
+                      />
                     </Form.Item>
-                  </Col>                  
+                  </Col>
                 </Row>
                 <Row gutter={24}>
                   <Col span={12}>
@@ -633,7 +707,10 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Performance Bonus"
                           name={[field.name, "performanceBonus"]}
                         >
-                          <Input type="number" placeholder="Performance Bonus" />
+                          <Input
+                            type="number"
+                            placeholder="Performance Bonus"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -705,7 +782,10 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Medical Allowance"
                           name={[field.name, "medicalAllowance"]}
                         >
-                          <Input type="number" placeholder="Medical Allowance" />
+                          <Input
+                            type="number"
+                            placeholder="Medical Allowance"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -723,7 +803,10 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Foreign Currency CTC"
                           name={[field.name, "foreignCurrencyCTC"]}
                         >
-                          <Input type="number" placeholder="Foreign Currency CTC" />
+                          <Input
+                            type="number"
+                            placeholder="Foreign Currency CTC"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -733,7 +816,10 @@ const JobDetails = ({ errors, values, handleChange, setFieldValue }: StepProps) 
                           label="Foreign Currency Code"
                           name={[field.name, "foreignCurrencyCode"]}
                         >
-                          <Input placeholder="Foreign Currency Code" maxLength={3} />
+                          <Input
+                            placeholder="Foreign Currency Code"
+                            maxLength={3}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
