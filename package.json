@@ -31,6 +31,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@reduxjs/toolkit": "^2.0.1",
+    "@sentry/nextjs": "^9.22.0",
     "@tanstack/react-table": "^8.11.2",
     "@types/qs": "^6.9.14",
     "antd": "^5.19.1",
