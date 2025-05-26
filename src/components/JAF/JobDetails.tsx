@@ -182,7 +182,7 @@ const JobDetails = ({
       <h1 className="text-xl">Job Details</h1>
       <Row gutter={24}>
         {/* Job Title (required) */}
-        <Col span={12}>
+        <Col span={24}>
           <Form.Item
             label="Job Title"
             required
@@ -194,18 +194,6 @@ const JobDetails = ({
               name="role"
               placeholder="Job Title"
               value={values.role}
-              onChange={handleChange}
-            />
-          </Form.Item>
-        </Col>
-
-        {/* Duration (optional) */}
-        <Col span={12}>
-          <Form.Item label="Duration">
-            <Input
-              name="duration"
-              placeholder="e.g. 6 months"
-              value={values.duration}
               onChange={handleChange}
             />
           </Form.Item>
