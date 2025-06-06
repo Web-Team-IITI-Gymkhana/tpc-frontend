@@ -23,7 +23,7 @@ const SeasonDetails = ({
   useEffect(() => {
     axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
       res.data.seasons.map((season: any) => {
-        const seasonString = `${season.type} ${season.year}`
+        const seasonString = `${season.type} ${season.year}`;
         options.push({ value: season.id, label: seasonString });
       });
       setOptionsx(options);
@@ -52,7 +52,7 @@ const SeasonDetails = ({
       </Row>
       <Row>
         <div className="ml-auto mr-auto flex flex-col items-start gap-8 ">
-          <div className="flex flex-col items-center w-[100%] text-[1rem] gap-1 opacity-60">
+          <div className="flex flex-col items-center w-[100%] text-[1rem] gap-1 opacity-100">
             <div>Terms and Conditions</div>
             <div className=" opacity-50 text-[0.8rem]">
               {" "}
@@ -60,7 +60,7 @@ const SeasonDetails = ({
             </div>
           </div>
           <div>
-            <div className="flex flex-col gap-3  text-[0.8rem] opacity-50">
+            <div className="flex flex-col gap-3  text-[0.8rem] opacity-100">
               {TermsAndConditions.map((tc, index) => (
                 <div key={index} className="flex gap-3">
                   <span>{index + 1}&#46;</span>
