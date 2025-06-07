@@ -37,7 +37,8 @@ const ResumePage = () => {
       const data = await GetResumes();
       setResumeData(data);
     } catch (error) {
-      toast.error("Error fetching data:");
+      toast.error("Error fetching data");
+      console.error("Error fetching resumes:", error);
     } finally {
       setLoading(false);
     }
@@ -51,7 +52,7 @@ const ResumePage = () => {
       setFile(event.target.files[0]);
     }
   };
-  
+
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
@@ -70,6 +71,15 @@ const ResumePage = () => {
 
     if (!resumeName) {
       toast.error("Please enter a name.");
+      return;
+    }
+
+    if (!file.name.endsWith(".pdf")) {
+      toast.error("Only PDF files are allowed.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size exceeds 2MB limit.");
       return;
     }
 
