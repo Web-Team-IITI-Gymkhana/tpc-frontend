@@ -201,7 +201,7 @@ const ResumePage = () => {
                   type="file"
                   onChange={handleFileChange}
                 />
-                <span className="text-red-500 text-xs">
+                <span className="text-black text-xs">
                   Accepted file types .pdf <br />
                   File size &lt; 2 MB.
                 </span>
