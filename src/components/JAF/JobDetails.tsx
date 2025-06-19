@@ -648,24 +648,102 @@ const JobDetails = ({
                 <Row gutter={24}>
                   <Col span={12}>
                     <Form.Item
-                      label="Tenth Marks"
+                      label="Tenth Marks (%)"
                       name={[field.name, "tenthMarks"]}
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (value === undefined || value === "")
+                              return Promise.resolve();
+                            const strValue = String(value).replace(/\s+/g, "");
+                            if (!/^\d*\.?\d*$/.test(strValue)) {
+                              return Promise.reject(
+                                "Please enter a positive decimal value",
+                              );
+                            }
+                            const num = parseFloat(strValue);
+                            if (isNaN(num) || num > 100) {
+                              return Promise.reject(
+                                "Value must be less than or equal to 100",
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      getValueFromEvent={(e) => {
+                        const value = e.target.value.replace(/\s+/g, "");
+                        return value;
+                      }}
                     >
                       <Input placeholder="Tenth Marks" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      label="Twelveth Marks"
-                      name={[field.name, "twelvethMarks"]}
+                      label="Twelfth Marks (%)"
+                      name={[field.name, "twelthMarks"]}
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (value === undefined || value === "")
+                              return Promise.resolve();
+                            const strValue = String(value).replace(/\s+/g, "");
+                            if (!/^\d*\.?\d*$/.test(strValue)) {
+                              return Promise.reject(
+                                "Please enter a positive decimal value",
+                              );
+                            }
+                            const num = parseFloat(strValue);
+                            if (isNaN(num) || num > 100) {
+                              return Promise.reject(
+                                "Value must be less than or equal to 100",
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      getValueFromEvent={(e) => {
+                        const value = e.target.value.replace(/\s+/g, "");
+                        return value;
+                      }}
                     >
-                      <Input placeholder="Twelveth Marks" />
+                      <Input placeholder="Twelfth Marks" />
                     </Form.Item>
                   </Col>
                 </Row>
                 <Row gutter={24}>
                   <Col span={12}>
-                    <Form.Item label="Min CPI" name={[field.name, "minCPI"]}>
+                    <Form.Item
+                      label="Min CPI"
+                      name={[field.name, "minCPI"]}
+                      rules={[
+                        {
+                          pattern: /^\d*\.?\d*$/,
+                          message: "Please enter a positive decimal value",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value === undefined || value === "")
+                              return Promise.resolve();
+                            if (!/^\d*\.?\d*$/.test(value))
+                              return Promise.resolve();
+                            const num = parseFloat(value);
+                            if (isNaN(num) || num > 10) {
+                              return Promise.reject(
+                                "Value must be less than or equal to 10",
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      getValueFromEvent={(e) => {
+                        const value = e.target.value.replace(/\s+/g, "");
+                        return value;
+                      }}
+                    >
                       <Input placeholder="Min CPI" />
                     </Form.Item>
                   </Col>
