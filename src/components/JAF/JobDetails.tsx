@@ -349,7 +349,7 @@ const JobDetails = ({
                   message.error("You can only upload PDF files!");
                   return Upload.LIST_IGNORE;
                 }
-                const isLt2M = file.size / 1024 / 1024 < 2;
+                const isLt2M = file.size / 1024 / 1024 <= 2;
                 if (!isLt2M) {
                   message.error("File must be smaller than 2MB!");
                   return Upload.LIST_IGNORE;
