@@ -340,9 +340,29 @@ const JobDetails = ({
             }
             help={toErrorString(errors.attachments)}
           >
-            <Upload fileList={fileList} onChange={handleFileChange}>
+            <Upload
+              fileList={fileList}
+              onChange={handleFileChange}
+              beforeUpload={(file) => {
+                const isPdf = file.type === "application/pdf";
+                if (!isPdf) {
+                  message.error("You can only upload PDF files!");
+                  return Upload.LIST_IGNORE;
+                }
+                const isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isLt2M) {
+                  message.error("File must be smaller than 2MB!");
+                  return Upload.LIST_IGNORE;
+                }
+                return true;
+              }}
+            >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
+            <ul className="list-disc text-black opacity-70 text-xs pl-5">
+              <li>Accepted file types .pdf</li>
+              <li>File size &lt; 2 MB.</li>
+            </ul>
           </Form.Item>
         </Col>
       </Row>
@@ -444,8 +464,6 @@ const JobDetails = ({
             <Button type="dashed" onClick={() => add()} block>
               + Add Test
             </Button>
-
-          
           </>
         )}
       </Form.List>
@@ -490,8 +508,6 @@ const JobDetails = ({
             <Button type="dashed" onClick={() => add()} block>
               + Add Interview
             </Button>
-
-           
           </>
         )}
       </Form.List>
