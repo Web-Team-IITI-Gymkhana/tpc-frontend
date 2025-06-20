@@ -29,6 +29,7 @@ const LoginPage = ({
         router.push("/recruiter");
       } catch (error) {
         toast.error("Some Error Occurred");
+        console.error("Error during passwordless login:", error);
       } finally {
         setLoading(false);
       }

@@ -499,9 +499,29 @@ const JobDetails = ({
             }
             help={toErrorString(errors.attachments)}
           >
-            <Upload fileList={fileList} onChange={handleFileChange}>
+            <Upload
+              fileList={fileList}
+              onChange={handleFileChange}
+              beforeUpload={(file) => {
+                const isPdf = file.type === "application/pdf";
+                if (!isPdf) {
+                  message.error("You can only upload PDF files!");
+                  return Upload.LIST_IGNORE;
+                }
+                const isLt2M = file.size / 1024 / 1024 <= 2;
+                if (!isLt2M) {
+                  message.error("File must be smaller than 2MB!");
+                  return Upload.LIST_IGNORE;
+                }
+                return true;
+              }}
+            >
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
+            <ul className="list-disc text-black opacity-70 text-xs pl-5">
+              <li>Accepted file types .pdf</li>
+              <li>File size &lt; 2 MB.</li>
+            </ul>
           </Form.Item>
         </Col>
       </Row>
@@ -876,18 +896,68 @@ const JobDetails = ({
                 <Row gutter={24}>
                   <Col span={12}>
                     <Form.Item
-                      label="Tenth Marks"
+                      label="Tenth Marks (%)"
                       name={[field.name, "tenthMarks"]}
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (value === undefined || value === "")
+                              return Promise.resolve();
+                            const strValue = String(value).replace(/\s+/g, "");
+                            if (!/^\d*\.?\d*$/.test(strValue)) {
+                              return Promise.reject(
+                                "Please enter a positive decimal value",
+                              );
+                            }
+                            const num = parseFloat(strValue);
+                            if (isNaN(num) || num > 100) {
+                              return Promise.reject(
+                                "Value must be less than or equal to 100",
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      getValueFromEvent={(e) => {
+                        const value = e.target.value.replace(/\s+/g, "");
+                        return value;
+                      }}
                     >
                       <Input placeholder="Tenth Marks" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      label="Twelveth Marks"
-                      name={[field.name, "twelvethMarks"]}
+                      label="Twelfth Marks (%)"
+                      name={[field.name, "twelthMarks"]}
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            if (value === undefined || value === "")
+                              return Promise.resolve();
+                            const strValue = String(value).replace(/\s+/g, "");
+                            if (!/^\d*\.?\d*$/.test(strValue)) {
+                              return Promise.reject(
+                                "Please enter a positive decimal value",
+                              );
+                            }
+                            const num = parseFloat(strValue);
+                            if (isNaN(num) || num > 100) {
+                              return Promise.reject(
+                                "Value must be less than or equal to 100",
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      getValueFromEvent={(e) => {
+                        const value = e.target.value.replace(/\s+/g, "");
+                        return value;
+                      }}
                     >
-                      <Input placeholder="Twelveth Marks" />
+                      <Input placeholder="Twelfth Marks" />
                     </Form.Item>
                   </Col>
                 </Row>
