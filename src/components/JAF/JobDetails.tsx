@@ -219,6 +219,7 @@ const JobDetails = ({
               name="offerLetterReleaseDate"
               value={values.offerLetterReleaseDate}
               onChange={handleChange}
+              min={new Date().toISOString().split("T")[0]}
             />
           </Form.Item>
         </Col>
@@ -230,6 +231,7 @@ const JobDetails = ({
               name="joiningDate"
               value={values.joiningDate}
               onChange={handleChange}
+              min={new Date().toISOString().split("T")[0]}
             />
           </Form.Item>
         </Col>
