@@ -676,7 +676,7 @@ const JobDetails = ({
                         return value;
                       }}
                     >
-                      <Input placeholder="90.5" />
+                      <Input placeholder="Tenth Marks" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -709,7 +709,7 @@ const JobDetails = ({
                         return value;
                       }}
                     >
-                      <Input placeholder="95.2" />
+                      <Input placeholder="Twelfth Marks" />
                     </Form.Item>
                   </Col>
                 </Row>
