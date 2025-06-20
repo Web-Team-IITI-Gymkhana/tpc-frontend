@@ -927,7 +927,12 @@ const JobDetails = ({
                           label="Stipend"
                           name={[field.name, "stipend"]}
                         >
-                          <Input type="number" placeholder="Stipend" />
+                          <Input
+                            type="number"
+                            placeholder="Stipend"
+                            min={0}
+                            prefix="₹"
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -935,7 +940,10 @@ const JobDetails = ({
                           label="Foreign Currency Stipend"
                           name={[field.name, "foreignCurrencyStipend"]}
                         >
-                          <Input placeholder="Foreign Currency Stipend" />
+                          <Input
+                            placeholder="Foreign Currency Stipend"
+                            min={0}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -945,7 +953,12 @@ const JobDetails = ({
                           label="Accommodation"
                           name={[field.name, "accommodation"]}
                         >
-                          <Input type="number" placeholder="Accommodation" />
+                          <Input
+                            type="number"
+                            placeholder="Accommodation"
+                            min={0}
+                            prefix="₹"
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -953,7 +966,12 @@ const JobDetails = ({
                           label="Tentative CTC"
                           name={[field.name, "tentativeCTC"]}
                         >
-                          <Input type="number" placeholder="Tentative CTC" />
+                          <Input
+                            type="number"
+                            placeholder="Tentative CTC"
+                            min={0}
+                            prefix="₹"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
