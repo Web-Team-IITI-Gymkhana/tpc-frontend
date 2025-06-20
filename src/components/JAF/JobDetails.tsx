@@ -778,7 +778,7 @@ const JobDetails = ({
                             }
                             disabled={!selectedCourse}
                             options={[
-                              { value: "ALL", label: "Select All" },
+                              { value: "ALL", label: "Open For All" },
                               ...branches.map((branch) => {
                                 const isSelected = selectedPrograms.some(
                                   (p) =>
