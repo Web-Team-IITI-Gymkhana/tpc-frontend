@@ -1,0 +1,18 @@
+FROM node:alpine
+
+WORKDIR /usr/app
+
+ENV NEXT_PUBLIC_BACKEND_URL=http://localhost:5001
+ENV NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
+ENV NODE_ENV=development
+ENV NEXT_PUBLIC_BASE_PATH="/portal"
+ENV NEXTAUTH_URL=https://localhost:5001/portal/api/auth
+
+COPY package.json yarn.lock ./
+RUN yarn install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["yarn", "dev"]
