@@ -26,6 +26,7 @@ import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import "./styles/CustomQuill.css";
 import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
+import CurrencySelect from "./CurrencySelect";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -53,6 +54,12 @@ const getBase64 = (file: File): Promise<string> => {
   });
 };
 
+interface CurrencyOption {
+  value: string;
+  label: string;
+  symbol: string;
+}
+
 const JobDetails = ({
   errors,
   values,
@@ -68,6 +75,9 @@ const JobDetails = ({
   const [seasonType, setSeasonType] = useState("");
   const [interviewType, setInterviewType] = useState([]);
   const [programs, setPrograms] = useState<SelectProps["options"]>([]);
+  const [customCurrencies, setCustomCurrencies] = useState<CurrencyOption[]>(
+    [],
+  );
   let testTypeOptions: any = [];
   let interviewTypeOptions: any = [];
   const programsOptions: SelectProps["options"] = [];
@@ -100,6 +110,13 @@ const JobDetails = ({
   const handleSkillChange = (newSkills: string[]) => {
     setSkills(newSkills);
     setFieldValue("skills", newSkills);
+  };
+
+  const handleAddCustomCurrency = (newCurrency: CurrencyOption) => {
+    setCustomCurrencies((prev) => [...prev, newCurrency]);
+    message.success(
+      `Added new currency: ${newCurrency.symbol} ${newCurrency.label}`,
+    );
   };
 
   useEffect(() => {
@@ -641,7 +658,7 @@ const JobDetails = ({
                         options={[
                           { value: "PREVIOUS", label: "No Active Backlogs" },
                           { value: "NEVER", label: "No Backlogs at All" },
-                          { value: "ACTIVE", label: "Doesn't Matter" },
+                          { value: "ACTIVE", label: "Backlogs Not a Concern" },
                         ]}
                       />
                     </Form.Item>
@@ -933,7 +950,19 @@ const JobDetails = ({
                             type="number"
                             placeholder="Stipend"
                             min={0}
-                            prefix="₹"
+                            addonBefore={
+                              <CurrencySelect
+                                name={[`${field.name}`, "stipendCurrency"]}
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                values={values}
+                                setFieldValue={setFieldValue}
+                                field={field}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                              />
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -943,8 +972,25 @@ const JobDetails = ({
                           name={[field.name, "foreignCurrencyStipend"]}
                         >
                           <Input
+                            type="number"
                             placeholder="Foreign Currency Stipend"
                             min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                name={[
+                                  `${field.name}`,
+                                  "foreignStipendCurrency",
+                                ]}
+                                defaultValue="USD"
+                                style={{ width: 120 }}
+                                values={values}
+                                setFieldValue={setFieldValue}
+                                field={field}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                              />
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -959,7 +1005,22 @@ const JobDetails = ({
                             type="number"
                             placeholder="Accommodation"
                             min={0}
-                            prefix="₹"
+                            addonBefore={
+                              <CurrencySelect
+                                name={[
+                                  `${field.name}`,
+                                  "accommodationCurrency",
+                                ]}
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                values={values}
+                                setFieldValue={setFieldValue}
+                                field={field}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                              />
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -972,7 +1033,19 @@ const JobDetails = ({
                             type="number"
                             placeholder="Tentative CTC"
                             min={0}
-                            prefix="₹"
+                            addonBefore={
+                              <CurrencySelect
+                                name={[`${field.name}`, "tentativeCTCCurrency"]}
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                values={values}
+                                setFieldValue={setFieldValue}
+                                field={field}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                              />
+                            }
                           />
                         </Form.Item>
                       </Col>
