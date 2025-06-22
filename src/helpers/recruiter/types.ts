@@ -182,8 +182,8 @@ export interface SalaryFC {
   // INTERNSHIP
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accomodation?: number;
-  tenetativeCTC?: number;
+  accommodation?: number;
+  tentativeCTC?: number;
   PPOConfirmationDate?: Date;
 }
 
@@ -263,7 +263,7 @@ export interface CompanyPostFC {
   category: string;
   yearOfEstablishment: string;
   website: string;
-  size: 0;
+  size: number;
   annualTurnover: string;
   socialMediaLink: string;
   domains: string[];
