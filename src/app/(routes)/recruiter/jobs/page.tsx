@@ -49,10 +49,10 @@ const JobPage = () => {
                   Current Status
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Season Year
+                  Season Type
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Season Type
+                  Season Year
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Company Name
