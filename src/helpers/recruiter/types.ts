@@ -182,8 +182,8 @@ export interface SalaryFC {
   // INTERNSHIP
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accomodation?: number;
-  tenetativeCTC?: number;
+  accommodation?: number;
+  tentativeCTC?: number;
   PPOConfirmationDate?: Date;
 }
 

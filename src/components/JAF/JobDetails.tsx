@@ -127,15 +127,17 @@ const JobDetails = ({
 
   const handleCurrencySync = (currency: string) => {
     setSyncedCurrency(currency);
-    const currentSalaries = form.getFieldValue("salaries");
+    const currentSalaries = form.getFieldValue("salaries") || [];
     const updatedSalaries = currentSalaries.map((salary: any) => ({
       ...salary,
       stipendCurrency: currency,
       accommodationCurrency: currency,
       tentativeCTCCurrency: currency,
       foreignStipendCurrency: currency,
+      foreignCurrencyCode: currency, 
     }));
     form.setFieldValue("salaries", updatedSalaries);
+    setFieldValue("salaries", updatedSalaries); 
   };
 
   useEffect(() => {
@@ -357,7 +359,7 @@ const JobDetails = ({
           medicalAllowance: s.medicalAllowance ?? 0,
           bondDuration: s.bondDuration ?? "",
           foreignCurrencyCTC: s.foreignCurrencyCTC ?? 0,
-          foreignCurrencyCode: s.foreignCurrencyCode ?? "",
+          foreignCurrencyCode: s.foreignCurrencyCode ?? "INR",
           otherCompensations: s.otherCompensations ?? 0,
           others: s.others ?? "",
           stipend: s.stipend ?? 0,
@@ -1196,7 +1198,7 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      {/* <Col span={12}>
                         <Form.Item
                           label="Foreign Currency Stipend"
                           name={[field.name, "foreignCurrencyStipend"]}
@@ -1225,10 +1227,9 @@ const JobDetails = ({
                             }
                           />
                         </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
+                      </Col> */}
+
+<Col span={12}>
                         <Form.Item
                           label="Accommodation"
                           name={[field.name, "accommodation"]}
@@ -1258,6 +1259,9 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
+                    </Row>
+                    <Row gutter={24}>
+                     
                       <Col span={12}>
                         <Form.Item
                           label="Tentative CTC"
@@ -1285,8 +1289,8 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
-                    </Row>
-                    <Form.Item
+                      <Col span={12}>
+                      <Form.Item
                       label="PPO Confirmation Date"
                       name={[field.name, "PPOConfirmationDate"]}
                     >
@@ -1295,6 +1299,8 @@ const JobDetails = ({
                         min={new Date().toISOString().split("T")[0]}
                       />
                     </Form.Item>
+                      </Col>
+                    </Row>
                   </>
                 )}
                 <Form.Item
