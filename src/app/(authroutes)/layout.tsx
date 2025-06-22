@@ -14,7 +14,7 @@ const AuthLayout = async ({ children }: Props) => {
       <Providers>
         <div className="min-h-screen flex">
           {/* Left side - Brand/Info section - Fixed */}
-          <div className="hidden lg:flex lg:w-[560px] lg:flex-col lg:justify-center lg:px-12 bg-gradient-to-br from-gray-800 to-gray-900 lg:fixed lg:top-0 lg:left-0 lg:h-screen lg:z-10">
+          <div className="hidden lg:flex lg:w-[560px] lg:flex-col lg:justify-center lg:px-12 bg-gradient-to-br from-slate-800 to-slate-800 lg:fixed lg:top-0 lg:left-0 lg:h-screen lg:z-10">
          
             <div className="space-y-12 opacity-80">
               {/* Logo/Brand Section */}

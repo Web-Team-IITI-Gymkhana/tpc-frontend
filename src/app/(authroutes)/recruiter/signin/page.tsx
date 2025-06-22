@@ -14,8 +14,12 @@ const LoginForm = () => {
 
   return (
     <div className="w-full">
-      {/* Header */}
-      <div className="text-center mb-8">
+    
+
+      {/* Form Card */}
+      <Card className="shadow-lg border-0 bg-white">
+        <CardHeader className="pb-4">
+        <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-slate-100 rounded-full">
             <Building2 className="h-8 w-8 text-slate-700" />
@@ -28,18 +32,6 @@ const LoginForm = () => {
           Access your recruitment dashboard
         </p>
       </div>
-
-      {/* Form Card */}
-      <Card className="shadow-lg border-0 bg-white">
-        <CardHeader className="pb-4">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-800">
-              Welcome Back
-            </h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Enter your email to receive a secure login link
-            </p>
-          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">

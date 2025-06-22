@@ -46,6 +46,7 @@ import {
   Check,
   ArrowRight
 } from "lucide-react";
+import { Building2 } from "lucide-react";
 
 export default function RecruiterSignup() {
   const [companies, setCompanies] = useState([]);
@@ -180,8 +181,17 @@ export default function RecruiterSignup() {
       } else {
         toast.error("Registration failed. Please try again.");
       }
-    } catch (error) {
-      toast.error("Error during registration. Please try again.");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      
+      // Handle rate limiting specifically
+      if (error?.response?.status === 429 || error?.status === 429 || error?.statusCode === 429) {
+        toast.error("Too many requests. Please wait a moment before trying again.");
+      } else if (error?.response?.data?.message?.includes("Too Many Requests") || error?.message?.includes("Too Many Requests")) {
+        toast.error("Too many requests. Please wait a moment before trying again.");
+      } else {
+        toast.error("Error during registration. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -189,9 +199,27 @@ export default function RecruiterSignup() {
 
   return (
     <Card className="shadow-lg border-0 bg-white">
+
+      <CardHeader className="pb-4">
+      <div className="text-center mb-8">
+        <div className="flex justify-center mb-4">
+          <div className="p-3 bg-slate-100 rounded-full">
+            <Building2 className="h-8 w-8 text-slate-700" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          Recruiter Registration
+        </h2>
+        <p className="text-gray-600">
+          Join our network of top recruiters
+        </p>
+      </div>
+      </CardHeader>
       
       
       <CardContent className="space-y-8">
+
+
         {/* Step 1: Personal Information */}
         <div className="space-y-6">
           <div className="flex items-center gap-3">

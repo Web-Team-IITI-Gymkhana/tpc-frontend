@@ -53,7 +53,7 @@ const Sidebar = () => {
           visibility: "visible",
         },
       }}
-      className="z-40 overflow-hidden bg-gradient-to-b from-slate-700 to-slate-800 pt-3 flex flex-col h-screen"
+      className="z-40 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-800 pt-3 flex flex-col h-screen"
     >
       <div className="relative">
         <div
