@@ -1171,14 +1171,96 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
+
                       <Col span={12}>
                         <Form.Item
-                          label="Bond Amount"
-                          name={[field.name, "bondAmount"]}
+                          label="First Year CTC"
+                          name={[field.name, "firstYearCTC"]}
                         >
                           <Input 
                             type="number" 
-                            placeholder="Bond Amount"
+                            placeholder="First Year CTC"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
+                        </Form.Item>
+                      </Col>
+                      
+                    </Row>
+                    
+                    <Row gutter={24}>
+                     
+                      <Col span={12}>
+                        <Form.Item
+                          label="Retention Bonus"
+                          name={[field.name, "retentionBonus"]}
+                        >
+                          <Input 
+                            type="number" 
+                            placeholder="Retention Bonus"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
+                        </Form.Item>
+                      </Col>
+
+                      <Col span={12}>
+                        <Form.Item
+                          label="Deductions"
+                          name={[field.name, "deductions"]}
+                        >
+                          <Input 
+                            type="number" 
+                            placeholder="Deductions"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      
+                      <Col span={12}>
+                        <Form.Item
+                          label="Medical Allowance"
+                          name={[field.name, "medicalAllowance"]}
+                        >
+                          <Input
+                            type="number"
+                            placeholder="Medical Allowance"
                             min={0}
                             addonBefore={
                               <CurrencySelect
@@ -1231,14 +1313,14 @@ const JobDetails = ({
                       </Col>
                     </Row>
                     <Row gutter={24}>
-                      <Col span={12}>
+                    <Col span={12}>
                         <Form.Item
-                          label="First Year CTC"
-                          name={[field.name, "firstYearCTC"]}
+                          label="Bond Amount"
+                          name={[field.name, "bondAmount"]}
                         >
                           <Input 
                             type="number" 
-                            placeholder="First Year CTC"
+                            placeholder="Bond Amount"
                             min={0}
                             addonBefore={
                               <CurrencySelect
@@ -1255,82 +1337,6 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Retention Bonus"
-                          name={[field.name, "retentionBonus"]}
-                        >
-                          <Input 
-                            type="number" 
-                            placeholder="Retention Bonus"
-                            min={0}
-                            addonBefore={
-                              <CurrencySelect
-                                
-                                defaultValue="INR"
-                                style={{ width: 120 }}
-                                allowCustom={true}
-                                customCurrencies={customCurrencies}
-                                onAddCustomCurrency={handleAddCustomCurrency}
-                                syncedCurrency={syncedCurrency}
-                                onCurrencySync={handleCurrencySync}
-                              />
-                            }
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Deductions"
-                          name={[field.name, "deductions"]}
-                        >
-                          <Input 
-                            type="number" 
-                            placeholder="Deductions"
-                            min={0}
-                            addonBefore={
-                              <CurrencySelect
-                                
-                                defaultValue="INR"
-                                style={{ width: 120 }}
-                                allowCustom={true}
-                                customCurrencies={customCurrencies}
-                                onAddCustomCurrency={handleAddCustomCurrency}
-                                syncedCurrency={syncedCurrency}
-                                onCurrencySync={handleCurrencySync}
-                              />
-                            }
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Medical Allowance"
-                          name={[field.name, "medicalAllowance"]}
-                        >
-                          <Input
-                            type="number"
-                            placeholder="Medical Allowance"
-                            min={0}
-                            addonBefore={
-                              <CurrencySelect
-                                
-                                defaultValue="INR"
-                                style={{ width: 120 }}
-                                allowCustom={true}
-                                customCurrencies={customCurrencies}
-                                onAddCustomCurrency={handleAddCustomCurrency}
-                                syncedCurrency={syncedCurrency}
-                                onCurrencySync={handleCurrencySync}
-                              />
-                            }
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item
                           label="Bond Duration"
