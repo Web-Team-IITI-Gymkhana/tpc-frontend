@@ -1,9 +1,8 @@
 "use client";
 import "antd/dist/reset.css";
 import { useEffect, useState } from "react";
-import { Row, Col, Steps, Space, Button } from "antd";
+import { Row, Col, Steps, Space, Button, Alert } from "antd";
 import { FormikWizard, RenderProps } from "formik-wizard-form";
-import * as Yup from "yup";
 import axios from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
@@ -11,133 +10,59 @@ import Loader from "@/components/Loader/loader";
 import SeasonDetails from "./SeasonDetails";
 import RecruiterDetails from "./RecruiterDetails";
 import JobDetails from "./JobDetails";
+import { 
+  API_ENDPOINTS,
+  DEFAULT_FORM_VALUES
+} from "../../utils/jaf.constants";
+import { JAFFormValues, JafDto } from "../../types/jaf.types";
+import { 
+  seasonDetailsValidationSchema, 
+  recruiterDetailsValidationSchema, 
+  jobDetailsValidationSchema 
+} from "../../validation/jaf.validation";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const { Step } = Steps;
 
-const iso = (date: any): string | null => {
-  return date ? new Date(date).toISOString() : null;
+// Helper function to extract user-friendly error messages
+const getErrorMessages = (errors: any): string[] => {
+  const messages: string[] = [];
+  
+  if (!errors || typeof errors !== 'object') {
+    return messages;
+  }
+
+  const traverse = (obj: any, path = '') => {
+    if (typeof obj === 'string') {
+      // Clean up error messages for better user experience
+      let cleanMessage = obj;
+      
+      // Handle specific error patterns
+      if (obj.includes('must be a `number` type')) {
+        cleanMessage = 'Please enter a valid number';
+      } else if (obj.includes('At least one program must be selected')) {
+        cleanMessage = 'Please select at least one program in the eligibility criteria';
+      } else if (obj.includes('At least one test must be specified')) {
+        cleanMessage = 'Please add at least one test in the selection procedure';
+      } else if (obj.includes('At least one interview round must be specified')) {
+        cleanMessage = 'Please add at least one interview round in the selection procedure';
+      } else if (obj.includes('At least one salary entry is required')) {
+        cleanMessage = 'Please add at least one salary package in compensation details';
+      }
+      
+      messages.push(cleanMessage);
+    } else if (Array.isArray(obj)) {
+      obj.forEach((item, index) => traverse(item, `${path}[${index}]`));
+    } else if (typeof obj === 'object' && obj !== null) {
+      Object.entries(obj).forEach(([key, value]) => traverse(value, path ? `${path}.${key}` : key));
+    }
+  };
+
+  traverse(errors);
+  
+  // Remove duplicates and return
+  return [...new Set(messages)];
 };
-const phoneRegExp =
-  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
-
-const requiredIfAny = (idx: 2 | 3, base: Yup.StringSchema = Yup.string()) =>
-  Yup.lazy((_, { parent }) => {
-    const k = (field: string) => `${field}${idx}` as const;
-
-    const essentials = [
-      parent[k("recName")],
-      parent[k("designation")],
-      parent[k("email")],
-      parent[k("phoneNumber")],
-    ];
-
-    const anyFilled = essentials.some(
-      (v) => typeof v === "string" && v.trim() !== "",
-    );
-
-    return anyFilled ? base.required("Required") : base.notRequired();
-  });
-
-export const recruiterStepSchema = Yup.object({
-  recName1: Yup.string().required("Required"),
-  designation1: Yup.string().required("Required"),
-  email1: Yup.string().email("Invalid email").required("Required"),
-  phoneNumber1: Yup.string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("Required"),
-  landline1: Yup.string(),
-
-  recName2: requiredIfAny(2),
-  designation2: requiredIfAny(2),
-  email2: requiredIfAny(2, Yup.string().email("Invalid email")),
-  phoneNumber2: requiredIfAny(
-    2,
-    Yup.string().matches(phoneRegExp, "Phone number is not valid"),
-  ),
-  landline2: Yup.string(),
-
-  recName3: requiredIfAny(3),
-  designation3: requiredIfAny(3),
-  email3: requiredIfAny(3, Yup.string().email("Invalid email")),
-  phoneNumber3: requiredIfAny(
-    3,
-    Yup.string().matches(phoneRegExp, "Phone number is not valid"),
-  ),
-  landline3: Yup.string(),
-});
-
-export const jobDetailsValidationSchema = Yup.object({
-  /* ───────────────────────────────── Job core ─────────────────────────── */
-  role: Yup.string().required("Job title is required"),
-  location: Yup.string().required("Location is required"),
-
-  duration: Yup.string(),
-
-  offerLetterReleaseDate: Yup.date().nullable(),
-  joiningDate: Yup.date().nullable(),
-
-  expectedNoOfHires: Yup.number()
-    .typeError("Expected hires must be a number")
-    .min(0, "Cannot be negative")
-    .nullable(),
-
-  minNoOfHires: Yup.number()
-    .typeError("Minimum hires must be a number")
-    .min(0, "Cannot be negative")
-    .nullable(),
-
-  skills: Yup.array().of(Yup.string()), // optional
-  description: Yup.string(), // optional
-  attachments: Yup.array().of(Yup.mixed<File>()), // optional
-  others: Yup.string(),
-
-  /* ────────────────────────────────────────────────────────── */
-  /*  Selection procedure                                      */
-  /* ────────────────────────────────────────────────────────── */
-  selectionMode: Yup.string()
-    .oneOf(["ONLINE", "OFFLINE", "HYBRID"])
-    .required("Selection mode is required"),
-
-  shortlistFromResume: Yup.boolean().required(),
-  groupDiscussion: Yup.boolean().required(),
-
-  tests: Yup.array()
-    .of(
-      Yup.object({
-        type: Yup.string().required("Type is required"),
-        duration: Yup.string().required("Duration is required"),
-      }),
-    )
-    .min(1, "Add at least one test"),
-
-  interviews: Yup.array()
-    .of(
-      Yup.object({
-        type: Yup.string().required("Type is required"),
-        duration: Yup.string().required("Duration is required"),
-      }),
-    )
-    .min(1, "Add at least one interview"),
-
-  /* requirements object is fully optional */
-  numberOfMembers: Yup.number().min(0).nullable(),
-  numberOfRooms: Yup.number().min(0).nullable(),
-  otherRequirements: Yup.string(),
-
-  /* ────────────────────────────────────────────────────────── */
-  /*  Salary slabs                                             */
-  /* ────────────────────────────────────────────────────────── */
-  salaries: Yup.array()
-    .of(
-      Yup.object({
-        isBacklogAllowed: Yup.string().required(
-          "Backlog selection is required",
-        ),
-      }),
-    )
-    .min(1, "At least one salary entry is required"),
-});
 
 function JAF() {
   const accessToken = Cookies.get("accessToken");
@@ -159,126 +84,97 @@ function JAF() {
   return (
     <div className="flex flex-col w-full gap-20 p-10">
       <FormikWizard
-        initialValues={{
-          //page1
-          seasonId: "",
-          terms: false,
-          //page2
-          recName1: "",
-          designation1: "",
-          email1: "",
-          phoneNumber1: "",
-          landline1: "",
-          recName2: "",
-          designation2: "",
-          email2: "",
-          phoneNumber2: "",
-          landline2: "",
-          recName3: "",
-          designation3: "",
-          email3: "",
-          phoneNumber3: "",
-          landline3: "",
-          //page3
-          role: "",
-          description: "",
-          attachments: [],
-          skills: [],
-          location: "",
-          minNoOfHires: "",
-          expectedNoOfHires: "",
-          offerLetterReleaseDate: null,
-          joiningDate: null,
-          duration: "",
-          selectionMode: "",
-          shortlistFromResume: false,
-          groupDiscussion: false,
-          tests: [],
-          interviews: [],
-          others: "",
-          numberOfMembers: "",
-          numberOfRooms: "",
-          otherRequirements: "",
-          salaries: [],
-          jobOthers: "",
-        }}
-        onSubmit={(values: any) => {
+        initialValues={DEFAULT_FORM_VALUES}
+        onSubmit={async (values: JAFFormValues) => {
+          // Filter and format recruiters
           const recruiters = [1, 2, 3]
             .map((i) => ({
-              name: values[`recName${i}`],
-              designation: values[`designation${i}`],
-              email: values[`email${i}`],
+              name: values[`recName${i}`] || "",
+              designation: values[`designation${i}`] || "",
+              email: values[`email${i}`] || "",
               contact: values[`phoneNumber${i}`]
                 ? "+91 " + values[`phoneNumber${i}`]
                 : "",
-              landline: values[`landline${i}`],
+              landline: values[`landline${i}`] || "",
             }))
             .filter(
               (r) =>
-                r.name || r.designation || r.email || r.contact || r.landline,
+                r.name.trim() || r.designation.trim() || r.email.trim() || r.contact.trim() || r.landline.trim(),
             );
 
-          /* ── assemble payload ───────────────────────────────────────────── */
-          const payload = {
+          // Ensure at least primary recruiter is present
+          if (recruiters.length === 0) {
+            toast.error("At least one recruiter contact is required");
+            return;
+          }
+
+          // Assemble payload matching backend DTO structure exactly
+          const payload: JafDto = {
             job: {
-              role: values.role,
               seasonId: values.seasonId,
-              description: values.description,
+              role: values.role,
+              description: values.description || undefined,
               recruiterDetailsFilled: recruiters,
-              attachments: values.attachments,
-              others: values.jobOthers,
-              skills: values.skills,
+              attachments: values.attachments?.length ? values.attachments.map(file => 
+                typeof file === 'string' ? file : file.name
+              ) : undefined,
+              others: values.jobOthers || undefined,
+              skills: values.skills?.length ? values.skills : undefined,
               location: values.location,
-
-              /* convert only if present */
-              offerLetterReleaseDate: iso(values.offerLetterReleaseDate),
-              joiningDate: iso(values.joiningDate),
-
-              duration: values.duration,
-
+              minNoOfHires: values.minNoOfHires ? Number(values.minNoOfHires) : undefined,
+              expectedNoOfHires: values.expectedNoOfHires ? Number(values.expectedNoOfHires) : undefined,
+              offerLetterReleaseDate: values.offerLetterReleaseDate ? new Date(values.offerLetterReleaseDate) : undefined,
+              joiningDate: values.joiningDate ? new Date(values.joiningDate) : undefined,
+              duration: values.duration || undefined,
               selectionProcedure: {
                 selectionMode: values.selectionMode,
                 shortlistFromResume: values.shortlistFromResume,
                 groupDiscussion: values.groupDiscussion,
-                tests: values.tests,
-                interviews: values.interviews,
-                others: values.others,
-                requirements: {
-                  numberOfMembers: values.numberOfMembers,
-                  numberOfRooms: values.numberOfRooms,
-                  otherRequirements: values.otherRequirements,
-                },
+                tests: values.tests || [],
+                interviews: values.interviews || [],
+                others: values.others || undefined,
+                requirements: (values.numberOfMembers || values.numberOfRooms || values.otherRequirements) ? {
+                  numberOfMembers: values.numberOfMembers ? Number(values.numberOfMembers) : undefined,
+                  numberOfRooms: values.numberOfRooms ? Number(values.numberOfRooms) : undefined,
+                  otherRequirements: values.otherRequirements || undefined,
+                } : undefined,
               },
             },
-            salaries: values.salaries,
+            salaries: values.salaries || [],
           };
 
-          axios
-            .post(`${baseUrl}/api/v1/recruiter-view/jaf`, payload, {
-              headers: { Authorization: `Bearer ${accessToken}` },
-            })
-            .then(() => {
-              toast.success("JAF Form filled successfully");
-              window.location.reload();
-            })
-            .catch(() => toast.error("Cannot Submit"));
+          // Submit to backend
+          try {
+            await axios.post(`${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`, payload, {
+              headers: { 
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+              },
+            });
+            
+            toast.success("JAF Form submitted successfully! Your application has been received.");
+            // Reset form or redirect as needed
+            window.location.reload();
+          } catch (error: any) {
+            console.error("JAF submission error:", error);
+            
+            const errorMessage = error.response?.data?.message || 
+                               error.response?.data?.error || 
+                               "Failed to submit JAF form. Please try again.";
+            
+            toast.error(errorMessage);
+          }
         }}
         validateOnNext
         activeStepIndex={0}
         steps={[
           {
             component: SeasonDetails,
-            validationSchema: Yup.object({
-              seasonId: Yup.string().required("Please select a season"),
-              terms: Yup.boolean().oneOf(
-                [true],
-                "Please accept the terms and conditions to proceed",
-              ),
-            }),
+            validationSchema: seasonDetailsValidationSchema,
           },
           {
             component: RecruiterDetails,
-            validationSchema: recruiterStepSchema,
+            validationSchema: recruiterDetailsValidationSchema,
           },
           {
             component: JobDetails,
@@ -293,14 +189,20 @@ function JAF() {
           handleNext,
           isNextDisabled,
           isPrevDisabled,
-        }: RenderProps) => (
+          errors,
+        }: RenderProps) => {
+          const errorMessages = getErrorMessages(errors);
+          
+          return (
           <Space direction="vertical" size="large">
             <Steps current={currentStepIndex}>
               <Step title="Season Details" />
               <Step title="Recruiter Details" />
               <Step title="Job Details" />
             </Steps>
+
             {renderComponent()}
+            
             <Row justify="center">
               <Space size="large">
                 <Button disabled={isPrevDisabled} onClick={handlePrev}>
@@ -311,8 +213,44 @@ function JAF() {
                 </Button>
               </Space>
             </Row>
+            
+            {/* Show validation errors below the finish button */}
+            {currentStepIndex === 2 && isNextDisabled && errorMessages.length > 0 && (
+              <Row justify="center" style={{ marginTop: 20 }}>
+                <Col span={24}>
+                  <Alert
+                    message="Please complete the following to submit your form:"
+                    description={
+                      <div style={{ marginTop: 8 }}>
+                        {errorMessages.map((error, index) => (
+                          <div key={index} style={{ 
+                            padding: '4px 0',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'flex-start'
+                          }}>
+                            <span style={{ 
+                              color: '#ff4d4f', 
+                              marginRight: '8px',
+                              fontWeight: 'bold'
+                            }}>•</span>
+                            <span>{error}</span>
+                          </div>
+                        ))}
+                      </div>
+                    }
+                    type="warning"
+                    showIcon
+                    style={{
+                      borderRadius: '8px',
+                      border: '1px solid #faad14'
+                    }}
+                  />
+                </Col>
+              </Row>
+            )}
           </Space>
-        )}
+        )}}
       </FormikWizard>
     </div>
   );
