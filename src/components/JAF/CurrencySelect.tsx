@@ -16,21 +16,9 @@ const defaultCurrencies: CurrencyOption[] = [
   { value: "CNY", label: "CNY", symbol: "¥" },
 ];
 
-interface SalaryField {
-  stipendCurrency?: string;
-  customCurrencySymbol?: string;
-  customCurrencyName?: string;
-}
-
 interface CurrencySelectProps {
-  name: string[];
   defaultValue?: string;
   style?: React.CSSProperties;
-  values?: {
-    salaries?: Record<number, SalaryField>;
-  };
-  setFieldValue?: (field: string, value: any) => void;
-  field?: { name: number };
   allowCustom?: boolean;
   maxSymbolLength?: number;
   maxNameLength?: number;
@@ -42,48 +30,34 @@ interface CurrencySelectProps {
 
 const CurrencySelect: FC<CurrencySelectProps> = (props) => {
   const {
-    name,
     defaultValue = "INR",
     style = { width: 90 },
-    values,
-    setFieldValue,
-    field,
     allowCustom = false,
     maxSymbolLength = 3,
     maxNameLength = 20,
   } = props;
   const allCurrencies = [...defaultCurrencies, ...props.customCurrencies];
-  const currentSalary = field && values?.salaries?.[field.name];
+  const [customSymbol, setCustomSymbol] = useState("");
+  const [customName, setCustomName] = useState("");
 
   const handleCustomCurrencyChange = (
     type: "symbol" | "name",
     value: string,
   ) => {
-    if (!setFieldValue || !field || !values?.salaries) return;
-
-    const updatedSalaries = {
-      ...values.salaries,
-      [field.name]: {
-        ...values.salaries[field.name],
-        [type === "symbol" ? "customCurrencySymbol" : "customCurrencyName"]:
-          value,
-      },
-    };
-    setFieldValue("salaries", updatedSalaries);
+    if (type === "symbol") {
+      setCustomSymbol(value);
+    } else {
+      setCustomName(value);
+    }
   };
+
   const setCustomCurrency = () => {
-    if (
-      !setFieldValue ||
-      !field ||
-      !values?.salaries ||
-      !currentSalary?.customCurrencySymbol
-    )
-      return;
+    if (!customSymbol) return;
 
     const newCurrency: CurrencyOption = {
-      value: currentSalary.customCurrencySymbol,
-      label: currentSalary.customCurrencyName || "Custom",
-      symbol: currentSalary.customCurrencySymbol,
+      value: customSymbol,
+      label: customName || "Custom",
+      symbol: customSymbol,
     };
 
     const exists = allCurrencies.some(
@@ -96,15 +70,15 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
     }
 
     props.onAddCustomCurrency(newCurrency);
+    
+    // Set the new currency as the selected currency
+    if (props.onCurrencySync) {
+      props.onCurrencySync(newCurrency.value);
+    }
 
-    const updatedSalaries = {
-      ...values.salaries,
-      [field.name]: {
-        ...values.salaries[field.name],
-        stipendCurrency: newCurrency.value,
-      },
-    };
-    setFieldValue("salaries", updatedSalaries);
+    // Reset custom inputs
+    setCustomSymbol("");
+    setCustomName("");
 
     message.success(
       `Added new currency: ${newCurrency.symbol} ${newCurrency.label}`,
@@ -121,12 +95,9 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
   const renderCustomOption = () => {
     if (!allowCustom) return null;
 
-    const symbol = currentSalary?.customCurrencySymbol;
-    const name = currentSalary?.customCurrencyName;
-
     return (
       <Select.Option value="CUSTOM">
-        {symbol ? `${symbol} ${name || "Custom"}` : "Custom"}
+        {customSymbol ? `${customSymbol} ${customName || "Custom"}` : "Custom"}
       </Select.Option>
     );
   };
@@ -146,12 +117,10 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
         <Form.Item
           style={{ flex: 1, marginRight: 8, marginBottom: 0 }}
           validateStatus={
-            currentSalary?.customCurrencySymbol?.length > maxSymbolLength
-              ? "error"
-              : undefined
+            customSymbol.length > maxSymbolLength ? "error" : undefined
           }
           help={
-            currentSalary?.customCurrencySymbol?.length > maxSymbolLength
+            customSymbol.length > maxSymbolLength
               ? `Symbol must be ${maxSymbolLength} characters or less`
               : undefined
           }
@@ -160,7 +129,7 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
             placeholder="Symbol"
             size="small"
             maxLength={maxSymbolLength}
-            value={currentSalary?.customCurrencySymbol || ""}
+            value={customSymbol}
             onChange={(e) =>
               handleCustomCurrencyChange("symbol", e.target.value)
             }
@@ -169,12 +138,10 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
         <Form.Item
           style={{ flex: 2, marginRight: 8, marginBottom: 0 }}
           validateStatus={
-            currentSalary?.customCurrencyName?.length > maxNameLength
-              ? "error"
-              : undefined
+            customName.length > maxNameLength ? "error" : undefined
           }
           help={
-            currentSalary?.customCurrencyName?.length > maxNameLength
+            customName.length > maxNameLength
               ? `Name must be ${maxNameLength} characters or less`
               : undefined
           }
@@ -183,7 +150,7 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
             placeholder="Currency Name"
             size="small"
             maxLength={maxNameLength}
-            value={currentSalary?.customCurrencyName || ""}
+            value={customName}
             onChange={(e) => handleCustomCurrencyChange("name", e.target.value)}
           />
         </Form.Item>
@@ -191,9 +158,9 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
           size="small"
           type="primary"
           disabled={
-            !currentSalary?.customCurrencySymbol ||
-            currentSalary.customCurrencySymbol.length > maxSymbolLength ||
-            (currentSalary.customCurrencyName?.length || 0) > maxNameLength
+            !customSymbol ||
+            customSymbol.length > maxSymbolLength ||
+            customName.length > maxNameLength
           }
           onClick={setCustomCurrency}
         >
@@ -210,30 +177,24 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
   };
 
   return (
-    <Form.Item
-      name={name}
-      noStyle
-      initialValue={props.syncedCurrency || defaultValue}
+    <Select
+      style={style}
+      value={props.syncedCurrency || defaultValue}
+      onChange={handleChange}
+      dropdownRender={(menu) =>
+        allowCustom ? (
+          <>
+            {menu}
+            {renderCustomInput()}
+          </>
+        ) : (
+          menu
+        )
+      }
     >
-      <Select
-        style={style}
-        value={props.syncedCurrency}
-        onChange={handleChange}
-        dropdownRender={(menu) =>
-          allowCustom ? (
-            <>
-              {menu}
-              {renderCustomInput()}
-            </>
-          ) : (
-            menu
-          )
-        }
-      >
-        {renderOptions()}
-        {renderCustomOption()}
-      </Select>
-    </Form.Item>
+      {renderOptions()}
+      {renderCustomOption()}
+    </Select>
   );
 };
 

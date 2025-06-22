@@ -130,10 +130,6 @@ const JobDetails = ({
     const currentSalaries = form.getFieldValue("salaries") || [];
     const updatedSalaries = currentSalaries.map((salary: any) => ({
       ...salary,
-      stipendCurrency: currency,
-      accommodationCurrency: currency,
-      tentativeCTCCurrency: currency,
-      foreignStipendCurrency: currency,
       foreignCurrencyCode: currency, 
     }));
     form.setFieldValue("salaries", updatedSalaries);
@@ -1006,7 +1002,23 @@ const JobDetails = ({
                           label="Base Salary"
                           name={[field.name, "baseSalary"]}
                         >
-                          <Input type="number" placeholder="Base Salary" />
+                          <Input 
+                            type="number" 
+                            placeholder="Base Salary"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                             
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1014,7 +1026,23 @@ const JobDetails = ({
                           label="Total CTC"
                           name={[field.name, "totalCTC"]}
                         >
-                          <Input type="number" placeholder="Total CTC" />
+                          <Input 
+                            type="number" 
+                            placeholder="Total CTC"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                    
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1024,7 +1052,23 @@ const JobDetails = ({
                           label="Take Home Salary"
                           name={[field.name, "takeHomeSalary"]}
                         >
-                          <Input type="number" placeholder="Take Home Salary" />
+                          <Input 
+                            type="number" 
+                            placeholder="Take Home Salary"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                             
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1032,7 +1076,23 @@ const JobDetails = ({
                           label="Gross Salary"
                           name={[field.name, "grossSalary"]}
                         >
-                          <Input type="number" placeholder="Gross Salary" />
+                          <Input 
+                            type="number" 
+                            placeholder="Gross Salary"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1042,7 +1102,23 @@ const JobDetails = ({
                           label="Joining Bonus"
                           name={[field.name, "joiningBonus"]}
                         >
-                          <Input type="number" placeholder="Joining Bonus" />
+                          <Input 
+                            type="number" 
+                            placeholder="Joining Bonus"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1053,6 +1129,19 @@ const JobDetails = ({
                           <Input
                             type="number"
                             placeholder="Performance Bonus"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -1063,7 +1152,23 @@ const JobDetails = ({
                           label="Relocation"
                           name={[field.name, "relocation"]}
                         >
-                          <Input type="number" placeholder="Relocation" />
+                          <Input 
+                            type="number" 
+                            placeholder="Relocation"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1071,7 +1176,23 @@ const JobDetails = ({
                           label="Bond Amount"
                           name={[field.name, "bondAmount"]}
                         >
-                          <Input type="number" placeholder="Bond Amount" />
+                          <Input 
+                            type="number" 
+                            placeholder="Bond Amount"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1081,7 +1202,23 @@ const JobDetails = ({
                           label="ESOP Amount"
                           name={[field.name, "esopAmount"]}
                         >
-                          <Input type="number" placeholder="ESOP Amount" />
+                          <Input 
+                            type="number" 
+                            placeholder="ESOP Amount"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1099,7 +1236,23 @@ const JobDetails = ({
                           label="First Year CTC"
                           name={[field.name, "firstYearCTC"]}
                         >
-                          <Input type="number" placeholder="First Year CTC" />
+                          <Input 
+                            type="number" 
+                            placeholder="First Year CTC"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1107,7 +1260,23 @@ const JobDetails = ({
                           label="Retention Bonus"
                           name={[field.name, "retentionBonus"]}
                         >
-                          <Input type="number" placeholder="Retention Bonus" />
+                          <Input 
+                            type="number" 
+                            placeholder="Retention Bonus"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1117,7 +1286,23 @@ const JobDetails = ({
                           label="Deductions"
                           name={[field.name, "deductions"]}
                         >
-                          <Input type="number" placeholder="Deductions" />
+                          <Input 
+                            type="number" 
+                            placeholder="Deductions"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -1128,6 +1313,19 @@ const JobDetails = ({
                           <Input
                             type="number"
                             placeholder="Medical Allowance"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="INR"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -1141,7 +1339,7 @@ const JobDetails = ({
                           <Input placeholder="Bond Duration" />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      {/*                       <Col span={12}>
                         <Form.Item
                           label="Foreign Currency CTC"
                           name={[field.name, "foreignCurrencyCTC"]}
@@ -1149,11 +1347,24 @@ const JobDetails = ({
                           <Input
                             type="number"
                             placeholder="Foreign Currency CTC"
+                            min={0}
+                            addonBefore={
+                              <CurrencySelect
+                                
+                                defaultValue="USD"
+                                style={{ width: 120 }}
+                                allowCustom={true}
+                                customCurrencies={customCurrencies}
+                                onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
+                              />
+                            }
                           />
                         </Form.Item>
-                      </Col>
+                      </Col> */}
                     </Row>
-                    <Row gutter={24}>
+                    {/* <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item
                           label="Foreign Currency Code"
@@ -1165,7 +1376,7 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
-                    </Row>
+                    </Row> */}
                   </>
                 ) : (
                   <>
@@ -1182,12 +1393,9 @@ const JobDetails = ({
                             min={0}
                             addonBefore={
                               <CurrencySelect
-                                name={[`${field.name}`, "stipendCurrency"]}
+                                
                                 defaultValue="INR"
                                 style={{ width: 120 }}
-                                values={values}
-                                setFieldValue={setFieldValue}
-                                field={field}
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
@@ -1240,15 +1448,9 @@ const JobDetails = ({
                             min={0}
                             addonBefore={
                               <CurrencySelect
-                                name={[
-                                  `${field.name}`,
-                                  "accommodationCurrency",
-                                ]}
+                                
                                 defaultValue="INR"
                                 style={{ width: 120 }}
-                                values={values}
-                                setFieldValue={setFieldValue}
-                                field={field}
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
@@ -1273,12 +1475,9 @@ const JobDetails = ({
                             min={0}
                             addonBefore={
                               <CurrencySelect
-                                name={[`${field.name}`, "tentativeCTCCurrency"]}
+                                
                                 defaultValue="INR"
                                 style={{ width: 120 }}
-                                values={values}
-                                setFieldValue={setFieldValue}
-                                field={field}
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
