@@ -7,7 +7,6 @@ interface CurrencyOption {
   symbol: string;
 }
 
-// Default currencies list
 const defaultCurrencies: CurrencyOption[] = [
   { value: "INR", label: "INR", symbol: "₹" },
   { value: "USD", label: "USD", symbol: "$" },
@@ -35,9 +34,10 @@ interface CurrencySelectProps {
   allowCustom?: boolean;
   maxSymbolLength?: number;
   maxNameLength?: number;
-  // Add props for shared custom currencies
   customCurrencies: CurrencyOption[];
   onAddCustomCurrency: (currency: CurrencyOption) => void;
+  syncedCurrency?: string;
+  onCurrencySync?: (currency: string) => void;
 }
 
 const CurrencySelect: FC<CurrencySelectProps> = (props) => {
@@ -52,7 +52,6 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
     maxSymbolLength = 3,
     maxNameLength = 20,
   } = props;
-  // Combine default and custom currencies
   const allCurrencies = [...defaultCurrencies, ...props.customCurrencies];
   const currentSalary = field && values?.salaries?.[field.name];
 
@@ -81,14 +80,12 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
     )
       return;
 
-    // Create new currency object
     const newCurrency: CurrencyOption = {
       value: currentSalary.customCurrencySymbol,
       label: currentSalary.customCurrencyName || "Custom",
       symbol: currentSalary.customCurrencySymbol,
     };
 
-    // Check if currency already exists
     const exists = allCurrencies.some(
       (c) => c.value === newCurrency.value || c.symbol === newCurrency.symbol,
     );
@@ -98,10 +95,8 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
       return;
     }
 
-    // Add custom currency through the parent callback
     props.onAddCustomCurrency(newCurrency);
 
-    // Update the form value
     const updatedSalaries = {
       ...values.salaries,
       [field.name]: {
@@ -208,10 +203,22 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
     );
   };
 
+  const handleChange = (value: string) => {
+    if (props.onCurrencySync) {
+      props.onCurrencySync(value);
+    }
+  };
+
   return (
-    <Form.Item name={name} noStyle initialValue={defaultValue}>
+    <Form.Item
+      name={name}
+      noStyle
+      initialValue={props.syncedCurrency || defaultValue}
+    >
       <Select
         style={style}
+        value={props.syncedCurrency}
+        onChange={handleChange}
         dropdownRender={(menu) =>
           allowCustom ? (
             <>

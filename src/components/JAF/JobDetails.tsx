@@ -69,6 +69,7 @@ const JobDetails = ({
   setFieldValue,
 }: StepProps) => {
   const [form] = Form.useForm();
+  const [syncedCurrency, setSyncedCurrency] = useState("INR");
 
   const [skills, setSkills] = useState([]);
   const [fileList, setFileList] = useState([]);
@@ -122,6 +123,19 @@ const JobDetails = ({
     message.success(
       `Added new currency: ${newCurrency.symbol} ${newCurrency.label}`,
     );
+  };
+
+  const handleCurrencySync = (currency: string) => {
+    setSyncedCurrency(currency);
+    const currentSalaries = form.getFieldValue("salaries");
+    const updatedSalaries = currentSalaries.map((salary: any) => ({
+      ...salary,
+      stipendCurrency: currency,
+      accommodationCurrency: currency,
+      tentativeCTCCurrency: currency,
+      foreignStipendCurrency: currency,
+    }));
+    form.setFieldValue("salaries", updatedSalaries);
   };
 
   useEffect(() => {
@@ -1174,6 +1188,8 @@ const JobDetails = ({
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
                               />
                             }
                           />
@@ -1194,7 +1210,7 @@ const JobDetails = ({
                                   `${field.name}`,
                                   "foreignStipendCurrency",
                                 ]}
-                                defaultValue="USD"
+                                defaultValue="INR"
                                 style={{ width: 120 }}
                                 values={values}
                                 setFieldValue={setFieldValue}
@@ -1202,6 +1218,8 @@ const JobDetails = ({
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
                               />
                             }
                           />
@@ -1232,6 +1250,8 @@ const JobDetails = ({
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
                               />
                             }
                           />
@@ -1257,6 +1277,8 @@ const JobDetails = ({
                                 allowCustom={true}
                                 customCurrencies={customCurrencies}
                                 onAddCustomCurrency={handleAddCustomCurrency}
+                                syncedCurrency={syncedCurrency}
+                                onCurrencySync={handleCurrencySync}
                               />
                             }
                           />
@@ -1267,7 +1289,10 @@ const JobDetails = ({
                       label="PPO Confirmation Date"
                       name={[field.name, "PPOConfirmationDate"]}
                     >
-                      <Input type="date" />
+                      <Input
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                      />
                     </Form.Item>
                   </>
                 )}
