@@ -32,6 +32,8 @@ import { MultiSelect } from "../ui/multiselect";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import ReCAPTCHA from "react-google-recaptcha";
+import { validateCaptcha } from "@/helpers/api";
 
 const Collapsible = dynamic(() => import("@/components/ui/collapsible"), {
   ssr: false,
@@ -252,6 +254,7 @@ export const RecruiterForm = ({
 export default function RecruiterSignup() {
   const [companies, setCompanies] = useState([]);
   const [createCompany, setCreateCompany] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
   const router = useRouter();
 
   const [companyFormData, setCompanyFormData] = useState<CompanyPostFC>({
@@ -302,6 +305,19 @@ export default function RecruiterSignup() {
   };
 
   const handleSubmit = async () => {
+    if (!captchaToken) return toast.error("Please complete the captcha");
+
+    try {
+      const captchaRes = await validateCaptcha(captchaToken);
+      console.log("Captcha response:", captchaRes);
+
+      if (!captchaRes) {
+        return toast.error("Captcha verification failed");
+      }
+    } catch (error) {
+      return toast.error("Captcha verification failed");
+    }
+
     if (createCompany) {
       try {
         const data = await postCompany(companyFormData);
@@ -455,6 +471,11 @@ export default function RecruiterSignup() {
             </Collapsible>
           )}
         </form>
+        <hr className="my-4" />
+        <ReCAPTCHA
+          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+          onChange={(token) => setCaptchaToken(token)}
+        />
       </CardContent>
       <CardFooter>
         <div className="flex justify-end space-x-1">
