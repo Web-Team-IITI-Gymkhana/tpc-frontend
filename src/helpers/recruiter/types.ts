@@ -263,7 +263,7 @@ export interface CompanyPostFC {
   category: string;
   yearOfEstablishment: string;
   website: string;
-  size: 0;
+  size: number;
   annualTurnover: string;
   socialMediaLink: string;
   domains: string[];

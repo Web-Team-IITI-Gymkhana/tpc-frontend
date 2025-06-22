@@ -14,7 +14,7 @@ const RecruiterDashboard = () => {
     <>
       <div>
         <Link href="/">
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <svg
@@ -48,7 +48,7 @@ const RecruiterDashboard = () => {
           </div>
         </Link>
         <Link href="/JAF">
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <svg
@@ -82,7 +82,7 @@ const RecruiterDashboard = () => {
           </div>
         </Link>
         <Link href="/recruiter/jobs">
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <svg
@@ -116,7 +116,7 @@ const RecruiterDashboard = () => {
           </div>
         </Link>
         <Link href="/recruiter/events">
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[2rem]">
               <div className="w-[2vw]">
                 <EventOutlinedIcon fontSize="small" />
