@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import ReCAPTCHA from "react-google-recaptcha";
 import { validateCaptcha } from "@/helpers/api";
 import { Combobox } from "../ui/combobox";
+import { handleApiError } from "@/utils/errorHandling";
 import { 
   User, 
   Building, 
@@ -182,16 +183,7 @@ export default function RecruiterSignup() {
         toast.error("Registration failed. Please try again.");
       }
     } catch (error: any) {
-      console.error("Registration error:", error);
-      
-      // Handle rate limiting specifically
-      if (error?.response?.status === 429 || error?.status === 429 || error?.statusCode === 429) {
-        toast.error("Too many requests. Please wait a moment before trying again.");
-      } else if (error?.response?.data?.message?.includes("Too Many Requests") || error?.message?.includes("Too Many Requests")) {
-        toast.error("Too many requests. Please wait a moment before trying again.");
-      } else {
-        toast.error("Error during registration. Please try again.");
-      }
+      handleApiError(error, "Error during registration. Please try again.");
     } finally {
       setLoading(false);
     }

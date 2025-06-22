@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Send } from "lucide-react";
 import toast from "react-hot-toast";
 import { loginWithEmail } from "@/helpers/api";
+import { handleApiError } from "@/utils/errorHandling";
 
 export const LoginWithEmail = (params: { email: string }) => {
   const onClick = async () => {
@@ -24,8 +25,17 @@ export const LoginWithEmail = (params: { email: string }) => {
       }
 
       return response;
-    } catch (error) {
-      toast.error("An error occurred while sending the email");
+    } catch (error: any) {
+      console.error("Login email error:", error);
+      
+      // Handle rate limiting specifically
+      if (error?.response?.status === 429 || error?.status === 429 || error?.statusCode === 429) {
+        toast.error("Too many requests. Please wait a moment before trying again.");
+      } else if (error?.response?.data?.message?.includes("Too Many Requests") || error?.message?.includes("Too Many Requests")) {
+        toast.error("Too many requests. Please wait a moment before trying again.");
+      } else {
+        toast.error("An error occurred while sending the email");
+      }
       return false;
     }
   };
