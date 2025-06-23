@@ -50,7 +50,7 @@ import {
 } from "lucide-react";
 import { Building2 } from "lucide-react";
 
-// Validation patterns (consistent with existing codebase)
+// Modern validation patterns for better UX
 const VALIDATION_PATTERNS = {
   PHONE: /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
   LANDLINE: /^[\d\s\-\+\(\)]+$/,
@@ -59,7 +59,7 @@ const VALIDATION_PATTERNS = {
   URL: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i,
 };
 
-// Field limits
+// Field limits for better validation
 const FIELD_LIMITS = {
   NAME_MIN: 2,
   NAME_MAX: 100,
@@ -79,11 +79,9 @@ const FIELD_LIMITS = {
   STATE_MAX: 100,
   YEAR_MIN: 1800,
   YEAR_MAX: new Date().getFullYear(),
-  SIZE_MAX: 10000000,
-  TURNOVER_MAX: 500,
 };
 
-// Validation error messages
+// Modern validation messages
 const VALIDATION_MESSAGES = {
   REQUIRED: "This field is required",
   INVALID_EMAIL: "Please enter a valid email address",
@@ -93,8 +91,6 @@ const VALIDATION_MESSAGES = {
   INVALID_URL: "Please enter a valid URL (e.g., https://example.com)",
   MIN_LENGTH: (min: number) => `Must be at least ${min} characters`,
   MAX_LENGTH: (max: number) => `Must not exceed ${max} characters`,
-  MIN_VALUE: (min: number) => `Value must be at least ${min}`,
-  MAX_VALUE: (max: number) => `Value must not exceed ${max}`,
   INVALID_YEAR: "Please enter a valid year",
   INVALID_SIZE: "Please enter a valid company size",
 };
@@ -109,34 +105,31 @@ export default function RecruiterSignup() {
   const [captchaToken, setCaptchaToken] = useState("");
   const [jaf, setJaf] = useState<JAFdetailsFC | null>(null);
   const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
   const captchaRef = useRef<ReCAPTCHA | null>(null);
 
-  // Validation states
+  // Modern validation states for better UX
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // Personal Information
-  const [personalInfo, setPersonalInfo] = useState({
-    name: "",
-    email: "",
-    contact: "",
+  // Original form data structure (working)
+  const [formData, setFormData] = useState({
+    user: { name: "", email: "", contact: "" },
+    companyId: "",
     designation: "",
     landline: "",
   });
 
-  // Company Information
-  const [companyInfo, setCompanyInfo] = useState({
-    companyId: "",
-    companyName: "",
+  // Company form data for new company creation
+  const [companyFormData, setCompanyFormData] = useState<CompanyPostFC>({
+    name: "",
     category: "",
-    website: "",
     yearOfEstablishment: "",
-    companySize: "",
+    website: "",
+    size: 0,
     annualTurnover: "",
     socialMediaLink: "",
-    domains: [] as string[],
+    domains: [],
     address: {
       line1: "",
       line2: "",
@@ -145,8 +138,6 @@ export default function RecruiterSignup() {
       country: "",
     },
   });
-
-  type CompanyStringFields = "companyId" | "companyName" | "category" | "website" | "yearOfEstablishment" | "companySize" | "annualTurnover" | "socialMediaLink";
 
   useEffect(() => {
     const loadData = async () => {
@@ -170,7 +161,7 @@ export default function RecruiterSignup() {
     loadData();
   }, []);
 
-  // Real-time validation functions
+  // Modern validation function for better UX
   const validateField = (field: string, value: string): string => {
     if (!value.trim() && isRequiredField(field)) {
       return VALIDATION_MESSAGES.REQUIRED;
@@ -224,13 +215,6 @@ export default function RecruiterSignup() {
         }
         break;
 
-      case "companySize":
-        const size = parseInt(value);
-        if (isNaN(size) || size < 1 || size > FIELD_LIMITS.SIZE_MAX) {
-          return VALIDATION_MESSAGES.INVALID_SIZE;
-        }
-        break;
-
       case "line1":
         if (value.length < FIELD_LIMITS.ADDRESS_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.ADDRESS_MIN);
         if (value.length > FIELD_LIMITS.ADDRESS_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.ADDRESS_MAX);
@@ -259,195 +243,155 @@ export default function RecruiterSignup() {
     return requiredPersonalFields.includes(field) || requiredCompanyFields.includes(field);
   };
 
-  const handlePersonalInfoChange = (field: string, value: string) => {
-    setPersonalInfo((prev) => ({ ...prev, [field]: value }));
-    
-    // Real-time validation
-    const error = validateField(field, value);
-    setValidationErrors((prev) => ({ ...prev, [field]: error }));
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleCompanyInfoChange = (field: string, value: string) => {
-    setCompanyInfo((prev) => {
-      const updated = { ...prev };
-      (updated as any)[field] = value;
-      return updated;
-    });
-    
-    // Real-time validation
-    const error = validateField(field, value);
-    setValidationErrors((prev) => ({ ...prev, [field]: error }));
-    setTouched((prev) => ({ ...prev, [field]: true }));
-  };
-
-  const handleDomainsChange = (value: string[]) => {
-    setCompanyInfo((prev) => ({ ...prev, domains: value }));
-  };
-
-  const handleAddressChange = (field: string, value: string) => {
-    setCompanyInfo((prev) => ({
-      ...prev,
-      address: { ...prev.address, [field]: value },
+  // Original input handlers (working) with modern validation
+  const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      user: { ...prevFormData.user, [name]: value },
     }));
     
-    // Real-time validation
-    const error = validateField(field, value);
-    setValidationErrors((prev) => ({ ...prev, [field]: error }));
-    setTouched((prev) => ({ ...prev, [field]: true }));
+    // Real-time validation for better UX
+    const error = validateField(name, value);
+    setValidationErrors((prev) => ({ ...prev, [name]: error }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
-  const validateAllFields = (): boolean => {
-    const errors: ValidationErrors = {};
-    let isValid = true;
-
-    // Validate personal info
-    Object.entries(personalInfo).forEach(([key, value]) => {
-      const error = validateField(key, value);
-      if (error) {
-        errors[key] = error;
-        isValid = false;
-      }
-    });
-
-    // Validate company info
-    if (createCompany) {
-      // Validate string fields only
-      const stringFields: (keyof typeof companyInfo)[] = [
-        "companyName", "category", "website", "yearOfEstablishment", 
-        "companySize", "annualTurnover", "socialMediaLink"
-      ];
-      
-      stringFields.forEach((key) => {
-        const value = companyInfo[key] as string;
-        const error = validateField(key, value);
-        if (error) {
-          errors[key] = error;
-          isValid = false;
-        }
-      });
-
-      // Validate address fields
-      Object.entries(companyInfo.address).forEach(([key, value]) => {
-        const error = validateField(key, value);
-        if (error) {
-          errors[key] = error;
-          isValid = false;
-        }
-      });
-    } else {
-      // Validate company selection
-      if (!companyInfo.companyId) {
-        errors.companyId = VALIDATION_MESSAGES.REQUIRED;
-        isValid = false;
-      }
-    }
-
-    setValidationErrors(errors);
-    return isValid;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+    
+    // Real-time validation for better UX
+    const error = validateField(name, value);
+    setValidationErrors((prev) => ({ ...prev, [name]: error }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
-  const handleSubmit = async () => {
-    if (!captchaToken) {
-      toast.error("Please complete the captcha verification");
-      return;
-    }
-
-    if (!validateAllFields()) {
-      toast.error("Please fix all validation errors before submitting");
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      // Verify captcha
-      const captchaRes = await validateCaptcha(captchaToken);
-      if (!captchaRes) {
-        toast.error("Captcha verification failed. Please try again.");
-        captchaRef.current?.reset();
-        setCaptchaToken("");
-        return;
-      }
-
-      let finalCompanyId = companyInfo.companyId;
-
-      // Create new company if needed
-      if (createCompany) {
-        const companyData: CompanyPostFC = {
-          name: companyInfo.companyName.trim(),
-          category: companyInfo.category,
-          website: companyInfo.website.trim() || undefined,
-          yearOfEstablishment: companyInfo.yearOfEstablishment,
-          size: companyInfo.companySize ? Number(companyInfo.companySize) : undefined,
-          annualTurnover: companyInfo.annualTurnover.trim() || undefined,
-          socialMediaLink: companyInfo.socialMediaLink.trim() || undefined,
-          domains: companyInfo.domains,
-          address: {
-            line1: companyInfo.address.line1.trim(),
-            line2: companyInfo.address.line2.trim() || undefined,
-            city: companyInfo.address.city.trim(),
-            state: companyInfo.address.state.trim(),
-            country: companyInfo.address.country,
-          },
-        };
-
-        const newCompany = await postCompany(companyData);
-        finalCompanyId = newCompany[0];
-        toast.success("Company created successfully!");
-      }
-
-      // Create recruiter
-      const recruiterData = {
-        user: {
-          name: personalInfo.name.trim(),
-          email: personalInfo.email.trim().toLowerCase(),
-          contact: personalInfo.contact.trim(),
-        },
-        companyId: finalCompanyId,
-        designation: personalInfo.designation.trim(),
-        landline: personalInfo.landline.trim() || undefined,
-      };
-
-      const signupRes = await signupRecruiter(recruiterData);
-
-      if (signupRes.success) {
-        toast.success("Registration successful! Please check your email for verification.");
-        
-        // Reset form
-        setPersonalInfo({ name: "", email: "", contact: "", designation: "", landline: "" });
-        setCompanyInfo({
-          companyId: "", companyName: "", category: "", website: "", 
-          yearOfEstablishment: "", companySize: "", annualTurnover: "", 
-          socialMediaLink: "", domains: [],
-          address: { line1: "", line2: "", city: "", state: "", country: "" }
-        });
-        setValidationErrors({});
-        setTouched({});
-        
-        // Redirect after brief delay
-        setTimeout(() => {
-          router.push("/recruiter/signin");
-        }, 2000);
-      } else {
-        toast.error(signupRes.message || "Registration failed. Please try again.");
-      }
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      handleApiError(error, "Registration failed. Please try again.");
-    } finally {
-      captchaRef.current?.reset();
-      setCaptchaToken("");
-      setSubmitting(false);
-    }
+  // Company form handlers with modern validation
+  const handleCompanyChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { id, value } = e.currentTarget;
+    setCompanyFormData((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+    
+    // Real-time validation for better UX
+    const fieldName = id === "name" ? "companyName" : id;
+    const error = validateField(fieldName, value);
+    setValidationErrors((prev) => ({ ...prev, [fieldName]: error }));
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
   };
 
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { id, value } = e.currentTarget;
+    setCompanyFormData((prevState) => ({
+      ...prevState,
+      address: {
+        ...prevState.address,
+        [id]: value,
+      },
+    }));
+    
+    // Real-time validation for better UX
+    const error = validateField(id, value);
+    setValidationErrors((prev) => ({ ...prev, [id]: error }));
+    setTouched((prev) => ({ ...prev, [id]: true }));
+  };
+
+  // Helper functions for modern validation display
   const getFieldError = (field: string): string => {
     return touched[field] ? validationErrors[field] || "" : "";
   };
 
   const isFieldInvalid = (field: string): boolean => {
     return touched[field] && !!validationErrors[field];
+  };
+
+  // Simplified submission with modern validation check
+  const handleSubmit = async () => {
+    if (!captchaToken) {
+      return toast.error("Please complete the captcha");
+    }
+
+    // Check if there are any validation errors
+    const hasErrors = Object.values(validationErrors).some(error => error !== "");
+    if (hasErrors) {
+      return toast.error("Please fix all validation errors before submitting");
+    }
+
+    // Basic required field check (fallback)
+    if (!formData.user.name.trim() || !formData.user.email.trim() || 
+        !formData.user.contact.trim() || !formData.designation.trim()) {
+      return toast.error("Please fill in all required personal information");
+    }
+
+    if (createCompany) {
+      if (!companyFormData.name.trim() || !companyFormData.category || 
+          !companyFormData.address.line1.trim() || !companyFormData.address.city.trim() || 
+          !companyFormData.address.state.trim() || !companyFormData.address.country) {
+        return toast.error("Please fill in all required company information");
+      }
+    } else {
+      if (!formData.companyId) {
+        return toast.error("Please select a company");
+      }
+    }
+
+    setLoading(true);
+
+    try {
+      const captchaRes = await validateCaptcha(captchaToken);
+      if (!captchaRes) {
+        toast.error("Captcha verification failed");
+        setLoading(false);
+        return;
+      }
+
+      if (createCompany) {
+        try {
+          const data = await postCompany(companyFormData);
+          const updatedFormData = { ...formData, companyId: data[0] };
+          setFormData(updatedFormData);
+
+          const signupRes = await signupRecruiter(updatedFormData);
+          if (signupRes.success) {
+            toast.success("Registration successful! Please check your email.");
+            router.push("/recruiter/signin");
+          } else {
+            toast.error("Some error occurred");
+          }
+        } catch (error) {
+          handleApiError(error, "Error creating company or signing up");
+        }
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const signupRes = await signupRecruiter(formData);
+        if (signupRes) {
+          toast.success("Registration successful! Please check your email.");
+          router.push("/recruiter/signin");
+        } else {
+          toast.error("Some error occurred");
+        }
+      } catch (error) {
+        handleApiError(error, "Error signing up");
+      }
+    } catch (error) {
+      toast.error("Captcha verification failed");
+    }
+
+    captchaRef.current?.reset();
+    setCaptchaToken("");
+    setLoading(false);
   };
 
   return (
@@ -486,9 +430,10 @@ export default function RecruiterSignup() {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  name="name"
                   placeholder="Enter your full name"
-                  value={personalInfo.name}
-                  onChange={(e) => handlePersonalInfoChange("name", e.target.value)}
+                  value={formData.user.name}
+                  onChange={handleUserInputChange}
                   onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
                   className={`pl-10 h-11 ${isFieldInvalid("name") ? "border-red-500 focus:border-red-500" : ""}`}
                   maxLength={FIELD_LIMITS.NAME_MAX}
@@ -509,10 +454,11 @@ export default function RecruiterSignup() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  name="email"
                   type="email"
                   placeholder="recruiter@company.com"
-                  value={personalInfo.email}
-                  onChange={(e) => handlePersonalInfoChange("email", e.target.value)}
+                  value={formData.user.email}
+                  onChange={handleUserInputChange}
                   onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
                   className={`pl-10 h-11 ${isFieldInvalid("email") ? "border-red-500 focus:border-red-500" : ""}`}
                   maxLength={FIELD_LIMITS.EMAIL_MAX}
@@ -535,13 +481,14 @@ export default function RecruiterSignup() {
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  name="contact"
                   type="tel"
                   placeholder="+91 XXXXX XXXXX"
-                  value={personalInfo.contact}
-                  onChange={(e) => handlePersonalInfoChange("contact", e.target.value)}
+                  value={formData.user.contact}
+                  onChange={handleUserInputChange}
                   onBlur={() => setTouched(prev => ({ ...prev, contact: true }))}
                   className={`pl-10 h-11 ${isFieldInvalid("contact") ? "border-red-500 focus:border-red-500" : ""}`}
-                  maxLength={FIELD_LIMITS.PHONE_MAX + 5} // Extra space for formatting
+                  maxLength={FIELD_LIMITS.PHONE_MAX + 5}
                 />
               </div>
               {getFieldError("contact") && (
@@ -557,9 +504,10 @@ export default function RecruiterSignup() {
                 Designation *
               </Label>
               <Input
+                name="designation"
                 placeholder="HR Manager, Talent Acquisition, etc."
-                value={personalInfo.designation}
-                onChange={(e) => handlePersonalInfoChange("designation", e.target.value)}
+                value={formData.designation}
+                onChange={handleInputChange}
                 onBlur={() => setTouched(prev => ({ ...prev, designation: true }))}
                 className={`h-11 ${isFieldInvalid("designation") ? "border-red-500 focus:border-red-500" : ""}`}
                 maxLength={FIELD_LIMITS.DESIGNATION_MAX}
@@ -580,21 +528,14 @@ export default function RecruiterSignup() {
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
+                name="landline"
                 type="tel"
                 placeholder="Office landline number"
-                value={personalInfo.landline}
-                onChange={(e) => handlePersonalInfoChange("landline", e.target.value)}
-                onBlur={() => setTouched(prev => ({ ...prev, landline: true }))}
-                className={`pl-10 h-11 ${isFieldInvalid("landline") ? "border-red-500 focus:border-red-500" : ""}`}
-                maxLength={FIELD_LIMITS.LANDLINE_MAX}
+                value={formData.landline}
+                onChange={handleInputChange}
+                className="pl-10 h-11"
               />
             </div>
-            {getFieldError("landline") && (
-              <div className="flex items-center gap-1 text-red-500 text-sm">
-                <AlertCircle className="h-3 w-3" />
-                {getFieldError("landline")}
-              </div>
-            )}
           </div>
         </div>
 
@@ -614,11 +555,7 @@ export default function RecruiterSignup() {
           <div className="flex gap-4">
             <Button
               variant={!createCompany ? "default" : "outline"}
-              onClick={() => {
-                setCreateCompany(false);
-                setValidationErrors({});
-                setTouched({});
-              }}
+              onClick={() => setCreateCompany(false)}
               className="flex-1"
               type="button"
             >
@@ -626,11 +563,7 @@ export default function RecruiterSignup() {
             </Button>
             <Button
               variant={createCompany ? "default" : "outline"}
-              onClick={() => {
-                setCreateCompany(true);
-                setValidationErrors({});
-                setTouched({});
-              }}
+              onClick={() => setCreateCompany(true)}
               className="flex-1"
               type="button"
             >
@@ -644,28 +577,23 @@ export default function RecruiterSignup() {
                 <Label className="text-sm font-medium text-gray-700">
                   Select Company *
                 </Label>
-                <Combobox
-                  options={(companies || []).map(
-                    (company: { id: string; name: string }) => ({
-                      value: company.id,
-                      label: company.name,
-                    }),
-                  )}
-                  value={companyInfo.companyId}
-                  onChange={(value) => {
-                    handleCompanyInfoChange("companyId", value);
-                    setTouched(prev => ({ ...prev, companyId: true }));
+                <Select
+                  value={formData.companyId}
+                  onValueChange={(value) => {
+                    setFormData((prev) => ({ ...prev, companyId: value }));
                   }}
-                  placeholder="Select company..."
-                  searchPlaceholder="Search companies..."
-                  emptyPlaceholder="No company found."
-                />
-                {getFieldError("companyId") && (
-                  <div className="flex items-center gap-1 text-red-500 text-sm">
-                    <AlertCircle className="h-3 w-3" />
-                    {getFieldError("companyId")}
-                  </div>
-                )}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder="Select company..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(companies || []).map((company: { id: string; name: string }) => (
+                      <SelectItem key={company.id} value={company.id}>
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           ) : (
@@ -676,9 +604,10 @@ export default function RecruiterSignup() {
                     Company Name *
                   </Label>
                   <Input
+                    id="name"
                     placeholder="Enter company name"
-                    value={companyInfo.companyName}
-                    onChange={(e) => handleCompanyInfoChange("companyName", e.target.value)}
+                    value={companyFormData.name}
+                    onChange={handleCompanyChange}
                     onBlur={() => setTouched(prev => ({ ...prev, companyName: true }))}
                     className={`h-11 ${isFieldInvalid("companyName") ? "border-red-500 focus:border-red-500" : ""}`}
                     maxLength={FIELD_LIMITS.COMPANY_NAME_MAX}
@@ -695,13 +624,12 @@ export default function RecruiterSignup() {
                     Category *
                   </Label>
                   <Select
-                    value={companyInfo.category}
+                    value={companyFormData.category}
                     onValueChange={(value) => {
-                      handleCompanyInfoChange("category", value);
-                      setTouched(prev => ({ ...prev, category: true }));
+                      setCompanyFormData((prev) => ({ ...prev, category: value }));
                     }}
                   >
-                    <SelectTrigger className={`h-11 ${isFieldInvalid("category") ? "border-red-500 focus:border-red-500" : ""}`}>
+                    <SelectTrigger className="h-11">
                       <SelectValue placeholder="Select company category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -714,12 +642,6 @@ export default function RecruiterSignup() {
                       )}
                     </SelectContent>
                   </Select>
-                  {getFieldError("category") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("category")}
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -729,21 +651,13 @@ export default function RecruiterSignup() {
                     Year of Establishment
                   </Label>
                   <Input
+                    id="yearOfEstablishment"
                     type="number"
                     placeholder="Enter year"
-                    value={companyInfo.yearOfEstablishment}
-                    onChange={(e) => handleCompanyInfoChange("yearOfEstablishment", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, yearOfEstablishment: true }))}
-                    className={`h-11 ${isFieldInvalid("yearOfEstablishment") ? "border-red-500 focus:border-red-500" : ""}`}
-                    min={FIELD_LIMITS.YEAR_MIN}
-                    max={FIELD_LIMITS.YEAR_MAX}
+                    value={companyFormData.yearOfEstablishment}
+                    onChange={handleCompanyChange}
+                    className="h-11"
                   />
-                  {getFieldError("yearOfEstablishment") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("yearOfEstablishment")}
-                    </div>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
@@ -752,19 +666,13 @@ export default function RecruiterSignup() {
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
+                      id="website"
                       placeholder="https://company.com"
-                      value={companyInfo.website}
-                      onChange={(e) => handleCompanyInfoChange("website", e.target.value)}
-                      onBlur={() => setTouched(prev => ({ ...prev, website: true }))}
-                      className={`pl-10 h-11 ${isFieldInvalid("website") ? "border-red-500 focus:border-red-500" : ""}`}
+                      value={companyFormData.website}
+                      onChange={handleCompanyChange}
+                      className="pl-10 h-11"
                     />
                   </div>
-                  {getFieldError("website") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("website")}
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -776,22 +684,14 @@ export default function RecruiterSignup() {
                   <div className="relative">
                     <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
+                      id="size"
                       type="number"
                       placeholder="Number of employees"
-                      value={companyInfo.companySize}
-                      onChange={(e) => handleCompanyInfoChange("companySize", e.target.value)}
-                      onBlur={() => setTouched(prev => ({ ...prev, companySize: true }))}
-                      className={`pl-10 h-11 ${isFieldInvalid("companySize") ? "border-red-500 focus:border-red-500" : ""}`}
-                      min="1"
-                      max={FIELD_LIMITS.SIZE_MAX}
+                      value={companyFormData.size || ""}
+                      onChange={handleCompanyChange}
+                      className="pl-10 h-11"
                     />
                   </div>
-                  {getFieldError("companySize") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("companySize")}
-                    </div>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
@@ -800,11 +700,11 @@ export default function RecruiterSignup() {
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
+                      id="annualTurnover"
                       placeholder="e.g., $10M"
-                      value={companyInfo.annualTurnover}
-                      onChange={(e) => handleCompanyInfoChange("annualTurnover", e.target.value)}
+                      value={companyFormData.annualTurnover}
+                      onChange={handleCompanyChange}
                       className="pl-10 h-11"
-                      maxLength={FIELD_LIMITS.TURNOVER_MAX}
                     />
                   </div>
                 </div>
@@ -816,18 +716,12 @@ export default function RecruiterSignup() {
                     Social Media Link
                   </Label>
                   <Input
+                    id="socialMediaLink"
                     placeholder="LinkedIn or other profile"
-                    value={companyInfo.socialMediaLink}
-                    onChange={(e) => handleCompanyInfoChange("socialMediaLink", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, socialMediaLink: true }))}
-                    className={`h-11 ${isFieldInvalid("socialMediaLink") ? "border-red-500 focus:border-red-500" : ""}`}
+                    value={companyFormData.socialMediaLink}
+                    onChange={handleCompanyChange}
+                    className="h-11"
                   />
-                  {getFieldError("socialMediaLink") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("socialMediaLink")}
-                    </div>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
@@ -835,8 +729,10 @@ export default function RecruiterSignup() {
                   </Label>
                   <MultiSelect
                     givenOptions={jaf?.domains || []}
-                    formData={companyInfo.domains}
-                    setFormData={handleDomainsChange}
+                    formData={companyFormData.domains}
+                    setFormData={(value) => {
+                      setCompanyFormData((prev) => ({ ...prev, domains: value }));
+                    }}
                   />
                 </div>
               </div>
@@ -848,20 +744,13 @@ export default function RecruiterSignup() {
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
+                    id="line1"
                     placeholder="123 Main St"
-                    value={companyInfo.address.line1}
-                    onChange={(e) => handleAddressChange("line1", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, line1: true }))}
-                    className={`pl-10 h-11 ${isFieldInvalid("line1") ? "border-red-500 focus:border-red-500" : ""}`}
-                    maxLength={FIELD_LIMITS.ADDRESS_MAX}
+                    value={companyFormData.address.line1}
+                    onChange={handleAddressChange}
+                    className="pl-10 h-11"
                   />
                 </div>
-                {getFieldError("line1") && (
-                  <div className="flex items-center gap-1 text-red-500 text-sm">
-                    <AlertCircle className="h-3 w-3" />
-                    {getFieldError("line1")}
-                  </div>
-                )}
               </div>
 
               <div className="space-y-2">
@@ -869,11 +758,11 @@ export default function RecruiterSignup() {
                   Address Line 2 (Optional)
                 </Label>
                 <Input
+                  id="line2"
                   placeholder="Apartment, studio, or floor"
-                  value={companyInfo.address.line2}
-                  onChange={(e) => handleAddressChange("line2", e.target.value)}
+                  value={companyFormData.address.line2}
+                  onChange={handleAddressChange}
                   className="h-11"
-                  maxLength={FIELD_LIMITS.ADDRESS_MAX}
                 />
               </div>
 
@@ -883,65 +772,49 @@ export default function RecruiterSignup() {
                     City *
                   </Label>
                   <Input
+                    id="city"
                     placeholder="Enter city"
-                    value={companyInfo.address.city}
-                    onChange={(e) => handleAddressChange("city", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, city: true }))}
-                    className={`h-11 ${isFieldInvalid("city") ? "border-red-500 focus:border-red-500" : ""}`}
-                    maxLength={FIELD_LIMITS.CITY_MAX}
+                    value={companyFormData.address.city}
+                    onChange={handleAddressChange}
+                    className="h-11"
                   />
-                  {getFieldError("city") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("city")}
-                    </div>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
                     State *
                   </Label>
                   <Input
+                    id="state"
                     placeholder="Enter state"
-                    value={companyInfo.address.state}
-                    onChange={(e) => handleAddressChange("state", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, state: true }))}
-                    className={`h-11 ${isFieldInvalid("state") ? "border-red-500 focus:border-red-500" : ""}`}
-                    maxLength={FIELD_LIMITS.STATE_MAX}
+                    value={companyFormData.address.state}
+                    onChange={handleAddressChange}
+                    className="h-11"
                   />
-                  {getFieldError("state") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("state")}
-                    </div>
-                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
                     Country *
                   </Label>
-                  <Combobox
-                    options={
-                      (jaf?.countries || []).map((country) => ({
-                        value: country,
-                        label: country,
-                      }))
-                    }
-                    value={companyInfo.address.country}
-                    onChange={(value) => {
-                      handleAddressChange("country", value);
-                      setTouched(prev => ({ ...prev, country: true }));
+                  <Select
+                    value={companyFormData.address.country}
+                    onValueChange={(value) => {
+                      setCompanyFormData((prev) => ({
+                        ...prev,
+                        address: { ...prev.address, country: value },
+                      }));
                     }}
-                    placeholder="Select country..."
-                    searchPlaceholder="Search countries..."
-                    emptyPlaceholder="No country found."
-                  />
-                  {getFieldError("country") && (
-                    <div className="flex items-center gap-1 text-red-500 text-sm">
-                      <AlertCircle className="h-3 w-3" />
-                      {getFieldError("country")}
-                    </div>
-                  )}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Select country..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(jaf?.countries || []).map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -975,11 +848,11 @@ export default function RecruiterSignup() {
       <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6">
         <Button
           onClick={handleSubmit}
-          disabled={loading || submitting || !captchaToken}
+          disabled={loading || !captchaToken}
           className="flex-1 h-12 bg-slate-700 hover:bg-slate-800 text-white font-medium disabled:opacity-50"
           type="button"
         >
-          {submitting ? (
+          {loading ? (
             <div className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               Processing Registration...
