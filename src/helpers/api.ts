@@ -84,7 +84,7 @@ export const apiCall = async (
   const res = await fetch(requestUrl, req);
   if (method === "GET" || recieveResponse) {
     if (res.ok) return await res.json();
-    else throw new Error("Cannot fetch");
+    else return res.json();
   } else return res.ok;
 };
 
@@ -600,11 +600,12 @@ export const deleteEvent = async (jobId: string, eventId: string) => {
   }
 };
 
-export const loginWithEmail = async (email: string) => {
+export const loginWithEmail = async (email: string, token: string) => {
   return apiCall("/auth/passwordless", {
     method: "POST",
-    body: { email },
+    body: { email, token },
     isAuth: false,
+    recieveResponse: true,
   });
 };
 
