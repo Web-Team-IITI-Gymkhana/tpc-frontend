@@ -104,7 +104,7 @@ interface ValidationErrors {
 }
 
 export default function RecruiterSignup() {
-  const [companies, setCompanies] = useState([]);
+  const [companies, setCompanies] = useState<Array<{id: string; name: string}>>([]);
   const [createCompany, setCreateCompany] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
   const [jaf, setJaf] = useState<JAFdetailsFC | null>(null);
@@ -155,10 +155,16 @@ export default function RecruiterSignup() {
           getCompanies(),
           getJafDetails(),
         ]);
-        setCompanies(companiesData);
+        
+        // Ensure companies is always an array
+        setCompanies(Array.isArray(companiesData) ? companiesData : []);
         setJaf(jafData);
       } catch (error) {
+        console.error("Failed to load form data:", error);
         toast.error("Failed to load form data. Please refresh the page.");
+        // Set fallback values
+        setCompanies([]);
+        setJaf(null);
       }
     };
     loadData();
@@ -639,7 +645,7 @@ export default function RecruiterSignup() {
                   Select Company *
                 </Label>
                 <Combobox
-                  options={companies.map(
+                  options={(companies || []).map(
                     (company: { id: string; name: string }) => ({
                       value: company.id,
                       label: company.name,
@@ -916,10 +922,10 @@ export default function RecruiterSignup() {
                   </Label>
                   <Combobox
                     options={
-                      jaf?.countries.map((country) => ({
+                      (jaf?.countries || []).map((country) => ({
                         value: country,
                         label: country,
-                      })) || []
+                      }))
                     }
                     value={companyInfo.address.country}
                     onChange={(value) => {
