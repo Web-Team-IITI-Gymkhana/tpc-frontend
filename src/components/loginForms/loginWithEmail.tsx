@@ -32,7 +32,6 @@ export const LoginWithEmail = ({ email }: { email: string }) => {
 
       if (
         response?.statusCode === 429 ||
-        response?.status === 429 ||
         response?.message?.includes("Too Many Requests")
       ) {
         toast.error("Too many requests. Please wait and try again.");
