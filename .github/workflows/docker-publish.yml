@@ -13,7 +13,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE: ${{ github.repository_owner }}/tpc-frontend # change per repo
+  IMAGE: ${{ github.repository_owner }}/tpc-frontend
 
 jobs:
   build:
