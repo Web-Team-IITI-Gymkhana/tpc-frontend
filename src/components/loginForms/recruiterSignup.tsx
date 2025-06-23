@@ -25,7 +25,7 @@ import {
 } from "@/helpers/recruiter/signup";
 import { getJafDetails } from "@/helpers/recruiter/api";
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { CompanyPostFC, JAFdetailsFC } from "@/helpers/recruiter/types";
 import { MultiSelect } from "../ui/multiselect";
 import Link from "next/link";
@@ -34,18 +34,18 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { validateCaptcha } from "@/helpers/api";
 import { Combobox } from "../ui/combobox";
 import { handleApiError } from "@/utils/errorHandling";
-import { 
-  User, 
-  Building, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Globe, 
+import {
+  User,
+  Building,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
   Calendar,
   Users,
   DollarSign,
   Check,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import { Building2 } from "lucide-react";
 
@@ -56,6 +56,13 @@ export default function RecruiterSignup() {
   const [jaf, setJaf] = useState<JAFdetailsFC | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const captchaRef = useRef<ReCAPTCHA | null>(null);
+
+  // Validation states
+  const [validationErrors, setValidationErrors] = useState({
+    website: "",
+    socialMediaLink: "",
+  });
 
   // Personal Information
   const [personalInfo, setPersonalInfo] = useState({
@@ -95,18 +102,38 @@ export default function RecruiterSignup() {
     });
   }, []);
 
+  // URL validation function
+  const validateURL = (url: string): boolean => {
+    if (!url) return true; // Empty URLs are allowed for optional fields
+    try {
+      const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+      return urlPattern.test(url) || new URL(url.startsWith('http') ? url : 'https://' + url).toString() !== '';
+    } catch {
+      return false;
+    }
+  };
+
   const handlePersonalInfoChange = (field: string, value: string) => {
-    setPersonalInfo(prev => ({ ...prev, [field]: value }));
+    setPersonalInfo((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCompanyInfoChange = (field: string, value: string) => {
-    setCompanyInfo(prev => ({ ...prev, [field]: value }));
+    setCompanyInfo((prev) => ({ ...prev, [field]: value }));
+    
+    // Validate URL fields
+    if (field === "website" || field === "socialMediaLink") {
+      const isValid = validateURL(value);
+      setValidationErrors((prev) => ({
+        ...prev,
+        [field]: isValid ? "" : "Please enter a valid URL (e.g., https://example.com)",
+      }));
+    }
   };
 
   const handleAddressChange = (field: string, value: string) => {
-    setCompanyInfo(prev => ({
+    setCompanyInfo((prev) => ({
       ...prev,
-      address: { ...prev.address, [field]: value }
+      address: { ...prev.address, [field]: value },
     }));
   };
 
@@ -117,7 +144,12 @@ export default function RecruiterSignup() {
     }
 
     // Validation
-    if (!personalInfo.name || !personalInfo.email || !personalInfo.contact || !personalInfo.designation) {
+    if (
+      !personalInfo.name ||
+      !personalInfo.email ||
+      !personalInfo.contact ||
+      !personalInfo.designation
+    ) {
       toast.error("Please fill in all required personal information");
       return;
     }
@@ -127,9 +159,35 @@ export default function RecruiterSignup() {
       return;
     }
 
-    if (createCompany && (!companyInfo.companyName || !companyInfo.category || !companyInfo.address.line1 || !companyInfo.address.city || !companyInfo.address.state || !companyInfo.address.country)) {
+    if (
+      createCompany &&
+      (!companyInfo.companyName ||
+        !companyInfo.category ||
+        !companyInfo.address.line1 ||
+        !companyInfo.address.city ||
+        !companyInfo.address.state ||
+        !companyInfo.address.country)
+    ) {
       toast.error("Please fill in all required company information");
       return;
+    }
+
+    // Check for URL validation errors
+    if (validationErrors.website || validationErrors.socialMediaLink) {
+      toast.error("Please fix the URL validation errors");
+      return;
+    }
+
+    // Validate URLs if they exist
+    if (createCompany) {
+      if (companyInfo.website && !validateURL(companyInfo.website)) {
+        toast.error("Please enter a valid website URL");
+        return;
+      }
+      if (companyInfo.socialMediaLink && !validateURL(companyInfo.socialMediaLink)) {
+        toast.error("Please enter a valid social media URL");
+        return;
+      }
     }
 
     setLoading(true);
@@ -175,7 +233,7 @@ export default function RecruiterSignup() {
       };
 
       const signupRes = await signupRecruiter(recruiterData);
-      
+
       if (signupRes.success) {
         toast.success("Registration successful! Please check your email.");
         router.push("/recruiter/signin");
@@ -185,42 +243,40 @@ export default function RecruiterSignup() {
     } catch (error: any) {
       handleApiError(error, "Error during registration. Please try again.");
     } finally {
+      captchaRef.current?.reset();
+      setCaptchaToken("");
       setLoading(false);
     }
   };
 
   return (
     <Card className="shadow-lg border-0 bg-white">
-
       <CardHeader className="pb-4">
-      <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <div className="p-3 bg-slate-100 rounded-full">
-            <Building2 className="h-8 w-8 text-slate-700" />
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-slate-100 rounded-full">
+              <Building2 className="h-8 w-8 text-slate-700" />
+            </div>
           </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Recruiter Registration
+          </h2>
+          <p className="text-gray-600">Join our network of top recruiters</p>
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          Recruiter Registration
-        </h2>
-        <p className="text-gray-600">
-          Join our network of top recruiters
-        </p>
-      </div>
       </CardHeader>
-      
-      
+
       <CardContent className="space-y-8">
-
-
         {/* Step 1: Personal Information */}
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-8 h-8 bg-slate-700 text-white rounded-full text-sm font-medium">
               1
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Personal Information
+            </h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
@@ -231,12 +287,14 @@ export default function RecruiterSignup() {
                 <Input
                   placeholder="Enter your full name"
                   value={personalInfo.name}
-                  onChange={(e) => handlePersonalInfoChange('name', e.target.value)}
+                  onChange={(e) =>
+                    handlePersonalInfoChange("name", e.target.value)
+                  }
                   className="pl-10 h-11"
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
                 Email Address *
@@ -247,13 +305,15 @@ export default function RecruiterSignup() {
                   type="email"
                   placeholder="recruiter@company.com"
                   value={personalInfo.email}
-                  onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
+                  onChange={(e) =>
+                    handlePersonalInfoChange("email", e.target.value)
+                  }
                   className="pl-10 h-11"
                 />
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
@@ -265,12 +325,14 @@ export default function RecruiterSignup() {
                   type="tel"
                   placeholder="+91 XXXXX XXXXX"
                   value={personalInfo.contact}
-                  onChange={(e) => handlePersonalInfoChange('contact', e.target.value)}
+                  onChange={(e) =>
+                    handlePersonalInfoChange("contact", e.target.value)
+                  }
                   className="pl-10 h-11"
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
                 Designation *
@@ -278,12 +340,14 @@ export default function RecruiterSignup() {
               <Input
                 placeholder="HR Manager, Talent Acquisition, etc."
                 value={personalInfo.designation}
-                onChange={(e) => handlePersonalInfoChange('designation', e.target.value)}
+                onChange={(e) =>
+                  handlePersonalInfoChange("designation", e.target.value)
+                }
                 className="h-11"
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700">
               Landline (optional)
@@ -294,7 +358,9 @@ export default function RecruiterSignup() {
                 type="tel"
                 placeholder="Office landline number"
                 value={personalInfo.landline}
-                onChange={(e) => handlePersonalInfoChange('landline', e.target.value)}
+                onChange={(e) =>
+                  handlePersonalInfoChange("landline", e.target.value)
+                }
                 className="pl-10 h-11"
               />
             </div>
@@ -309,9 +375,11 @@ export default function RecruiterSignup() {
             <div className="flex items-center justify-center w-8 h-8 bg-slate-700 text-white rounded-full text-sm font-medium">
               2
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Company Information</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Company Information
+            </h3>
           </div>
-          
+
           <div className="flex gap-4">
             <Button
               variant={!createCompany ? "default" : "outline"}
@@ -336,12 +404,16 @@ export default function RecruiterSignup() {
                   Select Company *
                 </Label>
                 <Combobox
-                  options={companies.map((company: { id: string; name: string }) => ({
-                    value: company.id,
-                    label: company.name,
-                  }))}
+                  options={companies.map(
+                    (company: { id: string; name: string }) => ({
+                      value: company.id,
+                      label: company.name,
+                    }),
+                  )}
                   value={companyInfo.companyId}
-                  onChange={(value) => handleCompanyInfoChange('companyId', value)}
+                  onChange={(value) =>
+                    handleCompanyInfoChange("companyId", value)
+                  }
                   placeholder="Select company..."
                   searchPlaceholder="Search companies..."
                   emptyPlaceholder="No company found."
@@ -352,24 +424,39 @@ export default function RecruiterSignup() {
             <div className="space-y-4 pt-4 border-t">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Company Name *</Label>
-                  <Input placeholder="Enter company name" onChange={(e) => handleCompanyInfoChange('companyName', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Company Name *
+                  </Label>
+                  <Input
+                    placeholder="Enter company name"
+                    value={companyInfo.companyName}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("companyName", e.target.value)
+                    }
+                    className="h-11"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Category *</Label>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Category *
+                  </Label>
                   <Select
                     value={companyInfo.category}
-                    onValueChange={(value) => handleCompanyInfoChange('category', value)}
+                    onValueChange={(value) =>
+                      handleCompanyInfoChange("category", value)
+                    }
                   >
                     <SelectTrigger className="h-11">
                       <SelectValue placeholder="Select company category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {["PUBLIC", "GOVERNMENT", "PSU", "MNC"].map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
+                      {["PRIVATE", "MNC", "PSU/GOVERNMENT", "STARTUP", "OTHER"].map(
+                        (category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -377,69 +464,161 @@ export default function RecruiterSignup() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Year of Establishment</Label>
-                  <Input type="number" placeholder="Enter year" onChange={(e) => handleCompanyInfoChange('yearOfEstablishment', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Year of Establishment
+                  </Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter year"
+                    value={companyInfo.yearOfEstablishment}
+                    onChange={(e) =>
+                      handleCompanyInfoChange(
+                        "yearOfEstablishment",
+                        e.target.value,
+                      )
+                    }
+                    className="h-11"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Website</Label>
-                  <Input placeholder="https://company.com" onChange={(e) => handleCompanyInfoChange('website', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Website *
+                  </Label>
+                  <Input
+                    placeholder="https://company.com"
+                    value={companyInfo.website}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("website", e.target.value)
+                    }
+                    className={`h-11 ${validationErrors.website ? 'border-red-500 focus:border-red-500' : ''}`}
+                  />
+                  {validationErrors.website && (
+                    <p className="text-red-500 text-sm">{validationErrors.website}</p>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Company Size</Label>
-                  <Input type="number" placeholder="Number of employees" onChange={(e) => handleCompanyInfoChange('companySize', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Company Size
+                  </Label>
+                  <Input
+                    type="number"
+                    placeholder="Number of employees"
+                    value={companyInfo.companySize || ""}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("companySize", e.target.value)
+                    }
+                    className="h-11"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Annual Turnover</Label>
-                  <Input placeholder="e.g., $10M" onChange={(e) => handleCompanyInfoChange('annualTurnover', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Annual Turnover
+                  </Label>
+                  <Input
+                    placeholder="e.g., $10M"
+                    value={companyInfo.annualTurnover}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("annualTurnover", e.target.value)
+                    }
+                    className="h-11"
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Social Media Link</Label>
-                  <Input placeholder="LinkedIn or other profile" onChange={(e) => handleCompanyInfoChange('socialMediaLink', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Social Media Link *
+                  </Label>
+                  <Input
+                    placeholder="LinkedIn or other profile"
+                    value={companyInfo.socialMediaLink}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("socialMediaLink", e.target.value)
+                    }
+                    className={`h-11 ${validationErrors.socialMediaLink ? 'border-red-500 focus:border-red-500' : ''}`}
+                  />
+                  {validationErrors.socialMediaLink && (
+                    <p className="text-red-500 text-sm">{validationErrors.socialMediaLink}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Domains</Label>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Domains
+                  </Label>
                   <MultiSelect
                     givenOptions={jaf?.domains || []}
                     formData={companyInfo.domains}
-                    setFormData={(value) => handleCompanyInfoChange('domains', value)}
+                    setFormData={(value) =>
+                      handleCompanyInfoChange("domains", value)
+                    }
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Address Line 1 *</Label>
-                <Input placeholder="123 Main St" onChange={(e) => handleAddressChange('line1', e.target.value)} className="h-11"/>
+                <Label className="text-sm font-medium text-gray-700">
+                  Address Line 1 *
+                </Label>
+                <Input
+                  placeholder="123 Main St"
+                  onChange={(e) => handleAddressChange("line1", e.target.value)}
+                  className="h-11"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Address Line 2 (Optional)</Label>
-                <Input placeholder="Apartment, studio, or floor" onChange={(e) => handleAddressChange('line2', e.target.value)} className="h-11"/>
+                <Label className="text-sm font-medium text-gray-700">
+                  Address Line 2 (Optional)
+                </Label>
+                <Input
+                  placeholder="Apartment, studio, or floor"
+                  onChange={(e) => handleAddressChange("line2", e.target.value)}
+                  className="h-11"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">City *</Label>
-                  <Input placeholder="Enter city" onChange={(e) => handleAddressChange('city', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    City *
+                  </Label>
+                  <Input
+                    placeholder="Enter city"
+                    onChange={(e) =>
+                      handleAddressChange("city", e.target.value)
+                    }
+                    className="h-11"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">State *</Label>
-                  <Input placeholder="Enter state" onChange={(e) => handleAddressChange('state', e.target.value)} className="h-11"/>
+                  <Label className="text-sm font-medium text-gray-700">
+                    State *
+                  </Label>
+                  <Input
+                    placeholder="Enter state"
+                    onChange={(e) =>
+                      handleAddressChange("state", e.target.value)
+                    }
+                    className="h-11"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Country *</Label>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Country *
+                  </Label>
                   <Combobox
-                    options={jaf?.countries.map((country) => ({
-                      value: country,
-                      label: country,
-                    })) || []}
+                    options={
+                      jaf?.countries.map((country) => ({
+                        value: country,
+                        label: country,
+                      })) || []
+                    }
                     value={companyInfo.address.country}
-                    onChange={(value) => handleAddressChange('country', value)}
+                    onChange={(value) => handleAddressChange("country", value)}
                     placeholder="Select country..."
                     searchPlaceholder="Search countries..."
                     emptyPlaceholder="No country found."
@@ -458,16 +637,19 @@ export default function RecruiterSignup() {
             <div className="flex items-center justify-center w-8 h-8 bg-slate-700 text-white rounded-full text-sm font-medium">
               3
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Security Verification</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Security Verification
+            </h3>
           </div>
-          
+
           <ReCAPTCHA
+            ref={captchaRef}
             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
             onChange={(token) => setCaptchaToken(token)}
           />
         </div>
       </CardContent>
-      
+
       <CardFooter className="flex flex-col sm:flex-row gap-4 pt-6">
         <Button
           onClick={handleSubmit}
@@ -486,7 +668,7 @@ export default function RecruiterSignup() {
             </>
           )}
         </Button>
-        
+
         <Link href="/recruiter/signin/" className="flex-1">
           <Button variant="outline" className="w-full h-12 font-medium">
             Already have an account? Sign In
