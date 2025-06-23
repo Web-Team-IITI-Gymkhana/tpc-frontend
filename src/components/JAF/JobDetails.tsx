@@ -21,17 +21,44 @@ import {
   List,
   Tag,
   Cascader,
+  Typography,
+  Alert,
+  Divider,
 } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import "./styles/CustomQuill.css";
-import { UploadOutlined, CloseOutlined } from "@ant-design/icons";
+import { UploadOutlined, CloseOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import CurrencySelect from "./CurrencySelect";
+import { 
+  PLACEHOLDERS, 
+  SELECTION_MODE_OPTIONS, 
+  GENDER_OPTIONS, 
+  CATEGORY_OPTIONS, 
+  BACKLOG_OPTIONS,
+  API_ENDPOINTS,
+  validateFileSize,
+  validateFileType,
+  FIELD_LIMITS
+} from "../../utils/jaf.constants";
+import { 
+  JAFFormValues, 
+  SeasonsDto, 
+  ProgramsDto, 
+  TestTypesEnum, 
+  InterviewTypesEnum,
+  SelectionModeEnum,
+  GenderEnum,
+  CategoryEnum,
+  BacklogEnum
+} from "../../types/jaf.types";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const { TextArea } = Input;
+const { Title, Text } = Typography;
 
 const toErrorString = (err: unknown): string | undefined => {
   if (typeof err === "string") return err; // plain message
@@ -46,6 +73,13 @@ type StepProps = {
   setFieldValue: (field: string, value: any) => void;
 };
 
+interface SelectedProgram {
+  year: string;
+  course: string;
+  branch: string;
+  id: string;
+}
+
 const getBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -55,6 +89,12 @@ const getBase64 = (file: File): Promise<string> => {
   });
 };
 
+interface CurrencyOption {
+  value: string;
+  label: string;
+  symbol: string;
+}
+
 const JobDetails = ({
   errors,
   values,
@@ -62,22 +102,42 @@ const JobDetails = ({
   setFieldValue,
 }: StepProps) => {
   const [form] = Form.useForm();
+  const [syncedCurrency, setSyncedCurrency] = useState<string>("INR");
 
-  const [skills, setSkills] = useState([]);
-  const [fileList, setFileList] = useState([]);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
 
-  const [testType, setTestType] = useState([]);
-  const [seasonType, setSeasonType] = useState("");
-  const [interviewType, setInterviewType] = useState([]);
-  const [programsData, setProgramsData] = useState<any>({
+  const [testType, setTestType] = useState<SelectProps["options"]>([]);
+  const [seasonType, setSeasonType] = useState<string>("");
+  const [interviewType, setInterviewType] = useState<SelectProps["options"]>([]);
+  const [programsData, setProgramsData] = useState<{
+    programs: ProgramsDto[];
+    coursesMap: Map<string, Set<string>>;
+    branchesMap: Map<string, Set<string>>;
+  }>({
     programs: [],
     coursesMap: new Map(),
+    branchesMap: new Map(),
   });
-  let testTypeOptions: any = [];
-  let interviewTypeOptions: any = [];
-  const programsOptions: SelectProps["options"] = [];
+  const [customCurrencies, setCustomCurrencies] = useState<CurrencyOption[]>([]);
 
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // Enhanced error handling for nested fields
+  const getFieldError = (fieldPath: string): string | undefined => {
+    const pathArray = fieldPath.split('.');
+    let error: any = errors;
+    
+    for (const key of pathArray) {
+      if (error && typeof error === 'object') {
+        error = error[key];
+      } else {
+        return undefined;
+      }
+    }
+    
+    return toErrorString(error);
+  };
 
   const handleFileChange = async (info: any) => {
     if (info.file.status !== "uploading") {
@@ -107,53 +167,88 @@ const JobDetails = ({
     setFieldValue("skills", newSkills);
   };
 
+  const handleAddCustomCurrency = (newCurrency: CurrencyOption) => {
+    setCustomCurrencies((prev) => [...prev, newCurrency]);
+    message.success(
+      `Added new currency: ${newCurrency.symbol} ${newCurrency.label}`,
+    );
+  };
+
+  const handleCurrencySync = (currency: string) => {
+    setSyncedCurrency(currency);
+    const currentSalaries = form.getFieldValue("salaries") || [];
+    const updatedSalaries = currentSalaries.map((salary: any) => ({
+      ...salary,
+      foreignCurrencyCode: currency, 
+    }));
+    form.setFieldValue("salaries", updatedSalaries);
+    setFieldValue("salaries", updatedSalaries); 
+  };
+
   useEffect(() => {
-    axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
-      res.data.testTypes.map((it: any) => {
-        testTypeOptions.push({ value: it, label: it });
-      });
-      setTestType(testTypeOptions);
-      res.data.interviewTypes.map((it: any) => {
-        interviewTypeOptions.push({ value: it, label: it });
-      });
-      setInterviewType(interviewTypeOptions);
+    const fetchJafData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}${API_ENDPOINTS.JAF_VALUES}`);
+        const data = response.data;
 
-      const matchingSeason = res.data.seasons.find(
-        (season) => season.id === values.seasonId,
-      );
+        // Process test types
+        const testTypeOptions = data.testTypes?.map((type: TestTypesEnum) => ({
+          value: type,
+          label: type.charAt(0) + type.slice(1).toLowerCase().replace('_', ' ')
+        })) || [];
+        setTestType(testTypeOptions);
 
-      if (matchingSeason) {
-        setSeasonType(matchingSeason.type);
+        // Process interview types
+        const interviewTypeOptions = data.interviewTypes?.map((type: InterviewTypesEnum) => ({
+          value: type,
+          label: type.charAt(0) + type.slice(1).toLowerCase().replace('_', ' ')
+        })) || [];
+        setInterviewType(interviewTypeOptions);
+
+        // Find matching season
+        const matchingSeason = data.seasons?.find(
+          (season: SeasonsDto) => season.id === values.seasonId,
+        );
+
+        if (matchingSeason) {
+          setSeasonType(matchingSeason.type);
+        }
+
+        // Process programs data
+        const uniqueYears = new Set<string>();
+        const programsMap = new Map<string, Set<string>>();
+        const branchesMap = new Map<string, Set<string>>();
+
+        data.programs?.forEach((program: ProgramsDto) => {
+          uniqueYears.add(program.year);
+
+          const yearCourseKey = program.year;
+          if (!programsMap.has(yearCourseKey)) {
+            programsMap.set(yearCourseKey, new Set());
+          }
+          programsMap.get(yearCourseKey)?.add(program.course);
+
+          const courseBranchKey = `${program.year}-${program.course}`;
+          if (!branchesMap.has(courseBranchKey)) {
+            branchesMap.set(courseBranchKey, new Set());
+          }
+          branchesMap.get(courseBranchKey)?.add(program.branch);
+        });
+
+        setYears(Array.from(uniqueYears));
+        setProgramsData({
+          programs: data.programs || [],
+          coursesMap: programsMap,
+          branchesMap: branchesMap,
+        });
+      } catch (error) {
+        console.error("Failed to fetch JAF data:", error);
+        message.error("Failed to load form data. Please refresh the page.");
       }
-      // Process programs data
-      const uniqueYears = new Set<string>();
-      const programsMap = new Map<string, Set<string>>();
-      const branchesMap = new Map<string, Set<string>>();
+    };
 
-      res.data.programs.forEach((program: any) => {
-        uniqueYears.add(program.year);
-
-        const yearCourseKey = program.year;
-        if (!programsMap.has(yearCourseKey)) {
-          programsMap.set(yearCourseKey, new Set());
-        }
-        programsMap.get(yearCourseKey)?.add(program.course);
-
-        const courseBranchKey = `${program.year}-${program.course}`;
-        if (!branchesMap.has(courseBranchKey)) {
-          branchesMap.set(courseBranchKey, new Set());
-        }
-        branchesMap.get(courseBranchKey)?.add(program.branch);
-      });
-
-      setYears(Array.from(uniqueYears));
-      setProgramsData({
-        programs: res.data.programs,
-        coursesMap: programsMap,
-        branchesMap: branchesMap,
-      });
-    });
-  }, []);
+    fetchJafData();
+  }, [values.seasonId]);
 
   const [years, setYears] = useState<string[]>([]);
   const [courses, setCourses] = useState<string[]>([]);
@@ -280,16 +375,39 @@ const JobDetails = ({
     );
   };
 
-  const [selectedPrograms, setSelectedPrograms] = useState<
-    Array<{
-      year: string;
-      course: string;
-      branch: string;
-      id: string;
-    }>
-  >([]);
+  const [selectedPrograms, setSelectedPrograms] = useState<SelectedProgram[]>([]);
 
   return (
+    <div style={{ 
+      padding: '0 32px', 
+      minHeight: '100vh'
+    }}>
+      {/* Header Section */}
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: 32,
+        marginBottom: 32,
+        padding: '32px 0',
+        background: 'white',
+        borderRadius: 16,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        border: '1px solid #e2e8f0'
+      }}>
+        <Title level={4} style={{ 
+          marginBottom: 12, 
+          color: '#1f2937',
+          textTransform: 'uppercase',
+          letterSpacing: '1px',
+          fontWeight: 700,
+          fontSize: 20
+        }}>
+          Job Details
+        </Title>
+        <Text style={{ fontSize: 16, color: '#6b7280', fontWeight: 500 }}>
+          Provide comprehensive job position details and requirements
+        </Text>
+      </div>
+
     <Form
       layout="vertical"
       form={form}
@@ -298,118 +416,221 @@ const JobDetails = ({
         interviews: [{ type: "TECHNICAL", duration: "" }],
         salaries: [{}],
       }}
-      onValuesChange={() => {
-        setFieldValue("interviews", form.getFieldsValue().interviews);
-        setFieldValue("tests", form.getFieldsValue().tests);
-        const norm = form.getFieldsValue().salaries.map((s: any) => ({
-          salaryPeriod: s.salaryPeriod ?? "",
-          programs: s.programs ?? [],
-          genders: s.genders ?? [],
-          categories: s.categories ?? [],
-          isBacklogAllowed: s.isBacklogAllowed ?? "",
-          minCPI: s.minCPI ?? 0,
-          tenthMarks: s.tenthMarks ?? 0,
-          twelthMarks: s.twelthMarks ?? 0,
-          baseSalary: s.baseSalary ?? 0,
-          totalCTC: s.totalCTC ?? 0,
-          takeHomeSalary: s.takeHomeSalary ?? 0,
-          grossSalary: s.grossSalary ?? 0,
-          joiningBonus: s.joiningBonus ?? 0,
-          performanceBonus: s.performanceBonus ?? 0,
-          relocation: s.relocation ?? 0,
-          bondAmount: s.bondAmount ?? 0,
-          esopAmount: s.esopAmount ?? 0,
-          esopVestPeriod: s.esopVestPeriod ?? "",
-          firstYearCTC: s.firstYearCTC ?? 0,
-          retentionBonus: s.retentionBonus ?? 0,
-          deductions: s.deductions ?? 0,
-          medicalAllowance: s.medicalAllowance ?? 0,
-          bondDuration: s.bondDuration ?? "",
-          foreignCurrencyCTC: s.foreignCurrencyCTC ?? 0,
-          foreignCurrencyCode: s.foreignCurrencyCode ?? "",
-          otherCompensations: s.otherCompensations ?? 0,
-          others: s.others ?? "",
-          stipend: s.stipend ?? 0,
-          foreignCurrencyStipend: s.foreignCurrencyStipend ?? 0,
-          accommodation: s.accommodation ?? 0,
-          tentativeCTC: s.tentativeCTC ?? 0,
-          PPOConfirmationDate: s.PPOConfirmationDate ?? null,
-        }));
+      onValuesChange={async (changedFields, allFields) => {
+        // Update Formik state with form values
+        const formValues = form.getFieldsValue();
+        setFieldValue("interviews", formValues.interviews || []);
+        setFieldValue("tests", formValues.tests || []);
+        
+        // Safely handle salaries array with proper null checks
+        const salariesArray = formValues.salaries || [];
+        const norm = salariesArray
+          .filter((s: any) => s !== undefined && s !== null)
+          .map((s: any) => ({
+            salaryPeriod: s?.salaryPeriod ?? "",
+            programs: s?.programs ?? [],
+            genders: s?.genders ?? [],
+            categories: s?.categories ?? [],
+            isBacklogAllowed: s?.isBacklogAllowed ?? "",
+            minCPI: s?.minCPI ?? 0,
+            tenthMarks: s?.tenthMarks ?? 0,
+            twelthMarks: s?.twelthMarks ?? 0,
+            baseSalary: s?.baseSalary ?? 0,
+            totalCTC: s?.totalCTC ?? 0,
+            takeHomeSalary: s?.takeHomeSalary ?? 0,
+            grossSalary: s?.grossSalary ?? 0,
+            joiningBonus: s?.joiningBonus ?? 0,
+            performanceBonus: s?.performanceBonus ?? 0,
+            relocation: s?.relocation ?? 0,
+            bondAmount: s?.bondAmount ?? 0,
+            esopAmount: s?.esopAmount ?? 0,
+            esopVestPeriod: s?.esopVestPeriod ?? "",
+            firstYearCTC: s?.firstYearCTC ?? 0,
+            retentionBonus: s?.retentionBonus ?? 0,
+            deductions: s?.deductions ?? 0,
+            medicalAllowance: s?.medicalAllowance ?? 0,
+            bondDuration: s?.bondDuration ?? "",
+            foreignCurrencyCTC: s?.foreignCurrencyCTC ?? 0,
+            foreignCurrencyCode: s?.foreignCurrencyCode ?? "INR",
+            otherCompensations: s?.otherCompensations ?? 0,
+            others: s?.others ?? "",
+            stipend: s?.stipend ?? 0,
+            foreignCurrencyStipend: s?.foreignCurrencyStipend ?? 0,
+            accommodation: s?.accommodation ?? 0,
+            tentativeCTC: s?.tentativeCTC ?? 0,
+            PPOConfirmationDate: s?.PPOConfirmationDate ?? null,
+          }));
         setFieldValue("salaries", norm);
       }}
     >
-      <h1 className="text-xl">Job Details</h1>
-      <Row gutter={24}>
+      
+      {/* Basic Job Information Section */}
+      <div style={{
+        background: 'white',
+        borderRadius: 16,
+        padding: '32px',
+        marginBottom: 24,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        border: '1px solid #e2e8f0'
+      }}>
+        <Title level={5} style={{ 
+          marginBottom: 24, 
+          color: '#1f2937',
+          fontWeight: 600,
+          fontSize: 18,
+          borderBottom: '2px solid #e2e8f0',
+          paddingBottom: 12
+        }}>
+          Basic Information
+        </Title>
+
+      <Row gutter={[24, 16]}>
         {/* Job Title (required) */}
         <Col span={12}>
           <Form.Item
-            label="Job Title"
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                <span style={{ color: '#ef4444' }}>* </span>
+                Job Title / Role
+              </Text>
+            }
             required
             hasFeedback
-            validateStatus={toErrorString(errors.role) ? "error" : undefined}
-            help={toErrorString(errors.role)}
+            validateStatus={getFieldError('role') ? "error" : undefined}
+            help={getFieldError('role')}
           >
             <Input
               name="role"
-              placeholder="Job Title"
+              placeholder={PLACEHOLDERS.JOB_TITLE}
               value={values.role}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              maxLength={FIELD_LIMITS.JOB_TITLE_MAX}
+              showCount
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
 
         {/* Duration (optional) */}
         <Col span={12}>
-          <Form.Item label="Duration">
+          <Form.Item 
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Job Duration
+              </Text>
+            }
+            validateStatus={getFieldError('duration') ? "error" : undefined}
+            help={getFieldError('duration')}
+          >
             <Input
               name="duration"
-              placeholder="e.g. 6 months"
+              placeholder={PLACEHOLDERS.JOB_DURATION}
               value={values.duration}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              maxLength={FIELD_LIMITS.DURATION_MAX}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
       </Row>
-      <Row gutter={24}>
+
+      <Row gutter={[24, 16]}>
         <Col span={12}>
-          <Form.Item label="Offer Letter Date">
+          <Form.Item 
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Offer Letter Release Date
+              </Text>
+            }
+            validateStatus={getFieldError('offerLetterReleaseDate') ? "error" : undefined}
+            help={getFieldError('offerLetterReleaseDate')}
+          >
             <Input
               type="date"
               name="offerLetterReleaseDate"
               value={values.offerLetterReleaseDate}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              min={new Date().toISOString().split("T")[0]}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
 
         <Col span={12}>
-          <Form.Item label="Tentative Joining Date">
+          <Form.Item 
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Tentative Joining Date
+              </Text>
+            }
+            validateStatus={getFieldError('joiningDate') ? "error" : undefined}
+            help={getFieldError('joiningDate')}
+          >
             <Input
               type="date"
               name="joiningDate"
               value={values.joiningDate}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              min={new Date().toISOString().split("T")[0]}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
       </Row>
-      <Row gutter={24}>
+
+      <Row gutter={[24, 16]}>
         {/* Location (required) */}
         <Col span={12}>
           <Form.Item
-            label="Location"
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                <span style={{ color: '#ef4444' }}>* </span>
+                Work Location
+              </Text>
+            }
             required
             hasFeedback
-            validateStatus={
-              toErrorString(errors.location) ? "error" : undefined
-            }
-            help={toErrorString(errors.location)}
+            validateStatus={getFieldError('location') ? "error" : undefined}
+            help={getFieldError('location')}
           >
             <Input
               name="location"
-              placeholder="City / Remote"
+              placeholder={PLACEHOLDERS.JOB_LOCATION}
               value={values.location}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              maxLength={FIELD_LIMITS.LOCATION_MAX}
+              showCount
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
@@ -417,783 +638,1699 @@ const JobDetails = ({
         {/* Expected hires (optional but numeric) */}
         <Col span={12}>
           <Form.Item
-            label="Expected number of Hires"
-            validateStatus={
-              toErrorString(errors.expectedNoOfHires) ? "error" : undefined
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Expected Number of Hires
+              </Text>
             }
-            help={toErrorString(errors.expectedNoOfHires)}
+            validateStatus={getFieldError('expectedNoOfHires') ? "error" : undefined}
+            help={getFieldError('expectedNoOfHires')}
           >
             <Input
               type="number"
               name="expectedNoOfHires"
+              placeholder={PLACEHOLDERS.EXPECTED_HIRES}
               value={values.expectedNoOfHires}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
               min={0}
+              max={FIELD_LIMITS.HIRES_MAX}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
       </Row>
-      <Row gutter={24}>
+
+      <Row gutter={[24, 16]}>
         <Col span={12}>
           <Form.Item
-            label="Minimum number of Hires"
-            validateStatus={
-              toErrorString(errors.minNoOfHires) ? "error" : undefined
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Minimum Number of Hires
+              </Text>
             }
-            help={toErrorString(errors.minNoOfHires)}
+            validateStatus={getFieldError('minNoOfHires') ? "error" : undefined}
+            help={getFieldError('minNoOfHires')}
           >
             <Input
               type="number"
               name="minNoOfHires"
+              placeholder={PLACEHOLDERS.MIN_HIRES}
               value={values.minNoOfHires}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
               min={0}
+              max={FIELD_LIMITS.HIRES_MAX}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
       </Row>
 
-      <Row gutter={24}>
+      <Row gutter={[24, 16]}>
         <Col span={24}>
           <Form.Item
-            label="Skills"
-            validateStatus={toErrorString(errors.skills) ? "error" : undefined}
-            help={toErrorString(errors.skills)}
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Required Skills
+              </Text>
+            }
+            validateStatus={getFieldError('skills') ? "error" : undefined}
+            help={getFieldError('skills')}
           >
             <Select
               mode="tags"
-              style={{ width: "100%" }}
-              placeholder="Enter a skill and press Enter"
-              value={values.skills}
-              onChange={(newSkills) => {
-                setFieldValue("skills", newSkills);
-                setSkills(newSkills);
+              style={{ 
+                width: "100%"
               }}
+              placeholder={PLACEHOLDERS.SKILLS}
+              value={values.skills}
+              onChange={(newSkills: string[]) => {
+                if (newSkills.length <= FIELD_LIMITS.SKILLS_MAX) {
+                  setFieldValue("skills", newSkills);
+                  setSkills(newSkills);
+                } else {
+                  message.warning(`Maximum ${FIELD_LIMITS.SKILLS_MAX} skills allowed`);
+                }
+              }}
+              maxTagCount="responsive"
+              showSearch
+              filterOption={false}
+              notFoundContent={null}
             />
+            {values.skills?.length > 0 && (
+              <Text type="secondary" style={{ fontSize: 12, marginTop: 4 }}>
+                {values.skills.length} / {FIELD_LIMITS.SKILLS_MAX} skills added
+              </Text>
+            )}
           </Form.Item>
         </Col>
       </Row>
+
       <Form.Item
-        label="Description"
-        className="my-3"
-        validateStatus={toErrorString(errors.description) ? "error" : undefined}
-        help={toErrorString(errors.description)}
+        label={
+          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+            Job Description
+          </Text>
+        }
+        validateStatus={getFieldError('description') ? "error" : undefined}
+        help={getFieldError('description')}
+        style={{ marginBottom: 24 }}
       >
         <Field name="description">
           {() => (
-            <ReactQuill
-              value={values.description}
-              onChange={(html) => setFieldValue("description", html)}
-              placeholder="Enter the description here..."
-              className="custom-quill"
-            />
+            <div style={{
+              borderRadius: 8,
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+              border: '1px solid #d1d5db',
+              overflow: 'hidden'
+            }}>
+              <ReactQuill
+                value={values.description || ""}
+                onChange={(html) => {
+                  setFieldValue("description", html);
+                }}
+                placeholder={PLACEHOLDERS.JOB_DESCRIPTION}
+                className="custom-quill"
+                style={{ 
+                  minHeight: 200
+                }}
+              />
+            </div>
           )}
         </Field>
+        {values.description && (
+          <Text type="secondary" style={{ fontSize: 12, marginTop: 4 }}>
+            {values.description.replace(/<[^>]*>/g, '').length} / {FIELD_LIMITS.DESCRIPTION_MAX} characters
+          </Text>
+        )}
       </Form.Item>
-      <Row gutter={24}>
-        <Col span={12}>
+
+      <Row gutter={[24, 16]}>
+        <Col span={24}>
           <Form.Item
-            label="Attachments"
-            validateStatus={
-              toErrorString(errors.attachments) ? "error" : undefined
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Job Related Documents
+              </Text>
             }
-            help={toErrorString(errors.attachments)}
+            validateStatus={getFieldError('attachments') ? "error" : undefined}
+            help={getFieldError('attachments')}
           >
-            <Upload
-              fileList={fileList}
-              onChange={handleFileChange}
-              beforeUpload={(file) => {
-                const isPdf = file.type === "application/pdf";
-                if (!isPdf) {
-                  message.error("You can only upload PDF files!");
-                  return Upload.LIST_IGNORE;
-                }
-                const isLt2M = file.size / 1024 / 1024 <= 2;
-                if (!isLt2M) {
-                  message.error("File must be smaller than 2MB!");
-                  return Upload.LIST_IGNORE;
-                }
-                return true;
-              }}
-            >
-              <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>
-            <ul className="list-disc text-black opacity-70 text-xs pl-5">
-              <li>Accepted file types .pdf</li>
-              <li>File size &lt; 2 MB.</li>
-            </ul>
+            <div style={{
+              borderRadius: 8,
+              border: '2px dashed #d1d5db',
+              padding: '24px',
+              textAlign: 'center',
+              background: '#f9fafb',
+              transition: 'all 0.3s ease'
+            }}>
+              <Upload
+                fileList={fileList}
+                onChange={handleFileChange}
+                beforeUpload={(file) => {
+                  // Validate file type
+                  if (!validateFileType(file)) {
+                    message.error("Only PDF files are allowed!");
+                    return Upload.LIST_IGNORE;
+                  }
+                  
+                  // Validate file size
+                  if (!validateFileSize(file, 2)) {
+                    message.error("File size must be smaller than 2MB!");
+                    return Upload.LIST_IGNORE;
+                  }
+
+                  // Check max files limit
+                  if (fileList.length >= FIELD_LIMITS.ATTACHMENTS_MAX) {
+                    message.error(`Maximum ${FIELD_LIMITS.ATTACHMENTS_MAX} files allowed`);
+                    return Upload.LIST_IGNORE;
+                  }
+                  
+                  return true;
+                }}
+                multiple
+                showUploadList={{
+                  showRemoveIcon: true,
+                  showDownloadIcon: false,
+                }}
+              >
+                <Button 
+                  icon={<UploadOutlined />} 
+                  disabled={fileList.length >= FIELD_LIMITS.ATTACHMENTS_MAX}
+                  style={{
+                    borderRadius: 8,
+                    height: 40,
+                    fontSize: 14,
+                    fontWeight: 500
+                  }}
+                >
+                  Upload Documents
+                </Button>
+              </Upload>
+              
+              <div style={{ marginTop: 12 }}>
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  PDF files only, max 2MB each, up to {FIELD_LIMITS.ATTACHMENTS_MAX} files
+                </Text>
+                {fileList.length > 0 && (
+                  <div style={{ marginTop: 6 }}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {fileList.length} / {FIELD_LIMITS.ATTACHMENTS_MAX} files uploaded
+                    </Text>
+                  </div>
+                )}
+              </div>
+            </div>
           </Form.Item>
         </Col>
       </Row>
+
       <Form.Item
-        label="Other Details"
-        validateStatus={toErrorString(errors.others) ? "error" : undefined}
-        help={toErrorString(errors.others)}
+        label={
+          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+            Additional Job Information
+          </Text>
+        }
+        validateStatus={getFieldError('others') ? "error" : undefined}
+        help={getFieldError('others')}
       >
         <TextArea
           rows={4}
           name="others"
-          onChange={handleChange}
+          placeholder={PLACEHOLDERS.OTHER_DETAILS}
+          onChange={(e) => {
+            handleChange(e);
+          }}
           value={values.others}
+          maxLength={FIELD_LIMITS.OTHER_DETAILS_MAX}
+          showCount
+          style={{
+            borderRadius: 8,
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            border: '1px solid #d1d5db'
+          }}
         />
       </Form.Item>
-      {/* ───────── Selection Procedure ───────── */}
-      <h1 className="text-xl">Selection Procedure</h1>
-      <Row gutter={24}>
+      </div>
+
+      {/* Selection Procedure Section */}
+      <div style={{
+        background: 'white',
+        borderRadius: 16,
+        padding: '32px',
+        marginBottom: 24,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        border: '1px solid #e2e8f0'
+      }}>
+        <Title level={5} style={{ 
+          marginBottom: 24, 
+          color: '#1f2937',
+          fontWeight: 600,
+          fontSize: 18,
+          borderBottom: '2px solid #e2e8f0',
+          paddingBottom: 12
+        }}>
+          Selection Procedure
+        </Title>
+
+      <Row gutter={[24, 16]}>
         {/* Selection Mode (required) */}
         <Col span={8}>
           <Form.Item
-            label="Selection Mode"
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                <span style={{ color: '#ef4444' }}>* </span>
+                Selection Mode
+              </Text>
+            }
             required
             hasFeedback
-            validateStatus={
-              toErrorString(errors.selectionMode) ? "error" : undefined
-            }
-            help={toErrorString(errors.selectionMode)}
+            validateStatus={getFieldError('selectionMode') ? "error" : undefined}
+            help={getFieldError('selectionMode')}
           >
             <Select
               value={values.selectionMode || undefined}
-              placeholder="Please select"
-              onChange={(val) => setFieldValue("selectionMode", val)}
-              options={[
-                { value: "ONLINE", label: "Online" },
-                { value: "OFFLINE", label: "Offline" },
-                { value: "HYBRID", label: "Hybrid" },
-              ]}
+              placeholder="Select mode"
+              onChange={(val: SelectionModeEnum) => {
+                setFieldValue("selectionMode", val);
+              }}
+              options={SELECTION_MODE_OPTIONS}
+              style={{
+                borderRadius: 8
+              }}
             />
           </Form.Item>
         </Col>
 
-        {/* Booleans: required by DTO, but no asterisk needed */}
-        <Col span={8} className="mt-auto mb-auto">
-          <Checkbox
-            checked={values.shortlistFromResume}
-            onChange={(e) =>
-              setFieldValue("shortlistFromResume", e.target.checked)
-            }
+        {/* Selection preferences */}
+        <Col span={8}>
+          <Form.Item 
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Selection Options
+              </Text>
+            } 
+            style={{ marginBottom: 8 }}
           >
-            Shortlist From Resume
-          </Checkbox>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <Checkbox
+                checked={values.shortlistFromResume}
+                onChange={(e) => setFieldValue("shortlistFromResume", e.target.checked)}
+                style={{ fontSize: 14 }}
+              >
+                <Text style={{ fontSize: 14 }}>Shortlist From Resume</Text>
+              </Checkbox>
+            </div>
+          </Form.Item>
         </Col>
 
-        <Col span={8} className="mt-auto mb-auto">
-          <Checkbox
-            checked={values.groupDiscussion}
-            onChange={(e) => setFieldValue("groupDiscussion", e.target.checked)}
-          >
-            Group Discussion
-          </Checkbox>
+        <Col span={8}>
+          <Form.Item label=" " style={{ marginBottom: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <Checkbox
+                checked={values.groupDiscussion}
+                onChange={(e) => setFieldValue("groupDiscussion", e.target.checked)}
+                style={{ fontSize: 14 }}
+              >
+                <Text style={{ fontSize: 14 }}>Group Discussion Round</Text>
+              </Checkbox>
+            </div>
+          </Form.Item>
         </Col>
       </Row>
-      {/* ───────── Tests ───────── */}
-      <h2 className="text-sm">Tests</h2>
+
+      {/* Tests Section */}
+      <Title level={5} style={{ 
+        marginTop: 32, 
+        marginBottom: 16, 
+        color: '#1f2937',
+        fontWeight: 600,
+        fontSize: 16
+      }}>
+        Written Tests & Assessments
+      </Title>
+      
       <Form.List name="tests">
         {(fields, { add, remove }) => (
           <>
-            {fields.map((field) => (
+            {fields.map((field, index) => (
               <Card
                 size="small"
-                title={`Test ${field.name + 1}`}
+                title={
+                  <Text strong style={{ fontSize: 14, color: '#374151' }}>Test {index + 1}</Text>
+                }
                 key={field.key}
-                extra={<CloseOutlined onClick={() => remove(field.name)} />}
+                extra={
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    icon={<CloseOutlined />}
+                    onClick={() => remove(field.name)}
+                    title="Remove this test"
+                    style={{
+                      borderRadius: 6
+                    }}
+                  />
+                }
+                style={{ 
+                  marginBottom: 16,
+                  borderRadius: 12,
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+                  border: '1px solid #e5e7eb'
+                }}
               >
-                <Row gutter={24}>
+                <Row gutter={[24, 16]}>
                   <Col span={12}>
                     <Form.Item
-                      label="Type"
+                      label={
+                        <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                          <span style={{ color: '#ef4444' }}>* </span>
+                          Test Type
+                        </Text>
+                      }
                       name={[field.name, "type"]}
-                      rules={[{ required: true, message: "Required" }]}
+                      validateStatus={getFieldError(`tests.${index}.type`) ? "error" : undefined}
+                      help={getFieldError(`tests.${index}.type`)}
                     >
-                      <Select placeholder="Please select" options={testType} />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Duration"
-                      name={[field.name, "duration"]}
-                      rules={[{ required: true, message: "Required" }]}
-                    >
-                      <Input placeholder="Duration" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Card>
-            ))}
-
-            <Button type="dashed" onClick={() => add()} block>
-              + Add Test
-            </Button>
-          </>
-        )}
-      </Form.List>
-      {/* ───────── Interviews ───────── */}
-      <h2 className="text-sm mt-10">Interviews</h2>
-      <Form.List name="interviews">
-        {(fields, { add, remove }) => (
-          <>
-            {fields.map((field) => (
-              <Card
-                size="small"
-                title={`Interview ${field.name + 1}`}
-                key={field.key}
-                extra={<CloseOutlined onClick={() => remove(field.name)} />}
-              >
-                <Row gutter={24}>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Type"
-                      name={[field.name, "type"]}
-                      rules={[{ required: true, message: "Required" }]}
-                    >
-                      <Select
-                        placeholder="Please select"
-                        options={interviewType}
+                      <Select 
+                        placeholder="Select type" 
+                        options={testType}
+                        showSearch
+                        filterOption={(input, option) =>
+                          String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        }
+                        onChange={(value) => {
+                          form.setFieldValue(['tests', index, 'type'], value);
+                        }}
+                        style={{
+                          borderRadius: 8
+                        }}
                       />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      label="Duration"
+                      label={
+                        <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                          <span style={{ color: '#ef4444' }}>* </span>
+                          Duration
+                        </Text>
+                      }
                       name={[field.name, "duration"]}
-                      rules={[{ required: true, message: "Required" }]}
+                      validateStatus={getFieldError(`tests.${index}.duration`) ? "error" : undefined}
+                      help={getFieldError(`tests.${index}.duration`)}
                     >
-                      <Input placeholder="Duration" />
+                      <Input 
+                        placeholder={PLACEHOLDERS.TEST_DURATION}
+                        maxLength={100}
+                        onChange={(e) => {
+                          form.setFieldValue(['tests', index, 'duration'], e.target.value);
+                        }}
+                        style={{
+                          borderRadius: 8,
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                          border: '1px solid #d1d5db'
+                        }}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
               </Card>
             ))}
 
-            <Button type="dashed" onClick={() => add()} block>
-              + Add Interview
+            <Button 
+              type="dashed" 
+              onClick={() => {
+                if (fields.length < FIELD_LIMITS.TESTS_MAX) {
+                  add();
+                } else {
+                  message.warning(`Maximum ${FIELD_LIMITS.TESTS_MAX} tests allowed`);
+                }
+              }} 
+              block
+              style={{ 
+                marginBottom: 16,
+                borderRadius: 8,
+                height: 40,
+                fontSize: 14,
+                fontWeight: 500,
+                borderColor: '#d1d5db'
+              }}
+              disabled={fields.length >= FIELD_LIMITS.TESTS_MAX}
+            >
+              + Add Test ({fields.length}/{FIELD_LIMITS.TESTS_MAX})
             </Button>
           </>
         )}
       </Form.List>
-      {/* ───────── Requirements (optional) ───────── */}
-      <h2 className="text-sm mt-10">Requirements</h2>
-      <Row gutter={24}>
+
+      {/* Interviews Section */}
+      <Title level={5} style={{ 
+        marginTop: 32, 
+        marginBottom: 16, 
+        color: '#1f2937',
+        fontWeight: 600,
+        fontSize: 16
+      }}>
+        Interview Rounds
+      </Title>
+      
+      <Form.List name="interviews">
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map((field, index) => (
+              <Card
+                size="small"
+                title={
+                  <Text strong style={{ fontSize: 14, color: '#374151' }}>Interview Round {index + 1}</Text>
+                }
+                key={field.key}
+                extra={
+                  <Button
+                    type="text"
+                    danger
+                    size="small"
+                    icon={<CloseOutlined />}
+                    onClick={() => remove(field.name)}
+                    title="Remove this interview round"
+                    style={{
+                      borderRadius: 6
+                    }}
+                  />
+                }
+                style={{ 
+                  marginBottom: 16,
+                  borderRadius: 12,
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+                  border: '1px solid #e5e7eb'
+                }}
+              >
+                <Row gutter={[24, 16]}>
+                  <Col span={12}>
+                    <Form.Item
+                      label={
+                        <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                          <span style={{ color: '#ef4444' }}>* </span>
+                          Interview Type
+                        </Text>
+                      }
+                      name={[field.name, "type"]}
+                      validateStatus={getFieldError(`interviews.${index}.type`) ? "error" : undefined}
+                      help={getFieldError(`interviews.${index}.type`)}
+                    >
+                      <Select
+                        placeholder="Select type"
+                        options={interviewType}
+                        showSearch
+                        filterOption={(input, option) =>
+                          String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                        }
+                        onChange={(value) => {
+                          form.setFieldValue(['interviews', index, 'type'], value);
+                        }}
+                        style={{
+                          borderRadius: 8
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label={
+                        <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                          <span style={{ color: '#ef4444' }}>* </span>
+                          Duration
+                        </Text>
+                      }
+                      name={[field.name, "duration"]}
+                      validateStatus={getFieldError(`interviews.${index}.duration`) ? "error" : undefined}
+                      help={getFieldError(`interviews.${index}.duration`)}
+                    >
+                      <Input 
+                        placeholder={PLACEHOLDERS.INTERVIEW_DURATION}
+                        maxLength={100}
+                        onChange={(e) => {
+                          form.setFieldValue(['interviews', index, 'duration'], e.target.value);
+                        }}
+                        style={{
+                          borderRadius: 8,
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                          border: '1px solid #d1d5db'
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Card>
+            ))}
+
+            <Button 
+              type="dashed" 
+              onClick={() => {
+                if (fields.length < FIELD_LIMITS.INTERVIEWS_MAX) {
+                  add();
+                } else {
+                  message.warning(`Maximum ${FIELD_LIMITS.INTERVIEWS_MAX} interview rounds allowed`);
+                }
+              }} 
+              block
+              style={{ 
+                marginBottom: 16,
+                borderRadius: 8,
+                height: 40,
+                fontSize: 14,
+                fontWeight: 500,
+                borderColor: '#d1d5db'
+              }}
+              disabled={fields.length >= FIELD_LIMITS.INTERVIEWS_MAX}
+            >
+              + Add Interview Round ({fields.length}/{FIELD_LIMITS.INTERVIEWS_MAX})
+            </Button>
+          </>
+        )}
+      </Form.List>
+
+      {/* Infrastructure Requirements */}
+      <Title level={5} style={{ 
+        marginTop: 32, 
+        marginBottom: 16, 
+        color: '#1f2937',
+        fontWeight: 600,
+        fontSize: 16
+      }}>
+        Infrastructure Requirements
+      </Title>
+
+      <Row gutter={[24, 16]}>
         <Col span={12}>
           <Form.Item
-            label="Number Of Members"
-            validateStatus={
-              toErrorString(errors.numberOfMembers) ? "error" : undefined
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Team Members Required
+              </Text>
             }
-            help={toErrorString(errors.numberOfMembers)}
+            validateStatus={getFieldError('numberOfMembers') ? "error" : undefined}
+            help={getFieldError('numberOfMembers')}
           >
             <Input
               type="number"
               name="numberOfMembers"
-              placeholder="Number Of Members"
+              placeholder={PLACEHOLDERS.REQUIREMENTS_MEMBERS}
               value={values.numberOfMembers}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
               min={0}
+              max={FIELD_LIMITS.MEMBERS_MAX}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item
-            label="Number Of Rooms"
-            validateStatus={
-              toErrorString(errors.numberOfRooms) ? "error" : undefined
+            label={
+              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                Rooms/Spaces Required
+              </Text>
             }
-            help={toErrorString(errors.numberOfRooms)}
+            validateStatus={getFieldError('numberOfRooms') ? "error" : undefined}
+            help={getFieldError('numberOfRooms')}
           >
             <Input
               type="number"
               name="numberOfRooms"
-              placeholder="Number Of Rooms"
+              placeholder={PLACEHOLDERS.REQUIREMENTS_ROOMS}
               value={values.numberOfRooms}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+              }}
               min={0}
+              max={FIELD_LIMITS.ROOMS_MAX}
+              style={{
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                border: '1px solid #d1d5db'
+              }}
             />
           </Form.Item>
         </Col>
       </Row>
+
       <Form.Item
-        label="Other Requirements"
-        validateStatus={
-          toErrorString(errors.otherRequirements) ? "error" : undefined
+        label={
+          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+            Other Infrastructure Requirements
+          </Text>
         }
-        help={toErrorString(errors.otherRequirements)}
+        validateStatus={getFieldError('otherRequirements') ? "error" : undefined}
+        help={getFieldError('otherRequirements')}
       >
         <TextArea
           rows={4}
           name="otherRequirements"
-          placeholder="Other Requirements"
+          placeholder={PLACEHOLDERS.OTHER_REQUIREMENTS}
           value={values.otherRequirements}
-          onChange={handleChange}
+          onChange={(e) => {
+            handleChange(e);
+          }}
+          maxLength={FIELD_LIMITS.OTHER_DETAILS_MAX}
+          showCount
+          style={{
+            borderRadius: 8,
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+            border: '1px solid #d1d5db'
+          }}
         />
       </Form.Item>
-      <h1 className="text-xl">Salary</h1>
-      <Form.List name="salaries">
-        {(fields, { add, remove }) => (
-          <div style={{ display: "flex", rowGap: 16, flexDirection: "column" }}>
-            {fields.map((field) => (
-              <Card
-                size="small"
-                title={`Salary ${field.name + 1}`}
-                key={field.key}
-                extra={
-                  <CloseOutlined
-                    onClick={() => {
-                      remove(field.name);
-                    }}
-                  />
-                }
-              >
-                <h2 className="text-sm ">Criteria</h2>
-                <Row gutter={24}>
-                  <Col span={24}>
-                    <Form.Item label="Programs" name={[field.name, "programs"]}>
-                      <div>
-                        <div style={{ marginBottom: "10px" }}>
-                          <Select
-                            style={{ width: "24%", marginRight: "1%" }}
-                            placeholder="Select Year"
-                            value={selectedYear || undefined}
-                            onChange={handleYearChange}
-                            options={years.map((year) => ({
-                              value: year,
-                              label: year,
-                            }))}
-                          />
-                          <Select
-                            style={{ width: "24%", marginRight: "1%" }}
-                            placeholder="Select Course"
-                            value={selectedCourse || undefined}
-                            onChange={handleCourseChange}
-                            disabled={!selectedYear}
-                            options={courses.map((course) => ({
-                              value: course,
-                              label: course,
-                            }))}
-                          />
-                          <Select
-                            style={{ width: "50%" }}
-                            placeholder="Select Branch"
-                            value={selectedBranch}
-                            onChange={(value) =>
-                              handleBranchChange(value, field.name)
-                            }
-                            disabled={!selectedCourse}
-                            options={[
-                              { value: "ALL", label: "Open For All" },
-                              ...branches.map((branch) => {
-                                const isSelected = selectedPrograms.some(
-                                  (p) =>
-                                    p.year === selectedYear &&
-                                    p.course === selectedCourse &&
-                                    p.branch === branch,
-                                );
-                                return {
-                                  value: branch,
-                                  label: branch,
-                                  className: isSelected
-                                    ? "ant-select-item-option-selected"
-                                    : "",
-                                };
-                              }),
-                            ]}
-                          />
-                        </div>
+      </div>
 
-                        {selectedPrograms.length > 0 && (
-                          <div
-                            style={{
-                              marginTop: "10px",
-                              border: "1px solid #d9d9d9",
-                              borderRadius: "4px",
-                              padding: "8px",
-                              minHeight: "50px",
-                              maxHeight: "150px",
-                              overflowY: "auto",
-                            }}
-                          >
-                            <h3 className="ml-2">Selected Programs :</h3>
-                            {selectedPrograms.map((program) => (
-                              <Tag
-                                key={program.id}
-                                closable
-                                onClose={() =>
-                                  handleRemoveProgram(program.id, field.name)
-                                }
-                                style={{
-                                  fontSize: "14px",
-                                  margin: "4px",
-                                  maxWidth: "100%",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                {`${program.branch} - ${program.course} - ${program.year}`}
-                              </Tag>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={24}>
-                  <Col span={12}>
-                    <Form.Item label="Genders" name={[field.name, "genders"]}>
-                      <Select
-                        mode="multiple"
-                        placeholder="Please select"
-                        options={[
-                          { value: "MALE", label: "Male" },
-                          { value: "FEMALE", label: "Female" },
-                          { value: "OTHER", label: "Other" },
-                        ]}
-                      ></Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Categories"
-                      name={[field.name, "categories"]}
-                    >
-                      <Select
-                        mode="multiple"
-                        placeholder="Please select"
-                        options={[
-                          { value: "GENERAL", label: "General" },
-                          { value: "SC", label: "SC" },
-                          { value: "ST", label: "ST" },
-                          { value: "OBC", label: "OBC" },
-                          { value: "PWD", label: "PWD" },
-                        ]}
-                      ></Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={24}>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Backlogs"
-                      name={[field.name, "isBacklogAllowed"]}
-                      required // ← shows the red asterisk
-                      rules={[{ required: true, message: "Required" }]} // validation & inline help
-                    >
-                      <Select
-                        placeholder="Please select"
-                        options={[
-                          { value: "PREVIOUS", label: "No Active Backlogs" },
-                          { value: "NEVER", label: "No Backlogs at All" },
-                          { value: "ACTIVE", label: "Doesn't Matter" },
-                        ]}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item label="Min CPI" name={[field.name, "minCPI"]}>
-                      <Input placeholder="Min CPI" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={24}>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Tenth Marks (%)"
-                      name={[field.name, "tenthMarks"]}
-                      rules={[
-                        {
-                          validator: (_, value) => {
-                            if (value === undefined || value === "")
-                              return Promise.resolve();
-                            const strValue = String(value).replace(/\s+/g, "");
-                            if (!/^\d*\.?\d*$/.test(strValue)) {
-                              return Promise.reject(
-                                "Please enter a positive decimal value",
-                              );
-                            }
-                            const num = parseFloat(strValue);
-                            if (isNaN(num) || num > 100) {
-                              return Promise.reject(
-                                "Value must be less than or equal to 100",
-                              );
-                            }
-                            return Promise.resolve();
-                          },
-                        },
-                      ]}
-                      getValueFromEvent={(e) => {
-                        const value = e.target.value.replace(/\s+/g, "");
-                        return value;
-                      }}
-                    >
-                      <Input placeholder="Tenth Marks" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Twelfth Marks (%)"
-                      name={[field.name, "twelthMarks"]}
-                      rules={[
-                        {
-                          validator: (_, value) => {
-                            if (value === undefined || value === "")
-                              return Promise.resolve();
-                            const strValue = String(value).replace(/\s+/g, "");
-                            if (!/^\d*\.?\d*$/.test(strValue)) {
-                              return Promise.reject(
-                                "Please enter a positive decimal value",
-                              );
-                            }
-                            const num = parseFloat(strValue);
-                            if (isNaN(num) || num > 100) {
-                              return Promise.reject(
-                                "Value must be less than or equal to 100",
-                              );
-                            }
-                            return Promise.resolve();
-                          },
-                        },
-                      ]}
-                      getValueFromEvent={(e) => {
-                        const value = e.target.value.replace(/\s+/g, "");
-                        return value;
-                      }}
-                    >
-                      <Input placeholder="Twelfth Marks" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                {seasonType === "PLACEMENT" ? (
-                  <>
-                    <h2 className="text-sm">Placement Details</h2>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Base Salary"
-                          name={[field.name, "baseSalary"]}
-                        >
-                          <Input type="number" placeholder="Base Salary" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Total CTC"
-                          name={[field.name, "totalCTC"]}
-                        >
-                          <Input type="number" placeholder="Total CTC" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Take Home Salary"
-                          name={[field.name, "takeHomeSalary"]}
-                        >
-                          <Input type="number" placeholder="Take Home Salary" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Gross Salary"
-                          name={[field.name, "grossSalary"]}
-                        >
-                          <Input type="number" placeholder="Gross Salary" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Joining Bonus"
-                          name={[field.name, "joiningBonus"]}
-                        >
-                          <Input type="number" placeholder="Joining Bonus" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Performance Bonus"
-                          name={[field.name, "performanceBonus"]}
-                        >
-                          <Input
-                            type="number"
-                            placeholder="Performance Bonus"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Relocation"
-                          name={[field.name, "relocation"]}
-                        >
-                          <Input type="number" placeholder="Relocation" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Bond Amount"
-                          name={[field.name, "bondAmount"]}
-                        >
-                          <Input type="number" placeholder="Bond Amount" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="ESOP Amount"
-                          name={[field.name, "esopAmount"]}
-                        >
-                          <Input type="number" placeholder="ESOP Amount" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="ESOP Vest Period"
-                          name={[field.name, "esopVestPeriod"]}
-                        >
-                          <Input placeholder="ESOP Vest Period" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="First Year CTC"
-                          name={[field.name, "firstYearCTC"]}
-                        >
-                          <Input type="number" placeholder="First Year CTC" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Retention Bonus"
-                          name={[field.name, "retentionBonus"]}
-                        >
-                          <Input type="number" placeholder="Retention Bonus" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Deductions"
-                          name={[field.name, "deductions"]}
-                        >
-                          <Input type="number" placeholder="Deductions" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Medical Allowance"
-                          name={[field.name, "medicalAllowance"]}
-                        >
-                          <Input
-                            type="number"
-                            placeholder="Medical Allowance"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Bond Duration"
-                          name={[field.name, "bondDuration"]}
-                        >
-                          <Input placeholder="Bond Duration" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Foreign Currency CTC"
-                          name={[field.name, "foreignCurrencyCTC"]}
-                        >
-                          <Input
-                            type="number"
-                            placeholder="Foreign Currency CTC"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Foreign Currency Code"
-                          name={[field.name, "foreignCurrencyCode"]}
-                        >
-                          <Input
-                            placeholder="Foreign Currency Code"
-                            maxLength={3}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </>
-                ) : (
-                  <>
-                    <h2 className="text-sm">Internship Details</h2>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Stipend"
-                          name={[field.name, "stipend"]}
-                        >
-                          <Input type="number" placeholder="Stipend" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Foreign Currency Stipend"
-                          name={[field.name, "foreignCurrencyStipend"]}
-                        >
-                          <Input placeholder="Foreign Currency Stipend" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Accommodation"
-                          name={[field.name, "accommodation"]}
-                        >
-                          <Input type="number" placeholder="Accommodation" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label="Tentative CTC"
-                          name={[field.name, "tentativeCTC"]}
-                        >
-                          <Input type="number" placeholder="Tentative CTC" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Form.Item
-                      label="PPO Confirmation Date"
-                      name={[field.name, "PPOConfirmationDate"]}
-                    >
-                      <Input type="date" />
-                    </Form.Item>
-                  </>
-                )}
-                <Form.Item
-                  label="Other Compensatons"
-                  name={[field.name, "otherCompensations"]}
+      {/* Compensation Details */}
+      <div style={{
+        background: 'white',
+        borderRadius: 16,
+        padding: '32px',
+        marginBottom: 24,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+        border: '1px solid #e2e8f0'
+      }}>
+        <Title level={5} style={{ 
+          marginBottom: 24, 
+          color: '#1f2937',
+          fontWeight: 600,
+          fontSize: 18,
+          borderBottom: '2px solid #e2e8f0',
+          paddingBottom: 12
+        }}>
+          Compensation Details
+        </Title>
+
+        <Form.List name="salaries">
+          {(fields, { add, remove }) => (
+            <div style={{ display: "flex", rowGap: 16, flexDirection: "column" }}>
+              {fields.map((field, index) => (
+                <Card
+                  size="small"
+                  title={
+                    <Text strong>Compensation Package {index + 1}</Text>
+                  }
+                  key={field.key}
+                  extra={
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<CloseOutlined />}
+                      onClick={() => remove(field.name)}
+                      title="Remove this salary package"
+                      disabled={fields.length === 1} // Prevent removing the last salary entry
+                    />
+                  }
+                  style={{ marginBottom: 16 }}
                 >
-                  <TextArea rows={4} placeholder="Other Compensatons" />
-                </Form.Item>
-              </Card>
-            ))}
+                  <Title level={5} style={{ 
+                    marginBottom: 20, 
+                    color: '#374151',
+                    fontWeight: 600,
+                    fontSize: 14,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    Eligibility Criteria
+                  </Title>
+                  <Row gutter={[24, 16]}>
+                    <Col span={24}>
+                      <Form.Item 
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Programs
+                          </Text>
+                        } 
+                        name={[field.name, "programs"]}
+                      >
+                        <div>
+                          <div style={{ marginBottom: 16 }}>
+                            <Select
+                              style={{ 
+                                width: "24%", 
+                                marginRight: "1%",
+                                borderRadius: 8
+                              }}
+                              placeholder="Select Year"
+                              value={selectedYear || undefined}
+                              onChange={handleYearChange}
+                              options={years.map((year) => ({
+                                value: year,
+                                label: year,
+                              }))}
+                            />
+                            <Select
+                              style={{ 
+                                width: "24%", 
+                                marginRight: "1%",
+                                borderRadius: 8
+                              }}
+                              placeholder="Select Course"
+                              value={selectedCourse || undefined}
+                              onChange={handleCourseChange}
+                              disabled={!selectedYear}
+                              options={courses.map((course) => ({
+                                value: course,
+                                label: course,
+                              }))}
+                            />
+                            <Select
+                              style={{ 
+                                width: "50%",
+                                borderRadius: 8
+                              }}
+                              placeholder="Select Branch"
+                              value={selectedBranch}
+                              onChange={(value) =>
+                                handleBranchChange(value, field.name)
+                              }
+                              disabled={!selectedCourse}
+                              options={[
+                                { value: "ALL", label: "Open For All" },
+                                ...branches.map((branch) => {
+                                  const isSelected = selectedPrograms.some(
+                                    (p) =>
+                                      p.year === selectedYear &&
+                                      p.course === selectedCourse &&
+                                      p.branch === branch,
+                                  );
+                                  return {
+                                    value: branch,
+                                    label: branch,
+                                    className: isSelected
+                                      ? "ant-select-item-option-selected"
+                                      : "",
+                                  };
+                                }),
+                              ]}
+                            />
+                          </div>
 
-            <Button type="dashed" onClick={() => add()} block>
-              + Add Salary
-            </Button>
-          </div>
-        )}
-      </Form.List>
+                          {selectedPrograms.length > 0 && (
+                            <div
+                              style={{
+                                marginTop: 16,
+                                border: "1px solid #e5e7eb",
+                                borderRadius: 8,
+                                padding: 16,
+                                minHeight: 50,
+                                maxHeight: 150,
+                                overflowY: "auto",
+                                background: "#f9fafb"
+                              }}
+                            >
+                              <Text strong style={{ fontSize: 13, color: '#374151', marginBottom: 8, display: 'block' }}>
+                                Selected Programs:
+                              </Text>
+                              {selectedPrograms.map((program) => (
+                                <Tag
+                                  key={program.id}
+                                  closable
+                                  onClose={() =>
+                                    handleRemoveProgram(program.id, field.name)
+                                  }
+                                  style={{
+                                    fontSize: 12,
+                                    margin: 4,
+                                    maxWidth: "100%",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                    borderRadius: 6
+                                  }}
+                                >
+                                  {`${program.branch} - ${program.course} - ${program.year}`}
+                                </Tag>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={[24, 16]}>
+                    <Col span={12}>
+                      <Form.Item 
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Eligible Genders
+                          </Text>
+                        }
+                        name={[field.name, "genders"]}
+                        help="Select eligible genders (leave empty for all genders)"
+                      >
+                        <Select
+                          mode="multiple"
+                          placeholder="Select eligible genders"
+                          options={GENDER_OPTIONS}
+                          allowClear
+                          maxTagCount="responsive"
+                          style={{
+                            borderRadius: 8
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Eligible Categories
+                          </Text>
+                        }
+                        name={[field.name, "categories"]}
+                        help="Select eligible categories (leave empty for all categories)"
+                      >
+                        <Select
+                          mode="multiple"
+                          placeholder="Select eligible categories"
+                          options={CATEGORY_OPTIONS}
+                          allowClear
+                          maxTagCount="responsive"
+                          style={{
+                            borderRadius: 8
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={[24, 16]}>
+                    <Col span={12}>
+                      <Form.Item
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            <span style={{ color: '#ef4444' }}>* </span>
+                            Backlog Policy
+                          </Text>
+                        }
+                        name={[field.name, "isBacklogAllowed"]}
+                        validateStatus={getFieldError(`salaries.${index}.isBacklogAllowed`) ? "error" : undefined}
+                        help={getFieldError(`salaries.${index}.isBacklogAllowed`)}
+                      >
+                        <Select
+                          placeholder="Select policy"
+                          options={BACKLOG_OPTIONS}
+                          onChange={(value) => {
+                            form.setFieldValue(['salaries', index, 'isBacklogAllowed'], value);
+                          }}
+                          style={{
+                            borderRadius: 8
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item 
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Minimum CPI Required
+                          </Text>
+                        }
+                        name={[field.name, "minCPI"]}
+                        help="Enter minimum CPI requirement (leave empty if no minimum)"
+                      >
+                        <Input
+                          placeholder={PLACEHOLDERS.MIN_CPI}
+                          type="number"
+                          min={0}
+                          max={FIELD_LIMITS.CPI_MAX}
+                          step={0.1}
+                          style={{
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                            border: '1px solid #d1d5db'
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={[24, 16]}>
+                    <Col span={12}>
+                      <Form.Item
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Minimum 10th Marks (%)
+                          </Text>
+                        }
+                        name={[field.name, "tenthMarks"]}
+                        validateStatus={getFieldError(`salaries.${index}.tenthMarks`) ? "error" : undefined}
+                        help={getFieldError(`salaries.${index}.tenthMarks`) || "Enter minimum 10th standard marks requirement (leave empty if no minimum)"}
+                      >
+                        <Input 
+                          placeholder={PLACEHOLDERS.TENTH_MARKS}
+                          type="number"
+                          min={0}
+                          max={100}
+                          step={0.1}
+                          onChange={(e) => {
+                            form.setFieldValue(['salaries', index, 'tenthMarks'], e.target.value);
+                          }}
+                          style={{
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                            border: '1px solid #d1d5db'
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Minimum 12th Marks (%)
+                          </Text>
+                        }
+                        name={[field.name, "twelthMarks"]}
+                        validateStatus={getFieldError(`salaries.${index}.twelthMarks`) ? "error" : undefined}
+                        help={getFieldError(`salaries.${index}.twelthMarks`) || "Enter minimum 12th standard marks requirement (leave empty if no minimum)"}
+                      >
+                        <Input 
+                          placeholder={PLACEHOLDERS.TWELFTH_MARKS}
+                          type="number"
+                          min={0}
+                          max={100}
+                          step={0.1}
+                          onChange={(e) => {
+                            form.setFieldValue(['salaries', index, 'twelthMarks'], e.target.value);
+                          }}
+                          style={{
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                            border: '1px solid #d1d5db'
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  {seasonType === "PLACEMENT" ? (
+                    <>
+                      <Title level={5} style={{ 
+                        marginTop: 24, 
+                        marginBottom: 16, 
+                        color: '#1f2937',
+                        fontWeight: 600
+                      }}>
+                        Placement Compensation Details
+                      </Title>
+
+                      <Row gutter={[24, 16]}>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Base Salary (Annual)
+                              </Text>
+                            }
+                            name={[field.name, "baseSalary"]}
+                            help="Fixed annual salary component"
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.BASE_SALARY}
+                              min={0}
+                              max={FIELD_LIMITS.SALARY_MAX}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Total CTC (Annual)
+                              </Text>
+                            }
+                            name={[field.name, "totalCTC"]}
+                            help="Complete cost to company including all benefits"
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.TOTAL_CTC}
+                              min={0}
+                              max={FIELD_LIMITS.SALARY_MAX}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Take Home Salary (Monthly)
+                              </Text>
+                            }
+                            name={[field.name, "takeHomeSalary"]}
+                            help="Net monthly salary after deductions"
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.TAKE_HOME_SALARY}
+                              min={0}
+                              max={FIELD_LIMITS.SALARY_MAX}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Gross Salary
+                              </Text>
+                            }
+                            name={[field.name, "grossSalary"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.GROSS_SALARY}
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Joining Bonus
+                              </Text>
+                            }
+                            name={[field.name, "joiningBonus"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.JOINING_BONUS}
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Performance Bonus
+                              </Text>
+                            }
+                            name={[field.name, "performanceBonus"]}
+                          >
+                            <Input
+                              type="number"
+                              placeholder={PLACEHOLDERS.PERFORMANCE_BONUS}
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Relocation
+                              </Text>
+                            }
+                            name={[field.name, "relocation"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.RELOCATION}
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                First Year CTC
+                              </Text>
+                            }
+                            name={[field.name, "firstYearCTC"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.FIRST_YEAR_CTC}
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        
+                      </Row>
+                      
+                      <Row gutter={[24, 16]}>
+                       
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Retention Bonus
+                              </Text>
+                            }
+                            name={[field.name, "retentionBonus"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder={PLACEHOLDERS.RETENTION_BONUS}
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Deductions
+                              </Text>
+                            }
+                            name={[field.name, "deductions"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder="Deductions"
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                        
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Medical Allowance
+                              </Text>
+                            }
+                            name={[field.name, "medicalAllowance"]}
+                          >
+                            <Input
+                              type="number"
+                              placeholder="Medical Allowance"
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                ESOP Amount
+                              </Text>
+                            }
+                            name={[field.name, "esopAmount"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder="ESOP Amount"
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                ESOP Vest Period
+                              </Text>
+                            }
+                            name={[field.name, "esopVestPeriod"]}
+                          >
+                            <Input 
+                              placeholder="ESOP Vest Period"
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                      <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Bond Amount
+                              </Text>
+                            }
+                            name={[field.name, "bondAmount"]}
+                          >
+                            <Input 
+                              type="number" 
+                              placeholder="Bond Amount"
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Bond Duration
+                              </Text>
+                            }
+                            name={[field.name, "bondDuration"]}
+                          >
+                            <Input 
+                              placeholder="Bond Duration"
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </>
+                  ) : (
+                    <>
+                      <Title level={5} style={{ 
+                        marginTop: 24, 
+                        marginBottom: 16, 
+                        color: '#1f2937',
+                        fontWeight: 600
+                      }}>
+                        Internship Compensation Details
+                      </Title>
+
+                      <Row gutter={[24, 16]}>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Monthly Stipend
+                              </Text>
+                            }
+                            name={[field.name, "stipend"]}
+                            help="Monthly stipend amount for internship"
+                          >
+                            <Input
+                              type="number"
+                              placeholder={PLACEHOLDERS.STIPEND}
+                              min={0}
+                              max={FIELD_LIMITS.STIPEND_MAX}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Accommodation
+                              </Text>
+                            }
+                            name={[field.name, "accommodation"]}
+                          >
+                            <Input
+                              type="number"
+                              placeholder="Accommodation"
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={[24, 16]}>
+                       
+                        <Col span={12}>
+                          <Form.Item
+                            label={
+                              <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                                Tentative CTC
+                              </Text>
+                            }
+                            name={[field.name, "tentativeCTC"]}
+                          >
+                            <Input
+                              type="number"
+                              placeholder="Tentative CTC"
+                              min={0}
+                              style={{
+                                borderRadius: 8,
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid #d1d5db'
+                              }}
+                              addonBefore={
+                                <CurrencySelect
+                                  defaultValue="INR"
+                                  style={{ width: 120 }}
+                                  allowCustom={true}
+                                  customCurrencies={customCurrencies}
+                                  onAddCustomCurrency={handleAddCustomCurrency}
+                                  syncedCurrency={syncedCurrency}
+                                  onCurrencySync={handleCurrencySync}
+                                />
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                        <Form.Item
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            PPO Confirmation Date
+                          </Text>
+                        }
+                        name={[field.name, "PPOConfirmationDate"]}
+                      >
+                        <Input
+                          type="date"
+                          min={new Date().toISOString().split("T")[0]}
+                          style={{
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                            border: '1px solid #d1d5db'
+                          }}
+                        />
+                      </Form.Item>
+                        </Col>
+                      </Row>
+                    </>
+                  )}
+                  <Row gutter={[24, 16]}>
+                    <Col span={24}>
+                      <Form.Item
+                        label={
+                          <Text strong style={{ fontSize: 14, color: '#374151' }}>
+                            Other Compensations / Perks
+                          </Text>
+                        }
+                        name={[field.name, "otherCompensations"]}
+                        validateStatus={getFieldError(`salaries.${index}.otherCompensations`) ? "error" : undefined}
+                        help={getFieldError(`salaries.${index}.otherCompensations`)}
+                      >
+                        <Input 
+                          placeholder={PLACEHOLDERS.OTHER_COMPENSATIONS}
+                          type="number"
+                          min={0}
+                          onChange={(e) => {
+                            form.setFieldValue(['salaries', index, 'otherCompensations'], e.target.value);
+                          }}
+                          style={{
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                            border: '1px solid #d1d5db'
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Card>
+              ))}
+
+              <Button 
+                type="dashed" 
+                onClick={() => {
+                  if (fields.length < FIELD_LIMITS.SALARY_ENTRIES_MAX) {
+                    add();
+                  } else {
+                    message.warning(`Maximum ${FIELD_LIMITS.SALARY_ENTRIES_MAX} salary packages allowed`);
+                  }
+                }} 
+                block
+                style={{ 
+                  marginTop: 24,
+                  borderRadius: 8,
+                  height: 40,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  borderColor: '#d1d5db'
+                }}
+                disabled={fields.length >= FIELD_LIMITS.SALARY_ENTRIES_MAX}
+              >
+                + Add Salary Package ({fields.length}/{FIELD_LIMITS.SALARY_ENTRIES_MAX})
+              </Button>
+            </div>
+          )}
+        </Form.List>
+      </div>
     </Form>
+    </div>
   );
 };
 

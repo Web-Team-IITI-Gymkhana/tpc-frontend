@@ -53,7 +53,7 @@ const Sidebar = () => {
           visibility: "visible",
         },
       }}
-      className="z-40 overflow-hidden bg-gray-800 pt-3 flex flex-col h-screen"
+      className="z-40 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-800 pt-3 flex flex-col h-screen"
     >
       <div className="relative">
         <div
@@ -73,7 +73,7 @@ const Sidebar = () => {
             className={
               !context.isOpen && isSmallScreen
                 ? "visible bg-gray-200 py-2 rounded-lg opacity-50 hover:opacity-100"
-                : "visible bg-gray-800 py-2 rounded-lg opacity-50 hover:opacity-100"
+                : "visible bg-slate-600 py-2 rounded-lg opacity-50 hover:opacity-100"
             }
           >
             <svg
@@ -106,7 +106,7 @@ const Sidebar = () => {
       <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
         <div>
           <hr />
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1rem]">
               <div className="w-[2rem]">
                 <svg

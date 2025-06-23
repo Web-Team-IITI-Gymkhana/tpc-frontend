@@ -80,8 +80,8 @@ export interface Salary {
   // Internship-specific fields
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accomodation?: number;
-  tenetativeCTC?: number;
+  accommodation?: number;
+  tentativeCTC?: number;
   PPOConfirmationDate?: string;
   job: {
     id: string;

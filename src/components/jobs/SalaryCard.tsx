@@ -198,11 +198,11 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
                 </div>
                 <div className="">
                   <div className="text-gray-500 font-semibold my-2">Accommodation</div>
-                  <div>{(salaryData?.accomodation) ? formatNumber(salaryData?.accomodation) : ""}</div>
+                  <div>{(salaryData?.accommodation) ? formatNumber(salaryData?.accommodation) : ""}</div>
                 </div>
                 <div className="">
                   <div className="text-gray-500 font-semibold my-2">Tentative CTC</div>
-                  <div>{(salaryData?.tenetativeCTC) ? formatNumber(salaryData?.tenetativeCTC) : ""}</div>
+                  <div>{(salaryData?.tentativeCTC) ? formatNumber(salaryData?.tentativeCTC) : ""}</div>
                 </div>
                 <div className="">
                   <div className="text-gray-500 font-semibold my-2">PPO Confirmation Date</div>

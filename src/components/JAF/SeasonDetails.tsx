@@ -1,8 +1,13 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
-import { Form, Input, Row, Col, Select, Checkbox } from "antd";
+import { Form, Row, Col, Select, Checkbox, Typography, Card, Divider, Alert, Space } from "antd";
 import { useEffect, useState } from "react";
 import { TermsAndConditions } from "@/dummyData/TermsAndConditions";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../utils/jaf.constants";
+import { SeasonsDto } from "../../types/jaf.types";
+import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
+
+const { Title, Text } = Typography;
 
 type StepProps = {
   errors: FormikErrors<FormikValues>;
@@ -10,6 +15,14 @@ type StepProps = {
   handleChange: FormikHandlers["handleChange"];
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
 };
+
+interface SeasonOption {
+  value: string;
+  label: string;
+  type: string;
+  year: string;
+}
+
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const SeasonDetails = ({
@@ -18,74 +31,215 @@ const SeasonDetails = ({
   handleChange,
   setFieldValue,
 }: StepProps) => {
-  const [optionsx, setOptionsx] = useState([]);
-  let options: any = [];
+  const [seasonOptions, setSeasonOptions] = useState<SeasonOption[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedSeasonInfo, setSelectedSeasonInfo] = useState<{type: string, year: string} | null>(null);
+
+  // Helper function to get error message
+  const getErrorMessage = (field: string): string => {
+    const error = errors[field];
+    return typeof error === 'string' ? error : '';
+  };
+
   useEffect(() => {
-    axios.get(`${baseUrl}/api/v1/jaf`).then((res) => {
-      res.data.seasons.map((season: any) => {
-        const seasonString = `${season.type} ${season.year}`;
-        options.push({ value: season.id, label: seasonString });
-      });
-      setOptionsx(options);
-    });
+    const fetchSeasons = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${baseUrl}${API_ENDPOINTS.JAF_VALUES}`);
+        const seasons: SeasonsDto[] = response.data.seasons;
+        
+        const options: SeasonOption[] = seasons.map((season) => ({
+          value: season.id,
+          label: `${season.type} ${season.year}`,
+          type: season.type,
+          year: season.year
+        }));
+        
+        setSeasonOptions(options);
+      } catch (error) {
+        console.error("Failed to fetch seasons:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSeasons();
   }, []);
+
+  const handleSeasonChange = (value: string) => {
+    setFieldValue("seasonId", value);
+    const selectedSeason = seasonOptions.find(option => option.value === value);
+    if (selectedSeason) {
+      setSelectedSeasonInfo({
+        type: selectedSeason.type,
+        year: selectedSeason.year
+      });
+    }
+  };
+
   return (
-    <Form layout="vertical">
-      <h1 className="text-xl">Season Details</h1>
-      <Row gutter={32}>
-        <Col span={24}>
+    <div style={{ padding: '0 24px' }}>
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        
+        {/* Header Section */}
+        <div style={{ textAlign: 'center', marginBottom: 32, marginTop: 24 }}>
+          <Title level={4} style={{ 
+            marginBottom: 8, 
+            color: '#1f2937',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            fontWeight: 600
+          }}>
+            Job Application Form
+          </Title>
+          <Text style={{ fontSize: 16, color: '#6b7280' }}>
+            Select recruitment season and review terms and conditions
+          </Text>
+        </div>
+
+        {/* Season Selection */}
+        <Card 
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <InfoCircleOutlined style={{ color: '#1890ff' }} />
+              <Text strong style={{ fontSize: 16 }}>Recruitment Season</Text>
+            </div>
+          }
+          style={{ 
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            borderRadius: 8,
+            border: '1px solid #e5e7eb'
+          }}
+        >
           <Form.Item
-            label="Type"
             required
             hasFeedback
-            validateStatus={!!errors.seasonId ? "error" : ""}
-            help={errors.seasonId ? `${errors.seasonId}` : ""}
+            validateStatus={getErrorMessage("seasonId") ? "error" : ""}
+            help={getErrorMessage("seasonId")}
+            style={{ marginBottom: selectedSeasonInfo ? 16 : 0 }}
           >
             <Select
-              onChange={(value) => setFieldValue("seasonId", value)}
-              placeholder="Please Select"
-              options={optionsx}
-              defaultValue={values.seasonId ? `${values.seasonId}` : null}
-            ></Select>
+              size="large"
+              loading={loading}
+              onChange={handleSeasonChange}
+              placeholder="Select the current recruitment season"
+              value={values.seasonId || undefined}
+              options={seasonOptions}
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent={loading ? "Loading seasons..." : "No seasons available"}
+              style={{ width: '100%' }}
+            />
           </Form.Item>
-        </Col>
-      </Row>
-      <Row>
-        <div className="ml-auto mr-auto flex flex-col items-start gap-8 ">
-          <div className="flex flex-col items-center w-[100%] text-[1rem] gap-1 opacity-100">
-            <div>Terms and Conditions</div>
-            <div className=" opacity-50 text-[0.8rem]">
-              {" "}
-              &#40;Please read it carefully&#41;
+
+          {selectedSeasonInfo && (
+            <Alert
+              message={`${selectedSeasonInfo.type} Season ${selectedSeasonInfo.year}`}
+              description={`Recruitment process for ${selectedSeasonInfo.type.toLowerCase()} positions`}
+              type="info"
+              showIcon
+              style={{ 
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bae6fd',
+                borderRadius: 6
+              }}
+            />
+          )}
+        </Card>
+
+        {/* Terms and Conditions */}
+        <Card
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <CheckCircleOutlined style={{ color: '#10b981' }} />
+              <Text strong style={{ fontSize: 16 }}>Terms and Conditions</Text>
             </div>
-          </div>
-          <div>
-            <div className="flex flex-col gap-3  text-[0.8rem] opacity-100">
+          }
+          style={{ 
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            borderRadius: 8,
+            border: '1px solid #e5e7eb'
+          }}
+        >
+          <div style={{ 
+            marginBottom: 20,
+            padding: 12,
+            backgroundColor: '#f9fafb',
+            borderRadius: 6,
+            border: '1px solid #e5e7eb'
+          }}>
+            <Space direction="vertical" size="small" style={{ width: '100%' }}>
               {TermsAndConditions.map((tc, index) => (
-                <div key={index} className="flex gap-3">
-                  <span>{index + 1}&#46;</span>
-                  <span className=" text-justify">{tc}</span>
+                <div 
+                  key={index} 
+                  style={{ 
+                    display: 'flex', 
+                    gap: 10, 
+                    alignItems: 'flex-start',
+                    padding: '4px 0'
+                  }}
+                >
+                  <Text 
+                    strong 
+                    style={{ 
+                      color: '#374151', 
+                      minWidth: 20,
+                      fontSize: 13,
+                      fontWeight: 600
+                    }}
+                  >
+                    {index + 1}.
+                  </Text>
+                  <Text 
+                    style={{ 
+                      textAlign: 'justify', 
+                      lineHeight: 1.4,
+                      fontSize: 13,
+                      color: '#374151'
+                    }}
+                  >
+                    {tc}
+                  </Text>
                 </div>
               ))}
-            </div>
+            </Space>
           </div>
+
+          <Divider style={{ margin: '12px 0' }} />
+
           <Form.Item
             required
             hasFeedback
-            validateStatus={!!errors.terms ? "error" : ""}
-            help={errors.terms ? `${errors.terms}` : ""}
+            validateStatus={getErrorMessage("terms") ? "error" : ""}
+            help={getErrorMessage("terms")}
+            style={{ marginBottom: 0 }}
           >
-            <Checkbox
-              onChange={(e) => setFieldValue("terms", e.target.checked)}
-              name="terms"
-              checked={values.terms}
-            >
-              I accept the terms and conditions
-            </Checkbox>
+            <div style={{
+              padding: 16,
+              backgroundColor: values.terms ? '#f0f9ff' : '#fafafa',
+              border: `2px solid ${values.terms ? '#1890ff' : '#d1d5db'}`,
+              borderRadius: 8,
+              transition: 'all 0.3s ease'
+            }}>
+              <Checkbox
+                onChange={(e) => setFieldValue("terms", e.target.checked)}
+                name="terms"
+                checked={values.terms}
+                style={{ fontSize: 15 }}
+              >
+                <Text strong style={{ color: values.terms ? '#1890ff' : '#374151' }}>
+                  I acknowledge that I have read, understood, and agree to comply with all the terms and conditions stated above
+                </Text>
+              </Checkbox>
+            </div>
           </Form.Item>
-        </div>
-      </Row>
-    </Form>
+
+        </Card>
+
+      </Space>
+    </div>
   );
 };
 

@@ -12,7 +12,7 @@ const AdminDashboard = () => {
     <>
       <div className="text-white">
         <Link href="/">
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
                 <svg
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </Link>
-        <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+        <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
           <Link href="/admin/companies">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
           {/* <CompanyDropDown userRole={userRole} /> */}
         </div>
         <Link href={"/admin/jobs"}>
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
                 <svg
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
           </div>
         </Link>
         <Link href={"/admin/students"}>
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
                 <svg
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
           </div>
         </Link>
         <Link href={"/admin/resumes"}>
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
                 <svg
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
           </div>
         </Link>
         <Link href={"/admin/recruiters"}>
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
                 <svg
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
           </div>
         </Link>
         <Link href={"/admin/seasons"}>
-        <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
+        <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
           <div className="flex justify-start gap-[1vw]">
             <div className="w-[2vw]">
               <svg
@@ -259,7 +259,7 @@ const AdminDashboard = () => {
         </div>
         </Link>
         <Link href={"/events"}>
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer">
             <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
                 <svg
@@ -294,7 +294,7 @@ const AdminDashboard = () => {
           </div>
         </Link>
         <Link href={"/admin/dashboard"}>
-          <div className="hover:bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer">
           <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw]">
               <svg
