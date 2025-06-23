@@ -2,7 +2,8 @@
 
 // Validation patterns
 export const VALIDATION_PATTERNS = {
-  PHONE: /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
+  PHONE:
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
   LANDLINE: /^[\d\s\-\+\(\)]+$/,
   NAME: /^[a-zA-Z\s.'-]+$/,
   JOB_TITLE: /^[a-zA-Z0-9\s\-\&\(\)\/\.]+$/,
@@ -25,10 +26,15 @@ export const GENDER_OPTIONS = [
 
 export const CATEGORY_OPTIONS = [
   { value: "GENERAL", label: "General" },
+  { value: "OBC", label: "OBC" },
   { value: "SC", label: "SC" },
   { value: "ST", label: "ST" },
-  { value: "OBC", label: "OBC" },
-  { value: "PWD", label: "PWD" },
+  { value: "EWS", label: "EWS" },
+  { value: "GENERAL_PWD", label: "General-PWD" },
+  { value: "OBC_PWD", label: "OBC-PWD" },
+  { value: "SC_PWD", label: "SC-PWD" },
+  { value: "ST_PWD", label: "ST-PWD" },
+  { value: "EWS_PWD", label: "EWS-PWD" },
 ];
 
 export const BACKLOG_OPTIONS = [
@@ -50,7 +56,8 @@ export const PLACEHOLDERS = {
   JOB_TITLE: "Enter job role (e.g., Software Developer, Data Analyst)",
   JOB_LOCATION: "Enter work location (e.g., Bangalore, Remote, Hybrid)",
   JOB_DURATION: "Enter duration (e.g., 6 months, 2 years, Permanent)",
-  JOB_DESCRIPTION: "Provide detailed job description, responsibilities, and requirements...",
+  JOB_DESCRIPTION:
+    "Provide detailed job description, responsibilities, and requirements...",
   EXPECTED_HIRES: "Enter expected number of candidates to hire",
   MIN_HIRES: "Enter minimum number of candidates to hire",
   SKILLS: "Type skill and press Enter to add (e.g., JavaScript, Python, SQL)",
@@ -67,7 +74,7 @@ export const PLACEHOLDERS = {
   MIN_CPI: "6",
   TENTH_MARKS: "75",
   TWELFTH_MARKS: "75",
-  
+
   // Placement Salary
   BASE_SALARY: "800000",
   TOTAL_CTC: "1200000",
@@ -94,11 +101,12 @@ export const PLACEHOLDERS = {
   STIPEND: "25000",
   FOREIGN_STIPEND: "1500",
   ACCOMMODATION: "15000",
-  TENTATIVE_CTC: "800000", 
+  TENTATIVE_CTC: "800000",
   PPO_DATE: "",
 
   // Other
-  OTHER_COMPENSATIONS_DESC: "Describe any other benefits, allowances, or compensations...",
+  OTHER_COMPENSATIONS_DESC:
+    "Describe any other benefits, allowances, or compensations...",
 };
 
 // Validation messages
@@ -106,7 +114,8 @@ export const VALIDATION_MESSAGES = {
   REQUIRED: "This field is required",
   INVALID_EMAIL: "Please enter a valid email address",
   INVALID_PHONE: "Please enter a valid phone number",
-  INVALID_NAME: "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
+  INVALID_NAME:
+    "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
   INVALID_CURRENCY: "Currency code must be 3 uppercase letters",
   NEGATIVE_NUMBER: "Value cannot be negative",
   INVALID_PERCENTAGE: "Percentage must be between 0 and 100",
@@ -118,7 +127,8 @@ export const VALIDATION_MESSAGES = {
   FUTURE_DATE: "Date cannot be in the past",
   DATE_ORDER: "End date must be after start date",
   MIN_HIRES_EXCEEDED: "Minimum hires cannot exceed expected hires",
-  CONDITIONAL_REQUIRED: "This field is required when any contact info is provided",
+  CONDITIONAL_REQUIRED:
+    "This field is required when any contact info is provided",
 };
 
 // Form field limits
@@ -156,7 +166,10 @@ export const FIELD_LIMITS = {
 };
 
 // Helper functions
-export const formatCurrency = (amount: number, currency: string = "INR"): string => {
+export const formatCurrency = (
+  amount: number,
+  currency: string = "INR",
+): string => {
   const currencySymbols: { [key: string]: string } = {
     INR: "₹",
     USD: "$",
@@ -165,16 +178,22 @@ export const formatCurrency = (amount: number, currency: string = "INR"): string
     JPY: "¥",
     CNY: "¥",
   };
-  
+
   const symbol = currencySymbols[currency] || currency;
   return `${symbol} ${amount.toLocaleString()}`;
 };
 
-export const validateFileSize = (file: File, maxSizeMB: number = 2): boolean => {
+export const validateFileSize = (
+  file: File,
+  maxSizeMB: number = 2,
+): boolean => {
   return file.size / 1024 / 1024 <= maxSizeMB;
 };
 
-export const validateFileType = (file: File, allowedTypes: string[] = ["application/pdf"]): boolean => {
+export const validateFileType = (
+  file: File,
+  allowedTypes: string[] = ["application/pdf"],
+): boolean => {
   return allowedTypes.includes(file.type);
 };
 
@@ -250,4 +269,4 @@ export default {
   validateFileSize,
   validateFileType,
   generateErrorMessage,
-}; 
+};
