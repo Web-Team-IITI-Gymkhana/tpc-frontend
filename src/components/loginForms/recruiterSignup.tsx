@@ -357,7 +357,21 @@ export default function RecruiterSignup() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Category *</Label>
-                  <Input placeholder="e.g., Technology, Finance" onChange={(e) => handleCompanyInfoChange('category', e.target.value)} className="h-11"/>
+                  <Select
+                    value={companyInfo.category}
+                    onValueChange={(value) => handleCompanyInfoChange('category', value)}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Select company category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["PUBLIC", "GOVERNMENT", "PSU", "MNC"].map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
