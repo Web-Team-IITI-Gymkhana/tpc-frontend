@@ -58,6 +58,12 @@ export default function RecruiterSignup() {
   const router = useRouter();
   const captchaRef = useRef<ReCAPTCHA | null>(null);
 
+  // Validation states
+  const [validationErrors, setValidationErrors] = useState({
+    website: "",
+    socialMediaLink: "",
+  });
+
   // Personal Information
   const [personalInfo, setPersonalInfo] = useState({
     name: "",
@@ -96,12 +102,32 @@ export default function RecruiterSignup() {
     });
   }, []);
 
+  // URL validation function
+  const validateURL = (url: string): boolean => {
+    if (!url) return true; // Empty URLs are allowed for optional fields
+    try {
+      const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+      return urlPattern.test(url) || new URL(url.startsWith('http') ? url : 'https://' + url).toString() !== '';
+    } catch {
+      return false;
+    }
+  };
+
   const handlePersonalInfoChange = (field: string, value: string) => {
     setPersonalInfo((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleCompanyInfoChange = (field: string, value: string) => {
     setCompanyInfo((prev) => ({ ...prev, [field]: value }));
+    
+    // Validate URL fields
+    if (field === "website" || field === "socialMediaLink") {
+      const isValid = validateURL(value);
+      setValidationErrors((prev) => ({
+        ...prev,
+        [field]: isValid ? "" : "Please enter a valid URL (e.g., https://example.com)",
+      }));
+    }
   };
 
   const handleAddressChange = (field: string, value: string) => {
@@ -144,6 +170,24 @@ export default function RecruiterSignup() {
     ) {
       toast.error("Please fill in all required company information");
       return;
+    }
+
+    // Check for URL validation errors
+    if (validationErrors.website || validationErrors.socialMediaLink) {
+      toast.error("Please fix the URL validation errors");
+      return;
+    }
+
+    // Validate URLs if they exist
+    if (createCompany) {
+      if (companyInfo.website && !validateURL(companyInfo.website)) {
+        toast.error("Please enter a valid website URL");
+        return;
+      }
+      if (companyInfo.socialMediaLink && !validateURL(companyInfo.socialMediaLink)) {
+        toast.error("Please enter a valid social media URL");
+        return;
+      }
     }
 
     setLoading(true);
@@ -385,6 +429,7 @@ export default function RecruiterSignup() {
                   </Label>
                   <Input
                     placeholder="Enter company name"
+                    value={companyInfo.companyName}
                     onChange={(e) =>
                       handleCompanyInfoChange("companyName", e.target.value)
                     }
@@ -425,6 +470,7 @@ export default function RecruiterSignup() {
                   <Input
                     type="number"
                     placeholder="Enter year"
+                    value={companyInfo.yearOfEstablishment}
                     onChange={(e) =>
                       handleCompanyInfoChange(
                         "yearOfEstablishment",
@@ -436,15 +482,19 @@ export default function RecruiterSignup() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
-                    Website
+                    Website *
                   </Label>
                   <Input
                     placeholder="https://company.com"
+                    value={companyInfo.website}
                     onChange={(e) =>
                       handleCompanyInfoChange("website", e.target.value)
                     }
-                    className="h-11"
+                    className={`h-11 ${validationErrors.website ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
+                  {validationErrors.website && (
+                    <p className="text-red-500 text-sm">{validationErrors.website}</p>
+                  )}
                 </div>
               </div>
 
@@ -456,6 +506,7 @@ export default function RecruiterSignup() {
                   <Input
                     type="number"
                     placeholder="Number of employees"
+                    value={companyInfo.companySize || ""}
                     onChange={(e) =>
                       handleCompanyInfoChange("companySize", e.target.value)
                     }
@@ -468,6 +519,7 @@ export default function RecruiterSignup() {
                   </Label>
                   <Input
                     placeholder="e.g., $10M"
+                    value={companyInfo.annualTurnover}
                     onChange={(e) =>
                       handleCompanyInfoChange("annualTurnover", e.target.value)
                     }
@@ -479,15 +531,19 @@ export default function RecruiterSignup() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
-                    Social Media Link
+                    Social Media Link *
                   </Label>
                   <Input
                     placeholder="LinkedIn or other profile"
+                    value={companyInfo.socialMediaLink}
                     onChange={(e) =>
                       handleCompanyInfoChange("socialMediaLink", e.target.value)
                     }
-                    className="h-11"
+                    className={`h-11 ${validationErrors.socialMediaLink ? 'border-red-500 focus:border-red-500' : ''}`}
                   />
+                  {validationErrors.socialMediaLink && (
+                    <p className="text-red-500 text-sm">{validationErrors.socialMediaLink}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
