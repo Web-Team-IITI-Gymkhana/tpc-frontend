@@ -450,7 +450,7 @@ export default function RecruiterSignup() {
                       <SelectValue placeholder="Select company category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {["PUBLIC", "GOVERNMENT", "PSU", "MNC"].map(
+                      {["PRIVATE", "MNC", "PSU/GOVERNMENT", "STARTUP", "OTHER"].map(
                         (category) => (
                           <SelectItem key={category} value={category}>
                             {category}
