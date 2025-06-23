@@ -9,12 +9,11 @@ export enum CategoryEnum {
 }
 
 export enum CompanyCategoryEnum {
-  GOVERNMENT = "GOVERNMENT",
   PRIVATE = "PRIVATE",
-  PSU = "PSU",
   MNC = "MNC",
+  PSU_GOVERNMENT = "PSU/GOVERNMENT",
   STARTUP = "STARTUP",
-  NGO = "NGO"
+  OTHER = "OTHER"
 }
 
 export enum DepartmentEnum {
