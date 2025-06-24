@@ -21,12 +21,12 @@ function StatItem({ label, value, onClick }: StatItemProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded-md transition-colors"
+      className="w-full flex items-center justify-between p-2 hover:bg-slate-600/50 rounded-md transition-colors"
     >
-      <span className="text-sm text-gray-600">{label}</span>
+      <span className="text-sm text-slate-300">{label}</span>
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">{value}</span>
-        {onClick && <ChevronRight className="h-4 w-4 text-gray-400" />}
+        <span className="text-sm font-medium text-white">{value}</span>
+        {onClick && <ChevronRight className="h-4 w-4 text-slate-400" />}
       </div>
     </button>
   );
@@ -59,10 +59,10 @@ export function Sidebar({
 
   if (view === "trends") {
     return (
-      <aside className="w-72 bg-white border-l overflow-y-auto no-scrollbar">
+      <aside className="w-72 bg-slate-800 border-l overflow-y-auto no-scrollbar">
         <div className="p-4 space-y-6">
           <div>
-            <label className="text-sm font-medium mb-2 block">Year Range</label>
+            <label className="text-sm font-medium mb-2 block text-white">Year Range</label>
             <div className="space-y-4">
               <Slider
                 min={2013}
@@ -72,7 +72,7 @@ export function Sidebar({
                 onValueChange={setYearRange}
                 className="mt-2"
               />
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-slate-300">
                 <span>{yearRange[0]}</span>
                 <span>{yearRange[1]}</span>
               </div>
@@ -80,7 +80,7 @@ export function Sidebar({
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Type</label>
+            <label className="text-sm font-medium mb-2 block text-white">Type</label>
             <Select
               value={season}
               // value={selectedTypes.join(',')}
@@ -105,10 +105,10 @@ export function Sidebar({
   }
 
   return (
-    <aside className="max-w-sm bg-white border-l overflow-y-auto no-scrollbar p-2">
-      <div className="p-4 space-y-4">
-        <div className="space-y-2 border rounded-lg p-4">
-          <p className="text-gray-500">Select Season :</p>
+    <aside className="max-w-sm bg-slate-800 border-l overflow-y-auto no-scrollbar p-2">
+              <div className="p-4 space-y-4">
+          <div className="space-y-2 border border-slate-600 rounded-lg p-4">
+            <p className="text-slate-300">Select Season :</p>
             <Select
             value={season}
             onValueChange={(value) => {

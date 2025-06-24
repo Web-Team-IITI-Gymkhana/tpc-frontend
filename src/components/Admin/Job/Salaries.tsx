@@ -342,12 +342,12 @@ const Salaries = ({
               {editMode ? (
                 <input
                   type="text"
-                  name="accomodation"
-                  value={formData.salaries[index].accomodation}
-                  onChange={(e) => handleChange(e, index, "accomodation")}
+                  name="accommodation"
+                  value={formData.salaries[index].accommodation}
+                  onChange={(e) => handleChange(e, index, "accommodation")}
                 />
               ) : (
-                <div>{salary.accomodation}</div>
+                <div>{salary.accommodation}</div>
               )}
             </div>
 
@@ -356,12 +356,12 @@ const Salaries = ({
               {editMode ? (
                 <input
                   type="text"
-                  name="tenetativeCTC"
-                  value={formData.salaries[index].tenetativeCTC}
-                  onChange={(e) => handleChange(e, index, "tenetativeCTC")}
+                  name="tentativeCTC"
+                  value={formData.salaries[index].tentativeCTC}
+                  onChange={(e) => handleChange(e, index, "tentativeCTC")}
                 />
               ) : (
-                <div>{salary.tenetativeCTC}</div>
+                <div>{salary.tentativeCTC}</div>
               )}
             </div>
           </div>
