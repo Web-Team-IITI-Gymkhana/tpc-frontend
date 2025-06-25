@@ -5,7 +5,8 @@ export enum CategoryEnum {
   SC = "SC",
   ST = "ST",
   OBC = "OBC",
-  PWD = "PWD"
+  PWD = "PWD",
+  EWS = "EWS"
 }
 
 export enum CompanyCategoryEnum {

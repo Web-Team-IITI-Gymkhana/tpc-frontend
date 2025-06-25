@@ -70,7 +70,7 @@ const CurrencySelect: FC<CurrencySelectProps> = (props) => {
     }
 
     props.onAddCustomCurrency(newCurrency);
-    
+
     // Set the new currency as the selected currency
     if (props.onCurrencySync) {
       props.onCurrencySync(newCurrency.value);

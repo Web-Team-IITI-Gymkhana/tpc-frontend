@@ -1,5 +1,4 @@
-
-interface Program {
+export interface Program {
   id: string;
   branch: string;
   course: string;
@@ -23,7 +22,7 @@ interface Student {
 export interface TPCMember {
   id: string;
   role: string;
-  student: Student; 
+  student: Student;
 }
 export interface JobCoordinatorFC {
   id: string;
