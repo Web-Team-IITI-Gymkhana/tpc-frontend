@@ -1,7 +1,7 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
 import { Form, Row, Col, Select, Checkbox, Typography, Card, Divider, Alert, Space } from "antd";
 import { useEffect, useState } from "react";
-import { TermsAndConditions } from "@/dummyData/TermsAndConditions";
+import { FullTime, Intern } from "./TermsAndConditions";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../utils/jaf.constants";
 import { SeasonsDto } from "../../types/jaf.types";
@@ -163,49 +163,66 @@ const SeasonDetails = ({
             border: '1px solid #e5e7eb'
           }}
         >
-          <div style={{ 
-            marginBottom: 20,
-            padding: 12,
-            backgroundColor: '#f9fafb',
-            borderRadius: 6,
-            border: '1px solid #e5e7eb'
-          }}>
-            <Space direction="vertical" size="small" style={{ width: '100%' }}>
-              {TermsAndConditions.map((tc, index) => (
-                <div 
-                  key={index} 
-                  style={{ 
-                    display: 'flex', 
-                    gap: 10, 
-                    alignItems: 'flex-start',
-                    padding: '4px 0'
-                  }}
-                >
-                  <Text 
-                    strong 
+          {selectedSeasonInfo ? (
+            <div style={{ 
+              marginBottom: 20,
+              padding: 12,
+              backgroundColor: '#f9fafb',
+              borderRadius: 6,
+              border: '1px solid #e5e7eb'
+            }}>
+             
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                {(selectedSeasonInfo.type.toLowerCase() === 'intern' ? Intern : FullTime).map((tc, index) => (
+                  <div 
+                    key={index} 
                     style={{ 
-                      color: '#374151', 
-                      minWidth: 20,
-                      fontSize: 13,
-                      fontWeight: 600
+                      display: 'flex', 
+                      gap: 10, 
+                      alignItems: 'flex-start',
+                      padding: '4px 0'
                     }}
                   >
-                    {index + 1}.
-                  </Text>
-                  <Text 
-                    style={{ 
-                      textAlign: 'justify', 
-                      lineHeight: 1.4,
-                      fontSize: 13,
-                      color: '#374151'
-                    }}
-                  >
-                    {tc}
-                  </Text>
-                </div>
-              ))}
-            </Space>
-          </div>
+                    <Text 
+                      strong 
+                      style={{ 
+                        color: '#374151', 
+                        minWidth: 20,
+                        fontSize: 13,
+                        fontWeight: 600
+                      }}
+                    >
+                      {index + 1}.
+                    </Text>
+                    <Text 
+                      style={{ 
+                        textAlign: 'justify', 
+                        lineHeight: 1.4,
+                        fontSize: 13,
+                        color: '#374151',
+                        whiteSpace: 'pre-line'
+                      }}
+                    >
+                      {tc}
+                    </Text>
+                  </div>
+                ))}
+              </Space>
+            </div>
+          ) : (
+            <div style={{ 
+              marginBottom: 20,
+              padding: 24,
+              textAlign: 'center',
+              backgroundColor: '#f9fafb',
+              borderRadius: 6,
+              border: '1px solid #e5e7eb'
+            }}>
+              <Text style={{ color: '#6b7280', fontSize: 14 }}>
+                Please select a recruitment season to view the terms and conditions
+              </Text>
+            </div>
+          )}
 
           <Divider style={{ margin: '12px 0' }} />
 
