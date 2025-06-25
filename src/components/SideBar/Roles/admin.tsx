@@ -82,6 +82,43 @@ const AdminDashboard = () => {
           </Link>
           {/* <CompanyDropDown userRole={userRole} /> */}
         </div>
+        <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <Link href="/admin/programs">
+            <div className="flex justify-start gap-[1vw]">
+              <div className="w-[2vw] text-white">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                >
+                  <path
+                    d="M10 2L2 6.5L10 11L18 6.5L10 2Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M2 13.5V7L10 12L18 7V13.5C18 14.3284 14.4183 15 10 15C5.58172 15 2 14.3284 2 13.5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { opacity: 0 },
+                  open: { opacity: 1 },
+                }}
+                className="w-[13vw] text-white"
+              >
+                Programs
+              </motion.div>
+            </div>
+          </Link>
+        </div>
         <Link href={"/admin/jobs"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
             <div className="flex justify-start gap-[1vw]">
@@ -230,40 +267,40 @@ const AdminDashboard = () => {
           </div>
         </Link>
         <Link href={"/admin/seasons"}>
-        <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-          <div className="flex justify-start gap-[1vw]">
-            <div className="w-[2vw] text-white">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 15 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-white"
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+            <div className="flex justify-start gap-[1vw]">
+              <div className="w-[2vw] text-white">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                >
+                  <path
+                    d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002ZM3.07504 7.50002C3.07504 5.05617 5.05618 3.07502 7.50004 3.07502C9.94388 3.07502 11.925 5.05617 11.925 7.50002C11.925 9.94386 9.94388 11.925 7.50004 11.925C5.05618 11.925 3.07504 9.94386 3.07504 7.50002ZM7.50004 3.92502C5.52562 3.92502 3.92504 5.52561 3.92504 7.50002C3.92504 9.47442 5.52563 11.075 7.50004 11.075C9.47444 11.075 11.075 9.47442 11.075 7.50002C11.075 5.52561 9.47444 3.92502 7.50004 3.92502ZM7.50004 5.25002C6.2574 5.25002 5.25004 6.25739 5.25004 7.50002C5.25004 8.74266 6.2574 9.75002 7.50004 9.75002C8.74267 9.75002 9.75004 8.74266 9.75004 7.50002C9.75004 6.25738 8.74267 5.25002 7.50004 5.25002ZM6.05004 7.50002C6.05004 6.69921 6.69923 6.05002 7.50004 6.05002C8.30084 6.05002 8.95004 6.69921 8.95004 7.50002C8.95004 8.30083 8.30084 8.95002 7.50004 8.95002C6.69923 8.95002 6.05004 8.30083 6.05004 7.50002Z"
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { opacity: 0 },
+                  open: { opacity: 1 },
+                }}
+                className="w-[13vw] text-white"
               >
-                <path
-                  d="M0.900024 7.50002C0.900024 3.85495 3.85495 0.900024 7.50002 0.900024C11.1451 0.900024 14.1 3.85495 14.1 7.50002C14.1 11.1451 11.1451 14.1 7.50002 14.1C3.85495 14.1 0.900024 11.1451 0.900024 7.50002ZM7.50002 1.80002C4.35201 1.80002 1.80002 4.35201 1.80002 7.50002C1.80002 10.648 4.35201 13.2 7.50002 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.35201 10.648 1.80002 7.50002 1.80002ZM3.07504 7.50002C3.07504 5.05617 5.05618 3.07502 7.50004 3.07502C9.94388 3.07502 11.925 5.05617 11.925 7.50002C11.925 9.94386 9.94388 11.925 7.50004 11.925C5.05618 11.925 3.07504 9.94386 3.07504 7.50002ZM7.50004 3.92502C5.52562 3.92502 3.92504 5.52561 3.92504 7.50002C3.92504 9.47442 5.52563 11.075 7.50004 11.075C9.47444 11.075 11.075 9.47442 11.075 7.50002C11.075 5.52561 9.47444 3.92502 7.50004 3.92502ZM7.50004 5.25002C6.2574 5.25002 5.25004 6.25739 5.25004 7.50002C5.25004 8.74266 6.2574 9.75002 7.50004 9.75002C8.74267 9.75002 9.75004 8.74266 9.75004 7.50002C9.75004 6.25738 8.74267 5.25002 7.50004 5.25002ZM6.05004 7.50002C6.05004 6.69921 6.69923 6.05002 7.50004 6.05002C8.30084 6.05002 8.95004 6.69921 8.95004 7.50002C8.95004 8.30083 8.30084 8.95002 7.50004 8.95002C6.69923 8.95002 6.05004 8.30083 6.05004 7.50002Z"
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
+                Seasons
+              </motion.div>
             </div>
-            <motion.div
-              initial={{ opacity: 1 }}
-              animate={context.isOpen ? "open" : "closed"}
-              transition={{ duration: 0.1 }}
-              variants={{
-                closed: { opacity: 0 },
-                open: { opacity: 1 },
-              }}
-              className="w-[13vw] text-white"
-            >
-              Seasons
-            </motion.div>
+            {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
           </div>
-          {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
-        </div>
         </Link>
         <Link href={"/events"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer text-white">
@@ -303,24 +340,24 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/dashboard"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer text-white">
-          <div className="flex justify-start gap-[1vw]">
+            <div className="flex justify-start gap-[1vw]">
               <div className="w-[2vw] text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 32 32"
-                width="20"
-                height="20"
-                className="text-white"
-              >
-                <path
-                  fill="currentColor"
-                  d="M24 21h2v5h-2zm-4-5h2v10h-2zm-9 10a5.006 5.006 0 0 1-5-5h2a3 3 0 1 0 3-3v-2a5 5 0 0 1 0 10"
-                ></path>
-                <path
-                  fill="currentColor"
-                  d="M28 2H4a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h24a2.003 2.003 0 0 0 2-2V4a2 2 0 0 0-2-2m0 9H14V4h14ZM12 4v7H4V4ZM4 28V13h24l.002 15Z"
-                ></path>
-              </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 32 32"
+                  width="20"
+                  height="20"
+                  className="text-white"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M24 21h2v5h-2zm-4-5h2v10h-2zm-9 10a5.006 5.006 0 0 1-5-5h2a3 3 0 1 0 3-3v-2a5 5 0 0 1 0 10"
+                  ></path>
+                  <path
+                    fill="currentColor"
+                    d="M28 2H4a2 2 0 0 0-2 2v24a2 2 0 0 0 2 2h24a2.003 2.003 0 0 0 2-2V4a2 2 0 0 0-2-2m0 9H14V4h14ZM12 4v7H4V4ZM4 28V13h24l.002 15Z"
+                  ></path>
+                </svg>
               </div>
               <motion.div
                 initial={{ opacity: 1 }}
