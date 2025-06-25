@@ -52,7 +52,7 @@ import { Building2 } from "lucide-react";
 
 // Validation patterns (consistent with existing codebase)
 const VALIDATION_PATTERNS = {
-  PHONE: /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
+  PHONE: /^(\+?\d{1,4}[\s-]?)?(\(?\d{2,5}\)?[\s-]?)?[\d\s-]{6,}$/,
   LANDLINE: /^[\d\s\-\+\(\)]+$/,
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   NAME: /^[a-zA-Z\s.'-]+$/,
@@ -89,7 +89,8 @@ const VALIDATION_MESSAGES = {
   INVALID_EMAIL: "Please enter a valid email address",
   INVALID_PHONE: "Please enter a valid phone number (10-15 digits)",
   INVALID_LANDLINE: "Please enter a valid landline number",
-  INVALID_NAME: "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
+  INVALID_NAME:
+    "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
   INVALID_URL: "Please enter a valid URL (e.g., https://example.com)",
   MIN_LENGTH: (min: number) => `Must be at least ${min} characters`,
   MAX_LENGTH: (max: number) => `Must not exceed ${max} characters`,
@@ -104,7 +105,9 @@ interface ValidationErrors {
 }
 
 export default function RecruiterSignup() {
-  const [companies, setCompanies] = useState<Array<{id: string; name: string}>>([]);
+  const [companies, setCompanies] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
   const [createCompany, setCreateCompany] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
   const [jaf, setJaf] = useState<JAFdetailsFC | null>(null);
@@ -114,7 +117,9 @@ export default function RecruiterSignup() {
   const captchaRef = useRef<ReCAPTCHA | null>(null);
 
   // Validation states
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+    {},
+  );
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Personal Information
@@ -146,7 +151,15 @@ export default function RecruiterSignup() {
     },
   });
 
-  type CompanyStringFields = "companyId" | "companyName" | "category" | "website" | "yearOfEstablishment" | "companySize" | "annualTurnover" | "socialMediaLink";
+  type CompanyStringFields =
+    | "companyId"
+    | "companyName"
+    | "category"
+    | "website"
+    | "yearOfEstablishment"
+    | "companySize"
+    | "annualTurnover"
+    | "socialMediaLink";
 
   useEffect(() => {
     const loadData = async () => {
@@ -155,7 +168,7 @@ export default function RecruiterSignup() {
           getCompanies(),
           getJafDetails(),
         ]);
-        
+
         // Ensure companies is always an array
         setCompanies(Array.isArray(companiesData) ? companiesData : []);
         setJaf(jafData);
@@ -180,46 +193,65 @@ export default function RecruiterSignup() {
 
     switch (field) {
       case "name":
-        if (value.length < FIELD_LIMITS.NAME_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.NAME_MIN);
-        if (value.length > FIELD_LIMITS.NAME_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.NAME_MAX);
-        if (!VALIDATION_PATTERNS.NAME.test(value)) return VALIDATION_MESSAGES.INVALID_NAME;
+        if (value.length < FIELD_LIMITS.NAME_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.NAME_MIN);
+        if (value.length > FIELD_LIMITS.NAME_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.NAME_MAX);
+        if (!VALIDATION_PATTERNS.NAME.test(value))
+          return VALIDATION_MESSAGES.INVALID_NAME;
         break;
 
       case "email":
-        if (value.length > FIELD_LIMITS.EMAIL_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.EMAIL_MAX);
-        if (!VALIDATION_PATTERNS.EMAIL.test(value)) return VALIDATION_MESSAGES.INVALID_EMAIL;
+        if (value.length > FIELD_LIMITS.EMAIL_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.EMAIL_MAX);
+        if (!VALIDATION_PATTERNS.EMAIL.test(value))
+          return VALIDATION_MESSAGES.INVALID_EMAIL;
         break;
 
       case "contact":
         const contactDigits = value.replace(/\D/g, "");
-        if (contactDigits.length < FIELD_LIMITS.PHONE_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.PHONE_MIN);
-        if (contactDigits.length > FIELD_LIMITS.PHONE_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.PHONE_MAX);
-        if (!VALIDATION_PATTERNS.PHONE.test(value)) return VALIDATION_MESSAGES.INVALID_PHONE;
+        if (contactDigits.length < FIELD_LIMITS.PHONE_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.PHONE_MIN);
+        if (contactDigits.length > FIELD_LIMITS.PHONE_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.PHONE_MAX);
+        if (!VALIDATION_PATTERNS.PHONE.test(value))
+          return VALIDATION_MESSAGES.INVALID_PHONE;
         break;
 
       case "landline":
-        if (value && !VALIDATION_PATTERNS.LANDLINE.test(value)) return VALIDATION_MESSAGES.INVALID_LANDLINE;
-        if (value.length > FIELD_LIMITS.LANDLINE_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.LANDLINE_MAX);
+        if (value && !VALIDATION_PATTERNS.LANDLINE.test(value))
+          return VALIDATION_MESSAGES.INVALID_LANDLINE;
+        if (value.length > FIELD_LIMITS.LANDLINE_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.LANDLINE_MAX);
         break;
 
       case "designation":
-        if (value.length < FIELD_LIMITS.DESIGNATION_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.DESIGNATION_MIN);
-        if (value.length > FIELD_LIMITS.DESIGNATION_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.DESIGNATION_MAX);
+        if (value.length < FIELD_LIMITS.DESIGNATION_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.DESIGNATION_MIN);
+        if (value.length > FIELD_LIMITS.DESIGNATION_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.DESIGNATION_MAX);
         break;
 
       case "companyName":
-        if (value.length < FIELD_LIMITS.COMPANY_NAME_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.COMPANY_NAME_MIN);
-        if (value.length > FIELD_LIMITS.COMPANY_NAME_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.COMPANY_NAME_MAX);
+        if (value.length < FIELD_LIMITS.COMPANY_NAME_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.COMPANY_NAME_MIN);
+        if (value.length > FIELD_LIMITS.COMPANY_NAME_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.COMPANY_NAME_MAX);
         break;
 
       case "website":
       case "socialMediaLink":
-        if (value && !VALIDATION_PATTERNS.URL.test(value)) return VALIDATION_MESSAGES.INVALID_URL;
+        if (value && !VALIDATION_PATTERNS.URL.test(value))
+          return VALIDATION_MESSAGES.INVALID_URL;
         break;
 
       case "yearOfEstablishment":
         const year = parseInt(value);
-        if (isNaN(year) || year < FIELD_LIMITS.YEAR_MIN || year > FIELD_LIMITS.YEAR_MAX) {
+        if (
+          isNaN(year) ||
+          year < FIELD_LIMITS.YEAR_MIN ||
+          year > FIELD_LIMITS.YEAR_MAX
+        ) {
           return VALIDATION_MESSAGES.INVALID_YEAR;
         }
         break;
@@ -232,18 +264,24 @@ export default function RecruiterSignup() {
         break;
 
       case "line1":
-        if (value.length < FIELD_LIMITS.ADDRESS_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.ADDRESS_MIN);
-        if (value.length > FIELD_LIMITS.ADDRESS_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.ADDRESS_MAX);
+        if (value.length < FIELD_LIMITS.ADDRESS_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.ADDRESS_MIN);
+        if (value.length > FIELD_LIMITS.ADDRESS_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.ADDRESS_MAX);
         break;
 
       case "city":
-        if (value.length < FIELD_LIMITS.CITY_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.CITY_MIN);
-        if (value.length > FIELD_LIMITS.CITY_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.CITY_MAX);
+        if (value.length < FIELD_LIMITS.CITY_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.CITY_MIN);
+        if (value.length > FIELD_LIMITS.CITY_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.CITY_MAX);
         break;
 
       case "state":
-        if (value.length < FIELD_LIMITS.STATE_MIN) return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.STATE_MIN);
-        if (value.length > FIELD_LIMITS.STATE_MAX) return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.STATE_MAX);
+        if (value.length < FIELD_LIMITS.STATE_MIN)
+          return VALIDATION_MESSAGES.MIN_LENGTH(FIELD_LIMITS.STATE_MIN);
+        if (value.length > FIELD_LIMITS.STATE_MAX)
+          return VALIDATION_MESSAGES.MAX_LENGTH(FIELD_LIMITS.STATE_MAX);
         break;
     }
 
@@ -252,16 +290,19 @@ export default function RecruiterSignup() {
 
   const isRequiredField = (field: string): boolean => {
     const requiredPersonalFields = ["name", "email", "contact", "designation"];
-    const requiredCompanyFields = createCompany 
+    const requiredCompanyFields = createCompany
       ? ["companyName", "category", "line1", "city", "state", "country"]
       : ["companyId"];
-    
-    return requiredPersonalFields.includes(field) || requiredCompanyFields.includes(field);
+
+    return (
+      requiredPersonalFields.includes(field) ||
+      requiredCompanyFields.includes(field)
+    );
   };
 
   const handlePersonalInfoChange = (field: string, value: string) => {
     setPersonalInfo((prev) => ({ ...prev, [field]: value }));
-    
+
     // Real-time validation
     const error = validateField(field, value);
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -274,7 +315,7 @@ export default function RecruiterSignup() {
       (updated as any)[field] = value;
       return updated;
     });
-    
+
     // Real-time validation
     const error = validateField(field, value);
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -290,7 +331,7 @@ export default function RecruiterSignup() {
       ...prev,
       address: { ...prev.address, [field]: value },
     }));
-    
+
     // Real-time validation
     const error = validateField(field, value);
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -314,10 +355,15 @@ export default function RecruiterSignup() {
     if (createCompany) {
       // Validate string fields only
       const stringFields: (keyof typeof companyInfo)[] = [
-        "companyName", "category", "website", "yearOfEstablishment", 
-        "companySize", "annualTurnover", "socialMediaLink"
+        "companyName",
+        "category",
+        "website",
+        "yearOfEstablishment",
+        "companySize",
+        "annualTurnover",
+        "socialMediaLink",
       ];
-      
+
       stringFields.forEach((key) => {
         const value = companyInfo[key] as string;
         const error = validateField(key, value);
@@ -379,7 +425,9 @@ export default function RecruiterSignup() {
           category: companyInfo.category,
           website: companyInfo.website.trim() || undefined,
           yearOfEstablishment: companyInfo.yearOfEstablishment,
-          size: companyInfo.companySize ? Number(companyInfo.companySize) : undefined,
+          size: companyInfo.companySize
+            ? Number(companyInfo.companySize)
+            : undefined,
           annualTurnover: companyInfo.annualTurnover.trim() || undefined,
           socialMediaLink: companyInfo.socialMediaLink.trim() || undefined,
           domains: companyInfo.domains,
@@ -412,25 +460,41 @@ export default function RecruiterSignup() {
       const signupRes = await signupRecruiter(recruiterData);
 
       if (signupRes.success) {
-        toast.success("Registration successful! Please check your email for verification.");
-        
+        toast.success(
+          "Registration successful! Please check your email for verification.",
+        );
+
         // Reset form
-        setPersonalInfo({ name: "", email: "", contact: "", designation: "", landline: "" });
+        setPersonalInfo({
+          name: "",
+          email: "",
+          contact: "",
+          designation: "",
+          landline: "",
+        });
         setCompanyInfo({
-          companyId: "", companyName: "", category: "", website: "", 
-          yearOfEstablishment: "", companySize: "", annualTurnover: "", 
-          socialMediaLink: "", domains: [],
-          address: { line1: "", line2: "", city: "", state: "", country: "" }
+          companyId: "",
+          companyName: "",
+          category: "",
+          website: "",
+          yearOfEstablishment: "",
+          companySize: "",
+          annualTurnover: "",
+          socialMediaLink: "",
+          domains: [],
+          address: { line1: "", line2: "", city: "", state: "", country: "" },
         });
         setValidationErrors({});
         setTouched({});
-        
+
         // Redirect after brief delay
         setTimeout(() => {
           router.push("/recruiter/signin");
         }, 2000);
       } else {
-        toast.error(signupRes.message || "Registration failed. Please try again.");
+        toast.error(
+          signupRes.message || "Registration failed. Please try again.",
+        );
       }
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -488,8 +552,10 @@ export default function RecruiterSignup() {
                 <Input
                   placeholder="Enter your full name"
                   value={personalInfo.name}
-                  onChange={(e) => handlePersonalInfoChange("name", e.target.value)}
-                  onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
+                  onChange={(e) =>
+                    handlePersonalInfoChange("name", e.target.value)
+                  }
+                  onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
                   className={`pl-10 h-11 ${isFieldInvalid("name") ? "border-red-500 focus:border-red-500" : ""}`}
                   maxLength={FIELD_LIMITS.NAME_MAX}
                 />
@@ -512,8 +578,12 @@ export default function RecruiterSignup() {
                   type="email"
                   placeholder="recruiter@company.com"
                   value={personalInfo.email}
-                  onChange={(e) => handlePersonalInfoChange("email", e.target.value)}
-                  onBlur={() => setTouched(prev => ({ ...prev, email: true }))}
+                  onChange={(e) =>
+                    handlePersonalInfoChange("email", e.target.value)
+                  }
+                  onBlur={() =>
+                    setTouched((prev) => ({ ...prev, email: true }))
+                  }
                   className={`pl-10 h-11 ${isFieldInvalid("email") ? "border-red-500 focus:border-red-500" : ""}`}
                   maxLength={FIELD_LIMITS.EMAIL_MAX}
                 />
@@ -538,8 +608,12 @@ export default function RecruiterSignup() {
                   type="tel"
                   placeholder="+91 XXXXX XXXXX"
                   value={personalInfo.contact}
-                  onChange={(e) => handlePersonalInfoChange("contact", e.target.value)}
-                  onBlur={() => setTouched(prev => ({ ...prev, contact: true }))}
+                  onChange={(e) =>
+                    handlePersonalInfoChange("contact", e.target.value)
+                  }
+                  onBlur={() =>
+                    setTouched((prev) => ({ ...prev, contact: true }))
+                  }
                   className={`pl-10 h-11 ${isFieldInvalid("contact") ? "border-red-500 focus:border-red-500" : ""}`}
                   maxLength={FIELD_LIMITS.PHONE_MAX + 5} // Extra space for formatting
                 />
@@ -559,8 +633,12 @@ export default function RecruiterSignup() {
               <Input
                 placeholder="HR Manager, Talent Acquisition, etc."
                 value={personalInfo.designation}
-                onChange={(e) => handlePersonalInfoChange("designation", e.target.value)}
-                onBlur={() => setTouched(prev => ({ ...prev, designation: true }))}
+                onChange={(e) =>
+                  handlePersonalInfoChange("designation", e.target.value)
+                }
+                onBlur={() =>
+                  setTouched((prev) => ({ ...prev, designation: true }))
+                }
                 className={`h-11 ${isFieldInvalid("designation") ? "border-red-500 focus:border-red-500" : ""}`}
                 maxLength={FIELD_LIMITS.DESIGNATION_MAX}
               />
@@ -583,8 +661,12 @@ export default function RecruiterSignup() {
                 type="tel"
                 placeholder="Office landline number"
                 value={personalInfo.landline}
-                onChange={(e) => handlePersonalInfoChange("landline", e.target.value)}
-                onBlur={() => setTouched(prev => ({ ...prev, landline: true }))}
+                onChange={(e) =>
+                  handlePersonalInfoChange("landline", e.target.value)
+                }
+                onBlur={() =>
+                  setTouched((prev) => ({ ...prev, landline: true }))
+                }
                 className={`pl-10 h-11 ${isFieldInvalid("landline") ? "border-red-500 focus:border-red-500" : ""}`}
                 maxLength={FIELD_LIMITS.LANDLINE_MAX}
               />
@@ -654,7 +736,7 @@ export default function RecruiterSignup() {
                   value={companyInfo.companyId}
                   onChange={(value) => {
                     handleCompanyInfoChange("companyId", value);
-                    setTouched(prev => ({ ...prev, companyId: true }));
+                    setTouched((prev) => ({ ...prev, companyId: true }));
                   }}
                   placeholder="Select company..."
                   searchPlaceholder="Search companies..."
@@ -678,8 +760,12 @@ export default function RecruiterSignup() {
                   <Input
                     placeholder="Enter company name"
                     value={companyInfo.companyName}
-                    onChange={(e) => handleCompanyInfoChange("companyName", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, companyName: true }))}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("companyName", e.target.value)
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, companyName: true }))
+                    }
                     className={`h-11 ${isFieldInvalid("companyName") ? "border-red-500 focus:border-red-500" : ""}`}
                     maxLength={FIELD_LIMITS.COMPANY_NAME_MAX}
                   />
@@ -698,20 +784,26 @@ export default function RecruiterSignup() {
                     value={companyInfo.category}
                     onValueChange={(value) => {
                       handleCompanyInfoChange("category", value);
-                      setTouched(prev => ({ ...prev, category: true }));
+                      setTouched((prev) => ({ ...prev, category: true }));
                     }}
                   >
-                    <SelectTrigger className={`h-11 ${isFieldInvalid("category") ? "border-red-500 focus:border-red-500" : ""}`}>
+                    <SelectTrigger
+                      className={`h-11 ${isFieldInvalid("category") ? "border-red-500 focus:border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Select company category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {["PRIVATE", "MNC", "PSU/GOVERNMENT", "STARTUP", "OTHER"].map(
-                        (category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ),
-                      )}
+                      {[
+                        "PRIVATE",
+                        "MNC",
+                        "PSU/GOVERNMENT",
+                        "STARTUP",
+                        "OTHER",
+                      ].map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   {getFieldError("category") && (
@@ -732,8 +824,18 @@ export default function RecruiterSignup() {
                     type="number"
                     placeholder="Enter year"
                     value={companyInfo.yearOfEstablishment}
-                    onChange={(e) => handleCompanyInfoChange("yearOfEstablishment", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, yearOfEstablishment: true }))}
+                    onChange={(e) =>
+                      handleCompanyInfoChange(
+                        "yearOfEstablishment",
+                        e.target.value,
+                      )
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        yearOfEstablishment: true,
+                      }))
+                    }
                     className={`h-11 ${isFieldInvalid("yearOfEstablishment") ? "border-red-500 focus:border-red-500" : ""}`}
                     min={FIELD_LIMITS.YEAR_MIN}
                     max={FIELD_LIMITS.YEAR_MAX}
@@ -754,8 +856,12 @@ export default function RecruiterSignup() {
                     <Input
                       placeholder="https://company.com"
                       value={companyInfo.website}
-                      onChange={(e) => handleCompanyInfoChange("website", e.target.value)}
-                      onBlur={() => setTouched(prev => ({ ...prev, website: true }))}
+                      onChange={(e) =>
+                        handleCompanyInfoChange("website", e.target.value)
+                      }
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, website: true }))
+                      }
                       className={`pl-10 h-11 ${isFieldInvalid("website") ? "border-red-500 focus:border-red-500" : ""}`}
                     />
                   </div>
@@ -779,8 +885,12 @@ export default function RecruiterSignup() {
                       type="number"
                       placeholder="Number of employees"
                       value={companyInfo.companySize}
-                      onChange={(e) => handleCompanyInfoChange("companySize", e.target.value)}
-                      onBlur={() => setTouched(prev => ({ ...prev, companySize: true }))}
+                      onChange={(e) =>
+                        handleCompanyInfoChange("companySize", e.target.value)
+                      }
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, companySize: true }))
+                      }
                       className={`pl-10 h-11 ${isFieldInvalid("companySize") ? "border-red-500 focus:border-red-500" : ""}`}
                       min="1"
                       max={FIELD_LIMITS.SIZE_MAX}
@@ -802,7 +912,12 @@ export default function RecruiterSignup() {
                     <Input
                       placeholder="e.g., $10M"
                       value={companyInfo.annualTurnover}
-                      onChange={(e) => handleCompanyInfoChange("annualTurnover", e.target.value)}
+                      onChange={(e) =>
+                        handleCompanyInfoChange(
+                          "annualTurnover",
+                          e.target.value,
+                        )
+                      }
                       className="pl-10 h-11"
                       maxLength={FIELD_LIMITS.TURNOVER_MAX}
                     />
@@ -818,8 +933,12 @@ export default function RecruiterSignup() {
                   <Input
                     placeholder="LinkedIn or other profile"
                     value={companyInfo.socialMediaLink}
-                    onChange={(e) => handleCompanyInfoChange("socialMediaLink", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, socialMediaLink: true }))}
+                    onChange={(e) =>
+                      handleCompanyInfoChange("socialMediaLink", e.target.value)
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, socialMediaLink: true }))
+                    }
                     className={`h-11 ${isFieldInvalid("socialMediaLink") ? "border-red-500 focus:border-red-500" : ""}`}
                   />
                   {getFieldError("socialMediaLink") && (
@@ -850,8 +969,12 @@ export default function RecruiterSignup() {
                   <Input
                     placeholder="123 Main St"
                     value={companyInfo.address.line1}
-                    onChange={(e) => handleAddressChange("line1", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, line1: true }))}
+                    onChange={(e) =>
+                      handleAddressChange("line1", e.target.value)
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, line1: true }))
+                    }
                     className={`pl-10 h-11 ${isFieldInvalid("line1") ? "border-red-500 focus:border-red-500" : ""}`}
                     maxLength={FIELD_LIMITS.ADDRESS_MAX}
                   />
@@ -885,8 +1008,12 @@ export default function RecruiterSignup() {
                   <Input
                     placeholder="Enter city"
                     value={companyInfo.address.city}
-                    onChange={(e) => handleAddressChange("city", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, city: true }))}
+                    onChange={(e) =>
+                      handleAddressChange("city", e.target.value)
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, city: true }))
+                    }
                     className={`h-11 ${isFieldInvalid("city") ? "border-red-500 focus:border-red-500" : ""}`}
                     maxLength={FIELD_LIMITS.CITY_MAX}
                   />
@@ -904,8 +1031,12 @@ export default function RecruiterSignup() {
                   <Input
                     placeholder="Enter state"
                     value={companyInfo.address.state}
-                    onChange={(e) => handleAddressChange("state", e.target.value)}
-                    onBlur={() => setTouched(prev => ({ ...prev, state: true }))}
+                    onChange={(e) =>
+                      handleAddressChange("state", e.target.value)
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, state: true }))
+                    }
                     className={`h-11 ${isFieldInvalid("state") ? "border-red-500 focus:border-red-500" : ""}`}
                     maxLength={FIELD_LIMITS.STATE_MAX}
                   />
@@ -921,16 +1052,14 @@ export default function RecruiterSignup() {
                     Country *
                   </Label>
                   <Combobox
-                    options={
-                      (jaf?.countries || []).map((country) => ({
-                        value: country,
-                        label: country,
-                      }))
-                    }
+                    options={(jaf?.countries || []).map((country) => ({
+                      value: country,
+                      label: country,
+                    }))}
                     value={companyInfo.address.country}
                     onChange={(value) => {
                       handleAddressChange("country", value);
-                      setTouched(prev => ({ ...prev, country: true }));
+                      setTouched((prev) => ({ ...prev, country: true }));
                     }}
                     placeholder="Select country..."
                     searchPlaceholder="Search countries..."
@@ -993,7 +1122,11 @@ export default function RecruiterSignup() {
         </Button>
 
         <Link href="/recruiter/signin/" className="flex-1">
-          <Button variant="outline" className="w-full h-12 font-medium" type="button">
+          <Button
+            variant="outline"
+            className="w-full h-12 font-medium"
+            type="button"
+          >
             Already have an account? Sign In
           </Button>
         </Link>
