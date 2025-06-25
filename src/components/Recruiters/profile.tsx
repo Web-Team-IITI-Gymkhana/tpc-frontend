@@ -1,75 +1,143 @@
 import React, { useState, useEffect } from "react";
 import { ProfileFC } from "@/helpers/recruiter/types";
 import { Button } from "../ui/button";
-import PersonIcon from "@mui/icons-material/Person";
 import { EditForm, EditCompanyForm } from "./editProfile";
 import { fetchProfile } from "@/helpers/recruiter/api";
 import { ProfileLoader, ProfileNavLoader } from "../Loader/loaders";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Mail, Phone, User, Building, MapPin, Calendar, Globe, Edit3, Briefcase } from "lucide-react";
 
 const ProfileDetails = ({ profile }: { profile: ProfileFC }) => {
   return (
-    <>
-      <div className="flex flex-col space-y-4 overflow-x-auto">
-        <div>
-          <span className="font-semibold">Landline: </span>
-          {profile.landline}
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+      <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+        <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+          <Phone className="w-6 h-6 text-amber-700" />
         </div>
-        <div>
-          <span className="font-semibold">Email: </span>
-          {profile.user.email}
-        </div>
-        <div>
-          <span className="font-semibold">Contact: </span>
-          {profile.user.contact}
+        <div className="flex-1">
+          <p className="text-sm font-medium text-slate-600 mb-1">Landline</p>
+          <p className="text-slate-900 font-medium">{profile.landline}</p>
         </div>
       </div>
-    </>
+
+      <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+          <Mail className="w-6 h-6 text-indigo-700" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-slate-600 mb-1">Email Address</p>
+          <p className="text-slate-900 font-medium">{profile.user.email}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+          <Phone className="w-6 h-6 text-emerald-700" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-medium text-slate-600 mb-1">Mobile Contact</p>
+          <p className="text-slate-900 font-medium">{profile.user.contact}</p>
+        </div>
+      </div>
+    </div>
   );
 };
 
 const CompanyProfileCard = ({ profile }: { profile: ProfileFC }) => {
   return (
-    <>
-      <div className="mb-4">
-        <span className="font-semibold">Name: </span>
-        <span>{profile.company.name}</span>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
+            <Building className="w-6 h-6 text-slate-700" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-600 mb-1">Company Name</p>
+            <p className="text-slate-900 font-medium">{profile.company.name}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+            <User className="w-6 h-6 text-teal-700" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-600 mb-1">Category</p>
+            <p className="text-slate-900 font-medium">{profile.company.category}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="w-12 h-12 bg-violet-100 rounded-full flex items-center justify-center">
+            <User className="w-6 h-6 text-violet-700" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-600 mb-1">Company Size</p>
+            <p className="text-slate-900 font-medium">{profile.company.size}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+            <Calendar className="w-6 h-6 text-amber-700" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-600 mb-1">Established</p>
+            <p className="text-slate-900 font-medium">{profile.company.yearOfEstablishment}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center">
+            <Globe className="w-6 h-6 text-sky-700" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-600 mb-1">Social Media</p>
+            <a
+              href={profile.company.socialMediaLink}
+              className="text-indigo-600 hover:text-indigo-800 font-medium hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profile.company.socialMediaLink}
+            </a>
+          </div>
+        </div>
       </div>
-      <div className="mb-4">
-        <span className="font-semibold">Domains: </span>
-        <span>{profile.company.domains.join(", ")}</span>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+        <div className="flex items-center gap-4 p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center">
+            <Briefcase className="w-6 h-6 text-rose-700" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-slate-600 mb-1">Domains</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {profile.company.domains.map((domain, index) => (
+                <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                  {domain}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 bg-white rounded-xl border border-slate-300 shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <MapPin className="w-5 h-5 text-slate-600" />
+            <p className="text-sm font-medium text-slate-600">Address</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            {Object.entries(profile.company.address).map(([key, value]) => (
+              <div key={key} className="capitalize">
+                <span className="font-medium text-slate-600">{key}:</span>{" "}
+                <span className="text-slate-900">{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="mb-4">
-        <span className="font-semibold">Category: </span>
-        <span>{profile.company.category}</span>
-      </div>
-      <div className="mb-4">
-        <span className="font-semibold">Address: </span>
-        <ul className="capitalize ml-4 list-disc">
-          {Object.entries(profile.company.address).map(([key, value]) => (
-            <li key={key}>
-              {key}: {value}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="mb-4">
-        <span className="font-semibold">Size: </span>
-        <span>{profile.company.size}</span>
-      </div>
-      <div className="mb-4">
-        <span className="font-semibold">Year of Establishment: </span>
-        <span>{profile.company.yearOfEstablishment}</span>
-      </div>
-      <div className="mb-4">
-        <span className="font-semibold">Social Media Link: </span>
-        <a
-          href={profile.company.socialMediaLink}
-          className="text-blue-500 hover:underline"
-        >
-          {profile.company.socialMediaLink}
-        </a>
-      </div>
-    </>
+    </div>
   );
 };
 
@@ -93,77 +161,113 @@ const RecruiterProfile = () => {
   };
 
   return (
-    <div className="w-full flex justify-center mt-16">
-      <div className="w-full lg:w-2/3 md:w-3/4">
-        <div className="bg-white shadow-md rounded-lg overflow-hidden w-full">
-          <div className="flex">
-            <div className="w-1/3 bg-gradient-to-br from-gray-400 to-gray-900 text-center text-white py-5">
-              <div className="mb-6">
-                <PersonIcon sx={{ fontSize: "6rem" }} />
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <div className="w-full bg-white rounded-2xl shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white p-8">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="relative">
+              <div className="w-20 h-20 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                <Briefcase className="w-10 h-10 text-white" />
               </div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+            </div>
+            <div className="text-center md:text-left flex-1">
               {loading ? (
                 <ProfileNavLoader />
               ) : (
                 <>
-                  <h6 className="text-lg font-semibold">{data.user.name}</h6>
-                  <p>{data.designation}</p>
+                  <h1 className="text-2xl font-bold mb-2">{data?.user.name}</h1>
+                  <div className="inline-flex items-center bg-white/20 text-white border border-white/30 text-sm px-3 py-1 rounded-full">
+                    <User className="w-4 h-4 mr-2" />
+                    {data?.designation}
+                  </div>
                 </>
               )}
             </div>
-            <div className="w-2/3">
-              <div className="p-5">
-                <div className="flex flex-wrap justify-between items-center mb-5 pb-2 border-b border-gray-300">
-                  <div className="flex space-x-2 rounded-xl select-none">
-                    <label className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="view"
-                        value="PROFILE"
-                        checked={view === "PROFILE"}
-                        onChange={handleViewChange}
-                        className="peer hidden"
-                      />
-                      <span className="tracking-widest peer-checked:bg-gradient-to-br peer-checked:from-gray-400 peer-checked:to-gray-900 peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
-                        Self
-                      </span>
-                    </label>
+          </div>
+        </div>
 
-                    <label className="radio flex flex-grow items-center justify-center rounded-lg p-1 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="view"
-                        value="COMPANY"
-                        checked={view === "COMPANY"}
-                        onChange={handleViewChange}
-                        className="peer hidden"
-                      />
-                      <span className="tracking-widest peer-checked:bg-gradient-to-br peer-checked:from-gray-400 peer-checked:to-gray-900 peer-checked:text-white text-gray-700 p-2 rounded-lg transition duration-150 ease-in-out">
-                        Company
-                      </span>
-                    </label>
-                  </div>
-                  {edit || (
-                    <Button onClick={() => setEdit(!edit)}>
-                      {edit ? "Save" : "Edit"}
-                    </Button>
-                  )}
+        {/* Navigation and Content */}
+        <div className="border-b border-slate-300 bg-slate-50/80">
+          <div className="p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-slate-600" />
+                {view === "PROFILE" ? "Personal Information" : "Company Information"}
+              </h2>
+              
+              <div className="flex items-center gap-4">
+                {/* View Toggle */}
+                <div className="flex bg-slate-200 rounded-xl p-1">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="view"
+                      value="PROFILE"
+                      checked={view === "PROFILE"}
+                      onChange={handleViewChange}
+                      className="sr-only"
+                    />
+                    <span className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      view === "PROFILE" 
+                        ? "bg-white text-slate-700 shadow-sm" 
+                        : "text-slate-600 hover:text-slate-800"
+                    }`}>
+                      Personal
+                    </span>
+                  </label>
+                  
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="view"
+                      value="COMPANY"
+                      checked={view === "COMPANY"}
+                      onChange={handleViewChange}
+                      className="sr-only"
+                    />
+                    <span className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      view === "COMPANY" 
+                        ? "bg-white text-slate-700 shadow-sm" 
+                        : "text-slate-600 hover:text-slate-800"
+                    }`}>
+                      Company
+                    </span>
+                  </label>
                 </div>
-                {loading ? (
-                  <ProfileLoader />
-                ) : view === "PROFILE" ? (
-                  edit ? (
-                    <EditForm profile={data} />
-                  ) : (
-                    <ProfileDetails profile={data} />
-                  )
-                ) : edit ? (
-                  <EditCompanyForm profile={data} />
-                ) : (
-                  <CompanyProfileCard profile={data} />
+
+                {/* Edit Button */}
+                {!edit && (
+                  <Button 
+                    onClick={() => setEdit(!edit)}
+                    className="bg-slate-700 hover:bg-slate-800 text-white"
+                  >
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
                 )}
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className="p-8">
+          {loading ? (
+            <ProfileLoader />
+          ) : view === "PROFILE" ? (
+            edit ? (
+              <EditForm profile={data} />
+            ) : (
+              <ProfileDetails profile={data} />
+            )
+          ) : edit ? (
+            <EditCompanyForm profile={data} />
+          ) : (
+            <CompanyProfileCard profile={data} />
+          )}
         </div>
       </div>
     </div>

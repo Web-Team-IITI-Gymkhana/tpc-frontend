@@ -134,7 +134,7 @@ const Sidebar = () => {
                 }}
                 className="w-[7rem]"
               >
-                <Link href={`/${role}/profile`}>Profile</Link>
+                <Link href={`/${role}/profile`} className="text-white">Profile</Link>
               </motion.div>
             </div>
           </div>

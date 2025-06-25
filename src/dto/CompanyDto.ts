@@ -2,7 +2,7 @@ const companyDTO = [
   {
     id: "string",
     name: "string",
-    category: "PUBLIC",
+    category: "PRIVATE",
     yearOfEstablishment: "string",
     website: "string",
     size: 0,
