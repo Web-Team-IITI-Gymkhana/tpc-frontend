@@ -984,527 +984,8 @@ const JobDetails = ({
           </Form.Item>
         </div>
 
-        {/* Selection Procedure Section */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 24,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <Title
-            level={5}
-            style={{
-              marginBottom: 24,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 18,
-              borderBottom: "2px solid #e2e8f0",
-              paddingBottom: 12,
-            }}
-          >
-            Selection Procedure
-          </Title>
-
-          <Row gutter={[24, 16]}>
-            {/* Selection Mode (required) */}
-            <Col span={8}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    <span style={{ color: "#ef4444" }}>* </span>
-                    Selection Mode
-                  </Text>
-                }
-                required
-                hasFeedback
-                validateStatus={
-                  getFieldError("selectionMode") ? "error" : undefined
-                }
-                help={getFieldError("selectionMode")}
-              >
-                <Select
-                  value={values.selectionMode || undefined}
-                  placeholder="Select mode"
-                  onChange={(val: SelectionModeEnum) => {
-                    setFieldValue("selectionMode", val);
-                  }}
-                  options={SELECTION_MODE_OPTIONS}
-                  style={{
-                    borderRadius: 8,
-                  }}
-                />
-              </Form.Item>
-            </Col>
-
-            {/* Selection preferences */}
-            <Col span={8}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Selection Options
-                  </Text>
-                }
-                style={{ marginBottom: 8 }}
-              >
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
-                >
-                  <Checkbox
-                    checked={values.shortlistFromResume}
-                    onChange={(e) =>
-                      setFieldValue("shortlistFromResume", e.target.checked)
-                    }
-                    style={{ fontSize: 14 }}
-                  >
-                    <Text style={{ fontSize: 14 }}>Shortlist From Resume</Text>
-                  </Checkbox>
-                </div>
-              </Form.Item>
-            </Col>
-
-            <Col span={8}>
-              <Form.Item label=" " style={{ marginBottom: 8 }}>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
-                >
-                  <Checkbox
-                    checked={values.groupDiscussion}
-                    onChange={(e) =>
-                      setFieldValue("groupDiscussion", e.target.checked)
-                    }
-                    style={{ fontSize: 14 }}
-                  >
-                    <Text style={{ fontSize: 14 }}>Group Discussion Round</Text>
-                  </Checkbox>
-                </div>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Tests Section */}
-          <Title
-            level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Written Tests & Assessments
-          </Title>
-
-          <Form.List name="tests">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Card
-                    size="small"
-                    title={
-                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                        Test {index + 1}
-                      </Text>
-                    }
-                    key={field.key}
-                    extra={
-                      <Button
-                        type="text"
-                        danger
-                        size="small"
-                        icon={<CloseOutlined />}
-                        onClick={() => remove(field.name)}
-                        title="Remove this test"
-                        style={{
-                          borderRadius: 6,
-                        }}
-                      />
-                    }
-                    style={{
-                      marginBottom: 16,
-                      borderRadius: 12,
-                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #e5e7eb",
-                    }}
-                  >
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Test Type
-                            </Text>
-                          }
-                          name={[field.name, "type"]}
-                          validateStatus={
-                            getFieldError(`tests.${index}.type`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`tests.${index}.type`)}
-                        >
-                          <Select
-                            placeholder="Select type"
-                            options={testType}
-                            showSearch
-                            filterOption={(input, option) =>
-                              String(option?.label ?? "")
-                                .toLowerCase()
-                                .includes(input.toLowerCase())
-                            }
-                            onChange={(value) => {
-                              form.setFieldValue(
-                                ["tests", index, "type"],
-                                value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Duration
-                            </Text>
-                          }
-                          name={[field.name, "duration"]}
-                          validateStatus={
-                            getFieldError(`tests.${index}.duration`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`tests.${index}.duration`)}
-                        >
-                          <Input
-                            placeholder={PLACEHOLDERS.TEST_DURATION}
-                            maxLength={100}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                ["tests", index, "duration"],
-                                e.target.value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-
-                <Button
-                  type="dashed"
-                  onClick={() => {
-                    if (fields.length < FIELD_LIMITS.TESTS_MAX) {
-                      add();
-                    } else {
-                      message.warning(
-                        `Maximum ${FIELD_LIMITS.TESTS_MAX} tests allowed`,
-                      );
-                    }
-                  }}
-                  block
-                  style={{
-                    marginBottom: 16,
-                    borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
-                  }}
-                  disabled={fields.length >= FIELD_LIMITS.TESTS_MAX}
-                >
-                  + Add Test ({fields.length}/{FIELD_LIMITS.TESTS_MAX})
-                </Button>
-              </>
-            )}
-          </Form.List>
-
-          {/* Interviews Section */}
-          <Title
-            level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Interview Rounds
-          </Title>
-
-          <Form.List name="interviews">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Card
-                    size="small"
-                    title={
-                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                        Interview Round {index + 1}
-                      </Text>
-                    }
-                    key={field.key}
-                    extra={
-                      <Button
-                        type="text"
-                        danger
-                        size="small"
-                        icon={<CloseOutlined />}
-                        onClick={() => remove(field.name)}
-                        title="Remove this interview round"
-                        style={{
-                          borderRadius: 6,
-                        }}
-                      />
-                    }
-                    style={{
-                      marginBottom: 16,
-                      borderRadius: 12,
-                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #e5e7eb",
-                    }}
-                  >
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Interview Type
-                            </Text>
-                          }
-                          name={[field.name, "type"]}
-                          validateStatus={
-                            getFieldError(`interviews.${index}.type`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`interviews.${index}.type`)}
-                        >
-                          <Select
-                            placeholder="Select type"
-                            options={interviewType}
-                            showSearch
-                            filterOption={(input, option) =>
-                              String(option?.label ?? "")
-                                .toLowerCase()
-                                .includes(input.toLowerCase())
-                            }
-                            onChange={(value) => {
-                              form.setFieldValue(
-                                ["interviews", index, "type"],
-                                value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Duration
-                            </Text>
-                          }
-                          name={[field.name, "duration"]}
-                          validateStatus={
-                            getFieldError(`interviews.${index}.duration`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`interviews.${index}.duration`)}
-                        >
-                          <Input
-                            placeholder={PLACEHOLDERS.INTERVIEW_DURATION}
-                            maxLength={100}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                ["interviews", index, "duration"],
-                                e.target.value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-
-                <Button
-                  type="dashed"
-                  onClick={() => {
-                    if (fields.length < FIELD_LIMITS.INTERVIEWS_MAX) {
-                      add();
-                    } else {
-                      message.warning(
-                        `Maximum ${FIELD_LIMITS.INTERVIEWS_MAX} interview rounds allowed`,
-                      );
-                    }
-                  }}
-                  block
-                  style={{
-                    marginBottom: 16,
-                    borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
-                  }}
-                  disabled={fields.length >= FIELD_LIMITS.INTERVIEWS_MAX}
-                >
-                  + Add Interview Round ({fields.length}/
-                  {FIELD_LIMITS.INTERVIEWS_MAX})
-                </Button>
-              </>
-            )}
-          </Form.List>
-
-          {/* Infrastructure Requirements */}
-          <Title
-            level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Infrastructure Requirements
-          </Title>
-
-          <Row gutter={[24, 16]}>
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Team Members Required
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("numberOfMembers") ? "error" : undefined
-                }
-                help={getFieldError("numberOfMembers")}
-              >
-                <Input
-                  type="number"
-                  name="numberOfMembers"
-                  placeholder={PLACEHOLDERS.REQUIREMENTS_MEMBERS}
-                  value={values.numberOfMembers}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={0}
-                  max={FIELD_LIMITS.MEMBERS_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Rooms/Spaces Required
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("numberOfRooms") ? "error" : undefined
-                }
-                help={getFieldError("numberOfRooms")}
-              >
-                <Input
-                  type="number"
-                  name="numberOfRooms"
-                  placeholder={PLACEHOLDERS.REQUIREMENTS_ROOMS}
-                  value={values.numberOfRooms}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={0}
-                  max={FIELD_LIMITS.ROOMS_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label={
-              <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                Other Infrastructure Requirements
-              </Text>
-            }
-            validateStatus={
-              getFieldError("otherRequirements") ? "error" : undefined
-            }
-            help={getFieldError("otherRequirements")}
-          >
-            <TextArea
-              rows={4}
-              name="otherRequirements"
-              placeholder={PLACEHOLDERS.OTHER_REQUIREMENTS}
-              value={values.otherRequirements}
-              onChange={(e) => {
-                handleChange(e);
-              }}
-              maxLength={FIELD_LIMITS.OTHER_DETAILS_MAX}
-              showCount
-              style={{
-                borderRadius: 8,
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                border: "1px solid #d1d5db",
-              }}
-            />
-          </Form.Item>
-        </div>
-
-        {/* Compensation Details */}
-        <div
+           {/* Compensation Details */}
+           <div
           style={{
             background: "white",
             borderRadius: 16,
@@ -2690,6 +2171,527 @@ const JobDetails = ({
             )}
           </Form.List>
         </div>
+
+        {/* Selection Procedure Section */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: 16,
+            padding: "32px",
+            marginBottom: 24,
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <Title
+            level={5}
+            style={{
+              marginBottom: 24,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 18,
+              borderBottom: "2px solid #e2e8f0",
+              paddingBottom: 12,
+            }}
+          >
+            Selection Procedure
+          </Title>
+
+          <Row gutter={[24, 16]}>
+            {/* Selection Mode (required) */}
+            <Col span={8}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    <span style={{ color: "#ef4444" }}>* </span>
+                    Selection Mode
+                  </Text>
+                }
+                required
+                hasFeedback
+                validateStatus={
+                  getFieldError("selectionMode") ? "error" : undefined
+                }
+                help={getFieldError("selectionMode")}
+              >
+                <Select
+                  value={values.selectionMode || undefined}
+                  placeholder="Select mode"
+                  onChange={(val: SelectionModeEnum) => {
+                    setFieldValue("selectionMode", val);
+                  }}
+                  options={SELECTION_MODE_OPTIONS}
+                  style={{
+                    borderRadius: 8,
+                  }}
+                />
+              </Form.Item>
+            </Col>
+
+            {/* Selection preferences */}
+            <Col span={8}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Selection Options
+                  </Text>
+                }
+                style={{ marginBottom: 8 }}
+              >
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
+                >
+                  <Checkbox
+                    checked={values.shortlistFromResume}
+                    onChange={(e) =>
+                      setFieldValue("shortlistFromResume", e.target.checked)
+                    }
+                    style={{ fontSize: 14 }}
+                  >
+                    <Text style={{ fontSize: 14 }}>Shortlist From Resume</Text>
+                  </Checkbox>
+                </div>
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item label=" " style={{ marginBottom: 8 }}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
+                >
+                  <Checkbox
+                    checked={values.groupDiscussion}
+                    onChange={(e) =>
+                      setFieldValue("groupDiscussion", e.target.checked)
+                    }
+                    style={{ fontSize: 14 }}
+                  >
+                    <Text style={{ fontSize: 14 }}>Group Discussion Round</Text>
+                  </Checkbox>
+                </div>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Tests Section */}
+          <Title
+            level={5}
+            style={{
+              marginTop: 32,
+              marginBottom: 16,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
+            Written Tests & Assessments
+          </Title>
+
+          <Form.List name="tests">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field, index) => (
+                  <Card
+                    size="small"
+                    title={
+                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                        Test {index + 1}
+                      </Text>
+                    }
+                    key={field.key}
+                    extra={
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={() => remove(field.name)}
+                        title="Remove this test"
+                        style={{
+                          borderRadius: 6,
+                        }}
+                      />
+                    }
+                    style={{
+                      marginBottom: 16,
+                      borderRadius: 12,
+                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <Row gutter={[24, 16]}>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Test Type
+                            </Text>
+                          }
+                          name={[field.name, "type"]}
+                          validateStatus={
+                            getFieldError(`tests.${index}.type`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`tests.${index}.type`)}
+                        >
+                          <Select
+                            placeholder="Select type"
+                            options={testType}
+                            showSearch
+                            filterOption={(input, option) =>
+                              String(option?.label ?? "")
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            onChange={(value) => {
+                              form.setFieldValue(
+                                ["tests", index, "type"],
+                                value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Duration
+                            </Text>
+                          }
+                          name={[field.name, "duration"]}
+                          validateStatus={
+                            getFieldError(`tests.${index}.duration`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`tests.${index}.duration`)}
+                        >
+                          <Input
+                            placeholder={PLACEHOLDERS.TEST_DURATION}
+                            maxLength={100}
+                            onChange={(e) => {
+                              form.setFieldValue(
+                                ["tests", index, "duration"],
+                                e.target.value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                              border: "1px solid #d1d5db",
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={() => {
+                    if (fields.length < FIELD_LIMITS.TESTS_MAX) {
+                      add();
+                    } else {
+                      message.warning(
+                        `Maximum ${FIELD_LIMITS.TESTS_MAX} tests allowed`,
+                      );
+                    }
+                  }}
+                  block
+                  style={{
+                    marginBottom: 16,
+                    borderRadius: 8,
+                    height: 40,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderColor: "#d1d5db",
+                  }}
+                  disabled={fields.length >= FIELD_LIMITS.TESTS_MAX}
+                >
+                  + Add Test ({fields.length}/{FIELD_LIMITS.TESTS_MAX})
+                </Button>
+              </>
+            )}
+          </Form.List>
+
+          {/* Interviews Section */}
+          <Title
+            level={5}
+            style={{
+              marginTop: 32,
+              marginBottom: 16,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
+            Interview Rounds
+          </Title>
+
+          <Form.List name="interviews">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field, index) => (
+                  <Card
+                    size="small"
+                    title={
+                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                        Interview Round {index + 1}
+                      </Text>
+                    }
+                    key={field.key}
+                    extra={
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={() => remove(field.name)}
+                        title="Remove this interview round"
+                        style={{
+                          borderRadius: 6,
+                        }}
+                      />
+                    }
+                    style={{
+                      marginBottom: 16,
+                      borderRadius: 12,
+                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <Row gutter={[24, 16]}>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Interview Type
+                            </Text>
+                          }
+                          name={[field.name, "type"]}
+                          validateStatus={
+                            getFieldError(`interviews.${index}.type`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`interviews.${index}.type`)}
+                        >
+                          <Select
+                            placeholder="Select type"
+                            options={interviewType}
+                            showSearch
+                            filterOption={(input, option) =>
+                              String(option?.label ?? "")
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            onChange={(value) => {
+                              form.setFieldValue(
+                                ["interviews", index, "type"],
+                                value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Duration
+                            </Text>
+                          }
+                          name={[field.name, "duration"]}
+                          validateStatus={
+                            getFieldError(`interviews.${index}.duration`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`interviews.${index}.duration`)}
+                        >
+                          <Input
+                            placeholder={PLACEHOLDERS.INTERVIEW_DURATION}
+                            maxLength={100}
+                            onChange={(e) => {
+                              form.setFieldValue(
+                                ["interviews", index, "duration"],
+                                e.target.value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                              border: "1px solid #d1d5db",
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={() => {
+                    if (fields.length < FIELD_LIMITS.INTERVIEWS_MAX) {
+                      add();
+                    } else {
+                      message.warning(
+                        `Maximum ${FIELD_LIMITS.INTERVIEWS_MAX} interview rounds allowed`,
+                      );
+                    }
+                  }}
+                  block
+                  style={{
+                    marginBottom: 16,
+                    borderRadius: 8,
+                    height: 40,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderColor: "#d1d5db",
+                  }}
+                  disabled={fields.length >= FIELD_LIMITS.INTERVIEWS_MAX}
+                >
+                  + Add Interview Round ({fields.length}/
+                  {FIELD_LIMITS.INTERVIEWS_MAX})
+                </Button>
+              </>
+            )}
+          </Form.List>
+
+          {/* Infrastructure Requirements */}
+          <Title
+            level={5}
+            style={{
+              marginTop: 32,
+              marginBottom: 16,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
+            Infrastructure Requirements
+          </Title>
+
+          <Row gutter={[24, 16]}>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Team Members Required
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("numberOfMembers") ? "error" : undefined
+                }
+                help={getFieldError("numberOfMembers")}
+              >
+                <Input
+                  type="number"
+                  name="numberOfMembers"
+                  placeholder={PLACEHOLDERS.REQUIREMENTS_MEMBERS}
+                  value={values.numberOfMembers}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={0}
+                  max={FIELD_LIMITS.MEMBERS_MAX}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Rooms/Spaces Required
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("numberOfRooms") ? "error" : undefined
+                }
+                help={getFieldError("numberOfRooms")}
+              >
+                <Input
+                  type="number"
+                  name="numberOfRooms"
+                  placeholder={PLACEHOLDERS.REQUIREMENTS_ROOMS}
+                  value={values.numberOfRooms}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={0}
+                  max={FIELD_LIMITS.ROOMS_MAX}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            label={
+              <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                Other Infrastructure Requirements
+              </Text>
+            }
+            validateStatus={
+              getFieldError("otherRequirements") ? "error" : undefined
+            }
+            help={getFieldError("otherRequirements")}
+          >
+            <TextArea
+              rows={4}
+              name="otherRequirements"
+              placeholder={PLACEHOLDERS.OTHER_REQUIREMENTS}
+              value={values.otherRequirements}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              maxLength={FIELD_LIMITS.OTHER_DETAILS_MAX}
+              showCount
+              style={{
+                borderRadius: 8,
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                border: "1px solid #d1d5db",
+              }}
+            />
+          </Form.Item>
+        </div>
+
+     
       </Form>
     </div>
   );
