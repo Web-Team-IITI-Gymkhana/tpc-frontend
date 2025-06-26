@@ -158,8 +158,8 @@ export interface Jobs {
   id: string;
   role: string;
   duration: string;
-  attachments: string[];
-  skills: string[];
+  attachments?: string[];
+  skills?: string[];
   description: string;
   active: boolean;
   currentStatus: string;
