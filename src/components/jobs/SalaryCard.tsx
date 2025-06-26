@@ -63,12 +63,40 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
   };
 
   const handleApply = async () => {
-    const data = await ApplyJob(salaryId, selectedResume);
-    if (data) {
-      toast.success("Applied Successfully");
-      fetchSalaryData();
-    } else {
-      toast.error("Cannot Apply");
+   
+
+    if (!selectedResume) {
+      toast.error("Please select a resume");
+      return;
+    }
+
+    const selectedResumeData = resumes.find(
+      (resume) => resume.id === selectedResume,
+    );
+    if (!selectedResumeData) {
+      toast.error("Selected resume not found");
+      return;
+    }
+
+    console.log("Selected resume data:", selectedResumeData);
+
+    try {
+      const data = await ApplyJob(salaryId, selectedResume);
+      if (data) {
+        toast.success("Applied Successfully");
+        fetchSalaryData();
+      } else {
+        toast.error("Cannot Apply");
+      }
+    } catch (error) {
+      console.error("Application error:", error);
+      if (error.message && error.message.includes("Not Authorized")) {
+        toast.error(
+          "You are not authorized to apply for this position. Please check if you meet the eligibility criteria.",
+        );
+      } else {
+        toast.error("Failed to apply. Please try again or contact support.");
+      }
     }
   };
 
@@ -243,7 +271,7 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
                 </div>
                 <div className="">
                   <div className="text-gray-500 font-semibold my-2">
-                  Tentative CTC for PPO Select
+                    Tentative CTC for PPO Select
                   </div>
                   <div>
                     {salaryData?.tentativeCTC
