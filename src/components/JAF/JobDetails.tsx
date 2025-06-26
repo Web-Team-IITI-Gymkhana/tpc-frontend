@@ -472,10 +472,10 @@ const JobDetails = ({
             fontSize: 20,
           }}
         >
-          {seasonType === "INTERNSHIP" ? "Intern Details" : "Job Details"}
+          {seasonType === "INTERN" ? "Intern Details" : "Job Details"}
         </Title>
         <Text style={{ fontSize: 16, color: "#6b7280", fontWeight: 500 }}>
-          {seasonType === "INTERNSHIP"
+          {seasonType === "INTERN"
             ? "Provide comprehensive internship position details and requirements"
             : "Provide comprehensive job position details and requirements"}
         </Text>
@@ -564,7 +564,7 @@ const JobDetails = ({
               paddingBottom: 12,
             }}
           >
-            {seasonType === "INTERNSHIP"
+            {seasonType === "INTERN"
               ? "Basic Internship Information"
               : "Basic Job Information"}
           </Title>
@@ -576,7 +576,7 @@ const JobDetails = ({
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
                     <span style={{ color: "#ef4444" }}>* </span>
-                    {seasonType === "INTERNSHIP"
+                    {seasonType === "INTERN"
                       ? "Internship Title / Role"
                       : "Job Title / Role"}
                   </Text>
@@ -589,7 +589,7 @@ const JobDetails = ({
                 <Input
                   name="role"
                   placeholder={
-                    seasonType === "INTERNSHIP"
+                    seasonType === "INTERN"
                       ? "e.g., Software Development Intern"
                       : PLACEHOLDERS.JOB_TITLE
                   }
@@ -609,7 +609,7 @@ const JobDetails = ({
             </Col>
 
             {/* Duration (only for internships) */}
-            {seasonType === "INTERNSHIP" && (
+            {seasonType === "INTERN" && (
               <Col span={12}>
                 <Form.Item
                   label={
@@ -846,7 +846,7 @@ const JobDetails = ({
           <Form.Item
             label={
               <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                {seasonType === "INTERNSHIP"
+                {seasonType === "INTERN"
                   ? "Internship Description"
                   : "Job Description"}
               </Text>
@@ -871,7 +871,7 @@ const JobDetails = ({
                       setFieldValue("description", html);
                     }}
                     placeholder={
-                      seasonType === "INTERNSHIP"
+                      seasonType === "INTERN"
                         ? "Describe the internship role, responsibilities, and learning opportunities..."
                         : PLACEHOLDERS.JOB_DESCRIPTION
                     }
@@ -896,7 +896,7 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    {seasonType === "INTERNSHIP"
+                    {seasonType === "INTERN"
                       ? "Internship Related Documents"
                       : "Job Related Documents"}
                   </Text>
@@ -984,7 +984,7 @@ const JobDetails = ({
           <Form.Item
             label={
               <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                {seasonType === "INTERNSHIP"
+                {seasonType === "INTERN"
                   ? "Additional Internship Information"
                   : "Additional Job Information"}
               </Text>
@@ -996,7 +996,7 @@ const JobDetails = ({
               rows={4}
               name="others"
               placeholder={
-                seasonType === "INTERNSHIP"
+                seasonType === "INTERN"
                   ? "Any additional internship details, special requirements, or benefits..."
                   : PLACEHOLDERS.OTHER_DETAILS
               }
