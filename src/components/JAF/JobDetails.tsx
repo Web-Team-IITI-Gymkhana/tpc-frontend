@@ -461,10 +461,13 @@ const JobDetails = ({
             fontSize: 20,
           }}
         >
-          Job Details
+          {seasonType === "INTERNSHIP" ? "Intern Details" : "Job Details"}
         </Title>
         <Text style={{ fontSize: 16, color: "#6b7280", fontWeight: 500 }}>
-          Provide comprehensive job position details and requirements
+          {seasonType === "INTERNSHIP" 
+            ? "Provide comprehensive internship position details and requirements"
+            : "Provide comprehensive job position details and requirements"
+          }
         </Text>
       </div>
 
@@ -549,7 +552,7 @@ const JobDetails = ({
               paddingBottom: 12,
             }}
           >
-            Basic Information
+            {seasonType === "INTERNSHIP" ? "Basic Internship Information" : "Basic Job Information"}
           </Title>
 
           <Row gutter={[24, 16]}>
@@ -559,7 +562,7 @@ const JobDetails = ({
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
                     <span style={{ color: "#ef4444" }}>* </span>
-                    Job Title / Role
+                    {seasonType === "INTERNSHIP" ? "Internship Title / Role" : "Job Title / Role"}
                   </Text>
                 }
                 required
@@ -569,7 +572,7 @@ const JobDetails = ({
               >
                 <Input
                   name="role"
-                  placeholder={PLACEHOLDERS.JOB_TITLE}
+                  placeholder={seasonType === "INTERNSHIP" ? "e.g., Software Development Intern" : PLACEHOLDERS.JOB_TITLE}
                   value={values.role}
                   onChange={(e) => {
                     handleChange(e);
@@ -585,93 +588,35 @@ const JobDetails = ({
               </Form.Item>
             </Col>
 
-            {/* Duration (optional) */}
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Job Duration
-                  </Text>
-                }
-                validateStatus={getFieldError("duration") ? "error" : undefined}
-                help={getFieldError("duration")}
-              >
-                <Input
-                  name="duration"
-                  placeholder={PLACEHOLDERS.JOB_DURATION}
-                  value={values.duration}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  maxLength={FIELD_LIMITS.DURATION_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={[24, 16]}>
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Offer Letter Release Date
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("offerLetterReleaseDate") ? "error" : undefined
-                }
-                help={getFieldError("offerLetterReleaseDate")}
-              >
-                <Input
-                  type="date"
-                  name="offerLetterReleaseDate"
-                  value={values.offerLetterReleaseDate}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={new Date().toISOString().split("T")[0]}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Tentative Joining Date
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("joiningDate") ? "error" : undefined
-                }
-                help={getFieldError("joiningDate")}
-              >
-                <Input
-                  type="date"
-                  name="joiningDate"
-                  value={values.joiningDate}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={new Date().toISOString().split("T")[0]}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
+            {/* Duration (only for internships) */}
+            {seasonType === "INTERNSHIP" && (
+              <Col span={12}>
+                <Form.Item
+                  label={
+                    <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                      Internship Duration
+                    </Text>
+                  }
+                  validateStatus={getFieldError("duration") ? "error" : undefined}
+                  help={getFieldError("duration")}
+                >
+                  <Input
+                    name="duration"
+                    placeholder="e.g., 2 months, 8 weeks"
+                    value={values.duration}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    maxLength={FIELD_LIMITS.DURATION_MAX}
+                    style={{
+                      borderRadius: 8,
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #d1d5db",
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            )}
           </Row>
 
           <Row gutter={[24, 16]}>
@@ -741,7 +686,8 @@ const JobDetails = ({
           </Row>
 
           <Row gutter={[24, 16]}>
-            <Col span={12}>
+
+          <Col span={12}>
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
@@ -763,6 +709,70 @@ const JobDetails = ({
                   }}
                   min={0}
                   max={FIELD_LIMITS.HIRES_MAX}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Offer Letter Release Date
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("offerLetterReleaseDate") ? "error" : undefined
+                }
+                help={getFieldError("offerLetterReleaseDate")}
+              >
+                <Input
+                  type="date"
+                  name="offerLetterReleaseDate"
+                  value={values.offerLetterReleaseDate}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={new Date().toISOString().split("T")[0]}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+
+          
+          </Row>
+
+         
+
+          <Row gutter={[24, 16]}>
+          <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Tentative Joining Date
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("joiningDate") ? "error" : undefined
+                }
+                help={getFieldError("joiningDate")}
+              >
+                <Input
+                  type="date"
+                  name="joiningDate"
+                  value={values.joiningDate}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={new Date().toISOString().split("T")[0]}
                   style={{
                     borderRadius: 8,
                     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -819,7 +829,7 @@ const JobDetails = ({
           <Form.Item
             label={
               <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                Job Description
+                {seasonType === "INTERNSHIP" ? "Internship Description" : "Job Description"}
               </Text>
             }
             validateStatus={getFieldError("description") ? "error" : undefined}
@@ -841,7 +851,7 @@ const JobDetails = ({
                     onChange={(html) => {
                       setFieldValue("description", html);
                     }}
-                    placeholder={PLACEHOLDERS.JOB_DESCRIPTION}
+                    placeholder={seasonType === "INTERNSHIP" ? "Describe the internship role, responsibilities, and learning opportunities..." : PLACEHOLDERS.JOB_DESCRIPTION}
                     className="custom-quill"
                     style={{
                       minHeight: 200,
@@ -863,7 +873,7 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Job Related Documents
+                    {seasonType === "INTERNSHIP" ? "Internship Related Documents" : "Job Related Documents"}
                   </Text>
                 }
                 validateStatus={
@@ -949,7 +959,7 @@ const JobDetails = ({
           <Form.Item
             label={
               <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                Additional Job Information
+                {seasonType === "INTERNSHIP" ? "Additional Internship Information" : "Additional Job Information"}
               </Text>
             }
             validateStatus={getFieldError("others") ? "error" : undefined}
@@ -958,7 +968,7 @@ const JobDetails = ({
             <TextArea
               rows={4}
               name="others"
-              placeholder={PLACEHOLDERS.OTHER_DETAILS}
+              placeholder={seasonType === "INTERNSHIP" ? "Any additional internship details, special requirements, or benefits..." : PLACEHOLDERS.OTHER_DETAILS}
               onChange={(e) => {
                 handleChange(e);
               }}
