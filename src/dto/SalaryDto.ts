@@ -1,3 +1,5 @@
+import { CourseEnum, DepartmentEnum } from "@/dto/Programs";
+
 interface Salary {
   id: string;
   totalCTC: number;
@@ -11,9 +13,9 @@ interface Salary {
 interface Program {
   id: string;
   branch: string;
-  course: string;
+  course: CourseEnum;
   year: string;
-  department: string;
+  department: DepartmentEnum;
 }
 
 const salaryDto = {
