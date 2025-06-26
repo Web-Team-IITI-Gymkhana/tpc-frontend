@@ -8,9 +8,9 @@ const Salaries = ({
   seasonType,
   editMode,
   handleChange,
-
   formData,
   loading,
+  jafDetails,
 }) => (
   <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
     <div className="font-semibold text-lg mb-4">Salaries</div>
@@ -387,7 +387,10 @@ const Salaries = ({
             </div>
 
             <div>
-              <div className="font-semibold my-2"> Tentative CTC for PPO Select</div>
+              <div className="font-semibold my-2">
+                {" "}
+                Tentative CTC for PPO Select
+              </div>
               {editMode ? (
                 <input
                   type="text"
@@ -446,39 +449,58 @@ const Salaries = ({
         <div>
           <h2 className="text-md font-semibold mt-4">Programs</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.programs.map((program, programIndex) => (
-              <div key={programIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {program.department} - {program.course} - {program.year}
-                </div>
-              </div>
-            ))}
+            {salary.programs && salary.programs.length > 0 ? (
+              salary.programs.map((programId, programIndex) => {
+                const program = jafDetails?.programs?.find(
+                  (p) => p.id === programId,
+                );
+                return (
+                  <div key={programIndex} className="mx-2 my-2">
+                    <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                      {program
+                        ? `${program.department} - ${program.course} - ${program.year}`
+                        : programId}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-gray-500">No programs specified</div>
+            )}
           </div>
         </div>
-        <div>
+        {/* <div>
           <h2 className="text-md font-semibold mt-4">Genders</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.genders.map((gender, genderIndex) => (
-              <div key={genderIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {gender}
+            {salary.genders && salary.genders.length > 0 ? (
+              salary.genders.map((gender, genderIndex) => (
+                <div key={genderIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {gender}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500">No genders specified</div>
+            )}
           </div>
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Categories</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.categories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {category}
+            {salary.categories && salary.categories.length > 0 ? (
+              salary.categories.map((category, categoryIndex) => (
+                <div key={categoryIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {category}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500">No categories specified</div>
+            )}
           </div>
-        </div>
+        </div> */}
       </div>
     ))}
   </div>
