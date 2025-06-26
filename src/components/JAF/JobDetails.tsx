@@ -2001,7 +2001,7 @@ const JobDetails = ({
                                 </Text>
                               }
                               name={[field.name, "stipend"]}
-                              help="Monthly stipend amount for internship"
+                            
                             >
                               <Input
                                 type="number"
