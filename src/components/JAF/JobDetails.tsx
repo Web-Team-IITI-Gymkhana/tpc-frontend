@@ -1694,7 +1694,7 @@ const JobDetails = ({
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={[24, 16]}>
+                    {/* <Row gutter={[24, 16]}>
                       <Col span={12}>
                         <Form.Item
                           label={
@@ -1745,7 +1745,7 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
-                    </Row>
+                    </Row> */}
                     <Row gutter={[24, 16]}>
                       <Col span={12}>
                         <Form.Item
