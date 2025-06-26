@@ -10,7 +10,7 @@ import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 
 const EventsPage = ({ params }: { params: { jobId: string } }) => {
-  const [events, setData] = useState<[EventFC]>(null);
+  const [events, setData] = useState<EventFC[]>(null);
   const [loading, setLoading] = useState(true);
   const [addEventForm, setAddEventForm] = useState(false);
   const [editEventForm, setEditEventForm] = useState(false);

@@ -411,37 +411,49 @@ const Salaries = ({
         <div>
           <h2 className="text-md font-semibold mt-4">Programs</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.programs.map((program, programIndex) => (
-              <div key={programIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {program.department} - {program.course} - {program.year}
+            {salary.programs && salary.programs.length > 0 ? (
+              salary.programs.map((program, programIndex) => (
+                <div key={programIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {program.department} - {program.course} - {program.year}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">No programs specified</div>
+            )}
           </div>
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Genders</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.genders.map((gender, genderIndex) => (
-              <div key={genderIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {gender}
+            {salary.genders && salary.genders.length > 0 ? (
+              salary.genders.map((gender, genderIndex) => (
+                <div key={genderIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {gender}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">All genders eligible</div>
+            )}
           </div>
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Categories</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.categories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {category}
+            {salary.categories && salary.categories.length > 0 ? (
+              salary.categories.map((category, categoryIndex) => (
+                <div key={categoryIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {category}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">All categories eligible</div>
+            )}
           </div>
         </div>
         <div className="flex justify-between mt-2 mb-4">

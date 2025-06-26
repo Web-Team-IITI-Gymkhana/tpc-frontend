@@ -255,6 +255,34 @@ const JobDetails = ({
           coursesMap: programsMap,
           branchesMap: branchesMap,
         });
+        
+        // Initialize selected programs from existing form data if any
+        const currentSalaries = values.salaries || [];
+        const newSelectedPrograms = new Map<number, SelectedProgram[]>();
+        
+        currentSalaries.forEach((salary: any, index: number) => {
+          if (salary?.programs?.length > 0) {
+            const selectedPrograms = salary.programs
+              .map((programId: string) => {
+                const program = data.programs?.find((p: ProgramsDto) => p.id === programId);
+                return program ? {
+                  year: program.year,
+                  course: program.course,
+                  branch: program.branch,
+                  id: program.id,
+                } : null;
+              })
+              .filter(Boolean);
+            
+            if (selectedPrograms.length > 0) {
+              newSelectedPrograms.set(index, selectedPrograms);
+            }
+          }
+        });
+        
+        if (newSelectedPrograms.size > 0) {
+          setSelectedProgramsBySalary(newSelectedPrograms);
+        }
       } catch (error) {
         console.error("Failed to fetch JAF data:", error);
         message.error("Failed to load form data. Please refresh the page.");
@@ -262,7 +290,7 @@ const JobDetails = ({
     };
 
     fetchJafData();
-  }, [values.seasonId]);
+  }, [values.seasonId, values.salaries]);
 
   const [years, setYears] = useState<string[]>([]);
   const [courses, setCourses] = useState<string[]>([]);
@@ -296,9 +324,11 @@ const JobDetails = ({
   };
 
   const handleBranchChange = (branch: string, fieldIndex: number) => {
+    const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
+    
     if (branch === "ALL") {
       const allBranchesSelected = branches.every((branch) =>
-        selectedPrograms.some(
+        currentSelectedPrograms.some(
           (p) =>
             p.year === selectedYear &&
             p.course === selectedCourse &&
@@ -307,14 +337,10 @@ const JobDetails = ({
       );
 
       if (allBranchesSelected) {
-        const updatedPrograms = selectedPrograms.filter(
+        const updatedPrograms = currentSelectedPrograms.filter(
           (p) => !(p.year === selectedYear && p.course === selectedCourse),
         );
-        setSelectedPrograms(updatedPrograms);
-        form.setFieldValue(
-          ["salaries", fieldIndex, "programs"],
-          updatedPrograms.map((p) => p.id),
-        );
+        updateSelectedPrograms(fieldIndex, updatedPrograms);
       } else {
         const allPrograms = programsData.programs
           .filter((p) => p.year === selectedYear && p.course === selectedCourse)
@@ -327,17 +353,13 @@ const JobDetails = ({
 
         const newPrograms = allPrograms.filter(
           (newProg) =>
-            !selectedPrograms.some(
+            !currentSelectedPrograms.some(
               (existingProg) => existingProg.id === newProg.id,
             ),
         );
 
-        const updatedPrograms = [...selectedPrograms, ...newPrograms];
-        setSelectedPrograms(updatedPrograms);
-        form.setFieldValue(
-          ["salaries", fieldIndex, "programs"],
-          updatedPrograms.map((p) => p.id),
-        );
+        const updatedPrograms = [...currentSelectedPrograms, ...newPrograms];
+        updateSelectedPrograms(fieldIndex, updatedPrograms);
       }
     } else {
       const program = programsData.programs.find(
@@ -348,17 +370,13 @@ const JobDetails = ({
       );
 
       if (program) {
-        const isSelected = selectedPrograms.some((p) => p.id === program.id);
+        const isSelected = currentSelectedPrograms.some((p) => p.id === program.id);
 
         if (isSelected) {
-          const updatedPrograms = selectedPrograms.filter(
+          const updatedPrograms = currentSelectedPrograms.filter(
             (p) => p.id !== program.id,
           );
-          setSelectedPrograms(updatedPrograms);
-          form.setFieldValue(
-            ["salaries", fieldIndex, "programs"],
-            updatedPrograms.map((p) => p.id),
-          );
+          updateSelectedPrograms(fieldIndex, updatedPrograms);
         } else {
           const newProgram = {
             year: program.year,
@@ -367,12 +385,8 @@ const JobDetails = ({
             id: program.id,
           };
 
-          const updatedPrograms = [...selectedPrograms, newProgram];
-          setSelectedPrograms(updatedPrograms);
-          form.setFieldValue(
-            ["salaries", fieldIndex, "programs"],
-            updatedPrograms.map((p) => p.id),
-          );
+          const updatedPrograms = [...currentSelectedPrograms, newProgram];
+          updateSelectedPrograms(fieldIndex, updatedPrograms);
         }
       }
     }
@@ -381,17 +395,40 @@ const JobDetails = ({
   };
 
   const handleRemoveProgram = (programId: string, fieldIndex: number) => {
-    const updatedPrograms = selectedPrograms.filter((p) => p.id !== programId);
-    setSelectedPrograms(updatedPrograms);
-    form.setFieldValue(
-      ["salaries", fieldIndex, "programs"],
-      updatedPrograms.map((p) => p.id),
-    );
+    const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
+    const updatedPrograms = currentSelectedPrograms.filter((p) => p.id !== programId);
+    updateSelectedPrograms(fieldIndex, updatedPrograms);
   };
 
-  const [selectedPrograms, setSelectedPrograms] = useState<SelectedProgram[]>(
-    [],
+  const [selectedProgramsBySalary, setSelectedProgramsBySalary] = useState<Map<number, SelectedProgram[]>>(
+    new Map(),
   );
+
+  // Helper function to get selected programs for a salary entry
+  const getSelectedPrograms = (fieldIndex: number): SelectedProgram[] => {
+    return selectedProgramsBySalary.get(fieldIndex) || [];
+  };
+
+  // Helper function to update selected programs for a salary entry
+  const updateSelectedPrograms = (fieldIndex: number, programs: SelectedProgram[]) => {
+    const newMap = new Map(selectedProgramsBySalary);
+    newMap.set(fieldIndex, programs);
+    setSelectedProgramsBySalary(newMap);
+    
+    // Update form field
+    form.setFieldValue(
+      ["salaries", fieldIndex, "programs"],
+      programs.map((p) => p.id),
+    );
+    
+    // Update Formik state to ensure validation
+    const currentSalaries = form.getFieldValue("salaries") || [];
+    currentSalaries[fieldIndex] = {
+      ...currentSalaries[fieldIndex],
+      programs: programs.map((p) => p.id),
+    };
+    setFieldValue("salaries", currentSalaries);
+  };
 
   return (
     <div
@@ -449,40 +486,44 @@ const JobDetails = ({
           const salariesArray = formValues.salaries || [];
           const norm = salariesArray
             .filter((s: any) => s !== undefined && s !== null)
-            .map((s: any) => ({
-              salaryPeriod: s?.salaryPeriod ?? "",
-              programs: s?.programs ?? [],
-              genders: s?.genders ?? [],
-              categories: s?.categories ?? [],
-              isBacklogAllowed: s?.isBacklogAllowed ?? "",
-              minCPI: s?.minCPI ?? 0,
-              tenthMarks: s?.tenthMarks ?? 0,
-              twelthMarks: s?.twelthMarks ?? 0,
-              baseSalary: s?.baseSalary ?? 0,
-              totalCTC: s?.totalCTC ?? 0,
-              takeHomeSalary: s?.takeHomeSalary ?? 0,
-              grossSalary: s?.grossSalary ?? 0,
-              joiningBonus: s?.joiningBonus ?? 0,
-              performanceBonus: s?.performanceBonus ?? 0,
-              relocation: s?.relocation ?? 0,
-              bondAmount: s?.bondAmount ?? 0,
-              esopAmount: s?.esopAmount ?? 0,
-              esopVestPeriod: s?.esopVestPeriod ?? "",
-              firstYearCTC: s?.firstYearCTC ?? 0,
-              retentionBonus: s?.retentionBonus ?? 0,
-              deductions: s?.deductions ?? 0,
-              medicalAllowance: s?.medicalAllowance ?? 0,
-              bondDuration: s?.bondDuration ?? "",
-              foreignCurrencyCTC: s?.foreignCurrencyCTC ?? 0,
-              foreignCurrencyCode: s?.foreignCurrencyCode ?? "INR",
-              otherCompensations: s?.otherCompensations ?? 0,
-              others: s?.others ?? "",
-              stipend: s?.stipend ?? 0,
-              foreignCurrencyStipend: s?.foreignCurrencyStipend ?? 0,
-              accommodation: s?.accommodation ?? 0,
-              tentativeCTC: s?.tentativeCTC ?? 0,
-              PPOConfirmationDate: s?.PPOConfirmationDate ?? null,
-            }));
+            .map((s: any, index: number) => {
+              // Get selected programs for this salary entry
+              const selectedPrograms = getSelectedPrograms(index);
+              return {
+                salaryPeriod: s?.salaryPeriod ?? "",
+                programs: s?.programs ?? selectedPrograms.map(p => p.id),
+                genders: s?.genders ?? [],
+                categories: s?.categories ?? [],
+                isBacklogAllowed: s?.isBacklogAllowed ?? "",
+                minCPI: s?.minCPI ?? 0,
+                tenthMarks: s?.tenthMarks ?? 0,
+                twelthMarks: s?.twelthMarks ?? 0,
+                baseSalary: s?.baseSalary ?? 0,
+                totalCTC: s?.totalCTC ?? 0,
+                takeHomeSalary: s?.takeHomeSalary ?? 0,
+                grossSalary: s?.grossSalary ?? 0,
+                joiningBonus: s?.joiningBonus ?? 0,
+                performanceBonus: s?.performanceBonus ?? 0,
+                relocation: s?.relocation ?? 0,
+                bondAmount: s?.bondAmount ?? 0,
+                esopAmount: s?.esopAmount ?? 0,
+                esopVestPeriod: s?.esopVestPeriod ?? "",
+                firstYearCTC: s?.firstYearCTC ?? 0,
+                retentionBonus: s?.retentionBonus ?? 0,
+                deductions: s?.deductions ?? 0,
+                medicalAllowance: s?.medicalAllowance ?? 0,
+                bondDuration: s?.bondDuration ?? "",
+                foreignCurrencyCTC: s?.foreignCurrencyCTC ?? 0,
+                foreignCurrencyCode: s?.foreignCurrencyCode ?? "INR",
+                otherCompensations: s?.otherCompensations ?? 0,
+                others: s?.others ?? "",
+                stipend: s?.stipend ?? 0,
+                foreignCurrencyStipend: s?.foreignCurrencyStipend ?? 0,
+                accommodation: s?.accommodation ?? 0,
+                tentativeCTC: s?.tentativeCTC ?? 0,
+                PPOConfirmationDate: s?.PPOConfirmationDate ?? null,
+              };
+            });
           setFieldValue("salaries", norm);
         }}
       >
@@ -1571,7 +1612,8 @@ const JobDetails = ({
                                 options={[
                                   { value: "ALL", label: "Open For All" },
                                   ...branches.map((branch) => {
-                                    const isSelected = selectedPrograms.some(
+                                    const currentSelectedPrograms = getSelectedPrograms(field.name);
+                                    const isSelected = currentSelectedPrograms.some(
                                       (p) =>
                                         p.year === selectedYear &&
                                         p.course === selectedCourse &&
@@ -1589,7 +1631,7 @@ const JobDetails = ({
                               />
                             </div>
 
-                            {selectedPrograms.length > 0 && (
+                            {getSelectedPrograms(field.name).length > 0 && (
                               <div
                                 style={{
                                   marginTop: 16,
@@ -1613,7 +1655,7 @@ const JobDetails = ({
                                 >
                                   Selected Programs:
                                 </Text>
-                                {selectedPrograms.map((program) => (
+                                {getSelectedPrograms(field.name).map((program) => (
                                   <Tag
                                     key={program.id}
                                     closable
