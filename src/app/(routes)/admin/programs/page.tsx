@@ -21,11 +21,23 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { DepartmentEnum } from "@/dto/Programs";
+import { CourseEnum, DepartmentEnum } from "@/dto/Programs";
 
 const hiddenColumns = ["id"];
 
-const defaultForm = { branch: "", course: "", year: "", department: "" };
+type ProgramForm = {
+  branch: string;
+  course: CourseEnum | "";
+  year: string;
+  department: DepartmentEnum | "";
+};
+
+const defaultForm: ProgramForm = {
+  branch: "",
+  course: "",
+  year: "",
+  department: "",
+};
 
 const ProgramsPage = () => {
   const [loading, setLoading] = useState(true);
@@ -34,9 +46,20 @@ const ProgramsPage = () => {
   const [form, setForm] = useState(defaultForm);
   const [submitting, setSubmitting] = useState(false);
 
-  const columns = generateColumns([
-    { id: "", branch: "", course: "", year: "", department: "" },
-  ]);
+  // Generate columns based on actual Program structure
+  const columns =
+    programs.length > 0
+      ? generateColumns(programs)
+      : generateColumns([
+          {
+            id: "",
+            branch: "",
+            course: CourseEnum.BTECH,
+            year: "",
+            department: DepartmentEnum.COMPUTER_SCIENCE_AND_ENGINEERING,
+          } as Program,
+        ]);
+
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
   );
@@ -72,9 +95,28 @@ const ProgramsPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate that required fields are selected
+    if (!form.course) {
+      toast.error("Please select a course");
+      return;
+    }
+    if (!form.department) {
+      toast.error("Please select a department");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await postPrograms([{ ...form }]);
+      // Ensure we're sending the correct structure that matches CreateProgramsDto
+      const programData = {
+        branch: form.branch,
+        course: form.course as CourseEnum,
+        year: form.year,
+        department: form.department as DepartmentEnum,
+      };
+
+      await postPrograms([programData]);
       toast.success("Program added successfully");
       handleClose();
       getPrograms();
@@ -112,15 +154,27 @@ const ProgramsPage = () => {
               onChange={handleChange}
               required
             />
-            <Input
-              name="course"
-              placeholder="Course"
+            <Select
               value={form.course}
-              onChange={handleChange}
+              onValueChange={(value: CourseEnum) =>
+                setForm({ ...form, course: value })
+              }
               required
-            />
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Course" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(CourseEnum).map((course) => (
+                  <SelectItem key={course} value={course}>
+                    {course}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Input
               name="year"
+              type="number"
               placeholder="Year"
               value={form.year}
               onChange={handleChange}
@@ -128,7 +182,9 @@ const ProgramsPage = () => {
             />
             <Select
               value={form.department}
-              onValueChange={(value) => setForm({ ...form, department: value })}
+              onValueChange={(value: DepartmentEnum) =>
+                setForm({ ...form, department: value })
+              }
               required
             >
               <SelectTrigger>

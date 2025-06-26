@@ -1,4 +1,5 @@
 // TypeScript interfaces matching the backend DTO structure exactly
+import { CourseEnum } from "@/dto/Programs";
 
 export enum CategoryEnum {
   GENERAL = "GENERAL",
@@ -230,9 +231,9 @@ export interface SeasonsDto {
 export interface ProgramsDto {
   id: string;
   branch: string;
-  course: string;
+  course: CourseEnum;
   year: string;
-  department: string;
+  department: DepartmentEnum;
 }
 
 export interface GetJafValuesDto {

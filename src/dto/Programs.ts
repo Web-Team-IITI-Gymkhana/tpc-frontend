@@ -1,3 +1,12 @@
+export enum CourseEnum {
+  BTECH = "BTech",
+  BTECH_MTECH = "BTech + MTech",
+  MSC = "MSc",
+  MS = "MS(Research)",
+  MTECH = "MTech",
+  PHD = "PhD",
+}
+
 export enum DepartmentEnum {
   ASTRONOMY_ASTROPHYSICS_AND_SPACE_ENGINEERING = "Astronomy, Astrophysics and Space Engineering",
   BIOSCIENCES_AND_BIOMEDICAL_ENGINEERING = "Biosciences and Biomedical Engineering",
