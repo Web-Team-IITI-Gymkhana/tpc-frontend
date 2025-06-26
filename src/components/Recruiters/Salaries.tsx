@@ -387,7 +387,7 @@ const Salaries = ({
             </div>
 
             <div>
-              <div className="font-semibold my-2">Tentative CTC</div>
+              <div className="font-semibold my-2"> Tentative CTC for PPO Select</div>
               {editMode ? (
                 <input
                   type="text"

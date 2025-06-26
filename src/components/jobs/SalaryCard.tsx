@@ -243,7 +243,7 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
                 </div>
                 <div className="">
                   <div className="text-gray-500 font-semibold my-2">
-                    Tentative CTC
+                  Tentative CTC for PPO Select
                   </div>
                   <div>
                     {salaryData?.tentativeCTC
