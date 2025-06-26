@@ -3,10 +3,10 @@ import Link from "next/link";
 import { Separator } from "../ui/separator";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import Image from 'next/image';
+import Image from "next/image";
 import { Jobs } from "@/helpers/student/types";
-import DOMPurify from 'dompurify';
-import "./styles/JobDescription.css"
+import DOMPurify from "dompurify";
+import "./styles/JobDescription.css";
 import { OpenJD } from "@/helpers/student/api";
 const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
@@ -15,7 +15,7 @@ interface Props {
   type: string;
 }
 
-const JobCard = ({ jobItem, type}: Props) => {
+const JobCard = ({ jobItem, type }: Props) => {
   const cleanHTML = DOMPurify.sanitize(jobItem.description);
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const handleViewDetails = () => {
@@ -29,11 +29,13 @@ const JobCard = ({ jobItem, type}: Props) => {
   return (
     <div className="">
       <div className="rounded-xl bg-white text-black p-5">
-        {type === "opportunity"? (
+        {type === "opportunity" ? (
           <div className="font-semibold text-md"> {jobItem.company.name}</div>
-        ): (
+        ) : (
           <div className="flex justify-between">
-            <div className="font-semibold text-md mt-2">{jobItem.company.name}</div>
+            <div className="font-semibold text-md mt-2">
+              {jobItem.company.name}
+            </div>
             <div className="text-sm my-3">
               <Link
                 href={`/student/job/${jobItem.id}`}
@@ -57,9 +59,7 @@ const JobCard = ({ jobItem, type}: Props) => {
             <div>{jobItem.role}</div>
           </div>
           <div>
-            <div className="text-gray-500 font-semibold my-2">
-              Duration
-            </div>{" "}
+            <div className="text-gray-500 font-semibold my-2">Duration</div>{" "}
             <div>{jobItem.duration}</div>
           </div>
           <div>
@@ -88,29 +88,42 @@ const JobCard = ({ jobItem, type}: Props) => {
             </div>
             <div className="font-semibold text-md"> Skills </div>
             <div className="flex flex-wrap !text-md">
-              {jobItem.skills.map((skill, index) => (
-                <div key={index} className="mx-2 my-2">
-                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                    {skill}
+              {jobItem.skills && jobItem.skills.length > 0 ? (
+                jobItem.skills.map((skill, index) => (
+                  <div key={index} className="mx-2 my-2">
+                    <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                      {skill}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-gray-500 italic">No skills specified</div>
+              )}
             </div>
             <div className="my-4">
               <Separator />
             </div>
-            {jobItem.attachments.length > 0 && (
+            {jobItem.attachments && jobItem.attachments.length > 0 && (
               <>
                 <div className="font-semibold text-md"> Attachments </div>
                 <div className="flex flex-wrap !text-md">
                   {jobItem.attachments.map((attachment, index) => (
-                    <div className="mx-2 my-2 cursor-pointer" key={index} onClick={() => handleOpenJD(attachment)}>
-                      <Image src={"/portal/images/file.png"} alt="" width={150} height={150} />
+                    <div
+                      className="mx-2 my-2 cursor-pointer"
+                      key={index}
+                      onClick={() => handleOpenJD(attachment)}
+                    >
+                      <Image
+                        src={"/portal/images/file.png"}
+                        alt=""
+                        width={150}
+                        height={150}
+                      />
                     </div>
                   ))}
                 </div>
                 <div className="my-4">
-                  <Separator /> 
+                  <Separator />
                 </div>
               </>
             )}

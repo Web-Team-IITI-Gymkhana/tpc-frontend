@@ -30,11 +30,12 @@ interface Salary {
   foreignCurrencyCode?: string;
   otherCompensations?: number;
   others?: string;
-  
+
   // Internship-specific fields
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accommodation?: number;
+  accommodation?: boolean;
+  ppoProvisionOnPerformance?: boolean;
   tentativeCTC?: number;
   PPOConfirmationDate?: Date;
 }
@@ -75,7 +76,11 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
       {salaryData &&
         salaryData.map((item, index) => (
           <div key={index} className="my-3">
-            <SalaryCard salaryId={item.id} resumes={resumes} seasonType={seasonType} />
+            <SalaryCard
+              salaryId={item.id}
+              resumes={resumes}
+              seasonType={seasonType}
+            />
           </div>
         ))}
     </div>

@@ -17,12 +17,12 @@ import toast from "react-hot-toast";
 import Loader from "@/components/Loader/loader";
 import { ProfileNavLoader } from "@/components/Loader/loaders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  User, 
-  GraduationCap, 
-  BookOpen, 
-  TrendingUp, 
-  AlertTriangle, 
+import {
+  User,
+  GraduationCap,
+  BookOpen,
+  TrendingUp,
+  AlertTriangle,
   Calendar,
   Mail,
   Phone,
@@ -31,7 +31,7 @@ import {
   Users,
   CheckCircle,
   XCircle,
-  Loader2
+  Loader2,
 } from "lucide-react";
 
 const ProfilePage = () => {
@@ -40,36 +40,56 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
-  const [deregistering, setDeregistering] = useState(false);
 
   const handleRegister = async (seasonId: string, registered: boolean) => {
-    const res = await RegisterSeason(seasonId, registered);
-    if (res) {
-      if (registered) toast.success("Deregistered successfully");
-      else toast.success("Registered successfully");
-      setStudentData(prevState => {
-        if (!prevState) return null;
+    try {
+      if (registered) {
+        setRegistering(true);
+      } else {
+        setRegistering(true);
+      }
 
-        const updatedRegistrations = prevState.registrations.map(registration =>
-          registration.season.id === seasonId
-            ? { ...registration, registered: !registered }
-            : registration
-        );
+      const res = await RegisterSeason(seasonId, registered);
 
-        return {
-          ...prevState,
-          registrations: updatedRegistrations
-        };
-      });
-    } else {
-      toast.error("Some Error Occurred");
+      if (res) {
+        if (registered) {
+          toast.success("Deregistered successfully");
+          setIsRegistered(false);
+        } else {
+          toast.success("Registered successfully");
+          setIsRegistered(true);
+        }
+
+        setStudentData((prevState) => {
+          if (!prevState) return null;
+
+          const updatedRegistrations = prevState.registrations.map(
+            (registration) =>
+              registration.season.id === seasonId
+                ? { ...registration, registered: !registered }
+                : registration,
+          );
+
+          return {
+            ...prevState,
+            registrations: updatedRegistrations,
+          };
+        });
+      } else {
+        toast.error("Some Error Occurred");
+      }
+    } catch (error) {
+      toast.error("Registration failed. Please try again.");
+    } finally {
+      setRegistering(false);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
         const data = await GetStudentData();
+        console.log("Student data received:", data); // Debug log
         setStudentData(data);
 
         if (data) {
@@ -78,18 +98,25 @@ const ProfilePage = () => {
             0,
           );
           setTotalPenalty(total);
+
+          // Set registration status based on actual data
+          if (data.registrations && data.registrations.length > 0) {
+            console.log("Registrations found:", data.registrations); // Debug log
+            setIsRegistered(data.registrations[0].registered);
+          } else {
+            console.log("No registrations found"); // Debug log
+          }
         }
       } catch (error) {
-        toast.error("Error fetching data:");
+        console.error("Error fetching student data:", error); // Debug log
+        toast.error("Error fetching data");
       } finally {
         setLoading(false);
       }
     };
 
-    if (studentData === null) {
-      fetchStudentData();
-    }
-  });
+    fetchStudentData();
+  }, []); // Add empty dependency array to run only once
 
   if (loading) {
     return (
@@ -128,7 +155,9 @@ const ProfilePage = () => {
                 <ProfileNavLoader />
               ) : (
                 <>
-                  <h1 className="text-2xl font-bold mb-2">{studentData.user.name}</h1>
+                  <h1 className="text-2xl font-bold mb-2">
+                    {studentData.user.name}
+                  </h1>
                   <div className="inline-flex items-center bg-white/20 text-white border border-white/30 text-sm px-3 py-1 rounded-full">
                     <GraduationCap className="w-4 h-4 mr-2" />
                     {studentData.rollNo}
@@ -136,47 +165,39 @@ const ProfilePage = () => {
                 </>
               )}
             </div>
-            
-            <div className="flex gap-4">
-              {!isRegistered && (
-                <Button 
-                  onClick={() => handleRegister(studentData.registrations[0].season.id, false)}
-                  disabled={registering}
-                  className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-                >
-                  {registering ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Registering...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Register for Season
-                    </>
-                  )}
-                </Button>
-              )}
-              
-              {isRegistered && (
-                <Button 
-                  onClick={() => handleRegister(studentData.registrations[0].season.id, true)}
-                  disabled={deregistering}
-                  variant="outline"
-                  className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-                >
-                  {deregistering ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Deregistering...
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="w-4 h-4 mr-2" />
-                      Deregister
-                    </>
-                  )}
-                </Button>
+
+            <div className="flex items-center gap-4">
+              {/* Registration Status Display */}
+              {studentData.registrations &&
+              studentData.registrations.length > 0 ? (
+                <div className="text-right">
+                  <p className="text-white/80 text-xs mb-1">
+                    Registration Status
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {studentData.registrations.map((registration, index) => (
+                      <div
+                        key={index}
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${
+                          registration.registered
+                            ? "bg-emerald-500/20 text-emerald-100 border-emerald-400/30"
+                            : "bg-slate-500/20 text-slate-200 border-slate-400/30"
+                        }`}
+                      >
+                        {registration.registered ? (
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                        ) : (
+                          <XCircle className="w-3 h-3 mr-1" />
+                        )}
+                        {registration.season.year} {registration.season.type}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-white/80 text-sm bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                  No active seasons available
+                </div>
               )}
             </div>
           </div>
@@ -188,24 +209,32 @@ const ProfilePage = () => {
             <User className="w-5 h-5 text-slate-600" />
             Contact Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Mail className="w-5 h-5 text-indigo-700" />
               </div>
-              <div className="flex-1">
-                <p className="text-xs font-medium text-slate-600 mb-1">Email Address</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.user.email}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Email Address
+                </p>
+                <p className="text-slate-900 font-medium text-sm break-all">
+                  {studentData.user.email}
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Phone className="w-5 h-5 text-emerald-700" />
               </div>
-              <div className="flex-1">
-                <p className="text-xs font-medium text-slate-600 mb-1">Contact Number</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.user.contact}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Contact Number
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.user.contact}
+                </p>
               </div>
             </div>
           </div>
@@ -217,44 +246,67 @@ const ProfilePage = () => {
             <GraduationCap className="w-5 h-5 text-slate-600" />
             Program Information
           </h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-violet-700" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-5 h-5 text-violet-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">Course</p>
-                <p className="text-slate-900 font-medium text-sm truncate">{studentData.program.course}</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Course
+                </p>
+                <p
+                  className="text-slate-900 font-medium text-sm"
+                  title={studentData.program.course}
+                >
+                  {studentData.program.course}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                <Users className="w-4 h-4 text-emerald-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5 text-emerald-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">Branch</p>
-                <p className="text-slate-900 font-medium text-sm truncate">{studentData.program.branch}</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Branch
+                </p>
+                <p
+                  className="text-slate-900 font-medium text-sm"
+                  title={studentData.program.branch}
+                >
+                  {studentData.program.branch}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
-                <Building className="w-4 h-4 text-slate-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Building className="w-5 h-5 text-slate-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">Department</p>
-                <p className="text-slate-900 font-medium text-sm truncate">{studentData.program.department}</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Department
+                </p>
+                <p
+                  className="text-slate-900 font-medium text-sm"
+                  title={studentData.program.department}
+                >
+                  {studentData.program.department}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                <Calendar className="w-4 h-4 text-indigo-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-indigo-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">Year</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.program.year}</p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.program.year}
+                </p>
               </div>
             </div>
           </div>
@@ -266,54 +318,72 @@ const ProfilePage = () => {
             <TrendingUp className="w-5 h-5 text-slate-600" />
             Academic Performance
           </h2>
-          <div className="grid grid-cols-2 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10 gap-4">
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
-                <Users className="w-4 h-4 text-amber-700" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5 text-amber-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">Category</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.category}</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Category
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.category}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-rose-100 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-rose-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-rose-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">Gender</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.gender}</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Gender
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.gender}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-emerald-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-emerald-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">CPI</p>
-                <p className="text-slate-900 font-bold text-lg">{studentData.cpi}</p>
+                <p className="text-slate-900 font-bold text-lg">
+                  {studentData.cpi}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center">
-                <Award className="w-4 h-4 text-sky-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Award className="w-5 h-5 text-sky-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">10th Marks</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.tenthMarks}%</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  10th Marks
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.tenthMarks}%
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center">
-                <Award className="w-4 h-4 text-violet-700" />
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Award className="w-5 h-5 text-violet-700" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">12th Marks</p>
-                <p className="text-slate-900 font-medium text-sm">{studentData.twelthMarks}%</p>
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  12th Marks
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.twelthMarks}%
+                </p>
               </div>
             </div>
           </div>
@@ -339,8 +409,89 @@ const ProfilePage = () => {
                   {studentData.penalties.map((penalty, index) => (
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-semibold">{penalty.penalty}</TableCell>
+                      <TableCell className="font-semibold">
+                        {penalty.penalty}
+                      </TableCell>
                       <TableCell>{penalty.reason}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
+
+        {/* Registrations Table */}
+        {studentData.registrations && studentData.registrations.length > 0 && (
+          <div className="border-t border-slate-300 p-6">
+            <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2 mb-4">
+              <Calendar className="w-5 h-5 text-blue-600" />
+              Season Registrations
+            </h2>
+            <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sr. No.</TableHead>
+                    <TableHead>Year</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {studentData.registrations.map((registration, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{registration.season.year}</TableCell>
+                      <TableCell className="uppercase">
+                        {registration.season.type}
+                      </TableCell>
+                      <TableCell>
+                        <div
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            registration.registered
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-slate-100 text-slate-800"
+                          }`}
+                        >
+                          {registration.registered ? (
+                            <>
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Registered
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Not Registered
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() =>
+                            handleRegister(
+                              registration.season.id,
+                              registration.registered,
+                            )
+                          }
+                          disabled={registering}
+                          size="sm"
+                          variant={
+                            registration.registered ? "outline" : "default"
+                          }
+                          className="h-8"
+                        >
+                          {registering ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : registration.registered ? (
+                            "Deregister"
+                          ) : (
+                            "Register"
+                          )}
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
