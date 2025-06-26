@@ -51,11 +51,11 @@ const SelectionProcedure = ({ selectionProcedure, editMode, handleChange }) => (
           <input
             type="number"
             name="numberOfMembers"
-            value={selectionProcedure.numberOfMembers}
+            value={selectionProcedure.requirements?.numberOfMembers || ''}
             onChange={(e) => handleChange(e, "numberOfMembers")}
           />
         ) : (
-          <div>{selectionProcedure.numberOfMembers}</div>
+          <div>{selectionProcedure.requirements?.numberOfMembers || 'Not specified'}</div>
         )}
       </div>
     </div>
@@ -87,18 +87,48 @@ const SelectionProcedure = ({ selectionProcedure, editMode, handleChange }) => (
     </div>
     <div className="mt-8">
       <div>
-        <span className="font-semibold">Other requirements :</span>
+        <span className="font-semibold">Other requirements: </span>
         {editMode ? (
           <input
             type="text"
             name="otherRequirements"
-            value={selectionProcedure.otherRequirements}
+            value={selectionProcedure.requirements?.otherRequirements || ''}
             onChange={(e) => handleChange(e, "otherRequirements")}
           />
         ) : (
-          <div>{selectionProcedure.otherRequirements}</div>
+          <div>{selectionProcedure.requirements?.otherRequirements || 'Not specified'}</div>
         )}
       </div>
+      {selectionProcedure.requirements?.numberOfRooms && (
+        <div className="mt-4">
+          <span className="font-semibold">Number of rooms: </span>
+          {editMode ? (
+            <input
+              type="number"
+              name="numberOfRooms"
+              value={selectionProcedure.requirements?.numberOfRooms || ''}
+              onChange={(e) => handleChange(e, "numberOfRooms")}
+            />
+          ) : (
+            <div>{selectionProcedure.requirements?.numberOfRooms}</div>
+          )}
+        </div>
+      )}
+      {selectionProcedure.others && (
+        <div className="mt-4">
+          <span className="font-semibold">Other notes: </span>
+          {editMode ? (
+            <textarea
+              name="others"
+              value={selectionProcedure.others || ''}
+              onChange={(e) => handleChange(e, "others")}
+              className="w-full p-2 border rounded"
+            />
+          ) : (
+            <div>{selectionProcedure.others}</div>
+          )}
+        </div>
+      )}
     </div>
   </div>
 );
