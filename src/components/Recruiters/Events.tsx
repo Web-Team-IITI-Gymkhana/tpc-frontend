@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 import Table from "../NewTableComponent/Table";
-export const JobEvents = ({ events, jobId }: { events: [EventFC], jobId: string }) => {
+export const JobEvents = ({ events, jobId }: { events: EventFC[], jobId: string }) => {
   const [eventId, setEventId] = useState<string>(null);
   const changeApplications = (eventId: string) => {
     setEventId(eventId);

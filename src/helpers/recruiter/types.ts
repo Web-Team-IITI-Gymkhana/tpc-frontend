@@ -95,22 +95,25 @@ export interface JobDetailFC {
       contact: string;
     };
   };
+  recruiterDetailsFilled: Array<{
+    name: string;
+    email: string;
+    contact: string;
+    designation: string;
+    landline?: string;
+  }>;
   selectionProcedure: {
     selectionMode: string;
-    shortlistFromResume: true;
-    groupDiscussion: true;
-    tests: [
-      {
-        type: string;
-        duration: number;
-      },
-    ];
-    interviews: [
-      {
-        type: string;
-        duration: number;
-      },
-    ];
+    shortlistFromResume: boolean;
+    groupDiscussion: boolean;
+    tests: Array<{
+      type: string;
+      duration: string;
+    }>;
+    interviews: Array<{
+      type: string;
+      duration: string;
+    }>;
     requirements: {
       numberOfMembers: number;
       numberOfRooms: number;
@@ -123,27 +126,24 @@ export interface JobDetailFC {
   offerLetterReleaseDate: string;
   joiningDate: string;
   location: string;
-  noOfVacancies: number;
-  duration: number;
+  minNoOfHires?: number;
+  expectedNoOfHires?: number;
+  duration: string;
   feedback: string;
-  jobCoordinators: [
-    {
-      id: string;
-      role: string;
-      tpcMember: TPCMember;
-    },
-  ];
-  events: [
-    {
-      id: string;
-      roundNumber: number;
-      type: string;
-      metadata: string;
-      startDateTime: string;
-      endDateTime: string;
-      visibleToRecruiter: true;
-    },
-  ];
+  jobCoordinators: Array<{
+    id: string;
+    role: string;
+    tpcMember: TPCMember;
+  }>;
+  events: Array<{
+    id: string;
+    roundNumber: number;
+    type: string;
+    metadata: string;
+    startDateTime: string;
+    endDateTime: string;
+    visibleToRecruiter: boolean;
+  }>;
   salaries: SalaryFC[];
 }
 
