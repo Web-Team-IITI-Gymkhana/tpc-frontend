@@ -50,7 +50,7 @@ const SeasonDetails = ({
         
         const options: SeasonOption[] = seasons.map((season) => ({
           value: season.id,
-          label: `${season.type} ${season.year}`,
+          label: `${season.year} `,
           type: season.type,
           year: season.year
         }));
@@ -136,7 +136,7 @@ const SeasonDetails = ({
 
           {selectedSeasonInfo && (
             <Alert
-              message={`${selectedSeasonInfo.type} Season ${selectedSeasonInfo.year}`}
+              message={`${selectedSeasonInfo.year} - ${selectedSeasonInfo.type}`}
               description={`Recruitment process for ${selectedSeasonInfo.type.toLowerCase()} positions`}
               type="info"
               showIcon

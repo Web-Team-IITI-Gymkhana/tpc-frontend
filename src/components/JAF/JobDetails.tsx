@@ -19,7 +19,6 @@ import {
   UploadProps,
   SelectProps,
   List,
-  Tag,
   Cascader,
   Typography,
   Alert,
@@ -294,118 +293,168 @@ const JobDetails = ({
     };
 
     fetchJafData();
-  }, [values.seasonId, values.salaries]);
+  }, [values.seasonId]);
 
   const [years, setYears] = useState<string[]>([]);
   const [courses, setCourses] = useState<string[]>([]);
   const [branches, setBranches] = useState<string[]>([]);
 
-  const [selectedYear, setSelectedYear] = useState<string>("");
-  const [selectedCourse, setSelectedCourse] = useState<string>("");
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
 
-  const handleYearChange = (year: string) => {
-    setSelectedYear(year);
-    setSelectedCourse("");
-    setSelectedBranch("");
+  // Collapsible state management
+  const [expandedYears, setExpandedYears] = useState<Set<string>>(new Set());
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(
+    new Set(),
+  );
 
-    const availableCourses = Array.from(
-      programsData.coursesMap.get(year) || [],
-    ) as string[];
-    setCourses(availableCourses);
+  const handleYearChange = (years: string[], fieldIndex: number) => {
+    setSelectedYears(years);
+
+    // Only keep courses that are available in the selected years
+    const availableCourses = new Set<string>();
+    years.forEach((year) => {
+      const yearCourses = programsData.coursesMap.get(year) || new Set();
+      yearCourses.forEach((course) => availableCourses.add(course));
+    });
+    setCourses(Array.from(availableCourses));
+
+    // Filter selected courses to only keep those that are still valid
+    const validCourses = selectedCourses.filter((course) =>
+      availableCourses.has(course),
+    );
+    setSelectedCourses(validCourses);
+
+    // Get available branches for the remaining valid year-course combinations
+    const availableBranches = new Set<string>();
+    years.forEach((year) => {
+      validCourses.forEach((course) => {
+        const key = `${year}-${course}`;
+        const yearCourseBranches =
+          programsData.branchesMap.get(key) || new Set();
+        yearCourseBranches.forEach((branch) => availableBranches.add(branch));
+      });
+    });
+    setBranches(Array.from(availableBranches));
+
+    // Filter selected branches to only keep those that are still valid
+    const validBranches = selectedBranches.filter((branch) =>
+      availableBranches.has(branch),
+    );
+    setSelectedBranches(validBranches);
+
+    // Update selected programs - remove programs that are no longer valid
+    const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
+    const validPrograms = currentSelectedPrograms.filter(
+      (program) =>
+        years.includes(program.year) &&
+        validCourses.includes(program.course) &&
+        validBranches.includes(program.branch),
+    );
+    updateSelectedPrograms(fieldIndex, validPrograms);
   };
 
-  const handleCourseChange = (course: string) => {
-    setSelectedCourse(course);
-    setSelectedBranch("");
+  const handleCourseChange = (courses: string[], fieldIndex: number) => {
+    setSelectedCourses(courses);
 
-    const key = `${selectedYear}-${course}`;
-    const availableBranches = Array.from(
-      programsData.branchesMap.get(key) || [],
-    ) as string[];
-    setBranches(availableBranches);
+    // Get all available branches for selected year-course combinations
+    const availableBranches = new Set<string>();
+    selectedYears.forEach((year) => {
+      courses.forEach((course) => {
+        const key = `${year}-${course}`;
+        const yearCourseBranches =
+          programsData.branchesMap.get(key) || new Set();
+        yearCourseBranches.forEach((branch) => availableBranches.add(branch));
+      });
+    });
+    setBranches(Array.from(availableBranches));
+
+    // Filter selected branches to only keep those that are still valid
+    const validBranches = selectedBranches.filter((branch) =>
+      availableBranches.has(branch),
+    );
+    setSelectedBranches(validBranches);
+
+    // Update selected programs - remove programs that are no longer valid
+    const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
+    const validPrograms = currentSelectedPrograms.filter(
+      (program) =>
+        selectedYears.includes(program.year) &&
+        courses.includes(program.course) &&
+        validBranches.includes(program.branch),
+    );
+    updateSelectedPrograms(fieldIndex, validPrograms);
   };
 
-  const handleBranchChange = (branch: string, fieldIndex: number) => {
+  const handleBranchChange = (branches: string[], fieldIndex: number) => {
     const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
 
-    if (branch === "ALL") {
-      const allBranchesSelected = branches.every((branch) =>
-        currentSelectedPrograms.some(
-          (p) =>
-            p.year === selectedYear &&
-            p.course === selectedCourse &&
-            p.branch === branch,
-        ),
+    // Handle "ALL" selection
+    if (branches.includes("ALL")) {
+      // Get all possible programs for selected year-course combinations
+      const allPrograms: SelectedProgram[] = [];
+      selectedYears.forEach((year) => {
+        selectedCourses.forEach((course) => {
+          const yearCoursePrograms = programsData.programs
+            .filter((p) => p.year === year && p.course === course)
+            .map((p) => ({
+              year: p.year,
+              course: p.course,
+              branch: p.branch,
+              id: p.id,
+            }));
+          allPrograms.push(...yearCoursePrograms);
+        });
+      });
+
+      // Remove duplicates
+      const uniquePrograms = allPrograms.filter(
+        (prog, index, self) =>
+          index === self.findIndex((p) => p.id === prog.id),
       );
 
-      if (allBranchesSelected) {
-        const updatedPrograms = currentSelectedPrograms.filter(
-          (p) => !(p.year === selectedYear && p.course === selectedCourse),
-        );
-        updateSelectedPrograms(fieldIndex, updatedPrograms);
-      } else {
-        const allPrograms = programsData.programs
-          .filter((p) => p.year === selectedYear && p.course === selectedCourse)
-          .map((p) => ({
-            year: p.year,
-            course: p.course,
-            branch: p.branch,
-            id: p.id,
-          }));
+      const newPrograms = uniquePrograms.filter(
+        (newProg) =>
+          !currentSelectedPrograms.some(
+            (existingProg) => existingProg.id === newProg.id,
+          ),
+      );
 
-        const newPrograms = allPrograms.filter(
-          (newProg) =>
-            !currentSelectedPrograms.some(
-              (existingProg) => existingProg.id === newProg.id,
-            ),
-        );
-
-        const updatedPrograms = [...currentSelectedPrograms, ...newPrograms];
-        updateSelectedPrograms(fieldIndex, updatedPrograms);
-      }
+      const updatedPrograms = [...currentSelectedPrograms, ...newPrograms];
+      updateSelectedPrograms(fieldIndex, updatedPrograms);
     } else {
-      const program = programsData.programs.find(
-        (p) =>
-          p.year === selectedYear &&
-          p.course === selectedCourse &&
-          p.branch === branch,
-      );
+      // Handle individual branch selections
+      const newPrograms: SelectedProgram[] = [];
 
-      if (program) {
-        const isSelected = currentSelectedPrograms.some(
-          (p) => p.id === program.id,
-        );
+      selectedYears.forEach((year) => {
+        selectedCourses.forEach((course) => {
+          branches.forEach((branch) => {
+            const program = programsData.programs.find(
+              (p) =>
+                p.year === year && p.course === course && p.branch === branch,
+            );
 
-        if (isSelected) {
-          const updatedPrograms = currentSelectedPrograms.filter(
-            (p) => p.id !== program.id,
-          );
-          updateSelectedPrograms(fieldIndex, updatedPrograms);
-        } else {
-          const newProgram = {
-            year: program.year,
-            course: program.course,
-            branch: program.branch,
-            id: program.id,
-          };
+            if (
+              program &&
+              !currentSelectedPrograms.some((p) => p.id === program.id)
+            ) {
+              newPrograms.push({
+                year: program.year,
+                course: program.course,
+                branch: program.branch,
+                id: program.id,
+              });
+            }
+          });
+        });
+      });
 
-          const updatedPrograms = [...currentSelectedPrograms, newProgram];
-          updateSelectedPrograms(fieldIndex, updatedPrograms);
-        }
-      }
+      const updatedPrograms = [...currentSelectedPrograms, ...newPrograms];
+      updateSelectedPrograms(fieldIndex, updatedPrograms);
     }
 
-    setSelectedBranch("");
-  };
-
-  const handleRemoveProgram = (programId: string, fieldIndex: number) => {
-    const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
-    const updatedPrograms = currentSelectedPrograms.filter(
-      (p) => p.id !== programId,
-    );
-    updateSelectedPrograms(fieldIndex, updatedPrograms);
+    setSelectedBranches([]);
   };
 
   const [selectedProgramsBySalary, setSelectedProgramsBySalary] = useState<
@@ -426,19 +475,196 @@ const JobDetails = ({
     newMap.set(fieldIndex, programs);
     setSelectedProgramsBySalary(newMap);
 
+    const programIds = programs.map((p) => p.id);
+
     // Update form field
-    form.setFieldValue(
-      ["salaries", fieldIndex, "programs"],
-      programs.map((p) => p.id),
-    );
+    form.setFieldValue(["salaries", fieldIndex, "programs"], programIds);
 
     // Update Formik state to ensure validation
     const currentSalaries = form.getFieldValue("salaries") || [];
     currentSalaries[fieldIndex] = {
       ...currentSalaries[fieldIndex],
-      programs: programs.map((p) => p.id),
+      programs: programIds,
     };
     setFieldValue("salaries", currentSalaries);
+  };
+
+  // Helper functions for hierarchical selection
+  const isYearIndeterminate = (year: string, fieldIndex: number): boolean => {
+    const selectedPrograms = getSelectedPrograms(fieldIndex);
+    const yearPrograms = programsData.programs.filter((p) => p.year === year);
+    const selectedYearPrograms = selectedPrograms.filter(
+      (p) => p.year === year,
+    );
+    return (
+      selectedYearPrograms.length > 0 &&
+      selectedYearPrograms.length < yearPrograms.length
+    );
+  };
+
+  const isCourseIndeterminate = (
+    year: string,
+    course: string,
+    fieldIndex: number,
+  ): boolean => {
+    const selectedPrograms = getSelectedPrograms(fieldIndex);
+    const coursePrograms = programsData.programs.filter(
+      (p) => p.year === year && p.course === course,
+    );
+    const selectedCoursePrograms = selectedPrograms.filter(
+      (p) => p.year === year && p.course === course,
+    );
+    return (
+      selectedCoursePrograms.length > 0 &&
+      selectedCoursePrograms.length < coursePrograms.length
+    );
+  };
+
+  const handleYearToggle = (
+    year: string,
+    checked: boolean,
+    fieldIndex: number,
+  ) => {
+    if (checked) {
+      // Add all programs for this year
+      const yearPrograms = programsData.programs
+        .filter((p) => p.year === year)
+        .map((p) => ({
+          year: p.year,
+          course: p.course,
+          branch: p.branch,
+          id: p.id,
+        }));
+
+      const currentPrograms = getSelectedPrograms(fieldIndex);
+      const otherPrograms = currentPrograms.filter((p) => p.year !== year);
+      updateSelectedPrograms(fieldIndex, [...otherPrograms, ...yearPrograms]);
+    } else {
+      // Remove all programs for this year
+      const currentPrograms = getSelectedPrograms(fieldIndex);
+      const remainingPrograms = currentPrograms.filter((p) => p.year !== year);
+      updateSelectedPrograms(fieldIndex, remainingPrograms);
+    }
+  };
+
+  const handleCourseToggle = (
+    year: string,
+    course: string,
+    checked: boolean,
+    fieldIndex: number,
+  ) => {
+    if (checked) {
+      // Add all programs for this year-course combination
+      const coursePrograms = programsData.programs
+        .filter((p) => p.year === year && p.course === course)
+        .map((p) => ({
+          year: p.year,
+          course: p.course,
+          branch: p.branch,
+          id: p.id,
+        }));
+
+      const currentPrograms = getSelectedPrograms(fieldIndex);
+      const otherPrograms = currentPrograms.filter(
+        (p) => !(p.year === year && p.course === course),
+      );
+      updateSelectedPrograms(fieldIndex, [...otherPrograms, ...coursePrograms]);
+    } else {
+      // Remove all programs for this year-course combination
+      const currentPrograms = getSelectedPrograms(fieldIndex);
+      const remainingPrograms = currentPrograms.filter(
+        (p) => !(p.year === year && p.course === course),
+      );
+      updateSelectedPrograms(fieldIndex, remainingPrograms);
+    }
+  };
+
+  const handleBranchToggle = (
+    year: string,
+    course: string,
+    branch: string,
+    checked: boolean,
+    fieldIndex: number,
+  ) => {
+    const program = programsData.programs.find(
+      (p) => p.year === year && p.course === course && p.branch === branch,
+    );
+    if (!program) return;
+
+    const currentPrograms = getSelectedPrograms(fieldIndex);
+
+    if (checked) {
+      const newProgram = {
+        year: program.year,
+        course: program.course,
+        branch: program.branch,
+        id: program.id,
+      };
+      updateSelectedPrograms(fieldIndex, [...currentPrograms, newProgram]);
+    } else {
+      const remainingPrograms = currentPrograms.filter(
+        (p) => p.id !== program.id,
+      );
+      updateSelectedPrograms(fieldIndex, remainingPrograms);
+    }
+  };
+
+  const handleSelectAllForYear = (year: string, fieldIndex: number) => {
+    const yearPrograms = programsData.programs
+      .filter((p) => p.year === year)
+      .map((p) => ({
+        year: p.year,
+        course: p.course,
+        branch: p.branch,
+        id: p.id,
+      }));
+
+    const currentPrograms = getSelectedPrograms(fieldIndex);
+    const otherPrograms = currentPrograms.filter((p) => p.year !== year);
+    updateSelectedPrograms(fieldIndex, [...otherPrograms, ...yearPrograms]);
+  };
+
+  const handleSelectAllForCourse = (
+    year: string,
+    course: string,
+    fieldIndex: number,
+  ) => {
+    const coursePrograms = programsData.programs
+      .filter((p) => p.year === year && p.course === course)
+      .map((p) => ({
+        year: p.year,
+        course: p.course,
+        branch: p.branch,
+        id: p.id,
+      }));
+
+    const currentPrograms = getSelectedPrograms(fieldIndex);
+    const otherPrograms = currentPrograms.filter(
+      (p) => !(p.year === year && p.course === course),
+    );
+    updateSelectedPrograms(fieldIndex, [...otherPrograms, ...coursePrograms]);
+  };
+
+  // Collapsible helper functions
+  const toggleYearExpanded = (year: string) => {
+    const newExpanded = new Set(expandedYears);
+    if (newExpanded.has(year)) {
+      newExpanded.delete(year);
+    } else {
+      newExpanded.add(year);
+    }
+    setExpandedYears(newExpanded);
+  };
+
+  const toggleCourseExpanded = (year: string, course: string) => {
+    const courseKey = `${year}-${course}`;
+    const newExpanded = new Set(expandedCourses);
+    if (newExpanded.has(courseKey)) {
+      newExpanded.delete(courseKey);
+    } else {
+      newExpanded.add(courseKey);
+    }
+    setExpandedCourses(newExpanded);
   };
 
   return (
@@ -487,7 +713,7 @@ const JobDetails = ({
         initialValues={{
           tests: [{ type: "APTITUDE", duration: "" }],
           interviews: [{ type: "TECHNICAL", duration: "" }],
-          salaries: [{}],
+          salaries: [{ programs: [] }],
         }}
         onValuesChange={async (changedFields, allFields) => {
           // Update Formik state with form values
@@ -532,7 +758,9 @@ const JobDetails = ({
                 others: s?.others ?? "",
                 stipend: s?.stipend ?? 0,
                 foreignCurrencyStipend: s?.foreignCurrencyStipend ?? 0,
-                accommodation: s?.accommodation ?? 0,
+                accommodation: s?.accommodation ?? false,
+                ppoProvisionOnPerformance:
+                  s?.ppoProvisionOnPerformance ?? false,
                 tentativeCTC: s?.tentativeCTC ?? 0,
                 PPOConfirmationDate: s?.PPOConfirmationDate ?? null,
               };
@@ -606,72 +834,6 @@ const JobDetails = ({
               </Form.Item>
             </Col>
 
-            {/* Location (required) */}
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    <span style={{ color: "#ef4444" }}>* </span>
-                    Work Location
-                  </Text>
-                }
-                required
-                hasFeedback
-                validateStatus={getFieldError("location") ? "error" : undefined}
-                help={getFieldError("location")}
-              >
-                <Input
-                  name="location"
-                  placeholder={PLACEHOLDERS.JOB_LOCATION}
-                  value={values.location}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  maxLength={FIELD_LIMITS.LOCATION_MAX}
-                  showCount
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={[24, 16]}>
-            {/* Expected hires (optional but numeric) */}
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Expected Number of Hires
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("expectedNoOfHires") ? "error" : undefined
-                }
-                help={getFieldError("expectedNoOfHires")}
-              >
-                <Input
-                  type="number"
-                  name="expectedNoOfHires"
-                  placeholder={PLACEHOLDERS.EXPECTED_HIRES}
-                  value={values.expectedNoOfHires}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={0}
-                  max={FIELD_LIMITS.HIRES_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-
             {/* Duration (only for internships) */}
             {seasonType === "INTERN" && (
               <Col span={12}>
@@ -706,6 +868,72 @@ const JobDetails = ({
           </Row>
 
           <Row gutter={[24, 16]}>
+            {/* Location (required) */}
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    <span style={{ color: "#ef4444" }}>* </span>
+                    Work Location
+                  </Text>
+                }
+                required
+                hasFeedback
+                validateStatus={getFieldError("location") ? "error" : undefined}
+                help={getFieldError("location")}
+              >
+                <Input
+                  name="location"
+                  placeholder={PLACEHOLDERS.JOB_LOCATION}
+                  value={values.location}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  maxLength={FIELD_LIMITS.LOCATION_MAX}
+                  showCount
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+
+            {/* Expected hires (optional but numeric) */}
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Expected Number of Hires
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("expectedNoOfHires") ? "error" : undefined
+                }
+                help={getFieldError("expectedNoOfHires")}
+              >
+                <Input
+                  type="number"
+                  name="expectedNoOfHires"
+                  placeholder={PLACEHOLDERS.EXPECTED_HIRES}
+                  value={values.expectedNoOfHires}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={0}
+                  max={FIELD_LIMITS.HIRES_MAX}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={[24, 16]}>
             <Col span={12}>
               <Form.Item
                 label={
@@ -736,9 +964,7 @@ const JobDetails = ({
                 />
               </Form.Item>
             </Col>
-          </Row>
 
-          <Row gutter={[24, 16]}>
             <Col span={12}>
               <Form.Item
                 label={
@@ -767,6 +993,9 @@ const JobDetails = ({
                 />
               </Form.Item>
             </Col>
+          </Row>
+
+          <Row gutter={[24, 16]}>
             <Col span={12}>
               <Form.Item
                 label={
@@ -1012,525 +1241,6 @@ const JobDetails = ({
           </Form.Item>
         </div>
 
-        {/* Selection Procedure Section */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 24,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <Title
-            level={5}
-            style={{
-              marginBottom: 24,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 18,
-              borderBottom: "2px solid #e2e8f0",
-              paddingBottom: 12,
-            }}
-          >
-            Selection Procedure
-          </Title>
-
-          <Row gutter={[24, 16]}>
-            {/* Selection Mode (required) */}
-            <Col span={8}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    <span style={{ color: "#ef4444" }}>* </span>
-                    Selection Mode
-                  </Text>
-                }
-                required
-                hasFeedback
-                validateStatus={
-                  getFieldError("selectionMode") ? "error" : undefined
-                }
-                help={getFieldError("selectionMode")}
-              >
-                <Select
-                  value={values.selectionMode || undefined}
-                  placeholder="Select mode"
-                  onChange={(val: SelectionModeEnum) => {
-                    setFieldValue("selectionMode", val);
-                  }}
-                  options={SELECTION_MODE_OPTIONS}
-                  style={{
-                    borderRadius: 8,
-                  }}
-                />
-              </Form.Item>
-            </Col>
-
-            {/* Selection preferences */}
-            <Col span={8}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Selection Options
-                  </Text>
-                }
-                style={{ marginBottom: 8 }}
-              >
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
-                >
-                  <Checkbox
-                    checked={values.shortlistFromResume}
-                    onChange={(e) =>
-                      setFieldValue("shortlistFromResume", e.target.checked)
-                    }
-                    style={{ fontSize: 14 }}
-                  >
-                    <Text style={{ fontSize: 14 }}>Shortlist From Resume</Text>
-                  </Checkbox>
-                </div>
-              </Form.Item>
-            </Col>
-
-            <Col span={8}>
-              <Form.Item label=" " style={{ marginBottom: 8 }}>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
-                >
-                  <Checkbox
-                    checked={values.groupDiscussion}
-                    onChange={(e) =>
-                      setFieldValue("groupDiscussion", e.target.checked)
-                    }
-                    style={{ fontSize: 14 }}
-                  >
-                    <Text style={{ fontSize: 14 }}>Group Discussion Round</Text>
-                  </Checkbox>
-                </div>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Tests Section */}
-          <Title
-            level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Written Tests & Assessments
-          </Title>
-
-          <Form.List name="tests">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Card
-                    size="small"
-                    title={
-                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                        Test {index + 1}
-                      </Text>
-                    }
-                    key={field.key}
-                    extra={
-                      <Button
-                        type="text"
-                        danger
-                        size="small"
-                        icon={<CloseOutlined />}
-                        onClick={() => remove(field.name)}
-                        title="Remove this test"
-                        style={{
-                          borderRadius: 6,
-                        }}
-                      />
-                    }
-                    style={{
-                      marginBottom: 16,
-                      borderRadius: 12,
-                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #e5e7eb",
-                    }}
-                  >
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Test Type
-                            </Text>
-                          }
-                          name={[field.name, "type"]}
-                          validateStatus={
-                            getFieldError(`tests.${index}.type`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`tests.${index}.type`)}
-                        >
-                          <Select
-                            placeholder="Select type"
-                            options={testType}
-                            showSearch
-                            filterOption={(input, option) =>
-                              String(option?.label ?? "")
-                                .toLowerCase()
-                                .includes(input.toLowerCase())
-                            }
-                            onChange={(value) => {
-                              form.setFieldValue(
-                                ["tests", index, "type"],
-                                value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Duration
-                            </Text>
-                          }
-                          name={[field.name, "duration"]}
-                          validateStatus={
-                            getFieldError(`tests.${index}.duration`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`tests.${index}.duration`)}
-                        >
-                          <Input
-                            placeholder={PLACEHOLDERS.TEST_DURATION}
-                            maxLength={100}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                ["tests", index, "duration"],
-                                e.target.value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-
-                <Button
-                  type="dashed"
-                  onClick={() => {
-                    if (fields.length < FIELD_LIMITS.TESTS_MAX) {
-                      add();
-                    } else {
-                      message.warning(
-                        `Maximum ${FIELD_LIMITS.TESTS_MAX} tests allowed`,
-                      );
-                    }
-                  }}
-                  block
-                  style={{
-                    marginBottom: 16,
-                    borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
-                  }}
-                  disabled={fields.length >= FIELD_LIMITS.TESTS_MAX}
-                >
-                  + Add Test ({fields.length}/{FIELD_LIMITS.TESTS_MAX})
-                </Button>
-              </>
-            )}
-          </Form.List>
-
-          {/* Interviews Section */}
-          <Title
-            level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Interview Rounds
-          </Title>
-
-          <Form.List name="interviews">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Card
-                    size="small"
-                    title={
-                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                        Interview Round {index + 1}
-                      </Text>
-                    }
-                    key={field.key}
-                    extra={
-                      <Button
-                        type="text"
-                        danger
-                        size="small"
-                        icon={<CloseOutlined />}
-                        onClick={() => remove(field.name)}
-                        title="Remove this interview round"
-                        style={{
-                          borderRadius: 6,
-                        }}
-                      />
-                    }
-                    style={{
-                      marginBottom: 16,
-                      borderRadius: 12,
-                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #e5e7eb",
-                    }}
-                  >
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Interview Type
-                            </Text>
-                          }
-                          name={[field.name, "type"]}
-                          validateStatus={
-                            getFieldError(`interviews.${index}.type`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`interviews.${index}.type`)}
-                        >
-                          <Select
-                            placeholder="Select type"
-                            options={interviewType}
-                            showSearch
-                            filterOption={(input, option) =>
-                              String(option?.label ?? "")
-                                .toLowerCase()
-                                .includes(input.toLowerCase())
-                            }
-                            onChange={(value) => {
-                              form.setFieldValue(
-                                ["interviews", index, "type"],
-                                value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Duration
-                            </Text>
-                          }
-                          name={[field.name, "duration"]}
-                          validateStatus={
-                            getFieldError(`interviews.${index}.duration`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(`interviews.${index}.duration`)}
-                        >
-                          <Input
-                            placeholder={PLACEHOLDERS.INTERVIEW_DURATION}
-                            maxLength={100}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                ["interviews", index, "duration"],
-                                e.target.value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-
-                <Button
-                  type="dashed"
-                  onClick={() => {
-                    if (fields.length < FIELD_LIMITS.INTERVIEWS_MAX) {
-                      add();
-                    } else {
-                      message.warning(
-                        `Maximum ${FIELD_LIMITS.INTERVIEWS_MAX} interview rounds allowed`,
-                      );
-                    }
-                  }}
-                  block
-                  style={{
-                    marginBottom: 16,
-                    borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
-                  }}
-                  disabled={fields.length >= FIELD_LIMITS.INTERVIEWS_MAX}
-                >
-                  + Add Interview Round ({fields.length}/
-                  {FIELD_LIMITS.INTERVIEWS_MAX})
-                </Button>
-              </>
-            )}
-          </Form.List>
-
-          {/* Infrastructure Requirements */}
-          <Title
-            level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
-          >
-            Infrastructure Requirements
-          </Title>
-
-          <Row gutter={[24, 16]}>
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Team Members Required
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("numberOfMembers") ? "error" : undefined
-                }
-                help={getFieldError("numberOfMembers")}
-              >
-                <Input
-                  type="number"
-                  name="numberOfMembers"
-                  placeholder={PLACEHOLDERS.REQUIREMENTS_MEMBERS}
-                  value={values.numberOfMembers}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={0}
-                  max={FIELD_LIMITS.MEMBERS_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    Rooms/Spaces Required
-                  </Text>
-                }
-                validateStatus={
-                  getFieldError("numberOfRooms") ? "error" : undefined
-                }
-                help={getFieldError("numberOfRooms")}
-              >
-                <Input
-                  type="number"
-                  name="numberOfRooms"
-                  placeholder={PLACEHOLDERS.REQUIREMENTS_ROOMS}
-                  value={values.numberOfRooms}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  min={0}
-                  max={FIELD_LIMITS.ROOMS_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label={
-              <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                Other Infrastructure Requirements
-              </Text>
-            }
-            validateStatus={
-              getFieldError("otherRequirements") ? "error" : undefined
-            }
-            help={getFieldError("otherRequirements")}
-          >
-            <TextArea
-              rows={4}
-              name="otherRequirements"
-              placeholder={PLACEHOLDERS.OTHER_REQUIREMENTS}
-              value={values.otherRequirements}
-              onChange={(e) => {
-                handleChange(e);
-              }}
-              maxLength={FIELD_LIMITS.OTHER_DETAILS_MAX}
-              showCount
-              style={{
-                borderRadius: 8,
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                border: "1px solid #d1d5db",
-              }}
-            />
-          </Form.Item>
-        </div>
-
         {/* Compensation Details */}
         <div
           style={{
@@ -1553,7 +1263,7 @@ const JobDetails = ({
               paddingBottom: 12,
             }}
           >
-            Compensation Details
+            Compensation/Eligibility Details
           </Title>
 
           <Form.List name="salaries">
@@ -1594,136 +1304,399 @@ const JobDetails = ({
                     </Title>
                     <Row gutter={[24, 16]}>
                       <Col span={24}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
-                              Programs
-                            </Text>
-                          }
-                          name={[field.name, "programs"]}
-                        >
-                          <div>
-                            <div style={{ marginBottom: 16 }}>
-                              <Select
-                                style={{
-                                  width: "24%",
-                                  marginRight: "1%",
-                                  borderRadius: 8,
-                                }}
-                                placeholder="Select Year"
-                                value={selectedYear || undefined}
-                                onChange={handleYearChange}
-                                options={years.map((year) => ({
-                                  value: year,
-                                  label: year,
-                                }))}
-                              />
-                              <Select
-                                style={{
-                                  width: "24%",
-                                  marginRight: "1%",
-                                  borderRadius: 8,
-                                }}
-                                placeholder="Select Course"
-                                value={selectedCourse || undefined}
-                                onChange={handleCourseChange}
-                                disabled={!selectedYear}
-                                options={courses.map((course) => ({
-                                  value: course,
-                                  label: course,
-                                }))}
-                              />
-                              <Select
-                                style={{
-                                  width: "50%",
-                                  borderRadius: 8,
-                                }}
-                                placeholder="Select Branch"
-                                value={selectedBranch}
-                                onChange={(value) =>
-                                  handleBranchChange(value, field.name)
-                                }
-                                disabled={!selectedCourse}
-                                options={[
-                                  { value: "ALL", label: "Open For All" },
-                                  ...branches.map((branch) => {
-                                    const currentSelectedPrograms =
-                                      getSelectedPrograms(field.name);
-                                    const isSelected =
-                                      currentSelectedPrograms.some(
-                                        (p) =>
-                                          p.year === selectedYear &&
-                                          p.course === selectedCourse &&
-                                          p.branch === branch,
-                                      );
-                                    return {
-                                      value: branch,
-                                      label: branch,
-                                      className: isSelected
-                                        ? "ant-select-item-option-selected"
-                                        : "",
-                                    };
-                                  }),
-                                ]}
-                              />
-                            </div>
+                        <div>
+                          <Text
+                            strong
+                            style={{
+                              fontSize: 14,
+                              color: "#374151",
+                              marginBottom: 16,
+                              display: "block",
+                            }}
+                          >
+                            Programs
+                          </Text>
 
-                            {getSelectedPrograms(field.name).length > 0 && (
+                          {/* Hidden Form.Item to manage the actual form field */}
+                          <Form.Item
+                            name={[field.name, "programs"]}
+                            initialValue={[]}
+                            style={{ display: "none" }}
+                            rules={[
+                              {
+                                type: "array",
+                                message: "Programs must be an array",
+                              },
+                            ]}
+                          >
+                            <Input />
+                          </Form.Item>
+
+                          <div>
+                            {/* Program Selection Tree */}
+                            <div
+                              style={{
+                                border: "1px solid #e5e7eb",
+                                borderRadius: 8,
+                                background: "#ffffff",
+                                overflow: "hidden",
+                              }}
+                            >
                               <div
                                 style={{
-                                  marginTop: 16,
-                                  border: "1px solid #e5e7eb",
-                                  borderRadius: 8,
-                                  padding: 16,
-                                  minHeight: 50,
-                                  maxHeight: 150,
-                                  overflowY: "auto",
+                                  padding: "12px 16px",
                                   background: "#f9fafb",
+                                  borderBottom: "1px solid #e5e7eb",
+                                  borderTopLeftRadius: 8,
+                                  borderTopRightRadius: 8,
                                 }}
                               >
-                                <Text
-                                  strong
+                                <div
                                   style={{
-                                    fontSize: 13,
-                                    color: "#374151",
-                                    marginBottom: 8,
-                                    display: "block",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
                                   }}
                                 >
-                                  Selected Programs:
-                                </Text>
-                                {getSelectedPrograms(field.name).map(
-                                  (program) => (
-                                    <Tag
-                                      key={program.id}
-                                      closable
-                                      onClose={() =>
-                                        handleRemoveProgram(
-                                          program.id,
-                                          field.name,
-                                        )
-                                      }
+                                  <Text
+                                    strong
+                                    style={{
+                                      fontSize: 14,
+                                      color: "#374151",
+                                    }}
+                                  >
+                                    Program Selection
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      fontSize: 12,
+                                      color: "#6b7280",
+                                    }}
+                                  >
+                                    {getSelectedPrograms(field.name).length}{" "}
+                                    selected
+                                  </Text>
+                                </div>
+                              </div>
+
+                              <div
+                                style={{
+                                  padding: "8px 0",
+                                }}
+                              >
+                                {years.map((year) => {
+                                  const yearPrograms =
+                                    programsData.programs.filter(
+                                      (p) => p.year === year,
+                                    );
+                                  const selectedYearPrograms =
+                                    getSelectedPrograms(field.name).filter(
+                                      (p) => p.year === year,
+                                    );
+                                  const isYearSelected =
+                                    selectedYearPrograms.length ===
+                                    yearPrograms.length;
+                                  const isYearIndeterminateVal =
+                                    isYearIndeterminate(year, field.name);
+
+                                  return (
+                                    <div
+                                      key={year}
                                       style={{
-                                        fontSize: 12,
-                                        margin: 4,
-                                        maxWidth: "100%",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                        borderRadius: 6,
+                                        borderBottom: "1px solid #f3f4f6",
                                       }}
                                     >
-                                      {`${program.branch} - ${program.course} - ${program.year}`}
-                                    </Tag>
-                                  ),
-                                )}
+                                      {/* Year Level */}
+                                      <div
+                                        style={{
+                                          padding: "8px 16px",
+                                          background: "#ffffff",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                          }}
+                                        >
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              gap: 8,
+                                            }}
+                                          >
+                                            <Button
+                                              type="text"
+                                              size="small"
+                                              icon={
+                                                expandedYears.has(year)
+                                                  ? "▼"
+                                                  : "▶"
+                                              }
+                                              onClick={() =>
+                                                toggleYearExpanded(year)
+                                              }
+                                              style={{
+                                                minWidth: 20,
+                                                height: 20,
+                                                padding: 0,
+                                                fontSize: 10,
+                                                color: "#6b7280",
+                                              }}
+                                            />
+                                            <Checkbox
+                                              checked={isYearSelected}
+                                              indeterminate={
+                                                isYearIndeterminateVal
+                                              }
+                                              onChange={(e) =>
+                                                handleYearToggle(
+                                                  year,
+                                                  e.target.checked,
+                                                  field.name,
+                                                )
+                                              }
+                                              style={{
+                                                fontWeight: 600,
+                                                fontSize: 14,
+                                              }}
+                                            >
+                                              {year} Batch (
+                                              {yearPrograms.length} programs)
+                                            </Checkbox>
+                                          </div>
+
+                                          <Button
+                                            type="link"
+                                            size="small"
+                                            style={{
+                                              fontSize: 12,
+                                            }}
+                                            onClick={() =>
+                                              handleSelectAllForYear(
+                                                year,
+                                                field.name,
+                                              )
+                                            }
+                                          >
+                                            Select All
+                                          </Button>
+                                        </div>
+                                      </div>
+
+                                      {/* Courses for this year */}
+                                      {expandedYears.has(year) && (
+                                        <div
+                                          style={{
+                                            paddingLeft: 32,
+                                            background: "#fafbfc",
+                                          }}
+                                        >
+                                          {Array.from(
+                                            programsData.coursesMap.get(year) ||
+                                              [],
+                                          ).map((course) => {
+                                            const coursePrograms =
+                                              programsData.programs.filter(
+                                                (p) =>
+                                                  p.year === year &&
+                                                  p.course === course,
+                                              );
+                                            const selectedCoursePrograms =
+                                              getSelectedPrograms(
+                                                field.name,
+                                              ).filter(
+                                                (p) =>
+                                                  p.year === year &&
+                                                  p.course === course,
+                                              );
+                                            const isCourseSelected =
+                                              selectedCoursePrograms.length ===
+                                              coursePrograms.length;
+                                            const isCourseIndeterminateVal =
+                                              isCourseIndeterminate(
+                                                year,
+                                                course,
+                                                field.name,
+                                              );
+
+                                            return (
+                                              <div key={`${year}-${course}`}>
+                                                {/* Course Level */}
+                                                <div
+                                                  style={{
+                                                    padding: "6px 12px",
+                                                    background: "#ffffff",
+                                                    margin: "2px 0",
+                                                    cursor: "pointer",
+                                                  }}
+                                                >
+                                                  <div
+                                                    style={{
+                                                      display: "flex",
+                                                      alignItems: "center",
+                                                      justifyContent:
+                                                        "space-between",
+                                                    }}
+                                                  >
+                                                    <div
+                                                      style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: 4,
+                                                      }}
+                                                    >
+                                                      <Button
+                                                        type="text"
+                                                        size="small"
+                                                        icon={
+                                                          expandedCourses.has(
+                                                            `${year}-${course}`,
+                                                          )
+                                                            ? "▼"
+                                                            : "▶"
+                                                        }
+                                                        onClick={() =>
+                                                          toggleCourseExpanded(
+                                                            year,
+                                                            course,
+                                                          )
+                                                        }
+                                                        style={{
+                                                          minWidth: 16,
+                                                          height: 16,
+                                                          padding: 0,
+                                                          fontSize: 8,
+                                                          color: "#6b7280",
+                                                        }}
+                                                      />
+                                                      <Checkbox
+                                                        checked={
+                                                          isCourseSelected
+                                                        }
+                                                        indeterminate={
+                                                          isCourseIndeterminateVal
+                                                        }
+                                                        onChange={(e) =>
+                                                          handleCourseToggle(
+                                                            year,
+                                                            course,
+                                                            e.target.checked,
+                                                            field.name,
+                                                          )
+                                                        }
+                                                        style={{
+                                                          fontWeight: 500,
+                                                          fontSize: 13,
+                                                        }}
+                                                      >
+                                                        {course} (
+                                                        {coursePrograms.length})
+                                                      </Checkbox>
+                                                    </div>
+
+                                                    <Button
+                                                      type="link"
+                                                      size="small"
+                                                      style={{
+                                                        fontSize: 11,
+                                                      }}
+                                                      onClick={() =>
+                                                        handleSelectAllForCourse(
+                                                          year,
+                                                          course,
+                                                          field.name,
+                                                        )
+                                                      }
+                                                    >
+                                                      All Branches
+                                                    </Button>
+                                                  </div>
+                                                </div>
+
+                                                {/* Branches for this course */}
+                                                {expandedCourses.has(
+                                                  `${year}-${course}`,
+                                                ) && (
+                                                  <div
+                                                    style={{
+                                                      paddingLeft: 24,
+                                                      marginBottom: 4,
+                                                    }}
+                                                  >
+                                                    {Array.from(
+                                                      programsData.branchesMap.get(
+                                                        `${year}-${course}`,
+                                                      ) || [],
+                                                    ).map((branch) => {
+                                                      const program =
+                                                        programsData.programs.find(
+                                                          (p) =>
+                                                            p.year === year &&
+                                                            p.course ===
+                                                              course &&
+                                                            p.branch === branch,
+                                                        );
+                                                      const isSelected =
+                                                        getSelectedPrograms(
+                                                          field.name,
+                                                        ).some(
+                                                          (p) =>
+                                                            p.id ===
+                                                            program?.id,
+                                                        );
+
+                                                      return (
+                                                        <div
+                                                          key={`${year}-${course}-${branch}`}
+                                                          style={{
+                                                            padding: "4px 8px",
+                                                            background:
+                                                              isSelected
+                                                                ? "#f0fdf4"
+                                                                : "#ffffff",
+                                                            margin: "1px 0",
+                                                            borderRadius: 4,
+                                                          }}
+                                                        >
+                                                          <Checkbox
+                                                            checked={isSelected}
+                                                            onChange={(e) =>
+                                                              handleBranchToggle(
+                                                                year,
+                                                                course,
+                                                                branch,
+                                                                e.target
+                                                                  .checked,
+                                                                field.name,
+                                                              )
+                                                            }
+                                                            style={{
+                                                              fontSize: 12,
+                                                            }}
+                                                          >
+                                                            {branch}
+                                                          </Checkbox>
+                                                        </div>
+                                                      );
+                                                    })}
+                                                  </div>
+                                                )}
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
                               </div>
-                            )}
+                            </div>
                           </div>
-                        </Form.Item>
+                        </div>
                       </Col>
                     </Row>
                     {/* <Row gutter={[24, 16]}>
@@ -1786,42 +1759,6 @@ const JobDetails = ({
                               strong
                               style={{ fontSize: 14, color: "#374151" }}
                             >
-                              <span style={{ color: "#ef4444" }}>* </span>
-                              Backlog Policy
-                            </Text>
-                          }
-                          name={[field.name, "isBacklogAllowed"]}
-                          validateStatus={
-                            getFieldError(`salaries.${index}.isBacklogAllowed`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={getFieldError(
-                            `salaries.${index}.isBacklogAllowed`,
-                          )}
-                        >
-                          <Select
-                            placeholder="Select policy"
-                            options={BACKLOG_OPTIONS}
-                            onChange={(value) => {
-                              form.setFieldValue(
-                                ["salaries", index, "isBacklogAllowed"],
-                                value,
-                              );
-                            }}
-                            style={{
-                              borderRadius: 8,
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
-                            >
                               Minimum CPI Required
                             </Text>
                           }
@@ -1842,8 +1779,7 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
-                    </Row>
-                    <Row gutter={[24, 16]}>
+
                       <Col span={12}>
                         <Form.Item
                           label={
@@ -1885,6 +1821,8 @@ const JobDetails = ({
                           />
                         </Form.Item>
                       </Col>
+                    </Row>
+                    <Row gutter={[24, 16]}>
                       <Col span={12}>
                         <Form.Item
                           label={
@@ -1922,6 +1860,42 @@ const JobDetails = ({
                               borderRadius: 8,
                               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                               border: "1px solid #d1d5db",
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Backlog Policy
+                            </Text>
+                          }
+                          name={[field.name, "isBacklogAllowed"]}
+                          validateStatus={
+                            getFieldError(`salaries.${index}.isBacklogAllowed`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(
+                            `salaries.${index}.isBacklogAllowed`,
+                          )}
+                        >
+                          <Select
+                            placeholder="Select policy"
+                            options={BACKLOG_OPTIONS}
+                            onChange={(value) => {
+                              form.setFieldValue(
+                                ["salaries", index, "isBacklogAllowed"],
+                                value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
                             }}
                           />
                         </Form.Item>
@@ -2518,7 +2492,6 @@ const JobDetails = ({
                                 </Text>
                               }
                               name={[field.name, "stipend"]}
-                              help="Monthly stipend amount for internship"
                             >
                               <Input
                                 type="number"
@@ -2558,67 +2531,25 @@ const JobDetails = ({
                               }
                               name={[field.name, "accommodation"]}
                             >
-                              <Input
-                                type="number"
-                                placeholder="Accommodation"
-                                min={0}
+                              <Select
+                                placeholder="Select accommodation provision"
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                                   border: "1px solid #d1d5db",
                                 }}
-                                addonBefore={
-                                  <CurrencySelect
-                                    defaultValue="INR"
-                                    style={{ width: 120 }}
-                                    allowCustom={true}
-                                    customCurrencies={customCurrencies}
-                                    onAddCustomCurrency={
-                                      handleAddCustomCurrency
-                                    }
-                                    syncedCurrency={syncedCurrency}
-                                    onCurrencySync={handleCurrencySync}
-                                  />
-                                }
-                              />
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                        <Row gutter={[24, 16]}>
-                          <Col span={12}>
-                            <Form.Item
-                              label={
-                                <Text
-                                  strong
-                                  style={{ fontSize: 14, color: "#374151" }}
-                                >
-                                  Tentative CTC
-                                </Text>
-                              }
-                              name={[field.name, "tentativeCTC"]}
-                            >
-                              <Input
-                                type="number"
-                                placeholder="Tentative CTC"
-                                min={0}
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
-                                addonBefore={
-                                  <CurrencySelect
-                                    defaultValue="INR"
-                                    style={{ width: 120 }}
-                                    allowCustom={true}
-                                    customCurrencies={customCurrencies}
-                                    onAddCustomCurrency={
-                                      handleAddCustomCurrency
-                                    }
-                                    syncedCurrency={syncedCurrency}
-                                    onCurrencySync={handleCurrencySync}
-                                  />
-                                }
+                                options={[
+                                  {
+                                    value: true,
+                                    label:
+                                      "Yes - Accommodation Stipend Provided",
+                                  },
+                                  {
+                                    value: false,
+                                    label:
+                                      "No - Accommodation Stipend Not Provided",
+                                  },
+                                ]}
                               />
                             </Form.Item>
                           </Col>
@@ -2629,23 +2560,103 @@ const JobDetails = ({
                                   strong
                                   style={{ fontSize: 14, color: "#374151" }}
                                 >
-                                  PPO Confirmation Date
+                                  PPO Provision on Performance
                                 </Text>
                               }
-                              name={[field.name, "PPOConfirmationDate"]}
+                              name={[field.name, "ppoProvisionOnPerformance"]}
                             >
-                              <Input
-                                type="date"
-                                min={new Date().toISOString().split("T")[0]}
+                              <Select
+                                placeholder="Select PPO provision"
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                                   border: "1px solid #d1d5db",
                                 }}
+                                options={[
+                                  {
+                                    value: true,
+                                    label: "Yes - PPO Offered on Performance",
+                                  },
+                                  {
+                                    value: false,
+                                    label: "No - PPO Not Offered",
+                                  },
+                                ]}
                               />
                             </Form.Item>
                           </Col>
                         </Row>
+
+                        {/* PPO Details - Only show if PPO provision is YES */}
+                        {form.getFieldValue([
+                          "salaries",
+                          index,
+                          "ppoProvisionOnPerformance",
+                        ]) === true && (
+                          <Row gutter={[24, 16]}>
+                            <Col span={12}>
+                              <Form.Item
+                                label={
+                                  <Text
+                                    strong
+                                    style={{ fontSize: 14, color: "#374151" }}
+                                  >
+                                    Tentative CTC for PPO Select
+                                  </Text>
+                                }
+                                name={[field.name, "tentativeCTC"]}
+                              >
+                                <Input
+                                  type="number"
+                                  placeholder="Tentative CTC"
+                                  min={0}
+                                  style={{
+                                    borderRadius: 8,
+                                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                                    border: "1px solid #d1d5db",
+                                  }}
+                                  addonBefore={
+                                    <CurrencySelect
+                                      defaultValue="INR"
+                                      style={{ width: 120 }}
+                                      allowCustom={true}
+                                      customCurrencies={customCurrencies}
+                                      onAddCustomCurrency={
+                                        handleAddCustomCurrency
+                                      }
+                                      syncedCurrency={syncedCurrency}
+                                      onCurrencySync={handleCurrencySync}
+                                    />
+                                  }
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                              <Form.Item
+                                label={
+                                  <Text
+                                    strong
+                                    style={{ fontSize: 14, color: "#374151" }}
+                                  >
+                                    Tentative Date for PPO Confirmation
+                                  </Text>
+                                }
+                                name={[field.name, "PPOConfirmationDate"]}
+                                help="Not later than 15th September 2025, as per AIPC policy"
+                              >
+                                <Input
+                                  type="date"
+                                  min={new Date().toISOString().split("T")[0]}
+                                  style={{
+                                    borderRadius: 8,
+                                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                                    border: "1px solid #d1d5db",
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        )}
                       </>
                     )}
                     <Row gutter={[24, 16]}>
@@ -2697,7 +2708,7 @@ const JobDetails = ({
                   type="dashed"
                   onClick={() => {
                     if (fields.length < FIELD_LIMITS.SALARY_ENTRIES_MAX) {
-                      add();
+                      add({ programs: [] });
                     } else {
                       message.warning(
                         `Maximum ${FIELD_LIMITS.SALARY_ENTRIES_MAX} salary packages allowed`,
@@ -2721,6 +2732,525 @@ const JobDetails = ({
               </div>
             )}
           </Form.List>
+        </div>
+
+        {/* Selection Procedure Section */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: 16,
+            padding: "32px",
+            marginBottom: 24,
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+            border: "1px solid #e2e8f0",
+          }}
+        >
+          <Title
+            level={5}
+            style={{
+              marginBottom: 24,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 18,
+              borderBottom: "2px solid #e2e8f0",
+              paddingBottom: 12,
+            }}
+          >
+            Selection Procedure
+          </Title>
+
+          <Row gutter={[24, 16]}>
+            {/* Selection Mode (required) */}
+            <Col span={8}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    <span style={{ color: "#ef4444" }}>* </span>
+                    Selection Mode
+                  </Text>
+                }
+                required
+                hasFeedback
+                validateStatus={
+                  getFieldError("selectionMode") ? "error" : undefined
+                }
+                help={getFieldError("selectionMode")}
+              >
+                <Select
+                  value={values.selectionMode || undefined}
+                  placeholder="Select mode"
+                  onChange={(val: SelectionModeEnum) => {
+                    setFieldValue("selectionMode", val);
+                  }}
+                  options={SELECTION_MODE_OPTIONS}
+                  style={{
+                    borderRadius: 8,
+                  }}
+                />
+              </Form.Item>
+            </Col>
+
+            {/* Selection preferences */}
+            <Col span={8}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Selection Options
+                  </Text>
+                }
+                style={{ marginBottom: 8 }}
+              >
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
+                >
+                  <Checkbox
+                    checked={values.shortlistFromResume}
+                    onChange={(e) =>
+                      setFieldValue("shortlistFromResume", e.target.checked)
+                    }
+                    style={{ fontSize: 14 }}
+                  >
+                    <Text style={{ fontSize: 14 }}>Shortlist From Resume</Text>
+                  </Checkbox>
+                </div>
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item label=" " style={{ marginBottom: 8 }}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
+                >
+                  <Checkbox
+                    checked={values.groupDiscussion}
+                    onChange={(e) =>
+                      setFieldValue("groupDiscussion", e.target.checked)
+                    }
+                    style={{ fontSize: 14 }}
+                  >
+                    <Text style={{ fontSize: 14 }}>Group Discussion Round</Text>
+                  </Checkbox>
+                </div>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Tests Section */}
+          <Title
+            level={5}
+            style={{
+              marginTop: 32,
+              marginBottom: 16,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
+            Written Tests & Assessments
+          </Title>
+
+          <Form.List name="tests">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field, index) => (
+                  <Card
+                    size="small"
+                    title={
+                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                        Test {index + 1}
+                      </Text>
+                    }
+                    key={field.key}
+                    extra={
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={() => remove(field.name)}
+                        title="Remove this test"
+                        style={{
+                          borderRadius: 6,
+                        }}
+                      />
+                    }
+                    style={{
+                      marginBottom: 16,
+                      borderRadius: 12,
+                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <Row gutter={[24, 16]}>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Test Type
+                            </Text>
+                          }
+                          name={[field.name, "type"]}
+                          validateStatus={
+                            getFieldError(`tests.${index}.type`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`tests.${index}.type`)}
+                        >
+                          <Select
+                            placeholder="Select type"
+                            options={testType}
+                            showSearch
+                            filterOption={(input, option) =>
+                              String(option?.label ?? "")
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            onChange={(value) => {
+                              form.setFieldValue(
+                                ["tests", index, "type"],
+                                value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Duration
+                            </Text>
+                          }
+                          name={[field.name, "duration"]}
+                          validateStatus={
+                            getFieldError(`tests.${index}.duration`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`tests.${index}.duration`)}
+                        >
+                          <Input
+                            placeholder={PLACEHOLDERS.TEST_DURATION}
+                            maxLength={100}
+                            onChange={(e) => {
+                              form.setFieldValue(
+                                ["tests", index, "duration"],
+                                e.target.value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                              border: "1px solid #d1d5db",
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={() => {
+                    if (fields.length < FIELD_LIMITS.TESTS_MAX) {
+                      add();
+                    } else {
+                      message.warning(
+                        `Maximum ${FIELD_LIMITS.TESTS_MAX} tests allowed`,
+                      );
+                    }
+                  }}
+                  block
+                  style={{
+                    marginBottom: 16,
+                    borderRadius: 8,
+                    height: 40,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderColor: "#d1d5db",
+                  }}
+                  disabled={fields.length >= FIELD_LIMITS.TESTS_MAX}
+                >
+                  + Add Test ({fields.length}/{FIELD_LIMITS.TESTS_MAX})
+                </Button>
+              </>
+            )}
+          </Form.List>
+
+          {/* Interviews Section */}
+          <Title
+            level={5}
+            style={{
+              marginTop: 32,
+              marginBottom: 16,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
+            Interview Rounds
+          </Title>
+
+          <Form.List name="interviews">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map((field, index) => (
+                  <Card
+                    size="small"
+                    title={
+                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                        Interview Round {index + 1}
+                      </Text>
+                    }
+                    key={field.key}
+                    extra={
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={() => remove(field.name)}
+                        title="Remove this interview round"
+                        style={{
+                          borderRadius: 6,
+                        }}
+                      />
+                    }
+                    style={{
+                      marginBottom: 16,
+                      borderRadius: 12,
+                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #e5e7eb",
+                    }}
+                  >
+                    <Row gutter={[24, 16]}>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Interview Type
+                            </Text>
+                          }
+                          name={[field.name, "type"]}
+                          validateStatus={
+                            getFieldError(`interviews.${index}.type`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`interviews.${index}.type`)}
+                        >
+                          <Select
+                            placeholder="Select type"
+                            options={interviewType}
+                            showSearch
+                            filterOption={(input, option) =>
+                              String(option?.label ?? "")
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            onChange={(value) => {
+                              form.setFieldValue(
+                                ["interviews", index, "type"],
+                                value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label={
+                            <Text
+                              strong
+                              style={{ fontSize: 14, color: "#374151" }}
+                            >
+                              <span style={{ color: "#ef4444" }}>* </span>
+                              Duration
+                            </Text>
+                          }
+                          name={[field.name, "duration"]}
+                          validateStatus={
+                            getFieldError(`interviews.${index}.duration`)
+                              ? "error"
+                              : undefined
+                          }
+                          help={getFieldError(`interviews.${index}.duration`)}
+                        >
+                          <Input
+                            placeholder={PLACEHOLDERS.INTERVIEW_DURATION}
+                            maxLength={100}
+                            onChange={(e) => {
+                              form.setFieldValue(
+                                ["interviews", index, "duration"],
+                                e.target.value,
+                              );
+                            }}
+                            style={{
+                              borderRadius: 8,
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                              border: "1px solid #d1d5db",
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Card>
+                ))}
+
+                <Button
+                  type="dashed"
+                  onClick={() => {
+                    if (fields.length < FIELD_LIMITS.INTERVIEWS_MAX) {
+                      add();
+                    } else {
+                      message.warning(
+                        `Maximum ${FIELD_LIMITS.INTERVIEWS_MAX} interview rounds allowed`,
+                      );
+                    }
+                  }}
+                  block
+                  style={{
+                    marginBottom: 16,
+                    borderRadius: 8,
+                    height: 40,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    borderColor: "#d1d5db",
+                  }}
+                  disabled={fields.length >= FIELD_LIMITS.INTERVIEWS_MAX}
+                >
+                  + Add Interview Round ({fields.length}/
+                  {FIELD_LIMITS.INTERVIEWS_MAX})
+                </Button>
+              </>
+            )}
+          </Form.List>
+
+          {/* Infrastructure Requirements */}
+          <Title
+            level={5}
+            style={{
+              marginTop: 32,
+              marginBottom: 16,
+              color: "#1f2937",
+              fontWeight: 600,
+              fontSize: 16,
+            }}
+          >
+            Infrastructure Requirements
+          </Title>
+
+          <Row gutter={[24, 16]}>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Team Members Required
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("numberOfMembers") ? "error" : undefined
+                }
+                help={getFieldError("numberOfMembers")}
+              >
+                <Input
+                  type="number"
+                  name="numberOfMembers"
+                  placeholder={PLACEHOLDERS.REQUIREMENTS_MEMBERS}
+                  value={values.numberOfMembers}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={0}
+                  max={FIELD_LIMITS.MEMBERS_MAX}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label={
+                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    Rooms/Spaces Required
+                  </Text>
+                }
+                validateStatus={
+                  getFieldError("numberOfRooms") ? "error" : undefined
+                }
+                help={getFieldError("numberOfRooms")}
+              >
+                <Input
+                  type="number"
+                  name="numberOfRooms"
+                  placeholder={PLACEHOLDERS.REQUIREMENTS_ROOMS}
+                  value={values.numberOfRooms}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  min={0}
+                  max={FIELD_LIMITS.ROOMS_MAX}
+                  style={{
+                    borderRadius: 8,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                    border: "1px solid #d1d5db",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            label={
+              <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                Other Infrastructure Requirements
+              </Text>
+            }
+            validateStatus={
+              getFieldError("otherRequirements") ? "error" : undefined
+            }
+            help={getFieldError("otherRequirements")}
+          >
+            <TextArea
+              rows={4}
+              name="otherRequirements"
+              placeholder={PLACEHOLDERS.OTHER_REQUIREMENTS}
+              value={values.otherRequirements}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              maxLength={FIELD_LIMITS.OTHER_DETAILS_MAX}
+              showCount
+              style={{
+                borderRadius: 8,
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                border: "1px solid #d1d5db",
+              }}
+            />
+          </Form.Item>
         </div>
       </Form>
     </div>
