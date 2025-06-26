@@ -16,7 +16,7 @@ const Salaries = ({
     <div className="font-semibold text-lg mb-4">Salaries</div>
     {salaries.map((salary, index) => (
       <div key={index}>
-        {seasonType === 'PLACEMENT' ? (
+        {seasonType === "PLACEMENT" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <div className="font-semibold my-2">Base Salary</div>
@@ -249,7 +249,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyCode"
                   value={formData.salaries[index].foreignCurrencyCode}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyCode")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyCode")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyCode}</div>
@@ -321,7 +323,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyStipend"
                   value={formData.salaries[index].foreignCurrencyStipend}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyStipend")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyStipend")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyStipend}</div>
@@ -332,13 +336,53 @@ const Salaries = ({
               <div className="font-semibold my-2">Accommodation</div>
               {editMode ? (
                 <input
-                  type="text"
+                  type="checkbox"
                   name="accommodation"
-                  value={formData.salaries[index].accommodation}
-                  onChange={(e) => handleChange(e, index, "accommodation")}
+                  checked={formData.salaries[index].accommodation || false}
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "accommodation",
+                    )
+                  }
                 />
               ) : (
-                <div>{salary.accommodation}</div>
+                <div>{salary.accommodation ? "Yes" : "No"}</div>
+              )}
+            </div>
+
+            <div>
+              <div className="font-semibold my-2">
+                PPO Provision on Performance
+              </div>
+              {editMode ? (
+                <input
+                  type="checkbox"
+                  name="ppoProvisionOnPerformance"
+                  checked={
+                    formData.salaries[index].ppoProvisionOnPerformance || false
+                  }
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "ppoProvisionOnPerformance",
+                    )
+                  }
+                />
+              ) : (
+                <div>{salary.ppoProvisionOnPerformance ? "Yes" : "No"}</div>
               )}
             </div>
 
@@ -435,8 +479,6 @@ const Salaries = ({
             ))}
           </div>
         </div>
-        
-       
       </div>
     ))}
   </div>

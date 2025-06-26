@@ -25,7 +25,7 @@ const Salaries = ({
     <div className="font-semibold text-lg mb-4">Salaries</div>
     {salaries.map((salary, index) => (
       <div key={index}>
-        {seasonType === 'PLACEMENT' ? (
+        {seasonType === "PLACEMENT" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <div className="font-semibold my-2">Base Salary</div>
@@ -258,7 +258,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyCode"
                   value={formData.salaries[index].foreignCurrencyCode}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyCode")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyCode")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyCode}</div>
@@ -330,7 +332,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyStipend"
                   value={formData.salaries[index].foreignCurrencyStipend}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyStipend")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyStipend")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyStipend}</div>
@@ -341,13 +345,53 @@ const Salaries = ({
               <div className="font-semibold my-2">Accommodation</div>
               {editMode ? (
                 <input
-                  type="text"
+                  type="checkbox"
                   name="accommodation"
-                  value={formData.salaries[index].accommodation}
-                  onChange={(e) => handleChange(e, index, "accommodation")}
+                  checked={formData.salaries[index].accommodation || false}
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "accommodation",
+                    )
+                  }
                 />
               ) : (
-                <div>{salary.accommodation}</div>
+                <div>{salary.accommodation ? "Yes" : "No"}</div>
+              )}
+            </div>
+
+            <div>
+              <div className="font-semibold my-2">
+                PPO Provision on Performance
+              </div>
+              {editMode ? (
+                <input
+                  type="checkbox"
+                  name="ppoProvisionOnPerformance"
+                  checked={
+                    formData.salaries[index].ppoProvisionOnPerformance || false
+                  }
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "ppoProvisionOnPerformance",
+                    )
+                  }
+                />
+              ) : (
+                <div>{salary.ppoProvisionOnPerformance ? "Yes" : "No"}</div>
               )}
             </div>
 
@@ -452,7 +496,9 @@ const Salaries = ({
                 </div>
               ))
             ) : (
-              <div className="text-gray-500 italic">All categories eligible</div>
+              <div className="text-gray-500 italic">
+                All categories eligible
+              </div>
             )}
           </div>
         </div>
@@ -502,23 +548,31 @@ const Salaries = ({
                   X
                 </button>
               </div>
-              <div className="p-4 web overflow-auto" style={{ maxHeight: "75vh" }}>
+              <div
+                className="p-4 web overflow-auto"
+                style={{ maxHeight: "75vh" }}
+              >
                 {loading ? (
                   <Loader />
                 ) : (
                   facultyApprovals.map((approval, index) => (
-                    <div key={approval.id} className="border-b border-gray-300 py-2">
+                    <div
+                      key={approval.id}
+                      className="border-b border-gray-300 py-2"
+                    >
                       <h3 className="text-lg font-semibold">
                         {approval?.faculty.user.name}
                       </h3>
                       <p className="text-gray-600">
-                        <strong>Department:</strong> {approval.faculty.department}
+                        <strong>Department:</strong>{" "}
+                        {approval.faculty.department}
                       </p>
                       <p className="text-gray-600">
                         <strong>Email:</strong> {approval.faculty?.user.email}
                       </p>
                       <p className="text-gray-600">
-                        <strong>Contact:</strong> {approval.faculty?.user.contact}
+                        <strong>Contact:</strong>{" "}
+                        {approval.faculty?.user.contact}
                       </p>
                       <p className="text-gray-600">
                         <strong>Status:</strong> {approval.status}
@@ -542,19 +596,25 @@ const Salaries = ({
                         <input
                           type="checkbox"
                           id={`faculty-${i}`}
-                          checked={selectedFaculties[index]?.includes(faculty.id)}
-                          onChange={() => setSelectedFaculties((prev) => {
-                            const newSelection = [...(prev[index] || [])];
-                            const selectedIndex = newSelection.indexOf(faculty.id);
-                            if (selectedIndex >= 0) {
-                              newSelection.splice(selectedIndex, 1);
-                            } else {
-                              newSelection.push(faculty.id);
-                            }
-                            const newSelectedFaculties = [...prev];
-                            newSelectedFaculties[index] = newSelection;
-                            return newSelectedFaculties;
-                          })}
+                          checked={selectedFaculties[index]?.includes(
+                            faculty.id,
+                          )}
+                          onChange={() =>
+                            setSelectedFaculties((prev) => {
+                              const newSelection = [...(prev[index] || [])];
+                              const selectedIndex = newSelection.indexOf(
+                                faculty.id,
+                              );
+                              if (selectedIndex >= 0) {
+                                newSelection.splice(selectedIndex, 1);
+                              } else {
+                                newSelection.push(faculty.id);
+                              }
+                              const newSelectedFaculties = [...prev];
+                              newSelectedFaculties[index] = newSelection;
+                              return newSelectedFaculties;
+                            })
+                          }
                         />
                         <label htmlFor={`faculty-${i}`} className="ml-2">
                           {faculty.user.name} ({faculty.department})

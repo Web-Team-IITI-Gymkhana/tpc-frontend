@@ -532,7 +532,9 @@ const JobDetails = ({
                 others: s?.others ?? "",
                 stipend: s?.stipend ?? 0,
                 foreignCurrencyStipend: s?.foreignCurrencyStipend ?? 0,
-                accommodation: s?.accommodation ?? 0,
+                accommodation: s?.accommodation ?? false,
+                ppoProvisionOnPerformance:
+                  s?.ppoProvisionOnPerformance ?? false,
                 tentativeCTC: s?.tentativeCTC ?? 0,
                 PPOConfirmationDate: s?.PPOConfirmationDate ?? null,
               };
@@ -2001,7 +2003,6 @@ const JobDetails = ({
                                 </Text>
                               }
                               name={[field.name, "stipend"]}
-                            
                             >
                               <Input
                                 type="number"
@@ -2041,67 +2042,25 @@ const JobDetails = ({
                               }
                               name={[field.name, "accommodation"]}
                             >
-                              <Input
-                                type="number"
-                                placeholder="Accommodation"
-                                min={0}
+                              <Select
+                                placeholder="Select accommodation provision"
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                                   border: "1px solid #d1d5db",
                                 }}
-                                addonBefore={
-                                  <CurrencySelect
-                                    defaultValue="INR"
-                                    style={{ width: 120 }}
-                                    allowCustom={true}
-                                    customCurrencies={customCurrencies}
-                                    onAddCustomCurrency={
-                                      handleAddCustomCurrency
-                                    }
-                                    syncedCurrency={syncedCurrency}
-                                    onCurrencySync={handleCurrencySync}
-                                  />
-                                }
-                              />
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                        <Row gutter={[24, 16]}>
-                          <Col span={12}>
-                            <Form.Item
-                              label={
-                                <Text
-                                  strong
-                                  style={{ fontSize: 14, color: "#374151" }}
-                                >
-                                  Tentative CTC for PPO Select
-                                </Text>
-                              }
-                              name={[field.name, "tentativeCTC"]}
-                            >
-                              <Input
-                                type="number"
-                                placeholder="Tentative CTC"
-                                min={0}
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
-                                addonBefore={
-                                  <CurrencySelect
-                                    defaultValue="INR"
-                                    style={{ width: 120 }}
-                                    allowCustom={true}
-                                    customCurrencies={customCurrencies}
-                                    onAddCustomCurrency={
-                                      handleAddCustomCurrency
-                                    }
-                                    syncedCurrency={syncedCurrency}
-                                    onCurrencySync={handleCurrencySync}
-                                  />
-                                }
+                                options={[
+                                  {
+                                    value: true,
+                                    label:
+                                      "Yes - Accommodation Stipend Provided",
+                                  },
+                                  {
+                                    value: false,
+                                    label:
+                                      "No - Accommodation Stipend Not Provided",
+                                  },
+                                ]}
                               />
                             </Form.Item>
                           </Col>
@@ -2112,23 +2071,103 @@ const JobDetails = ({
                                   strong
                                   style={{ fontSize: 14, color: "#374151" }}
                                 >
-                                 Tentative Date for PPO Confirmation
+                                  PPO Provision on Performance
                                 </Text>
                               }
-                              name={[field.name, "PPOConfirmationDate"]}
+                              name={[field.name, "ppoProvisionOnPerformance"]}
                             >
-                              <Input
-                                type="date"
-                                min={new Date().toISOString().split("T")[0]}
+                              <Select
+                                placeholder="Select PPO provision"
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                                   border: "1px solid #d1d5db",
                                 }}
+                                options={[
+                                  {
+                                    value: true,
+                                    label: "Yes - PPO Offered on Performance",
+                                  },
+                                  {
+                                    value: false,
+                                    label: "No - PPO Not Offered",
+                                  },
+                                ]}
                               />
                             </Form.Item>
                           </Col>
                         </Row>
+
+                        {/* PPO Details - Only show if PPO provision is YES */}
+                        {form.getFieldValue([
+                          "salaries",
+                          index,
+                          "ppoProvisionOnPerformance",
+                        ]) === true && (
+                          <Row gutter={[24, 16]}>
+                            <Col span={12}>
+                              <Form.Item
+                                label={
+                                  <Text
+                                    strong
+                                    style={{ fontSize: 14, color: "#374151" }}
+                                  >
+                                    Tentative CTC for PPO Select
+                                  </Text>
+                                }
+                                name={[field.name, "tentativeCTC"]}
+                              >
+                                <Input
+                                  type="number"
+                                  placeholder="Tentative CTC"
+                                  min={0}
+                                  style={{
+                                    borderRadius: 8,
+                                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                                    border: "1px solid #d1d5db",
+                                  }}
+                                  addonBefore={
+                                    <CurrencySelect
+                                      defaultValue="INR"
+                                      style={{ width: 120 }}
+                                      allowCustom={true}
+                                      customCurrencies={customCurrencies}
+                                      onAddCustomCurrency={
+                                        handleAddCustomCurrency
+                                      }
+                                      syncedCurrency={syncedCurrency}
+                                      onCurrencySync={handleCurrencySync}
+                                    />
+                                  }
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                              <Form.Item
+                                label={
+                                  <Text
+                                    strong
+                                    style={{ fontSize: 14, color: "#374151" }}
+                                  >
+                                    Tentative Date for PPO Confirmation
+                                  </Text>
+                                }
+                                name={[field.name, "PPOConfirmationDate"]}
+                                help="Not later than 15th September 2025, as per AIPC policy"
+                              >
+                                <Input
+                                  type="date"
+                                  min={new Date().toISOString().split("T")[0]}
+                                  style={{
+                                    borderRadius: 8,
+                                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                                    border: "1px solid #d1d5db",
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        )}
                       </>
                     )}
                     <Row gutter={[24, 16]}>
