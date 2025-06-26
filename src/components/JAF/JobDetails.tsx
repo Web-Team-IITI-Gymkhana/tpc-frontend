@@ -255,31 +255,35 @@ const JobDetails = ({
           coursesMap: programsMap,
           branchesMap: branchesMap,
         });
-        
+
         // Initialize selected programs from existing form data if any
         const currentSalaries = values.salaries || [];
         const newSelectedPrograms = new Map<number, SelectedProgram[]>();
-        
+
         currentSalaries.forEach((salary: any, index: number) => {
           if (salary?.programs?.length > 0) {
             const selectedPrograms = salary.programs
               .map((programId: string) => {
-                const program = data.programs?.find((p: ProgramsDto) => p.id === programId);
-                return program ? {
-                  year: program.year,
-                  course: program.course,
-                  branch: program.branch,
-                  id: program.id,
-                } : null;
+                const program = data.programs?.find(
+                  (p: ProgramsDto) => p.id === programId,
+                );
+                return program
+                  ? {
+                      year: program.year,
+                      course: program.course,
+                      branch: program.branch,
+                      id: program.id,
+                    }
+                  : null;
               })
               .filter(Boolean);
-            
+
             if (selectedPrograms.length > 0) {
               newSelectedPrograms.set(index, selectedPrograms);
             }
           }
         });
-        
+
         if (newSelectedPrograms.size > 0) {
           setSelectedProgramsBySalary(newSelectedPrograms);
         }
@@ -325,7 +329,7 @@ const JobDetails = ({
 
   const handleBranchChange = (branch: string, fieldIndex: number) => {
     const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
-    
+
     if (branch === "ALL") {
       const allBranchesSelected = branches.every((branch) =>
         currentSelectedPrograms.some(
@@ -370,7 +374,9 @@ const JobDetails = ({
       );
 
       if (program) {
-        const isSelected = currentSelectedPrograms.some((p) => p.id === program.id);
+        const isSelected = currentSelectedPrograms.some(
+          (p) => p.id === program.id,
+        );
 
         if (isSelected) {
           const updatedPrograms = currentSelectedPrograms.filter(
@@ -396,13 +402,15 @@ const JobDetails = ({
 
   const handleRemoveProgram = (programId: string, fieldIndex: number) => {
     const currentSelectedPrograms = getSelectedPrograms(fieldIndex);
-    const updatedPrograms = currentSelectedPrograms.filter((p) => p.id !== programId);
+    const updatedPrograms = currentSelectedPrograms.filter(
+      (p) => p.id !== programId,
+    );
     updateSelectedPrograms(fieldIndex, updatedPrograms);
   };
 
-  const [selectedProgramsBySalary, setSelectedProgramsBySalary] = useState<Map<number, SelectedProgram[]>>(
-    new Map(),
-  );
+  const [selectedProgramsBySalary, setSelectedProgramsBySalary] = useState<
+    Map<number, SelectedProgram[]>
+  >(new Map());
 
   // Helper function to get selected programs for a salary entry
   const getSelectedPrograms = (fieldIndex: number): SelectedProgram[] => {
@@ -410,17 +418,20 @@ const JobDetails = ({
   };
 
   // Helper function to update selected programs for a salary entry
-  const updateSelectedPrograms = (fieldIndex: number, programs: SelectedProgram[]) => {
+  const updateSelectedPrograms = (
+    fieldIndex: number,
+    programs: SelectedProgram[],
+  ) => {
     const newMap = new Map(selectedProgramsBySalary);
     newMap.set(fieldIndex, programs);
     setSelectedProgramsBySalary(newMap);
-    
+
     // Update form field
     form.setFieldValue(
       ["salaries", fieldIndex, "programs"],
       programs.map((p) => p.id),
     );
-    
+
     // Update Formik state to ensure validation
     const currentSalaries = form.getFieldValue("salaries") || [];
     currentSalaries[fieldIndex] = {
@@ -461,13 +472,12 @@ const JobDetails = ({
             fontSize: 20,
           }}
         >
-          {seasonType === "INTERNSHIP" ? "Intern Details" : "Job Details"}
+          {seasonType === "INTERN" ? "Intern Details" : "Job Details"}
         </Title>
         <Text style={{ fontSize: 16, color: "#6b7280", fontWeight: 500 }}>
-          {seasonType === "INTERNSHIP" 
+          {seasonType === "INTERN"
             ? "Provide comprehensive internship position details and requirements"
-            : "Provide comprehensive job position details and requirements"
-          }
+            : "Provide comprehensive job position details and requirements"}
         </Text>
       </div>
 
@@ -494,7 +504,7 @@ const JobDetails = ({
               const selectedPrograms = getSelectedPrograms(index);
               return {
                 salaryPeriod: s?.salaryPeriod ?? "",
-                programs: s?.programs ?? selectedPrograms.map(p => p.id),
+                programs: s?.programs ?? selectedPrograms.map((p) => p.id),
                 genders: s?.genders ?? [],
                 categories: s?.categories ?? [],
                 isBacklogAllowed: s?.isBacklogAllowed ?? "",
@@ -552,7 +562,9 @@ const JobDetails = ({
               paddingBottom: 12,
             }}
           >
-            {seasonType === "INTERNSHIP" ? "Basic Internship Information" : "Basic Job Information"}
+            {seasonType === "INTERN"
+              ? "Basic Internship Information"
+              : "Basic Job Information"}
           </Title>
 
           <Row gutter={[24, 16]}>
@@ -562,7 +574,9 @@ const JobDetails = ({
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
                     <span style={{ color: "#ef4444" }}>* </span>
-                    {seasonType === "INTERNSHIP" ? "Internship Title / Role" : "Job Title / Role"}
+                    {seasonType === "INTERN"
+                      ? "Internship Title / Role"
+                      : "Job Title / Role"}
                   </Text>
                 }
                 required
@@ -572,7 +586,11 @@ const JobDetails = ({
               >
                 <Input
                   name="role"
-                  placeholder={seasonType === "INTERNSHIP" ? "e.g., Software Development Intern" : PLACEHOLDERS.JOB_TITLE}
+                  placeholder={
+                    seasonType === "INTERN"
+                      ? "e.g., Software Development Intern"
+                      : PLACEHOLDERS.JOB_TITLE
+                  }
                   value={values.role}
                   onChange={(e) => {
                     handleChange(e);
@@ -588,38 +606,6 @@ const JobDetails = ({
               </Form.Item>
             </Col>
 
-            {/* Duration (only for internships) */}
-            {seasonType === "INTERNSHIP" && (
-              <Col span={12}>
-                <Form.Item
-                  label={
-                    <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                      Internship Duration
-                    </Text>
-                  }
-                  validateStatus={getFieldError("duration") ? "error" : undefined}
-                  help={getFieldError("duration")}
-                >
-                  <Input
-                    name="duration"
-                    placeholder="e.g., 2 months, 8 weeks"
-                    value={values.duration}
-                    onChange={(e) => {
-                      handleChange(e);
-                    }}
-                    maxLength={FIELD_LIMITS.DURATION_MAX}
-                    style={{
-                      borderRadius: 8,
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #d1d5db",
-                    }}
-                  />
-                </Form.Item>
-              </Col>
-            )}
-          </Row>
-
-          <Row gutter={[24, 16]}>
             {/* Location (required) */}
             <Col span={12}>
               <Form.Item
@@ -651,7 +637,9 @@ const JobDetails = ({
                 />
               </Form.Item>
             </Col>
+          </Row>
 
+          <Row gutter={[24, 16]}>
             {/* Expected hires (optional but numeric) */}
             <Col span={12}>
               <Form.Item
@@ -683,11 +671,42 @@ const JobDetails = ({
                 />
               </Form.Item>
             </Col>
+
+            {/* Duration (only for internships) */}
+            {seasonType === "INTERN" && (
+              <Col span={12}>
+                <Form.Item
+                  label={
+                    <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                      Internship Duration
+                    </Text>
+                  }
+                  validateStatus={
+                    getFieldError("duration") ? "error" : undefined
+                  }
+                  help={getFieldError("duration")}
+                >
+                  <Input
+                    name="duration"
+                    placeholder="e.g., 2 months, 8 weeks"
+                    value={values.duration}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                    maxLength={FIELD_LIMITS.DURATION_MAX}
+                    style={{
+                      borderRadius: 8,
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #d1d5db",
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            )}
           </Row>
 
           <Row gutter={[24, 16]}>
-
-          <Col span={12}>
+            <Col span={12}>
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
@@ -717,7 +736,9 @@ const JobDetails = ({
                 />
               </Form.Item>
             </Col>
+          </Row>
 
+          <Row gutter={[24, 16]}>
             <Col span={12}>
               <Form.Item
                 label={
@@ -746,14 +767,7 @@ const JobDetails = ({
                 />
               </Form.Item>
             </Col>
-
-          
-          </Row>
-
-         
-
-          <Row gutter={[24, 16]}>
-          <Col span={12}>
+            <Col span={12}>
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
@@ -829,7 +843,9 @@ const JobDetails = ({
           <Form.Item
             label={
               <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                {seasonType === "INTERNSHIP" ? "Internship Description" : "Job Description"}
+                {seasonType === "INTERN"
+                  ? "Internship Description"
+                  : "Job Description"}
               </Text>
             }
             validateStatus={getFieldError("description") ? "error" : undefined}
@@ -851,7 +867,11 @@ const JobDetails = ({
                     onChange={(html) => {
                       setFieldValue("description", html);
                     }}
-                    placeholder={seasonType === "INTERNSHIP" ? "Describe the internship role, responsibilities, and learning opportunities..." : PLACEHOLDERS.JOB_DESCRIPTION}
+                    placeholder={
+                      seasonType === "INTERN"
+                        ? "Describe the internship role, responsibilities, and learning opportunities..."
+                        : PLACEHOLDERS.JOB_DESCRIPTION
+                    }
                     className="custom-quill"
                     style={{
                       minHeight: 200,
@@ -873,7 +893,9 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    {seasonType === "INTERNSHIP" ? "Internship Related Documents" : "Job Related Documents"}
+                    {seasonType === "INTERN"
+                      ? "Internship Related Documents"
+                      : "Job Related Documents"}
                   </Text>
                 }
                 validateStatus={
@@ -959,7 +981,9 @@ const JobDetails = ({
           <Form.Item
             label={
               <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                {seasonType === "INTERNSHIP" ? "Additional Internship Information" : "Additional Job Information"}
+                {seasonType === "INTERN"
+                  ? "Additional Internship Information"
+                  : "Additional Job Information"}
               </Text>
             }
             validateStatus={getFieldError("others") ? "error" : undefined}
@@ -968,7 +992,11 @@ const JobDetails = ({
             <TextArea
               rows={4}
               name="others"
-              placeholder={seasonType === "INTERNSHIP" ? "Any additional internship details, special requirements, or benefits..." : PLACEHOLDERS.OTHER_DETAILS}
+              placeholder={
+                seasonType === "INTERN"
+                  ? "Any additional internship details, special requirements, or benefits..."
+                  : PLACEHOLDERS.OTHER_DETAILS
+              }
               onChange={(e) => {
                 handleChange(e);
               }}
@@ -1622,13 +1650,15 @@ const JobDetails = ({
                                 options={[
                                   { value: "ALL", label: "Open For All" },
                                   ...branches.map((branch) => {
-                                    const currentSelectedPrograms = getSelectedPrograms(field.name);
-                                    const isSelected = currentSelectedPrograms.some(
-                                      (p) =>
-                                        p.year === selectedYear &&
-                                        p.course === selectedCourse &&
-                                        p.branch === branch,
-                                    );
+                                    const currentSelectedPrograms =
+                                      getSelectedPrograms(field.name);
+                                    const isSelected =
+                                      currentSelectedPrograms.some(
+                                        (p) =>
+                                          p.year === selectedYear &&
+                                          p.course === selectedCourse &&
+                                          p.branch === branch,
+                                      );
                                     return {
                                       value: branch,
                                       label: branch,
@@ -1665,29 +1695,31 @@ const JobDetails = ({
                                 >
                                   Selected Programs:
                                 </Text>
-                                {getSelectedPrograms(field.name).map((program) => (
-                                  <Tag
-                                    key={program.id}
-                                    closable
-                                    onClose={() =>
-                                      handleRemoveProgram(
-                                        program.id,
-                                        field.name,
-                                      )
-                                    }
-                                    style={{
-                                      fontSize: 12,
-                                      margin: 4,
-                                      maxWidth: "100%",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
-                                      borderRadius: 6,
-                                    }}
-                                  >
-                                    {`${program.branch} - ${program.course} - ${program.year}`}
-                                  </Tag>
-                                ))}
+                                {getSelectedPrograms(field.name).map(
+                                  (program) => (
+                                    <Tag
+                                      key={program.id}
+                                      closable
+                                      onClose={() =>
+                                        handleRemoveProgram(
+                                          program.id,
+                                          field.name,
+                                        )
+                                      }
+                                      style={{
+                                        fontSize: 12,
+                                        margin: 4,
+                                        maxWidth: "100%",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        borderRadius: 6,
+                                      }}
+                                    >
+                                      {`${program.branch} - ${program.course} - ${program.year}`}
+                                    </Tag>
+                                  ),
+                                )}
                               </div>
                             )}
                           </div>
