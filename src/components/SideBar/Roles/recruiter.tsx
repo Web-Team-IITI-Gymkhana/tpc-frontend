@@ -139,6 +139,39 @@ const RecruiterDashboard = () => {
             </div>
           </div>
         </Link>
+        <Link href="/recruiter/help">
+          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+            <div className="flex justify-start gap-[2rem]">
+              <div className="w-[2vw] text-white">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                >
+                  <path
+                    d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19C3 20.1 3.9 21 5 21H11V19H5V3H13V9H21ZM23 15V17H17V15H23ZM20 19V21H14V19H20ZM21 11V13H15V11H21Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { opacity: 0 },
+                  open: { opacity: 1 },
+                }}
+                className="w-[5rem] text-nowrap text-white"
+              >
+                Help Center
+              </motion.div>
+            </div>
+          </div>
+        </Link>
       </div>
     </>
   );
