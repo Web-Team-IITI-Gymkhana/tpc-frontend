@@ -706,3 +706,23 @@ export const validateCaptcha = async (captcha: string) => {
   });
   return res;
 };
+
+export const fetchPrograms = async (queryParam?: object) => {
+  return apiCall("/programs", {
+    queryParam,
+  });
+};
+
+export const postPrograms = async (
+  programs: {
+    branch: string;
+    course: string;
+    year: string;
+    department: string;
+  }[],
+) => {
+  return apiCall("/programs", {
+    method: "POST",
+    body: programs,
+  });
+};
