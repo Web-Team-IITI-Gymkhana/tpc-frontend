@@ -57,6 +57,7 @@ import {
   CategoryEnum,
   BacklogEnum,
 } from "../../types/jaf.types";
+import { CourseEnum } from "@/dto/Programs";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -78,7 +79,7 @@ type StepProps = {
 
 interface SelectedProgram {
   year: string;
-  course: string;
+  course: CourseEnum;
   branch: string;
   id: string;
 }
@@ -1365,7 +1366,7 @@ const JobDetails = ({
                                       color: "#374151",
                                     }}
                                   >
-                                    Program Selection
+                                    {"Program Selection (Based on Course Completion Year)"}
                                   </Text>
                                   <Text
                                     style={{
