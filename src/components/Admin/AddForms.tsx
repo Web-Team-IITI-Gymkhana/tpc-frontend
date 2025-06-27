@@ -48,15 +48,20 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
   }, []);
 
   return (
-    <div className="bg-gray-200 p-8 rounded-lg md:w-80 w-full leading-8">
+    <div className="bg-gray-200 p-4 md:p-8 rounded-lg w-full max-w-md mx-auto leading-6 md:leading-8">
       {loading ? (
-        <CircularProgress />
+        <div className="flex justify-center">
+          <CircularProgress />
+        </div>
       ) : (
         <>
           <div className="text-center font-semibold">
-            <PersonIcon sx={{ fontSize: 80 }} className="mx-auto" />
+            <PersonIcon
+              sx={{ fontSize: { xs: 60, md: 80 } }}
+              className="mx-auto"
+            />
             <br />
-            <label htmlFor="tpcMember" className="mt-2">
+            <label htmlFor="tpcMember" className="mt-2 text-sm md:text-base">
               Select TPC Member
             </label>
             <Select
@@ -69,12 +74,14 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
                 });
               }}
               isSearchable
-              className="mb-4 text-sm font-normal"
+              className="mb-4 text-xs md:text-sm font-normal"
             />
-            {coordinator && coordinator.student.user.name}
+            <div className="text-sm md:text-base">
+              {coordinator && coordinator.student.user.name}
+            </div>
           </div>
           {coordinator && (
-            <div>
+            <div className="space-y-2 text-sm md:text-base">
               <div>
                 <span className="font-semibold">Role : </span>
                 {coordinator.role}
@@ -85,7 +92,9 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
               </div>
               <div>
                 <span className="font-semibold">Email : </span>
-                {coordinator.student.user.email}
+                <span className="break-all">
+                  {coordinator.student.user.email}
+                </span>
               </div>
               <div>
                 <span className="font-semibold">Contact : </span>
@@ -101,7 +110,7 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
                 }}
               />
               <Button
-                className="w-full"
+                className="w-full h-10 md:h-11 text-sm md:text-base"
                 onClick={() => {
                   submitData();
                 }}

@@ -59,11 +59,13 @@ export function Sidebar({
 
   if (view === "trends") {
     return (
-      <aside className="w-72 bg-slate-800 border-l overflow-y-auto no-scrollbar">
-        <div className="p-4 space-y-6">
+      <aside className="w-full lg:w-72 bg-slate-800 border-l overflow-y-auto no-scrollbar">
+        <div className="p-3 md:p-4 space-y-4 md:space-y-6">
           <div>
-            <label className="text-sm font-medium mb-2 block text-white">Year Range</label>
-            <div className="space-y-4">
+            <label className="text-sm font-medium mb-2 block text-white">
+              Year Range
+            </label>
+            <div className="space-y-3 md:space-y-4">
               <Slider
                 min={2013}
                 max={2024}
@@ -72,7 +74,7 @@ export function Sidebar({
                 onValueChange={setYearRange}
                 className="mt-2"
               />
-              <div className="flex justify-between text-sm text-slate-300">
+              <div className="flex justify-between text-xs md:text-sm text-slate-300">
                 <span>{yearRange[0]}</span>
                 <span>{yearRange[1]}</span>
               </div>
@@ -80,22 +82,21 @@ export function Sidebar({
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block text-white">Type</label>
+            <label className="text-sm font-medium mb-2 block text-white">
+              Type
+            </label>
             <Select
               value={season}
-              // value={selectedTypes.join(',')}
-              // onValueChange={(value) => setSelectedTypes(value.split(','))}
               onValueChange={(value) =>
                 setSeason(value as "placement" | "internship")
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-10 md:h-11">
                 <SelectValue placeholder="Select types" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="placement">Placements</SelectItem>
                 <SelectItem value="internship">Internships</SelectItem>
-                {/* <SelectItem value="placements,internships">Both</SelectItem> */}
               </SelectContent>
             </Select>
           </div>
@@ -105,132 +106,34 @@ export function Sidebar({
   }
 
   return (
-    <aside className="max-w-sm bg-slate-800 border-l overflow-y-auto no-scrollbar p-2">
-              <div className="p-4 space-y-4">
-          <div className="space-y-2 border border-slate-600 rounded-lg p-4">
-            <p className="text-slate-300">Select Season :</p>
-            <Select
+    <aside className="w-full lg:w-72 lg:max-w-sm bg-slate-800 border-l overflow-y-auto no-scrollbar p-2">
+      <div className="p-3 md:p-4 space-y-4">
+        <div className="space-y-2 border border-slate-600 rounded-lg p-3 md:p-4">
+          <p className="text-slate-300 text-sm md:text-base">Select Season :</p>
+          <Select
             value={season}
             onValueChange={(value) => {
-              const selectedOption = options.find((option) => option.value === value);
+              const selectedOption = options.find(
+                (option) => option.value === value,
+              );
               setSeason(value);
               if (selectedOption) {
-              setSeasonType(selectedOption.type);
+                setSeasonType(selectedOption.type);
               }
             }}
-            >
-            <SelectTrigger>
+          >
+            <SelectTrigger className="h-10 md:h-11">
               <SelectValue placeholder="Select Season" />
             </SelectTrigger>
             <SelectContent>
               {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
               ))}
             </SelectContent>
-            </Select>
-
-          {/* <Select
-            value={selectedTypes.join(",")}
-            onValueChange={(value) => setSelectedTypes(value.split(","))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="placements">Placements</SelectItem>
-              <SelectItem value="internships">Internships</SelectItem>
-              <SelectItem value="placements,internships">Both</SelectItem>
-            </SelectContent>
-          </Select> */}
+          </Select>
         </div>
-
-        {/* <div>
-          <h1 className="text-lg font-bold">Statistics</h1>
-        </div> */}
-
-        {/* <div className="text-sm text-gray-500">
-          From 24 Nov 2024 to 24 Dec 2024
-        </div> */}
-
-        {/* <div className="space-y-4">
-          <div className="bg-white rounded-lg border p-4">
-            <h3 className="font-medium mb-2">Offer Details</h3>
-            <div className="space-y-1">
-              <StatItem label="Total Offers" value="54" onClick={() => {}} />
-              <StatItem
-                label="Published Offers"
-                value="43"
-                onClick={() => {}}
-              />
-              <StatItem label="Accepted" value="14" onClick={() => {}} />
-              <StatItem label="Declined" value="3" onClick={() => {}} />
-              <StatItem label="Pending" value="28" onClick={() => {}} />
-              <StatItem
-                label="Offer Letters Uploaded"
-                value="0"
-                onClick={() => {}}
-              />
-              <StatItem
-                label="Number Of Companies"
-                value="3"
-                onClick={() => {}}
-              />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border p-4">
-            <h3 className="font-medium mb-2">Process Stats</h3>
-            <div className="space-y-1">
-              <StatItem label="Total Drives" value="0" />
-              <StatItem label="Rounds Defined" value="0" />
-              <StatItem label="Students Round Details Updated" value="0" />
-              <StatItem label="Attendance Updated" value="0" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border p-4">
-            <h3 className="font-medium mb-2">Ongoing Drives</h3>
-            <div className="space-y-1">
-              <StatItem label="Applied" value="0" onClick={() => {}} />
-              <StatItem label="Published" value="0" onClick={() => {}} />
-              <StatItem
-                label="Publish Requested"
-                value="0"
-                onClick={() => {}}
-              />
-              <StatItem label="Results Awaited" value="0" onClick={() => {}} />
-              <StatItem label="Shortlisted" value="0" onClick={() => {}} />
-            </div>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <div className="text-center p-2 bg-gray-50 rounded">
-                <div className="text-xs text-gray-600">Eligible</div>
-                <div className="font-medium">0</div>
-              </div>
-              <div className="text-center p-2 bg-gray-50 rounded">
-                <div className="text-xs text-gray-600">Registered</div>
-                <div className="font-medium">0</div>
-              </div>
-              <div className="text-center p-2 bg-gray-50 rounded">
-                <div className="text-xs text-gray-600">Shortlisted</div>
-                <div className="font-medium">0</div>
-              </div>
-              <div className="text-center p-2 bg-gray-50 rounded">
-                <div className="text-xs text-gray-600">Attended</div>
-                <div className="font-medium">0</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg border p-4">
-            <h3 className="font-medium mb-2">Non Closure Drives</h3>
-            <div className="space-y-1">
-              <StatItem label="Suspended" value="0" onClick={() => {}} />
-              <StatItem label="No Offers" value="0" onClick={() => {}} />
-            </div>
-          </div>
-        </div> */}
       </div>
     </aside>
   );

@@ -37,7 +37,7 @@ const AcceptButton: React.FC<ButtonProps> = ({
   return (
     <Button
       variant={"default"}
-      className={`bg-sky-600 mx-4 hover:bg-blue-600 ${finalButton && "w-full"}`}
+      className={`bg-sky-600 mx-2 md:mx-4 hover:bg-blue-600 text-sm md:text-base ${finalButton ? "w-full" : "w-full sm:w-auto"}`}
       onClick={() => {
         if (finalButton) {
           UpdateApprovalPATCH(rows, remarks, "APPROVED");
@@ -45,7 +45,7 @@ const AcceptButton: React.FC<ButtonProps> = ({
       }}
     >
       Approve
-      <img src={tick.src} />
+      <img src={tick.src} className="ml-1 md:ml-2 w-4 h-4" />
     </Button>
   );
 };
@@ -58,7 +58,7 @@ const RejectButton: React.FC<ButtonProps> = ({
   return (
     <Button
       variant={"destructive"}
-      className={`bg-red-500 hover:bg-red-400 ${finalButton && "w-full"}`}
+      className={`bg-red-500 hover:bg-red-400 text-sm md:text-base ${finalButton ? "w-full" : "w-full sm:w-auto"}`}
       onClick={() => {
         if (finalButton) {
           UpdateApprovalPATCH(rows, remarks, "REJECTED");
@@ -66,7 +66,7 @@ const RejectButton: React.FC<ButtonProps> = ({
       }}
     >
       Reject
-      <img src={cross.src} alt="" />
+      <img src={cross.src} alt="" className="ml-1 md:ml-2 w-4 h-4" />
     </Button>
   );
 };
@@ -86,17 +86,19 @@ const FeedbackForm: React.FC<Props> = ({ checkedRows }) => {
 
   return (
     <>
-      <h4 className="font-semibold text-base my-3">Write Feedback</h4>
+      <h4 className="font-semibold text-sm md:text-base my-3">
+        Write Feedback
+      </h4>
       <TextArea
         placeholder="Write Your Feedback Here"
         name="feedback"
         rows={4}
-        className="mb-3 w-full"
+        className="mb-3 w-full text-sm md:text-base"
         id="feedback"
         value={feedbackText}
         onChange={(e) => setFeedbackText(e.target.value)}
       />
-      <div className="flex flex-row">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
         <Dialog>
           <DialogTrigger asChild>
             <div>
