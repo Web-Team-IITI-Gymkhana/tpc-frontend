@@ -49,11 +49,13 @@ const FacultyPage = () => {
     fetchData();
   }, []);
   return (
-    <div className="md:m-12 m-2">
-      <h1 className="text-center font-bold text-3xl my-5 py-5">Approvals</h1>
+    <div className="m-2 md:m-6 lg:m-12">
+      <h1 className="text-center font-bold text-2xl md:text-3xl my-3 md:my-5 py-3 md:py-5">
+        Approvals
+      </h1>
       <div>
         {loading && (
-          <div className=" w-[100%] h-[50vh] mx-2 py-4 rounded-md bg-white  flex justify-center items-center">
+          <div className="w-full h-[50vh] mx-2 py-4 rounded-md bg-white flex justify-center items-center">
             <Loader />
           </div>
         )}

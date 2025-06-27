@@ -669,39 +669,16 @@ const JobDetails = ({
   };
 
   return (
-    <div
-      style={{
-        padding: "0 32px",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="px-1 md:px-8 min-h-screen">
       {/* Header Section */}
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: 32,
-          marginBottom: 32,
-          padding: "32px 0",
-          background: "white",
-          borderRadius: 16,
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-          border: "1px solid #e2e8f0",
-        }}
-      >
+      <div className="text-center mt-4 md:mt-8 mb-4 md:mb-8 py-4 md:py-8 bg-white rounded-lg md:rounded-2xl shadow-md border border-gray-200">
         <Title
           level={4}
-          style={{
-            marginBottom: 12,
-            color: "#1f2937",
-            textTransform: "uppercase",
-            letterSpacing: "1px",
-            fontWeight: 700,
-            fontSize: 20,
-          }}
+          className="mb-2 md:mb-3 text-gray-800 uppercase tracking-wide font-bold text-lg md:text-xl"
         >
           {seasonType === "INTERN" ? "Intern Details" : "Job Details"}
         </Title>
-        <Text style={{ fontSize: 16, color: "#6b7280", fontWeight: 500 }}>
+        <Text className="text-sm md:text-base text-gray-600 font-medium px-2 md:px-0">
           {seasonType === "INTERN"
             ? "Provide comprehensive internship position details and requirements"
             : "Provide comprehensive job position details and requirements"}
@@ -770,39 +747,23 @@ const JobDetails = ({
         }}
       >
         {/* Basic Job Information Section */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 24,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e2e8f0",
-          }}
-        >
+        <div className="bg-white rounded-lg md:rounded-2xl p-4 md:p-8 mb-4 md:mb-6 shadow-md border border-gray-200">
           <Title
             level={5}
-            style={{
-              marginBottom: 24,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 18,
-              borderBottom: "2px solid #e2e8f0",
-              paddingBottom: 12,
-            }}
+            className="mb-4 md:mb-6 text-gray-800 font-semibold text-base md:text-lg border-b-2 border-gray-200 pb-2 md:pb-3"
           >
             {seasonType === "INTERN"
               ? "Basic Internship Information"
               : "Basic Job Information"}
           </Title>
 
-          <Row gutter={[24, 16]}>
+          <Row gutter={[16, 12]} className="md:gutter-24">
             {/* Job Title (required) */}
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item
                 label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    <span style={{ color: "#ef4444" }}>* </span>
+                  <Text strong className="text-xs md:text-sm text-gray-700">
+                    <span className="text-red-500">* </span>
                     {seasonType === "INTERN"
                       ? "Internship Title / Role"
                       : "Job Title / Role"}
@@ -812,6 +773,7 @@ const JobDetails = ({
                 hasFeedback
                 validateStatus={getFieldError("role") ? "error" : undefined}
                 help={getFieldError("role")}
+                className="mb-3 md:mb-4"
               >
                 <Input
                   name="role"
@@ -826,21 +788,17 @@ const JobDetails = ({
                   }}
                   maxLength={FIELD_LIMITS.JOB_TITLE_MAX}
                   showCount
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
 
             {/* Duration (only for internships) */}
             {seasonType === "INTERN" && (
-              <Col span={12}>
+              <Col xs={24} md={12}>
                 <Form.Item
                   label={
-                    <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                    <Text strong className="text-xs md:text-sm text-gray-700">
                       Internship Duration
                     </Text>
                   }
@@ -848,6 +806,7 @@ const JobDetails = ({
                     getFieldError("duration") ? "error" : undefined
                   }
                   help={getFieldError("duration")}
+                  className="mb-3 md:mb-4"
                 >
                   <Input
                     name="duration"
@@ -857,24 +816,20 @@ const JobDetails = ({
                       handleChange(e);
                     }}
                     maxLength={FIELD_LIMITS.DURATION_MAX}
-                    style={{
-                      borderRadius: 8,
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #d1d5db",
-                    }}
+                    className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                   />
                 </Form.Item>
               </Col>
             )}
           </Row>
 
-          <Row gutter={[24, 16]}>
+          <Row gutter={[16, 12]} className="md:gutter-24">
             {/* Location (required) */}
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item
                 label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    <span style={{ color: "#ef4444" }}>* </span>
+                  <Text strong className="text-xs md:text-sm text-gray-700">
+                    <span className="text-red-500">* </span>
                     Work Location
                   </Text>
                 }
@@ -882,6 +837,7 @@ const JobDetails = ({
                 hasFeedback
                 validateStatus={getFieldError("location") ? "error" : undefined}
                 help={getFieldError("location")}
+                className="mb-3 md:mb-4"
               >
                 <Input
                   name="location"
@@ -892,20 +848,16 @@ const JobDetails = ({
                   }}
                   maxLength={FIELD_LIMITS.LOCATION_MAX}
                   showCount
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
 
             {/* Expected hires (optional but numeric) */}
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item
                 label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                  <Text strong className="text-xs md:text-sm text-gray-700">
                     Expected Number of Hires
                   </Text>
                 }
@@ -913,6 +865,7 @@ const JobDetails = ({
                   getFieldError("expectedNoOfHires") ? "error" : undefined
                 }
                 help={getFieldError("expectedNoOfHires")}
+                className="mb-3 md:mb-4"
               >
                 <Input
                   type="number"
@@ -924,18 +877,14 @@ const JobDetails = ({
                   }}
                   min={0}
                   max={FIELD_LIMITS.HIRES_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
           </Row>
 
-          <Row gutter={[24, 16]}>
-            <Col span={12}>
+          <Row gutter={[16, 12]} className="md:gutter-24">
+            <Col xs={24} md={12}>
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>
@@ -1243,26 +1192,10 @@ const JobDetails = ({
         </div>
 
         {/* Compensation Details */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 24,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e2e8f0",
-          }}
-        >
+        <div className="bg-white rounded-lg md:rounded-2xl p-4 md:p-8 mb-4 md:mb-6 shadow-md border border-gray-200">
           <Title
             level={5}
-            style={{
-              marginBottom: 24,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 18,
-              borderBottom: "2px solid #e2e8f0",
-              paddingBottom: 12,
-            }}
+            className="mb-4 md:mb-6 text-gray-800 font-semibold text-base md:text-lg border-b-2 border-gray-200 pb-2 md:pb-3"
           >
             Compensation/Eligibility Details
           </Title>
@@ -1292,18 +1225,11 @@ const JobDetails = ({
                   >
                     <Title
                       level={5}
-                      style={{
-                        marginBottom: 20,
-                        color: "#374151",
-                        fontWeight: 600,
-                        fontSize: 14,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.5px",
-                      }}
+                      className="mb-3 md:mb-5 text-gray-700 font-semibold text-xs md:text-sm uppercase tracking-wide"
                     >
                       Eligibility Criteria
                     </Title>
-                    <Row gutter={[24, 16]}>
+                    <Row gutter={[16, 12]} className="md:gutter-24">
                       <Col span={24}>
                         <div>
                           <Text
@@ -1366,7 +1292,9 @@ const JobDetails = ({
                                       color: "#374151",
                                     }}
                                   >
-                                    {"Program Selection (Based on Course Completion Year)"}
+                                    {
+                                      "Program Selection (Based on Course Completion Year)"
+                                    }
                                   </Text>
                                   <Text
                                     style={{
@@ -1752,19 +1680,20 @@ const JobDetails = ({
                         </Form.Item>
                       </Col>
                     </Row> */}
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
+                    <Row gutter={[16, 12]} className="md:gutter-24">
+                      <Col xs={24} md={12}>
                         <Form.Item
                           label={
                             <Text
                               strong
-                              style={{ fontSize: 14, color: "#374151" }}
+                              className="text-xs md:text-sm text-gray-700"
                             >
                               Minimum CPI Required
                             </Text>
                           }
                           name={[field.name, "minCPI"]}
                           help="Enter minimum CPI requirement (leave empty if no minimum)"
+                          className="mb-3 md:mb-4"
                         >
                           <Input
                             placeholder={PLACEHOLDERS.MIN_CPI}
@@ -1772,16 +1701,12 @@ const JobDetails = ({
                             min={0}
                             max={FIELD_LIMITS.CPI_MAX}
                             step={0.1}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
+                            className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                           />
                         </Form.Item>
                       </Col>
 
-                      <Col span={12}>
+                      <Col xs={24} md={12}>
                         <Form.Item
                           label={
                             <Text
@@ -1823,13 +1748,13 @@ const JobDetails = ({
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
+                    <Row gutter={[16, 12]} className="md:gutter-24">
+                      <Col xs={24} md={12}>
                         <Form.Item
                           label={
                             <Text
                               strong
-                              style={{ fontSize: 14, color: "#374151" }}
+                              className="text-xs md:text-sm text-gray-700"
                             >
                               Minimum 12th Marks (%)
                             </Text>
@@ -1844,6 +1769,7 @@ const JobDetails = ({
                             getFieldError(`salaries.${index}.twelthMarks`) ||
                             "Enter minimum 12th standard marks requirement (leave empty if no minimum)"
                           }
+                          className="mb-3 md:mb-4"
                         >
                           <Input
                             placeholder={PLACEHOLDERS.TWELFTH_MARKS}
@@ -1857,22 +1783,18 @@ const JobDetails = ({
                                 e.target.value,
                               );
                             }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
+                            className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                           />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      <Col xs={24} md={12}>
                         <Form.Item
                           label={
                             <Text
                               strong
-                              style={{ fontSize: 14, color: "#374151" }}
+                              className="text-xs md:text-sm text-gray-700"
                             >
-                              <span style={{ color: "#ef4444" }}>* </span>
+                              <span className="text-red-500">* </span>
                               Backlog Policy
                             </Text>
                           }
@@ -1885,6 +1807,7 @@ const JobDetails = ({
                           help={getFieldError(
                             `salaries.${index}.isBacklogAllowed`,
                           )}
+                          className="mb-3 md:mb-4"
                         >
                           <Select
                             placeholder="Select policy"
@@ -1895,9 +1818,7 @@ const JobDetails = ({
                                 value,
                               );
                             }}
-                            style={{
-                              borderRadius: 8,
-                            }}
+                            className="rounded-md"
                           />
                         </Form.Item>
                       </Col>
@@ -1906,40 +1827,32 @@ const JobDetails = ({
                       <>
                         <Title
                           level={5}
-                          style={{
-                            marginTop: 24,
-                            marginBottom: 16,
-                            color: "#1f2937",
-                            fontWeight: 600,
-                          }}
+                          className="mt-4 md:mt-6 mb-3 md:mb-4 text-gray-800 font-semibold text-sm md:text-base"
                         >
                           Placement Compensation Details
                         </Title>
 
-                        <Row gutter={[24, 16]}>
-                          <Col span={12}>
+                        <Row gutter={[16, 12]} className="md:gutter-24">
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label={
                                 <Text
                                   strong
-                                  style={{ fontSize: 14, color: "#374151" }}
+                                  className="text-xs md:text-sm text-gray-700"
                                 >
                                   Base Salary (Annual)
                                 </Text>
                               }
                               name={[field.name, "baseSalary"]}
                               help="Fixed annual salary component"
+                              className="mb-3 md:mb-4"
                             >
                               <Input
                                 type="number"
                                 placeholder={PLACEHOLDERS.BASE_SALARY}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
+                                className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
                                     defaultValue="INR"
@@ -1956,29 +1869,26 @@ const JobDetails = ({
                               />
                             </Form.Item>
                           </Col>
-                          <Col span={12}>
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label={
                                 <Text
                                   strong
-                                  style={{ fontSize: 14, color: "#374151" }}
+                                  className="text-xs md:text-sm text-gray-700"
                                 >
                                   Total CTC (Annual)
                                 </Text>
                               }
                               name={[field.name, "totalCTC"]}
                               help="Complete cost to company including all benefits"
+                              className="mb-3 md:mb-4"
                             >
                               <Input
                                 type="number"
                                 placeholder={PLACEHOLDERS.TOTAL_CTC}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
+                                className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
                                     defaultValue="INR"
@@ -1996,8 +1906,8 @@ const JobDetails = ({
                             </Form.Item>
                           </Col>
                         </Row>
-                        <Row gutter={[24, 16]}>
-                          <Col span={12}>
+                        <Row gutter={[16, 12]} className="md:gutter-24">
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label={
                                 <Text
@@ -2471,39 +2381,31 @@ const JobDetails = ({
                       <>
                         <Title
                           level={5}
-                          style={{
-                            marginTop: 24,
-                            marginBottom: 16,
-                            color: "#1f2937",
-                            fontWeight: 600,
-                          }}
+                          className="mt-4 md:mt-6 mb-3 md:mb-4 text-gray-800 font-semibold text-sm md:text-base"
                         >
                           Internship Compensation Details
                         </Title>
 
-                        <Row gutter={[24, 16]}>
-                          <Col span={12}>
+                        <Row gutter={[16, 12]} className="md:gutter-24">
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label={
                                 <Text
                                   strong
-                                  style={{ fontSize: 14, color: "#374151" }}
+                                  className="text-xs md:text-sm text-gray-700"
                                 >
                                   Monthly Stipend
                                 </Text>
                               }
                               name={[field.name, "stipend"]}
+                              className="mb-3 md:mb-4"
                             >
                               <Input
                                 type="number"
                                 placeholder={PLACEHOLDERS.STIPEND}
                                 min={0}
                                 max={FIELD_LIMITS.STIPEND_MAX}
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
+                                className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
                                     defaultValue="INR"
@@ -2520,25 +2422,22 @@ const JobDetails = ({
                               />
                             </Form.Item>
                           </Col>
-                          <Col span={12}>
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label={
                                 <Text
                                   strong
-                                  style={{ fontSize: 14, color: "#374151" }}
+                                  className="text-xs md:text-sm text-gray-700"
                                 >
                                   Accommodation
                                 </Text>
                               }
                               name={[field.name, "accommodation"]}
+                              className="mb-3 md:mb-4"
                             >
                               <Select
                                 placeholder="Select accommodation provision"
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
+                                className="rounded-md"
                                 options={[
                                   {
                                     value: true,
@@ -2554,25 +2453,22 @@ const JobDetails = ({
                               />
                             </Form.Item>
                           </Col>
-                          <Col span={12}>
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label={
                                 <Text
                                   strong
-                                  style={{ fontSize: 14, color: "#374151" }}
+                                  className="text-xs md:text-sm text-gray-700"
                                 >
                                   PPO Provision on Performance
                                 </Text>
                               }
                               name={[field.name, "ppoProvisionOnPerformance"]}
+                              className="mb-3 md:mb-4"
                             >
                               <Select
                                 placeholder="Select PPO provision"
-                                style={{
-                                  borderRadius: 8,
-                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                                  border: "1px solid #d1d5db",
-                                }}
+                                className="rounded-md"
                                 options={[
                                   {
                                     value: true,
@@ -2660,13 +2556,13 @@ const JobDetails = ({
                         )}
                       </>
                     )}
-                    <Row gutter={[24, 16]}>
+                    <Row gutter={[16, 12]} className="md:gutter-24">
                       <Col span={24}>
                         <Form.Item
                           label={
                             <Text
                               strong
-                              style={{ fontSize: 14, color: "#374151" }}
+                              className="text-xs md:text-sm text-gray-700"
                             >
                               Other Compensations / Perks
                             </Text>
@@ -2682,6 +2578,7 @@ const JobDetails = ({
                           help={getFieldError(
                             `salaries.${index}.otherCompensations`,
                           )}
+                          className="mb-3 md:mb-4"
                         >
                           <Input
                             placeholder={PLACEHOLDERS.OTHER_COMPENSATIONS}
@@ -2693,11 +2590,7 @@ const JobDetails = ({
                                 e.target.value,
                               );
                             }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
+                            className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                           />
                         </Form.Item>
                       </Col>
@@ -2736,37 +2629,21 @@ const JobDetails = ({
         </div>
 
         {/* Selection Procedure Section */}
-        <div
-          style={{
-            background: "white",
-            borderRadius: 16,
-            padding: "32px",
-            marginBottom: 24,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-            border: "1px solid #e2e8f0",
-          }}
-        >
+        <div className="bg-white rounded-lg md:rounded-2xl p-4 md:p-8 mb-4 md:mb-6 shadow-md border border-gray-200">
           <Title
             level={5}
-            style={{
-              marginBottom: 24,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 18,
-              borderBottom: "2px solid #e2e8f0",
-              paddingBottom: 12,
-            }}
+            className="mb-4 md:mb-6 text-gray-800 font-semibold text-base md:text-lg border-b-2 border-gray-200 pb-2 md:pb-3"
           >
             Selection Procedure
           </Title>
 
-          <Row gutter={[24, 16]}>
+          <Row gutter={[16, 12]} className="md:gutter-24">
             {/* Selection Mode (required) */}
-            <Col span={8}>
+            <Col xs={24} lg={8}>
               <Form.Item
                 label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
-                    <span style={{ color: "#ef4444" }}>* </span>
+                  <Text strong className="text-xs md:text-sm text-gray-700">
+                    <span className="text-red-500">* </span>
                     Selection Mode
                   </Text>
                 }
@@ -2776,6 +2653,7 @@ const JobDetails = ({
                   getFieldError("selectionMode") ? "error" : undefined
                 }
                 help={getFieldError("selectionMode")}
+                className="mb-3 md:mb-4"
               >
                 <Select
                   value={values.selectionMode || undefined}
@@ -2784,52 +2662,50 @@ const JobDetails = ({
                     setFieldValue("selectionMode", val);
                   }}
                   options={SELECTION_MODE_OPTIONS}
-                  style={{
-                    borderRadius: 8,
-                  }}
+                  className="rounded-md"
                 />
               </Form.Item>
             </Col>
 
             {/* Selection preferences */}
-            <Col span={8}>
+            <Col xs={24} lg={8}>
               <Form.Item
                 label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                  <Text strong className="text-xs md:text-sm text-gray-700">
                     Selection Options
                   </Text>
                 }
-                style={{ marginBottom: 8 }}
+                className="mb-2 md:mb-4"
               >
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
-                >
+                <div className="flex flex-col gap-3">
                   <Checkbox
                     checked={values.shortlistFromResume}
                     onChange={(e) =>
                       setFieldValue("shortlistFromResume", e.target.checked)
                     }
-                    style={{ fontSize: 14 }}
+                    className="text-xs md:text-sm"
                   >
-                    <Text style={{ fontSize: 14 }}>Shortlist From Resume</Text>
+                    <Text className="text-xs md:text-sm">
+                      Shortlist From Resume
+                    </Text>
                   </Checkbox>
                 </div>
               </Form.Item>
             </Col>
 
-            <Col span={8}>
-              <Form.Item label=" " style={{ marginBottom: 8 }}>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 12 }}
-                >
+            <Col xs={24} lg={8}>
+              <Form.Item label=" " className="mb-2 md:mb-4">
+                <div className="flex flex-col gap-3">
                   <Checkbox
                     checked={values.groupDiscussion}
                     onChange={(e) =>
                       setFieldValue("groupDiscussion", e.target.checked)
                     }
-                    style={{ fontSize: 14 }}
+                    className="text-xs md:text-sm"
                   >
-                    <Text style={{ fontSize: 14 }}>Group Discussion Round</Text>
+                    <Text className="text-xs md:text-sm">
+                      Group Discussion Round
+                    </Text>
                   </Checkbox>
                 </div>
               </Form.Item>
@@ -2839,13 +2715,7 @@ const JobDetails = ({
           {/* Tests Section */}
           <Title
             level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
+            className="mt-6 md:mt-8 mb-3 md:mb-4 text-gray-800 font-semibold text-sm md:text-base"
           >
             Written Tests & Assessments
           </Title>
@@ -2857,7 +2727,7 @@ const JobDetails = ({
                   <Card
                     size="small"
                     title={
-                      <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                      <Text strong className="text-xs md:text-sm text-gray-700">
                         Test {index + 1}
                       </Text>
                     }
@@ -2870,20 +2740,13 @@ const JobDetails = ({
                         icon={<CloseOutlined />}
                         onClick={() => remove(field.name)}
                         title="Remove this test"
-                        style={{
-                          borderRadius: 6,
-                        }}
+                        className="rounded-md"
                       />
                     }
-                    style={{
-                      marginBottom: 16,
-                      borderRadius: 12,
-                      boxShadow: "0 2px 12px rgba(0, 0, 0, 0.06)",
-                      border: "1px solid #e5e7eb",
-                    }}
+                    className="mb-3 md:mb-4 rounded-lg shadow-sm border border-gray-200"
                   >
-                    <Row gutter={[24, 16]}>
-                      <Col span={12}>
+                    <Row gutter={[16, 12]} className="md:gutter-24">
+                      <Col xs={24} md={12}>
                         <Form.Item
                           label={
                             <Text
@@ -3150,22 +3013,16 @@ const JobDetails = ({
           {/* Infrastructure Requirements */}
           <Title
             level={5}
-            style={{
-              marginTop: 32,
-              marginBottom: 16,
-              color: "#1f2937",
-              fontWeight: 600,
-              fontSize: 16,
-            }}
+            className="mt-6 md:mt-8 mb-3 md:mb-4 text-gray-800 font-semibold text-sm md:text-base"
           >
             Infrastructure Requirements
           </Title>
 
-          <Row gutter={[24, 16]}>
-            <Col span={12}>
+          <Row gutter={[16, 12]} className="md:gutter-24">
+            <Col xs={24} md={12}>
               <Form.Item
                 label={
-                  <Text strong style={{ fontSize: 14, color: "#374151" }}>
+                  <Text strong className="text-xs md:text-sm text-gray-700">
                     Team Members Required
                   </Text>
                 }
@@ -3173,6 +3030,7 @@ const JobDetails = ({
                   getFieldError("numberOfMembers") ? "error" : undefined
                 }
                 help={getFieldError("numberOfMembers")}
+                className="mb-3 md:mb-4"
               >
                 <Input
                   type="number"
@@ -3184,15 +3042,11 @@ const JobDetails = ({
                   }}
                   min={0}
                   max={FIELD_LIMITS.MEMBERS_MAX}
-                  style={{
-                    borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                    border: "1px solid #d1d5db",
-                  }}
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={12}>
               <Form.Item
                 label={
                   <Text strong style={{ fontSize: 14, color: "#374151" }}>

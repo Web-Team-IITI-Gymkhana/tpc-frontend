@@ -17,8 +17,8 @@ const NavLink = ({ href }: LinkProps) => {
   if (isActive) {
     return (
       <div className="bg-gray-900 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-        <div className="flex justify-start gap-[1vw]">
-          <div className="w-[2vw] text-white">
+        <div className="flex justify-start gap-3">
+          <div className="w-5 flex-shrink-0 text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -42,7 +42,7 @@ const NavLink = ({ href }: LinkProps) => {
               closed: { opacity: 0 },
               open: { opacity: 1 },
             }}
-            className="w-[13vw] text-white"
+            className="flex-1 text-white"
           >
             Login
           </motion.div>
@@ -55,7 +55,7 @@ const NavLink = ({ href }: LinkProps) => {
     <Link href={href}>
       <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
         <div className="flex justify-start gap-[1rem]">
-          <div className="w-[2rem] text-white">
+          <div className="w-5 flex-shrink-0 text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -79,7 +79,7 @@ const NavLink = ({ href }: LinkProps) => {
               closed: { opacity: 0 },
               open: { opacity: 1 },
             }}
-            className="w-[13vw] text-white"
+            className="flex-1 text-white"
           >
             Login
           </motion.div>
@@ -104,7 +104,7 @@ const LogoutButton = () => {
       onClick={logOut}
     >
       <div className="flex justify-start gap-[1rem]">
-        <div className="w-[2rem] text-white">
+        <div className="w-5 flex-shrink-0 text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -129,7 +129,7 @@ const LogoutButton = () => {
             closed: { opacity: 0 },
             open: { opacity: 1 },
           }}
-          className="w-[13vw] cursor-pointer text-white"
+          className="flex-1 cursor-pointer text-white"
         >
           Logout
         </motion.div>

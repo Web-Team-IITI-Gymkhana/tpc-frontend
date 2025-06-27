@@ -16,7 +16,7 @@ const RecruiterDashboard = () => {
         <Link href="/">
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
             <div className="flex justify-start gap-[2rem]">
-              <div className="w-[2vw] text-white">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -51,7 +51,7 @@ const RecruiterDashboard = () => {
         <Link href="/JAF">
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
             <div className="flex justify-start gap-[2rem]">
-              <div className="w-[2vw] text-white">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -86,7 +86,7 @@ const RecruiterDashboard = () => {
         <Link href="/recruiter/jobs">
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
             <div className="flex justify-start gap-[2rem]">
-              <div className="w-[2vw] text-white">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -121,7 +121,7 @@ const RecruiterDashboard = () => {
         <Link href="/recruiter/events">
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
             <div className="flex justify-start gap-[2rem]">
-              <div className="w-[2vw] text-white">
+              <div className="w-5 flex-shrink-0 text-white">
                 <EventOutlinedIcon fontSize="small" className="text-white" />
               </div>
               <motion.div
@@ -142,7 +142,7 @@ const RecruiterDashboard = () => {
         <Link href="/recruiter/help">
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
             <div className="flex justify-start gap-[2rem]">
-              <div className="w-[2vw] text-white">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"

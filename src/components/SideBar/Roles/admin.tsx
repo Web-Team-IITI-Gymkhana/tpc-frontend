@@ -13,8 +13,8 @@ const AdminDashboard = () => {
       <div className="text-white">
         <Link href="/">
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Home
               </motion.div>
@@ -48,8 +48,8 @@ const AdminDashboard = () => {
         </Link>
         <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
           <Link href="/admin/companies">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Companies
               </motion.div>
@@ -84,8 +84,8 @@ const AdminDashboard = () => {
         </div>
         <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
           <Link href="/admin/programs">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Programs
               </motion.div>
@@ -121,8 +121,8 @@ const AdminDashboard = () => {
         </div>
         <Link href={"/admin/jobs"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Jobs
               </motion.div>
@@ -158,8 +158,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/students"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -184,7 +184,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Students
               </motion.div>
@@ -195,8 +195,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/resumes"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -221,7 +221,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Resumes
               </motion.div>
@@ -232,8 +232,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/recruiters"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -258,7 +258,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Recruiters
               </motion.div>
@@ -268,8 +268,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/seasons"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -294,7 +294,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Seasons
               </motion.div>
@@ -304,8 +304,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/events"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -330,7 +330,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Schedule
               </motion.div>
@@ -340,8 +340,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/dashboard"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 32 32"
@@ -367,7 +367,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Dashboard
               </motion.div>
@@ -377,8 +377,8 @@ const AdminDashboard = () => {
         </Link>
         <Link href={"/admin/help"}>
           <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] cursor-pointer text-white">
-            <div className="flex justify-start gap-[1vw]">
-              <div className="w-[2vw] text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
                 <svg
                   width="20"
                   height="20"
@@ -401,7 +401,7 @@ const AdminDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[13vw] text-white"
+                className="flex-1 text-white"
               >
                 Help Center
               </motion.div>
