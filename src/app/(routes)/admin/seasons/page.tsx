@@ -29,21 +29,19 @@ const SeasonsPage = () => {
     fetchData();
   }, []);
   return (
-    <div className="container my-8">
-      <h1 className="text-3xl mb-8 font-bold mx-auto text-center">
+    <div className="container mx-auto my-4 md:my-8 px-2 md:px-4">
+      <h1 className="text-2xl md:text-3xl mb-4 md:mb-8 font-bold mx-auto text-center">
         Seasons
       </h1>
       {addSeasonForm && (
-        <AddSeason
-          open={addSeasonForm}
-          setOpen={setAddSeasonForm}
-        />
+        <AddSeason open={addSeasonForm} setOpen={setAddSeasonForm} />
       )}
-      <div className="w-full px-4 pb-4 flex justify-end">
+      <div className="w-full px-2 md:px-4 pb-4 flex justify-center md:justify-end">
         <Button
           onClick={() => {
             setAddSeasonForm(true);
           }}
+          className="w-full sm:w-auto"
         >
           Add Season
         </Button>

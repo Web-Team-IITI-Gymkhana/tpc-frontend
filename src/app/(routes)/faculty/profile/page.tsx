@@ -8,7 +8,7 @@ import Loader from "@/components/Loader/loader";
 
 const Profile = ({ params }: { params: { facultyId: string } }) => {
   return (
-    <div className="h-screen">
+    <div className="min-h-screen p-2 md:p-4">
       <FacultyProfile />
     </div>
   );
