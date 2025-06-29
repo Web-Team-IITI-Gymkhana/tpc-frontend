@@ -12,7 +12,7 @@ const StudentDashboard = () => {
     <>
       <div className="text-white">
         <Link href={"/student/interviewExperiences"}>
-          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
                 <svg
@@ -47,7 +47,7 @@ const StudentDashboard = () => {
             {/* <RecruiterDropDown userRole={userRole} /> */}
           </div>
         </Link>
-        <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+        <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
           <Link href={`/student/resumes`}>
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
@@ -83,7 +83,7 @@ const StudentDashboard = () => {
           </Link>
         </div>
         <Link href={`/student/opportunities`}>
-          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
                 <svg
@@ -120,7 +120,7 @@ const StudentDashboard = () => {
           </div>
         </Link>
         <Link href={`/student/onCampus`}>
-          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
                 <svg
@@ -157,7 +157,7 @@ const StudentDashboard = () => {
           </div>
         </Link>
         <Link href={`/student/offCampus`}>
-          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
                 <svg
@@ -194,7 +194,7 @@ const StudentDashboard = () => {
           </div>
         </Link>
         <Link href={`/student/jobs`}>
-          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
                 <svg
@@ -231,7 +231,7 @@ const StudentDashboard = () => {
           </div>
         </Link>
         <Link href={"/student/help"}>
-          <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw] text-white">
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">
                 <svg

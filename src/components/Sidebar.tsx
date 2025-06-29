@@ -137,22 +137,26 @@ const Sidebar = () => {
       {/* Desktop Layout - Visible on screens >= 768px */}
       <motion.div
         initial={{
-          width: context.isOpen ? "18vw" : "6vw",
+          width: context.isOpen ? "288px" : "80px",
           visibility: "inherit",
         }}
         animate={context.isOpen ? "open" : "closed"}
         transition={{ duration: 0.2 }}
         variants={{
           closed: {
-            width: "6vw",
+            width: "80px",
+            minWidth: "80px",
+            maxWidth: "80px",
             visibility: "visible",
           },
           open: {
-            width: "18vw",
+            width: "288px",
+            minWidth: "288px",
+            maxWidth: "288px",
             visibility: "visible",
           },
         }}
-        className="hidden md:flex z-40 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-800 pt-3 flex-col h-screen relative"
+        className="hidden md:flex z-40 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-800 pt-3 flex-col h-screen relative flex-shrink-0"
       >
         {/* Desktop Sidebar Toggle and Title */}
         <div className="relative">
@@ -191,12 +195,12 @@ const Sidebar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="mx-[1vw] flex flex-col-reverse justify-between align-middle h-full">
+        <div className="mx-4 flex flex-col-reverse justify-between align-middle h-full">
           <div>
             <hr />
-            <div className="hover:bg-slate-600/50 rounded-md my-[1vh] py-[1vh] px-[1vw]">
-              <div className="flex justify-start gap-[1rem]">
-                <div className="w-[2rem]">
+            <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4">
+              <div className="flex justify-start gap-4">
+                <div className="w-5 flex-shrink-0">
                   <svg
                     width="20"
                     height="20"
@@ -220,7 +224,7 @@ const Sidebar = () => {
                     closed: { opacity: 0 },
                     open: { opacity: 1 },
                   }}
-                  className="w-[7rem]"
+                  className="flex-1 text-white"
                 >
                   <Link href={`/${role}/profile`} className="text-white">
                     Profile
