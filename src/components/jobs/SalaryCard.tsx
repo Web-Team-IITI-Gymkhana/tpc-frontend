@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -29,27 +29,33 @@ const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
 };
 
-interface Props {
+interface ApplicationResume {
+  id: string;
+  filepath: string;
+  verified: boolean;
+}
+
+interface Application {
+  id: string;
+  eventId: string;
+  resume: ApplicationResume;
+}
+
+interface SalaryCardProps {
   salaryId: string;
-  seasonType: string;
+  seasonType: "PLACEMENT" | "INTERNSHIP";
   resumes: Resume[];
 }
 
-export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
-  const [salaryData, setSalaryData] = useState<Salary | null>(null);
-  const [loading, setLoading] = useState(true);
+interface ErrorState {
+  hasError: boolean;
+  message: string;
+}
 
-  const fetchSalaryData = async () => {
-    try {
-      const data = await GetSalaryById(salaryId);
-      setSalaryData(data);
-    } catch (error) {
-      toast.error("Error fetching data:");
-    } finally {
-      setLoading(false);
-    }
-  };
+const formatNumber = (num: number): string => {
+  if (!num || typeof num !== "number") return "₹0";
 
+<<<<<<< Updated upstream
   useEffect(() => {
     if (salaryData === null) {
       fetchSalaryData();
@@ -123,10 +129,29 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
     } else {
       return `₹${num.toString()}`;
     }
+=======
+  if (num >= 1e7) {
+    const crores = num / 1e7;
+    return `₹${crores.toFixed(2)} Crores`;
+  } else if (num >= 1e5) {
+    const lakhs = num / 1e5;
+    return `₹${lakhs.toFixed(2)} Lakhs`;
+  } else if (num >= 1e3) {
+    const thousands = num / 1e3;
+    return `₹${thousands.toFixed(2)}K`;
+  } else {
+    return `₹${num.toString()}`;
+>>>>>>> Stashed changes
   }
+};
 
-  function formatDate(dateString: string): string {
+const formatDate = (dateString: string): string => {
+  if (!dateString) return "N/A";
+
+  try {
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
+
     return date.toLocaleString("en-US", {
       year: "numeric",
       month: "long",
@@ -136,38 +161,597 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
       second: "numeric",
       timeZoneName: "short",
     });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid Date";
+  }
+};
+
+const extractResumeDisplayName = (filepath: string): string => {
+  if (!filepath) return "resume.pdf";
+
+  try {
+    const filename =
+      filepath.split("/").pop() || filepath.split("\\").pop() || "resume";
+
+    if (filename.toLowerCase().endsWith(".pdf")) {
+      return filename;
+    } else {
+      const nameWithoutExt = filename.split(".")[0];
+      return `${nameWithoutExt}.pdf`;
+    }
+  } catch (error) {
+    console.error("Error extracting resume name:", error);
+    return "resume.pdf";
+  }
+};
+
+const SalaryCard: React.FC<SalaryCardProps> = ({
+  salaryId,
+  resumes,
+  seasonType,
+}) => {
+  const [salaryData, setSalaryData] = useState<Salary | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedResume, setSelectedResume] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [error, setError] = useState<ErrorState>({
+    hasError: false,
+    message: "",
+  });
+  const [isApplying, setIsApplying] = useState<boolean>(false);
+
+  const hasApplied = useMemo(() => {
+    return salaryData?.job?.applications?.length > 0;
+  }, [salaryData?.job?.applications]);
+
+  const salaryTitle = useMemo(() => {
+    if (!salaryData) return "";
+    return seasonType === "PLACEMENT"
+      ? `CTC Offered: ${formatNumber(salaryData.totalCTC || 0)}`
+      : `Stipend: ${formatNumber(salaryData.stipend || 0)}`;
+  }, [salaryData, seasonType]);
+
+  const fetchSalaryData = useCallback(async () => {
+    if (!salaryId) {
+      setError({ hasError: true, message: "Invalid salary ID" });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError({ hasError: false, message: "" });
+
+      const data = await GetSalaryById(salaryId);
+
+      if (!data) {
+        throw new Error("No data received from server");
+      }
+
+      setSalaryData(data);
+    } catch (error) {
+      console.error("Error fetching salary data:", error);
+      setError({
+        hasError: true,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch salary data",
+      });
+      toast.error("Error fetching salary data");
+    } finally {
+      setLoading(false);
+    }
+  }, [salaryId]);
+
+  useEffect(() => {
+    fetchSalaryData();
+  }, [fetchSalaryData]);
+
+  const handleResumeChange = useCallback((value: string) => {
+    setSelectedResume(value);
+  }, []);
+
+  const handleApply = useCallback(async () => {
+    if (!selectedResume) {
+      toast.error("Please select a resume");
+      return;
+    }
+
+    if (!salaryId) {
+      toast.error("Invalid salary information");
+      return;
+    }
+
+    const selectedResumeData = resumes.find(
+      (resume) => resume.id === selectedResume,
+    );
+
+    if (!selectedResumeData) {
+      toast.error("Selected resume not found");
+      return;
+    }
+
+    if (!selectedResumeData.verified) {
+      toast.error("Please select a verified resume");
+      return;
+    }
+
+    try {
+      setIsApplying(true);
+      const data = await ApplyJob(salaryId, selectedResume);
+
+      if (data) {
+        toast.success("Applied Successfully");
+        await fetchSalaryData();
+      } else {
+        toast.error("Application failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Application error:", error);
+
+      if (error instanceof Error) {
+        if (error.message.includes("Not Authorized")) {
+          toast.error(
+            "You are not authorized to apply for this position. Please check if you meet the eligibility criteria.",
+          );
+        } else if (error.message.includes("already applied")) {
+          toast.error("You have already applied for this position.");
+        } else {
+          toast.error("Failed to apply. Please try again or contact support.");
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsApplying(false);
+    }
+  }, [selectedResume, salaryId, resumes, fetchSalaryData]);
+
+  const handleOpenResume = useCallback(async (filepath: string) => {
+    if (!filepath) {
+      toast.error("Invalid resume file");
+      return;
+    }
+
+    try {
+      await OpenResume(filepath);
+    } catch (error) {
+      console.error("Error opening resume:", error);
+      toast.error("Failed to open resume");
+    }
+  }, []);
+
+  const handleToggleDetails = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-64 w-full flex justify-center items-center bg-white rounded-xl">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error.hasError) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-800 p-6 rounded-xl">
+        <h3 className="font-semibold mb-2">Error Loading Salary Information</h3>
+        <p className="text-sm">{error.message}</p>
+        <Button
+          onClick={fetchSalaryData}
+          className="mt-4 bg-red-600 hover:bg-red-700"
+          size="sm"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  if (!salaryData) {
+    return (
+      <div className="bg-gray-50 border border-gray-200 text-gray-600 p-6 rounded-xl text-center">
+        <p>No salary information available</p>
+      </div>
+    );
   }
 
   return (
-    <div id="main-container" className="">
-      {loading && (
-        <div className="h-screen w-full flex justify-center items-center">
-          <Loader />
+    <div className="bg-white text-black p-5 rounded-xl shadow-sm border border-gray-200">
+      <div
+        className="font-semibold text-lg cursor-pointer hover:text-blue-600 transition-colors"
+        onClick={handleToggleDetails}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleToggleDetails();
+          }
+        }}
+      >
+        <div className="flex justify-between items-center">
+          <span>{salaryData.job?.company?.name || "Unknown Company"}</span>
+          {hasApplied && (
+            <div className="text-green-500 font-semibold px-3 py-1 border rounded-full inline-block border-green-500 text-xs bg-green-50">
+              Applied
+            </div>
+          )}
         </div>
-      )}
-      {salaryData && (
-        <div className="bg-white text-black p-5 rounded-xl">
-          <div
-            className="font-semibold text-md"
-            onClick={handleViewDetails}
-            style={{ cursor: "pointer" }}
-          >
-            <div className="flex justify-between">
-              {salaryData?.job.company.name}
-              {salaryData.job.applications.length > 0 && (
-                <>
-                  <div className=" text-green-500 font-semibold px-2 py-1 border rounded-3xl inline-block border-green-500 text-xs ">
-                    {"Applied"}
-                  </div>
-                </>
-              )}
+      </div>
+
+      <div className="text-gray-500 font-semibold my-2 text-sm">
+        {salaryTitle}
+      </div>
+
+      <div className="my-4">
+        <Separator />
+      </div>
+
+      {seasonType === "PLACEMENT" ? (
+        <div
+          className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2 gap-4"
+          onClick={handleToggleDetails}
+          style={{ cursor: "pointer" }}
+        >
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Role</div>
+            <div className="font-medium">{salaryData.job?.role || "N/A"}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Base Salary</div>
+            <div>
+              {salaryData.baseSalary
+                ? formatNumber(salaryData.baseSalary)
+                : "N/A"}
             </div>
           </div>
-          <div className="">
-            <div className="text-gray-500 font-semibold my-2 text-sm">
-              {seasonType === "PLACEMENT"
-                ? `CTC Offered: ${formatNumber(salaryData?.totalCTC)}`
-                : `Stipend: ${formatNumber(salaryData?.stipend)}`}
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              Take Home Salary
+            </div>
+            <div>
+              {salaryData.takeHomeSalary
+                ? formatNumber(salaryData.takeHomeSalary)
+                : "N/A"}
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Gross Salary</div>
+            <div>
+              {salaryData.grossSalary
+                ? formatNumber(salaryData.grossSalary)
+                : "N/A"}
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              Other Compensations
+            </div>
+            <div>
+              {salaryData.otherCompensations
+                ? formatNumber(salaryData.otherCompensations)
+                : "N/A"}
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Duration</div>
+            <div>{salaryData.salaryPeriod || "N/A"}</div>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2 gap-4"
+          onClick={handleToggleDetails}
+          style={{ cursor: "pointer" }}
+        >
+          <div>
+            <div className="text-gray-500 font-semibold my-2">Role</div>
+            <div className="font-medium">{salaryData.job?.role || "N/A"}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              Foreign Currency Stipend
+            </div>
+            <div>{salaryData.foreignCurrencyStipend || "N/A"}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              Accommodation
+            </div>
+            <div>{salaryData.accommodation ? "Yes" : "No"}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              PPO Provision
+            </div>
+            <div>{salaryData.ppoProvisionOnPerformance ? "Yes" : "No"}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              Tentative CTC for PPO
+            </div>
+            <div>
+              {salaryData.tentativeCTC
+                ? formatNumber(salaryData.tentativeCTC)
+                : "N/A"}
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-500 font-semibold my-2">
+              PPO Confirmation Date
+            </div>
+            <div>
+              {salaryData.PPOConfirmationDate
+                ? formatDate(salaryData.PPOConfirmationDate)
+                : "N/A"}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isExpanded && (
+        <>
+          <div className="my-4">
+            <Separator />
+          </div>
+
+          {seasonType === "PLACEMENT" && (
+            <>
+              <div className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2 gap-4 mb-6">
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Joining Bonus
+                  </div>
+                  <div>
+                    {salaryData.joiningBonus
+                      ? formatNumber(salaryData.joiningBonus)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Performance Bonus
+                  </div>
+                  <div>
+                    {salaryData.performanceBonus
+                      ? formatNumber(salaryData.performanceBonus)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Relocation
+                  </div>
+                  <div>
+                    {salaryData.relocation
+                      ? formatNumber(salaryData.relocation)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Bond Amount
+                  </div>
+                  <div>
+                    {salaryData.bondAmount
+                      ? formatNumber(salaryData.bondAmount)
+                      : "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="my-4">
+                <Separator />
+              </div>
+
+              <div className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2 gap-4 mb-6">
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    ESOP Amount
+                  </div>
+                  <div>
+                    {salaryData.esopAmount
+                      ? formatNumber(salaryData.esopAmount)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    ESOP Vest Period
+                  </div>
+                  <div>{salaryData.esopVestPeriod || "N/A"}</div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    First Year CTC
+                  </div>
+                  <div>
+                    {salaryData.firstYearCTC
+                      ? formatNumber(salaryData.firstYearCTC)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Retention Bonus
+                  </div>
+                  <div>
+                    {salaryData.retentionBonus
+                      ? formatNumber(salaryData.retentionBonus)
+                      : "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="my-4">
+                <Separator />
+              </div>
+
+              <div className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2 gap-4 mb-6">
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Deductions
+                  </div>
+                  <div>
+                    {salaryData.deductions
+                      ? formatNumber(salaryData.deductions)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Medical Allowance
+                  </div>
+                  <div>
+                    {salaryData.medicalAllowance
+                      ? formatNumber(salaryData.medicalAllowance)
+                      : "N/A"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Bond Duration
+                  </div>
+                  <div>{salaryData.bondDuration || "N/A"}</div>
+                </div>
+                <div>
+                  <div className="text-gray-500 font-semibold my-2">
+                    Foreign Currency CTC
+                  </div>
+                  <div>
+                    {salaryData.foreignCurrencyCTC &&
+                    salaryData.foreignCurrencyCode
+                      ? `${salaryData.foreignCurrencyCTC} ${salaryData.foreignCurrencyCode}`
+                      : "N/A"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="my-4">
+                <Separator />
+              </div>
+            </>
+          )}
+
+          <div className="my-4 mt-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 text-sm mx-2 gap-4 mb-6">
+              <div>
+                <div className="text-gray-500 font-semibold my-2">
+                  Selection Mode
+                </div>
+                <div>
+                  {salaryData.job?.selectionProcedure?.selectionMode || "N/A"}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-500 font-semibold my-2">
+                  Shortlist from Resume
+                </div>
+                <div>
+                  {salaryData.job?.selectionProcedure?.shortlistFromResume
+                    ? "YES"
+                    : "NO"}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-500 font-semibold my-2">
+                  Group Discussion
+                </div>
+                <div>
+                  {salaryData.job?.selectionProcedure?.groupDiscussion
+                    ? "YES"
+                    : "NO"}
+                </div>
+              </div>
+            </div>
+
+            <div className="my-4">
+              <Separator />
+            </div>
+
+            <div className="font-semibold text-md mx-2 my-4">
+              Selection Procedure
+            </div>
+
+            <h3 className="text-md font-semibold mx-2 mt-6 mb-2">Tests</h3>
+            <div className="overflow-x-auto">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">Sr.</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Duration</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {salaryData.job?.selectionProcedure?.tests?.length > 0 ? (
+                    salaryData.job.selectionProcedure.tests.map(
+                      (test, index) => (
+                        <TableRow key={`test-${index}`}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{test.type || "N/A"}</TableCell>
+                          <TableCell>
+                            {test.duration ? `${test.duration} mins` : "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        className="text-center text-gray-500"
+                      >
+                        No tests specified
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            <h3 className="text-md font-semibold mx-2 mt-6 mb-2">Interviews</h3>
+            <div className="overflow-x-auto">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">Sr.</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Duration</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {salaryData.job?.selectionProcedure?.interviews?.length >
+                  0 ? (
+                    salaryData.job.selectionProcedure.interviews.map(
+                      (interview, index) => (
+                        <TableRow key={`interview-${index}`}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{interview.type || "N/A"}</TableCell>
+                          <TableCell>
+                            {interview.duration
+                              ? `${interview.duration} mins`
+                              : "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        className="text-center text-gray-500"
+                      >
+                        No interviews specified
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
           </div>
 
@@ -175,377 +759,61 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
             <Separator />
           </div>
 
-          {seasonType === "PLACEMENT" ? (
-            <>
-              <div
-                className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2"
-                onClick={handleViewDetails}
-                style={{ cursor: "pointer" }}
-              >
-                <div>
-                  <div className="text-gray-500 font-semibold my-2 pr-2">
-                    Role
-                  </div>
-                  <div className="">{salaryData?.job.role}</div>
-                </div>
-                <div className="md:ml-2 lg:ml-6">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Base Salary
-                  </div>
-                  <div>
-                    {salaryData?.baseSalary
-                      ? formatNumber(salaryData?.baseSalary)
-                      : ""}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Take Home Salary
-                  </div>
-                  <div>
-                    {salaryData?.takeHomeSalary
-                      ? formatNumber(salaryData?.takeHomeSalary)
-                      : ""}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Gross Salary
-                  </div>
-                  <div>
-                    {salaryData?.grossSalary
-                      ? formatNumber(salaryData?.grossSalary)
-                      : ""}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Other Compensations
-                  </div>
-                  <div>
-                    {salaryData?.otherCompensations
-                      ? formatNumber(salaryData?.otherCompensations)
-                      : ""}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Duration
-                  </div>
-                  <div>{salaryData?.salaryPeriod || ""}</div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div
-                className="grid md:grid-cols-3 lg:grid-cols-6 text-sm mx-2"
-                onClick={handleViewDetails}
-                style={{ cursor: "pointer" }}
-              >
-                <div>
-                  <div className="text-gray-500 font-semibold my-2 pr-2">
-                    Role
-                  </div>
-                  <div>{salaryData?.job.role || ""}</div>
-                </div>
-                <div className="md:ml-2 lg:ml-6">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Foreign Currency Stipend
-                  </div>
-                  <div>{salaryData?.foreignCurrencyStipend || ""}</div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Accommodation
-                  </div>
-                  <div>{salaryData?.accommodation ? "Yes" : "No"}</div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    PPO Provision
-                  </div>
-                  <div>
-                    {salaryData?.ppoProvisionOnPerformance ? "Yes" : "No"}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Tentative CTC for PPO Select
-                  </div>
-                  <div>
-                    {salaryData?.tentativeCTC
-                      ? formatNumber(salaryData?.tentativeCTC)
-                      : ""}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    PPO Confirmation Date
-                  </div>
-                  <div>
-                    {salaryData?.PPOConfirmationDate
-                      ? formatDate(salaryData?.PPOConfirmationDate)
-                      : ""}
-                  </div>
-                </div>
-                <div className="">
-                  <div className="text-gray-500 font-semibold my-2">
-                    Duration
-                  </div>
-                  <div>{salaryData?.salaryPeriod || ""}</div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {isopen && (
-            <>
-              <div className="my-4">
-                <Separator />
-              </div>
-              {seasonType === "PLACEMENT" && (
-                <>
-                  <div
-                    className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2"
-                    onClick={handleViewDetails}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div>
-                      <div className="text-gray-500 font-semibold my-2 pr-2">
-                        Joining Bonus
-                      </div>
-                      <div>
-                        {salaryData?.joiningBonus
-                          ? formatNumber(salaryData?.joiningBonus)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="md:ml-2 lg:ml-6">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Performance Bonus
-                      </div>
-                      <div>
-                        {salaryData?.performanceBonus
-                          ? formatNumber(salaryData?.performanceBonus)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Relocation
-                      </div>
-                      <div>
-                        {salaryData?.relocation
-                          ? formatNumber(salaryData?.relocation)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Bond Amount
-                      </div>
-                      <div>
-                        {salaryData?.bondAmount
-                          ? formatNumber(salaryData?.bondAmount)
-                          : ""}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="my-4">
-                    <Separator />
-                  </div>
-
-                  <div
-                    className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2"
-                    onClick={handleViewDetails}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div>
-                      <div className="text-gray-500 font-semibold my-2 pr-2">
-                        ESOP Amount
-                      </div>
-                      <div>
-                        {salaryData?.esopAmount
-                          ? formatNumber(salaryData?.esopAmount)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="md:ml-2 lg:ml-6">
-                      <div className="text-gray-500 font-semibold my-2">
-                        ESOP Vest Period
-                      </div>
-                      <div>{salaryData?.esopVestPeriod || ""}</div>
-                    </div>
-                    <div className="">
-                      <div className="text-gray-500 font-semibold my-2">
-                        First Year CTC
-                      </div>
-                      <div>
-                        {salaryData?.firstYearCTC
-                          ? formatNumber(salaryData?.firstYearCTC)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Retention Bonus
-                      </div>
-                      <div>
-                        {salaryData?.retentionBonus
-                          ? formatNumber(salaryData?.retentionBonus)
-                          : ""}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="my-4">
-                    <Separator />
-                  </div>
-
-                  <div
-                    className="grid md:grid-cols-3 lg:grid-cols-4 text-sm mx-2"
-                    onClick={handleViewDetails}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div>
-                      <div className="text-gray-500 font-semibold my-2 pr-2">
-                        Deductions
-                      </div>
-                      <div>
-                        {salaryData?.deductions
-                          ? formatNumber(salaryData?.deductions)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="md:ml-2 lg:ml-6">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Medical Allowance
-                      </div>
-                      <div>
-                        {salaryData?.medicalAllowance
-                          ? formatNumber(salaryData?.medicalAllowance)
-                          : ""}
-                      </div>
-                    </div>
-                    <div className="">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Bond Duration
-                      </div>
-                      <div>{salaryData?.bondDuration || ""}</div>
-                    </div>
-                    <div className="">
-                      <div className="text-gray-500 font-semibold my-2">
-                        Retention Bonus
-                      </div>
-                      <div>{`${salaryData?.foreignCurrencyCTC || ""} ${salaryData?.foreignCurrencyCode || ""}`}</div>
-                    </div>
-                  </div>
-
-                  <div className="my-4">
-                    <Separator />
-                  </div>
-                </>
-              )}
-              <div className="my-4 mt-6">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 text-sm mx-2">
-                  <div>
-                    <div className="text-gray-500 font-semibold my-2">
-                      Selection mode
-                    </div>{" "}
-                    <div>{salaryData.job.selectionProcedure.selectionMode}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 font-semibold my-2">
-                      Shortlist from Resume
-                    </div>{" "}
-                    <div>
-                      {salaryData.job.selectionProcedure.shortlistFromResume
-                        ? "YES"
-                        : "NO"}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 font-semibold my-2">
-                      Group Discussion
-                    </div>{" "}
-                    <div>
-                      {salaryData.job.selectionProcedure.groupDiscussion
-                        ? "YES"
-                        : "NO"}
-                    </div>
-                  </div>
-                </div>
-                <div className="my-4">
-                  <Separator />
-                </div>
-                <div className="font-semibold text-md mx-2 my-2">
-                  Selection Procedure
-                </div>
-                <h2 className="text-md font-semibold mx-2 mt-8">Tests</h2>
-                <Table className="overflow-hidden">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Sr.</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Duration</TableHead>
+          <div className="font-semibold text-md mx-2 my-4">Events</div>
+          <div className="overflow-x-auto">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Round</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {salaryData.job?.events?.length > 0 ? (
+                  salaryData.job.events.map((event, index) => (
+                    <TableRow key={`event-${index}`}>
+                      <TableCell>{event.roundNumber || "N/A"}</TableCell>
+                      <TableCell>{event.type || "N/A"}</TableCell>
+                      <TableCell>
+                        {event.startDateTime
+                          ? formatDate(event.startDateTime)
+                          : "N/A"}
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {salaryData.job.selectionProcedure.tests.map(
-                      (test, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{test.type}</TableCell>
-                          <TableCell>{test.duration}</TableCell>
-                        </TableRow>
-                      ),
-                    )}
-                  </TableBody>
-                </Table>
-                <h2 className="text-md font-semibold mx-2 mt-8">Interviews</h2>
-                <Table className="overflow-hidden">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Sr.</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Duration</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {salaryData.job.selectionProcedure.interviews.map(
-                      (test, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{test.type}</TableCell>
-                          <TableCell>{test.duration}</TableCell>
-                        </TableRow>
-                      ),
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              <div className="my-4">
-                <Separator />
-              </div>
-
-              <div className="font-semibold text-md mx-2 my-2">Events</div>
-              <Table className="overflow-hidden">
-                <TableHeader>
+                  ))
+                ) : (
                   <TableRow>
-                    <TableHead>Round</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Date</TableHead>
+                    <TableCell
+                      colSpan={3}
+                      className="text-center text-gray-500"
+                    >
+                      No events scheduled
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {salaryData.job.events.map((event, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{event.roundNumber}</TableCell>
-                      <TableCell>{event.type}</TableCell>
-                      <TableCell>{event.startDateTime}</TableCell>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {salaryData.job?.applications?.length > 0 && (
+            <>
+              <div className="my-4">
+                <Separator />
+              </div>
+
+              <div className="font-semibold text-md mx-2 my-4">
+                Applications
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16">Sr.</TableHead>
+                      <TableHead>Resume</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
+<<<<<<< Updated upstream
                   ))}
                 </TableBody>
               </Table>
@@ -637,11 +905,119 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+=======
+                  </TableHeader>
+                  <TableBody>
+                    {salaryData.job.applications.map(
+                      (application: Application, index: number) => {
+                        const displayName = extractResumeDisplayName(
+                          application.resume.filepath,
+                        );
+
+                        return (
+                          <TableRow
+                            key={`application-${application.id}-${index}`}
+                          >
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>
+                              <button
+                                className="text-blue-500 font-semibold hover:text-blue-600 transition-colors underline"
+                                onClick={() =>
+                                  handleOpenResume(application.resume.filepath)
+                                }
+                                type="button"
+                              >
+                                {displayName}
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  application.resume.verified
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-yellow-100 text-yellow-800"
+                                }`}
+                              >
+                                {application.resume.verified
+                                  ? "Verified"
+                                  : "Not Verified"}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      },
+                    )}
+                  </TableBody>
+                </Table>
+>>>>>>> Stashed changes
               </div>
             </>
           )}
-        </div>
+
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 my-6 p-4 bg-gray-50 rounded-lg">
+            <Select
+              value={selectedResume || ""}
+              onValueChange={handleResumeChange}
+            >
+              <SelectTrigger className="w-full sm:w-[250px]">
+                <SelectValue placeholder="Select a Resume" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {resumes?.length > 0 ? (
+                    resumes.map((resume) => (
+                      <SelectItem key={resume.id} value={resume.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{resume.name}</span>
+                          {resume.verified && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="#10B981"
+                              className="flex-shrink-0"
+                            >
+                              <path d="M12 2C6.486 2 2 6.486 2 12C2 17.514 6.486 22 12 22C17.514 22 22 17.514 22 12C22 10.874 21.803984 9.7942031 21.458984 8.7832031L19.839844 10.402344C19.944844 10.918344 20 11.453 20 12C20 16.411 16.411 20 12 20C7.589 20 4 16.411 4 12C4 7.589 7.589 4 12 4C13.633 4 15.151922 4.4938906 16.419922 5.3378906L17.851562 3.90625C16.203562 2.71225 14.185 2 12 2zM21.292969 3.2929688L11 13.585938L7.7070312 10.292969L6.2929688 11.707031L11 16.414062L22.707031 4.7070312L21.292969 3.2929688z" />
+                            </svg>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-resumes" disabled>
+                      No resumes available
+                    </SelectItem>
+                  )}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Button
+              disabled={!selectedResume || isApplying || hasApplied}
+              onClick={handleApply}
+              className={`w-full sm:w-auto px-6 ${
+                hasApplied
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {isApplying ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Applying...
+                </div>
+              ) : hasApplied ? (
+                "Applied"
+              ) : (
+                "Apply"
+              )}
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
-}
+};
+
+export default SalaryCard;
