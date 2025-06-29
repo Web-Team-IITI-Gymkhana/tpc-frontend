@@ -43,7 +43,7 @@ interface Application {
 
 interface SalaryCardProps {
   salaryId: string;
-  seasonType: "PLACEMENT" | "INTERNSHIP";
+  seasonType: "PLACEMENT" | "INTERNSHIP" | "INTERN";
   resumes: Resume[];
 }
 
@@ -55,81 +55,6 @@ interface ErrorState {
 const formatNumber = (num: number): string => {
   if (!num || typeof num !== "number") return "₹0";
 
-<<<<<<< Updated upstream
-  useEffect(() => {
-    if (salaryData === null) {
-      fetchSalaryData();
-    }
-  });
-
-  const [selectedResume, setSelectedResume] = useState<string | null>(null);
-
-  const handleResumeChange = (value: string) => {
-    setSelectedResume(value);
-  };
-
-  const handleApply = async () => {
-   
-
-    if (!selectedResume) {
-      toast.error("Please select a resume");
-      return;
-    }
-
-    const selectedResumeData = resumes.find(
-      (resume) => resume.id === selectedResume,
-    );
-    if (!selectedResumeData) {
-      toast.error("Selected resume not found");
-      return;
-    }
-
-    console.log("Selected resume data:", selectedResumeData);
-
-    try {
-      const data = await ApplyJob(salaryId, selectedResume);
-      if (data) {
-        toast.success("Applied Successfully");
-        fetchSalaryData();
-      } else {
-        toast.error("Cannot Apply");
-      }
-    } catch (error) {
-      console.error("Application error:", error);
-      if (error.message && error.message.includes("Not Authorized")) {
-        toast.error(
-          "You are not authorized to apply for this position. Please check if you meet the eligibility criteria.",
-        );
-      } else {
-        toast.error("Failed to apply. Please try again or contact support.");
-      }
-    }
-  };
-
-  const handleOpenResume = async (filename: string) => {
-    OpenResume(filename);
-  };
-
-  const [isopen, setIsopen] = useState(false);
-  const handleViewDetails = () => {
-    setIsopen(!isopen);
-  };
-
-  function formatNumber(num: number): string {
-    console.log(num);
-    if (num >= 1e7) {
-      const crores = num / 1e7;
-      return `₹${crores.toFixed(2)} Crores`;
-    } else if (num >= 1e5) {
-      const lakhs = num / 1e5;
-      return `₹${lakhs.toFixed(2)} Lakhs`;
-    } else if (num >= 1e3) {
-      const lakhs = num / 1e3;
-      return `₹${lakhs.toFixed(2)}K`;
-    } else {
-      return `₹${num.toString()}`;
-    }
-=======
   if (num >= 1e7) {
     const crores = num / 1e7;
     return `₹${crores.toFixed(2)} Crores`;
@@ -141,7 +66,6 @@ const formatNumber = (num: number): string => {
     return `₹${thousands.toFixed(2)}K`;
   } else {
     return `₹${num.toString()}`;
->>>>>>> Stashed changes
   }
 };
 
@@ -773,7 +697,12 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                 {salaryData.job?.events?.length > 0 ? (
                   salaryData.job.events.map((event, index) => (
                     <TableRow key={`event-${index}`}>
-                      <TableCell>{event.roundNumber || "N/A"}</TableCell>
+                      <TableCell>
+                        {event.roundNumber !== null &&
+                        event.roundNumber !== undefined
+                          ? event.roundNumber
+                          : "N/A"}
+                      </TableCell>
                       <TableCell>{event.type || "N/A"}</TableCell>
                       <TableCell>
                         {event.startDateTime
@@ -813,106 +742,21 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                       <TableHead>Resume</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
-<<<<<<< Updated upstream
-                  ))}
-                </TableBody>
-              </Table>
-
-              {salaryData.job.applications.length > 0 && (
-                <>
-                  <div className="my-4">
-                    <Separator />
-                  </div>
-
-                  <div className="font-semibold text-md mx-2 my-2">
-                    Applications
-                  </div>
-                  <Table className="overflow-hidden">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Sr.</TableHead>
-                        <TableHead>Resume</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {salaryData.job.applications.map((application, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>
-                            <div
-                              className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                              onClick={() =>
-                                handleOpenResume(application.resume.filepath)
-                              }
-                            >
-                              {application.resume.filepath}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {application.resume.verified
-                              ? "Verified"
-                              : "Not Verified"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </>
-              )}
-
-              <div className="flex justify-between my-3">
-                <Button disabled={!selectedResume} onClick={handleApply}>
-                  Apply
-                </Button>
-                <Select
-                  value={selectedResume || ""}
-                  onValueChange={handleResumeChange}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a Resume" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {resumes &&
-                        resumes.map((resume) => (
-                          <SelectItem key={resume.id} value={resume.id}>
-                            {resume.verified ? (
-                              <span
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                {resume.name}
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  x="0px"
-                                  y="0px"
-                                  width="20"
-                                  height="20"
-                                  viewBox="0 0 24 24"
-                                  style={{ fill: "#40C057", marginLeft: 5 }}
-                                >
-                                  <path d="M 12 2 C 6.486 2 2 6.486 2 12 C 2 17.514 6.486 22 12 22 C 17.514 22 22 17.514 22 12 C 22 10.874 21.803984 9.7942031 21.458984 8.7832031 L 19.839844 10.402344 C 19.944844 10.918344 20 11.453 20 12 C 20 16.411 16.411 20 12 20 C 7.589 20 4 16.411 4 12 C 4 7.589 7.589 4 12 4 C 13.633 4 15.151922 4.4938906 16.419922 5.3378906 L 17.851562 3.90625 C 16.203562 2.71225 14.185 2 12 2 z M 21.292969 3.2929688 L 11 13.585938 L 7.7070312 10.292969 L 6.2929688 11.707031 L 11 16.414062 L 22.707031 4.7070312 L 21.292969 3.2929688 z"></path>
-                                </svg>
-                              </span>
-                            ) : (
-                              resume.name
-                            )}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-=======
                   </TableHeader>
                   <TableBody>
                     {salaryData.job.applications.map(
                       (application: Application, index: number) => {
-                        const displayName = extractResumeDisplayName(
-                          application.resume.filepath,
+                        // Find the matching resume from the resumes array
+                        const matchingResume = resumes.find(
+                          (resume) => resume.id === application.resume.id,
                         );
+
+                        // Use the resume name if found, otherwise fallback to extracting from filepath
+                        const displayName = matchingResume
+                          ? matchingResume.name
+                          : extractResumeDisplayName(
+                              application.resume.filepath,
+                            );
 
                         return (
                           <TableRow
@@ -949,7 +793,6 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                     )}
                   </TableBody>
                 </Table>
->>>>>>> Stashed changes
               </div>
             </>
           )}

@@ -7,7 +7,17 @@ import toast from "react-hot-toast";
 import Loader from "@/components/Loader/loader";
 
 // Define the season type union
-type SeasonType = "PLACEMENT" | "INTERNSHIP";
+type SeasonType = "PLACEMENT" | "INTERNSHIP" | "INTERN";
+
+// Helper function to normalize season types for display
+const getSeasonDisplayName = (seasonType: SeasonType): string => {
+  return seasonType === "PLACEMENT" ? "Placement" : "Internship";
+};
+
+// Helper function to check if season is internship-related
+const isInternshipSeason = (seasonType: SeasonType): boolean => {
+  return seasonType === "INTERNSHIP" || seasonType === "INTERN";
+};
 
 interface Salary {
   id: string;
@@ -85,7 +95,8 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
         if (
           jobData.season?.type &&
           (jobData.season.type === "PLACEMENT" ||
-            jobData.season.type === "INTERNSHIP")
+            jobData.season.type === "INTERNSHIP" ||
+            jobData.season.type === "INTERN")
         ) {
           setSeasonType(jobData.season.type);
         } else {
@@ -157,8 +168,7 @@ const SalaryPage = ({ params }: { params: { jobId: string } }) => {
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">
-            {seasonType === "PLACEMENT" ? "Placement" : "Internship"}{" "}
-            Opportunities
+            {getSeasonDisplayName(seasonType)} Opportunities
           </h1>
           <p className="text-slate-600">
             {salaryData.length}{" "}
