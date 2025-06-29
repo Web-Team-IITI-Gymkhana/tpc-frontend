@@ -126,13 +126,18 @@ export const Applications = ({
       try {
         const jsonData: EventFC = await getEvent(eventId);
         jsonData.applications.forEach(async (application) => {
+          // Create display filename in format: resumename.pdf
+          const resumeName = application.resume.name || "resume";
+          const displayName = resumeName.endsWith(".pdf")
+            ? resumeName
+            : `${resumeName}.pdf`;
+
           application.resume.resumeFile = (
             <span
               className="cursor-pointer"
               onClick={() => getResume(application.resume.filepath)}
             >
-              {application.resume.filepath}{" "}
-              {application.resume.verified && <VerifiedIcon />}
+              {displayName} {application.resume.verified && <VerifiedIcon />}
             </span>
           );
         });
@@ -232,7 +237,7 @@ export const Applications = ({
           data={applications}
           columns={columns}
           type={"application"}
-          buttonText={"Give Feedback"}
+          buttonText={"Direct feedback to students"}
           buttonAction={handleFeedback}
           showExport={false}
         />

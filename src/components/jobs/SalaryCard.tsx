@@ -63,8 +63,6 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
   };
 
   const handleApply = async () => {
-   
-
     if (!selectedResume) {
       toast.error("Please select a resume");
       return;
@@ -568,26 +566,34 @@ export default function SalaryCard({ salaryId, resumes, seasonType }: Props) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {salaryData.job.applications.map((application, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>
-                            <div
-                              className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                              onClick={() =>
-                                handleOpenResume(application.resume.filepath)
-                              }
-                            >
-                              {application.resume.filepath}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {application.resume.verified
-                              ? "Verified"
-                              : "Not Verified"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {salaryData.job.applications.map((application, index) => {
+                        // Create display filename in format: resumename.pdf
+                        const resumeName = application.resume.name || "resume";
+                        const displayName = resumeName.endsWith(".pdf")
+                          ? resumeName
+                          : `${resumeName}.pdf`;
+
+                        return (
+                          <TableRow key={index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>
+                              <div
+                                className="my-1 p-2 text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                                onClick={() =>
+                                  handleOpenResume(application.resume.filepath)
+                                }
+                              >
+                                {displayName}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {application.resume.verified
+                                ? "Verified"
+                                : "Not Verified"}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </>
