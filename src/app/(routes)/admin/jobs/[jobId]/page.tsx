@@ -244,7 +244,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                   <input
                     type="checkbox"
                     name="activity"
-                    value={formData.active}
+                    checked={formData.active}
                     onChange={(e) => {
                       setFormData((form) => ({
                         ...form,
@@ -262,10 +262,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 </span>
                 {editMode ? (
                   <input
-                    defaultChecked={job.registration === "OPEN" ? true : false}
                     type="checkbox"
                     name="registration"
-                    value={formData.registration}
+                    checked={formData.registration === "OPEN"}
                     onChange={(e) => {
                       setFormData((form) => ({
                         ...form,
@@ -322,7 +321,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     />
                   ) : (
                     <div
-                      dangerouslySetInnerHTML={{ __html: job.description || '' }}
+                      dangerouslySetInnerHTML={{
+                        __html: job.description || "",
+                      }}
                     ></div>
                   )}
                 </div>
@@ -367,7 +368,9 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     />
                   ) : (
                     <div>
-                      {job.offerLetterReleaseDate ? new Date(job.offerLetterReleaseDate).toLocaleString() : 'Not specified'}
+                      {job.offerLetterReleaseDate
+                        ? new Date(job.offerLetterReleaseDate).toLocaleString()
+                        : "Not specified"}
                     </div>
                   )}
                 </div>
@@ -381,7 +384,11 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{job.joiningDate ? new Date(job.joiningDate).toLocaleString() : 'Not specified'}</div>
+                    <div>
+                      {job.joiningDate
+                        ? new Date(job.joiningDate).toLocaleString()
+                        : "Not specified"}
+                    </div>
                   )}
                 </div>
                 <div>
@@ -394,19 +401,21 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{job.duration || 'Not specified'}</div>
+                    <div>{job.duration || "Not specified"}</div>
                   )}
                 </div>
                 {(job.minNoOfHires || job.expectedNoOfHires) && (
                   <>
                     {job.minNoOfHires && (
                       <div>
-                        <div className="font-semibold my-2">Min. No. of Hires</div>{" "}
+                        <div className="font-semibold my-2">
+                          Min. No. of Hires
+                        </div>{" "}
                         {editMode ? (
                           <input
                             type="number"
                             name="minNoOfHires"
-                            value={formData.minNoOfHires || ''}
+                            value={formData.minNoOfHires || ""}
                             onChange={handleChange}
                           />
                         ) : (
@@ -416,12 +425,14 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     )}
                     {job.expectedNoOfHires && (
                       <div>
-                        <div className="font-semibold my-2">Expected No. of Hires</div>{" "}
+                        <div className="font-semibold my-2">
+                          Expected No. of Hires
+                        </div>{" "}
                         {editMode ? (
                           <input
                             type="number"
                             name="expectedNoOfHires"
-                            value={formData.expectedNoOfHires || ''}
+                            value={formData.expectedNoOfHires || ""}
                             onChange={handleChange}
                           />
                         ) : (
@@ -501,10 +512,14 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           </div>
           <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
             <div className="font-semibold text-xl my-4">Recruiter Details</div>
-            {job.recruiterDetailsFilled && job.recruiterDetailsFilled.length > 0 ? (
+            {job.recruiterDetailsFilled &&
+            job.recruiterDetailsFilled.length > 0 ? (
               <div className="space-y-6">
                 {job.recruiterDetailsFilled.map((recruiter, index) => (
-                  <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
+                  <div
+                    key={index}
+                    className="border-b border-gray-200 pb-4 last:border-b-0"
+                  >
                     {job.recruiterDetailsFilled.length > 1 && (
                       <div className="font-semibold text-lg mb-3 text-blue-600">
                         Recruiter {index + 1}
@@ -598,10 +613,16 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
               editMode={editMode}
               handleChange={(e, field) => {
                 const { value, type, checked } = e.target;
-                const fieldValue = type === 'checkbox' ? checked : value;
-                
+                const fieldValue = type === "checkbox" ? checked : value;
+
                 // Handle nested requirements fields
-                if (['numberOfMembers', 'numberOfRooms', 'otherRequirements'].includes(field)) {
+                if (
+                  [
+                    "numberOfMembers",
+                    "numberOfRooms",
+                    "otherRequirements",
+                  ].includes(field)
+                ) {
                   setFormData({
                     ...formData,
                     selectionProcedure: {
