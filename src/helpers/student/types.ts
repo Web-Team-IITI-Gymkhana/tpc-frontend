@@ -76,11 +76,12 @@ export interface Salary {
   foreignCurrencyCode?: string;
   otherCompensations?: number;
   others?: string;
-  
+
   // Internship-specific fields
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accommodation?: number;
+  accommodation?: boolean;
+  ppoProvisionOnPerformance?: boolean;
   tentativeCTC?: number;
   PPOConfirmationDate?: string;
   job: {
@@ -157,8 +158,8 @@ export interface Jobs {
   id: string;
   role: string;
   duration: string;
-  attachments: string[];
-  skills: string[];
+  attachments?: string[];
+  skills?: string[];
   description: string;
   active: boolean;
   currentStatus: string;
@@ -256,7 +257,7 @@ export interface Job {
   jobCoordinators: {
     id: string;
     role: string;
-    tpcMember: TPCMember
+    tpcMember: TPCMember;
   }[];
 
   events: {

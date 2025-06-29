@@ -11,31 +11,43 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/button";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 import Table from "../NewTableComponent/Table";
-export const JobEvents = ({ events, jobId }: { events: [EventFC], jobId: string }) => {
+export const JobEvents = ({
+  events,
+  jobId,
+}: {
+  events: EventFC[];
+  jobId: string;
+}) => {
   const [eventId, setEventId] = useState<string>(null);
   const changeApplications = (eventId: string) => {
     setEventId(eventId);
   };
 
   return (
-    <div>
-      <div className="overflow-y-auto">
-        <table className="w-full overflow-y-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <div className="space-y-4">
+      <div className="w-full overflow-x-auto">
+        <table className="w-full min-w-[640px] text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-3 md:px-6 py-3">
                 Round Number
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-3 md:px-6 py-3">
                 Type
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th
+                scope="col"
+                className="px-3 md:px-6 py-3 hidden sm:table-cell"
+              >
                 Meta Data
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th scope="col" className="px-3 md:px-6 py-3">
                 Start Date
               </th>
-              <th scope="col" className="px-6 py-3">
+              <th
+                scope="col"
+                className="px-3 md:px-6 py-3 hidden md:table-cell"
+              >
                 End Date
               </th>
             </tr>
@@ -55,26 +67,41 @@ export const JobEvents = ({ events, jobId }: { events: [EventFC], jobId: string 
               >
                 <th
                   scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  className="px-3 md:px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
                   {event.roundNumber}
                 </th>
-                <td className="px-6 py-4">{event.type}</td>
-                <td className="px-6 py-4">{event.metadata}</td>
-                <td className="px-6 py-4">{new Date(event.startDateTime).toLocaleString()}</td>
-                <td className="px-6 py-4">{new Date(event.endDateTime).toLocaleString()}</td>
+                <td className="px-3 md:px-6 py-4">{event.type}</td>
+                <td className="px-3 md:px-6 py-4 hidden sm:table-cell">
+                  {event.metadata}
+                </td>
+                <td className="px-3 md:px-6 py-4">
+                  <span className="block sm:hidden">
+                    {new Date(event.startDateTime).toLocaleDateString()}
+                  </span>
+                  <span className="hidden sm:block">
+                    {new Date(event.startDateTime).toLocaleString()}
+                  </span>
+                </td>
+                <td className="px-3 md:px-6 py-4 hidden md:table-cell">
+                  {new Date(event.endDateTime).toLocaleString()}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <h4 className="text-2xl my-4 text-center font-semibold">Applications</h4>
+      <h4 className="text-xl md:text-2xl my-4 text-center font-semibold">
+        Applications
+      </h4>
       {eventId ? (
-        <div className="overflow-y-auto">
+        <div className="overflow-hidden">
           <Applications eventId={eventId} jobId={jobId} />
         </div>
       ) : (
-        <div className="text-center mt-4">Select Event to view more</div>
+        <div className="text-center mt-4 p-4 bg-gray-50 rounded-lg">
+          Select Event to view more
+        </div>
       )}
     </div>
   );
@@ -82,7 +109,7 @@ export const JobEvents = ({ events, jobId }: { events: [EventFC], jobId: string 
 
 export const Applications = ({
   eventId,
-  jobId
+  jobId,
 }: {
   eventId: string;
   jobId: string;
@@ -99,8 +126,16 @@ export const Applications = ({
       try {
         const jsonData: EventFC = await getEvent(eventId);
         jsonData.applications.forEach(async (application) => {
-          application.resume.resumeFile = <span className="cursor-pointer" onClick={() => getResume(application.resume.filepath)}>{application.resume.filepath} {application.resume.verified && <VerifiedIcon />}</span>;
-        })
+          application.resume.resumeFile = (
+            <span
+              className="cursor-pointer"
+              onClick={() => getResume(application.resume.filepath)}
+            >
+              {application.resume.filepath}{" "}
+              {application.resume.verified && <VerifiedIcon />}
+            </span>
+          );
+        });
         setApplications(jsonData.applications);
       } catch (error) {
         toast.error("Error Fetching Data");
@@ -123,10 +158,9 @@ export const Applications = ({
   };
   const handlePostFeedback = async () => {
     const c1 = await postFeedback(jobId, feedbackText, studentIds);
-    if(c1){
+    if (c1) {
       toast.success("Feedback Posted");
-    }
-    else{
+    } else {
       toast.error("Error Posting Feedback");
     }
     handleCloseModal();
@@ -152,30 +186,42 @@ export const Applications = ({
     const studentIds = applications.map((student) => student.student.id);
     setStudentIds(studentIds);
     handleOpenModal();
-  }
+  };
 
   return (
     <div className="w-full">
-      <Modal open={open} onClose={handleCloseModal} className="flex justify-center items-center">
-          <div className="p-4 w-full md:w-1/2 bg-white rounded-xl border-2 border-gray-400">
-            <h2 className="text-xl font-semibold">Post Feedback</h2>
-            <input
-              type="text"
-              value={feedbackText}
-              onChange={handleFeedbackChange}
-              placeholder="Enter your feedback"
-              className="w-full mt-2 p-2 border border-gray-300 rounded text-black"
-            />
-            <div className="flex justify-end mt-4">
-              <Button onClick={handleCloseModal} variant="destructive">
-                Cancel
-              </Button>
-              <Button onClick={handlePostFeedback} variant="default" className="ml-2">
-                Give Feedback
-              </Button>
-            </div>
+      <Modal
+        open={open}
+        onClose={handleCloseModal}
+        className="flex justify-center items-center p-4"
+      >
+        <div className="p-4 md:p-6 w-full max-w-md md:max-w-lg bg-white rounded-xl border-2 border-gray-400 mx-4">
+          <h2 className="text-lg md:text-xl font-semibold">Post Feedback</h2>
+          <input
+            type="text"
+            value={feedbackText}
+            onChange={handleFeedbackChange}
+            placeholder="Enter your feedback"
+            className="w-full mt-2 p-2 border border-gray-300 rounded text-black text-sm md:text-base"
+          />
+          <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
+            <Button
+              onClick={handleCloseModal}
+              variant="destructive"
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePostFeedback}
+              variant="default"
+              className="w-full sm:w-auto"
+            >
+              Give Feedback
+            </Button>
           </div>
-        </Modal>
+        </div>
+      </Modal>
       {loading && (
         <div className="flex justify-center">
           <Loader />

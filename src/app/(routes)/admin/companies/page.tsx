@@ -26,8 +26,10 @@ const JobPage = () => {
   }, []);
 
   return (
-    <div className="m-10">
-      <h1 className="text-center font-bold text-3xl my-5 py-5">Companies</h1>
+    <div className="m-2 md:m-6 lg:m-10">
+      <h1 className="text-center font-bold text-2xl md:text-3xl my-3 md:my-5 py-3 md:py-5">
+        Companies
+      </h1>
       <div>
         {loading && (
           <div className="h-48 flex justify-center items-center">

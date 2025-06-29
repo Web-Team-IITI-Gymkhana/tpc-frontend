@@ -89,23 +89,48 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
   };
 
   const addNewTest = () => {
-    const newTest = { type: "", duration: 0 };
+    const newTest = { type: "", duration: "" };
     setFormData((prev) => ({
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        tests: [...prev.selectionProcedure.tests, newTest],
+        tests: [...(prev.selectionProcedure.tests || []), newTest],
+      },
+    }));
+  };
+
+  const removeTest = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectionProcedure: {
+        ...prev.selectionProcedure,
+        tests: prev.selectionProcedure.tests.filter((_, i) => i !== index),
       },
     }));
   };
 
   const addNewInterview = () => {
-    const newInterview = { type: "", duration: 0 };
+    const newInterview = { type: "", duration: "" };
     setFormData((prev) => ({
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        interviews: [...prev.selectionProcedure.interviews, newInterview],
+        interviews: [
+          ...(prev.selectionProcedure.interviews || []),
+          newInterview,
+        ],
+      },
+    }));
+  };
+
+  const removeInterview = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectionProcedure: {
+        ...prev.selectionProcedure,
+        interviews: prev.selectionProcedure.interviews.filter(
+          (_, i) => i !== index,
+        ),
       },
     }));
   };
@@ -164,14 +189,73 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
               <div className="font-semibold text-lg my-4">Skills</div>
               <div className="flex flex-wrap gap-4">
                 {editMode ? (
-                  <input
-                    type="text"
-                    name="skills"
-                    value={formData.skills}
-                    onChange={handleChange}
-                  />
+                  <div className="w-full">
+                    <input
+                      type="text"
+                      placeholder="Type skill and press Enter"
+                      className="w-full p-2 border border-gray-300 rounded"
+                      onKeyDown={(e) => {
+                        const target = e.target as HTMLInputElement;
+                        if (e.key === "Enter" && target.value.trim()) {
+                          e.preventDefault();
+                          const newSkill = target.value.trim();
+                          const currentSkills = Array.isArray(formData.skills)
+                            ? formData.skills
+                            : [];
+                          if (!currentSkills.includes(newSkill)) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              skills: [...currentSkills, newSkill],
+                            }));
+                          }
+                          target.value = "";
+                        }
+                      }}
+                    />
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {(Array.isArray(formData.skills)
+                        ? formData.skills
+                        : []
+                      ).map((skill, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                        >
+                          {skill}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedSkills = formData.skills.filter(
+                                (_, i) => i !== index,
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                skills: updatedSkills,
+                              }));
+                            }}
+                            className="text-blue-600 hover:text-blue-800 font-bold"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 ) : (
-                  job.skills
+                  <div className="flex flex-wrap gap-2">
+                    {Array.isArray(job.skills) && job.skills.length > 0 ? (
+                      job.skills.map((skill, index) => (
+                        <span
+                          key={index}
+                          className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm"
+                        >
+                          {skill}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-gray-500">No skills specified</span>
+                    )}
+                  </div>
                 )}
               </div>
               <div className="flex md:flex-row flex-col flex-wrap bg-gray-200 rounded-lg justify-between py-4 px-6 my-3">
@@ -194,11 +278,11 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     <input
                       type="date"
                       name="offerLetterReleaseDate"
-                      value={formData.offerLetterReleaseDate}
+                      value={formData.offerLetterReleaseDate || ""}
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{job.offerLetterReleaseDate}</div>
+                    <div>{job.offerLetterReleaseDate || "N/A"}</div>
                   )}
                 </div>
                 <div>
@@ -207,11 +291,11 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     <input
                       type="date"
                       name="joiningDate"
-                      value={formData.joiningDate}
+                      value={formData.joiningDate || ""}
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{job.joiningDate}</div>
+                    <div>{job.joiningDate || "N/A"}</div>
                   )}
                 </div>
                 <div>
@@ -220,11 +304,11 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     <input
                       type="text"
                       name="duration"
-                      value={formData.duration}
+                      value={formData.duration || ""}
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{job.duration}</div>
+                    <div>{job.duration || "N/A"}</div>
                   )}
                 </div>
                 <div>
@@ -325,7 +409,8 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     type="number"
                     name="numberOfMembers"
                     value={
-                      formData.selectionProcedure.requirements.numberOfMembers
+                      formData.selectionProcedure.requirements
+                        ?.numberOfMembers || ""
                     }
                     onChange={(e) => {
                       setFormData((prev) => ({
@@ -333,7 +418,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                         selectionProcedure: {
                           ...prev.selectionProcedure,
                           requirements: {
-                            ...prev.selectionProcedure.requirements,
+                            ...(prev.selectionProcedure.requirements || {}),
                             numberOfMembers: e.target.value,
                           },
                         },
@@ -342,7 +427,8 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   />
                 ) : (
                   <div>
-                    {job.selectionProcedure.requirements.numberOfMembers}
+                    {job.selectionProcedure.requirements?.numberOfMembers ||
+                      "N/A"}
                   </div>
                 )}
               </div>
@@ -352,67 +438,95 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div className="font-semibold bg-gray-200">Tests</div>
                 <ul className="list-disc capitalize">
                   {editMode
-                    ? formData.selectionProcedure.tests.map((test, index) => (
-                        <li key={index} className="my-2">
-                          Test Type:
-                          <select
-                            className="ml-4 my-2 capitalize"
-                            value={test.type}
-                            onChange={(e) => {
-                              const updatedtests =
-                                formData.selectionProcedure.tests.map((i, j) =>
-                                  j === index
-                                    ? { ...i, type: e.target.value }
-                                    : i,
-                                );
-                              setFormData((prev) => ({
-                                ...prev,
-                                selectionProcedure: {
-                                  ...prev.selectionProcedure,
-                                  tests: updatedtests,
-                                },
-                              }));
-                            }}
+                    ? (formData.selectionProcedure.tests || []).map(
+                        (test, index) => (
+                          <li
+                            key={index}
+                            className="my-2 border p-3 rounded bg-gray-50"
                           >
-                            {jafDetails.testTypes.map((test, index) => (
-                              <option key={index}>{test}</option>
-                            ))}
-                          </select>
-                          <br />
-                          Test Duration:
-                          <input
-                            className="ml-4 my-2"
-                            type="number"
-                            name="testDuration"
-                            value={test.duration}
-                            onChange={(e) => {
-                              const updatedTests =
-                                formData.selectionProcedure.tests.map((t, i) =>
-                                  i === index
-                                    ? { ...t, duration: Number(e.target.value) }
-                                    : t,
-                                );
-                              setFormData((prev) => ({
-                                ...prev,
-                                selectionProcedure: {
-                                  ...prev.selectionProcedure,
-                                  tests: updatedTests,
-                                },
-                              }));
-                            }}
-                          />
-                        </li>
-                      ))
-                    : job.selectionProcedure.tests.map((p, index) => (
-                        <li key={index} className="my-2">
-                          {Object.entries(p).map(([key, value]) => (
-                            <span key={key}>
-                              {key} : {value}
-                              <br />
-                            </span>
-                          ))}
-                        </li>
-                      ))}
+                            <div className="flex justify-between items-start mb-2">
+                              <span className="font-semibold">
+                                Test {index + 1}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeTest(index)}
+                                className="text-red-500 hover:text-red-700 font-bold"
+                                title="Remove test"
+                              >
+                                ×
+                              </button>
+                            </div>
+                            <div className="mb-2">
+                              Test Type:
+                              <select
+                                className="ml-4 my-2 capitalize p-1 border rounded"
+                                value={test.type || ""}
+                                onChange={(e) => {
+                                  const updatedTests =
+                                    formData.selectionProcedure.tests.map(
+                                      (t, i) =>
+                                        i === index
+                                          ? { ...t, type: e.target.value }
+                                          : t,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      tests: updatedTests,
+                                    },
+                                  }));
+                                }}
+                              >
+                                <option value="">Select Type</option>
+                                {jafDetails?.testTypes?.map((testType, idx) => (
+                                  <option key={idx} value={testType}>
+                                    {testType}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              Test Duration:
+                              <input
+                                className="ml-4 my-2 p-1 border rounded"
+                                type="text"
+                                placeholder="e.g., 2 hours, 90 minutes"
+                                value={test.duration || ""}
+                                onChange={(e) => {
+                                  const updatedTests =
+                                    formData.selectionProcedure.tests.map(
+                                      (t, i) =>
+                                        i === index
+                                          ? { ...t, duration: e.target.value }
+                                          : t,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      tests: updatedTests,
+                                    },
+                                  }));
+                                }}
+                              />
+                            </div>
+                          </li>
+                        ),
+                      )
+                    : (job.selectionProcedure.tests || []).map(
+                        (test, index) => (
+                          <li key={index} className="my-2">
+                            <div>
+                              <strong>Type:</strong> {test.type}
+                            </div>
+                            <div>
+                              <strong>Duration:</strong> {test.duration}
+                            </div>
+                          </li>
+                        ),
+                      )}
                 </ul>
                 {editMode && (
                   <Button className="w-full" onClick={addNewTest}>
@@ -427,71 +541,97 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div className="font-semibold bg-gray-200">Interviews</div>
                 <ul className="list-disc capitalize">
                   {editMode
-                    ? formData.selectionProcedure.interviews.map(
+                    ? (formData.selectionProcedure.interviews || []).map(
                         (interview, index) => (
-                          <li key={index} className="my-2">
-                            Interview Type:
-                            <select
-                              className="ml-4 my-2 capitalize"
-                              value={interview.type}
-                              onChange={(e) => {
-                                const updatedInterviews =
-                                  formData.selectionProcedure.interviews.map(
-                                    (i, j) =>
-                                      j === index
-                                        ? { ...i, type: e.target.value }
-                                        : i,
-                                  );
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  selectionProcedure: {
-                                    ...prev.selectionProcedure,
-                                    interviews: updatedInterviews,
-                                  },
-                                }));
-                              }}
-                            >
-                              {jafDetails.interviewTypes.map((test, index) => (
-                                <option key={index}>{test}</option>
-                              ))}
-                            </select>
-                            <br />
-                            Interview Duration:
-                            <input
-                              className="ml-4 my-2"
-                              type="number"
-                              name="interviewDuration"
-                              value={interview.duration}
-                              onChange={(e) => {
-                                const updatedInterviews =
-                                  formData.selectionProcedure.interviews.map(
-                                    (i, j) =>
-                                      j === index
-                                        ? { ...i, duration: e.target.value }
-                                        : i,
-                                  );
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  selectionProcedure: {
-                                    ...prev.selectionProcedure,
-                                    interviews: updatedInterviews,
-                                  },
-                                }));
-                              }}
-                            />
+                          <li
+                            key={index}
+                            className="my-2 border p-3 rounded bg-gray-50"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <span className="font-semibold">
+                                Interview {index + 1}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeInterview(index)}
+                                className="text-red-500 hover:text-red-700 font-bold"
+                                title="Remove interview"
+                              >
+                                ×
+                              </button>
+                            </div>
+                            <div className="mb-2">
+                              Interview Type:
+                              <select
+                                className="ml-4 my-2 capitalize p-1 border rounded"
+                                value={interview.type || ""}
+                                onChange={(e) => {
+                                  const updatedInterviews =
+                                    formData.selectionProcedure.interviews.map(
+                                      (i, j) =>
+                                        j === index
+                                          ? { ...i, type: e.target.value }
+                                          : i,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      interviews: updatedInterviews,
+                                    },
+                                  }));
+                                }}
+                              >
+                                <option value="">Select Type</option>
+                                {jafDetails?.interviewTypes?.map(
+                                  (interviewType, idx) => (
+                                    <option key={idx} value={interviewType}>
+                                      {interviewType}
+                                    </option>
+                                  ),
+                                )}
+                              </select>
+                            </div>
+                            <div>
+                              Interview Duration:
+                              <input
+                                className="ml-4 my-2 p-1 border rounded"
+                                type="text"
+                                placeholder="e.g., 30 minutes, 1 hour"
+                                value={interview.duration || ""}
+                                onChange={(e) => {
+                                  const updatedInterviews =
+                                    formData.selectionProcedure.interviews.map(
+                                      (i, j) =>
+                                        j === index
+                                          ? { ...i, duration: e.target.value }
+                                          : i,
+                                    );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    selectionProcedure: {
+                                      ...prev.selectionProcedure,
+                                      interviews: updatedInterviews,
+                                    },
+                                  }));
+                                }}
+                              />
+                            </div>
                           </li>
                         ),
                       )
-                    : job.selectionProcedure.interviews.map((p, index) => (
-                        <li key={index} className="my-2">
-                          {Object.entries(p).map(([key, value]) => (
-                            <span key={key}>
-                              {key} : {value}
-                              <br />
-                            </span>
-                          ))}
-                        </li>
-                      ))}
+                    : (job.selectionProcedure.interviews || []).map(
+                        (interview, index) => (
+                          <li key={index} className="my-2">
+                            <div>
+                              <strong>Type:</strong> {interview.type}
+                            </div>
+                            <div>
+                              <strong>Duration:</strong> {interview.duration}
+                            </div>
+                          </li>
+                        ),
+                      )}
                 </ul>
                 {editMode && (
                   <Button className="w-full" onClick={addNewInterview}>
@@ -510,7 +650,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                       name="otherRequirements"
                       value={
                         formData.selectionProcedure.requirements
-                          .otherRequirements
+                          ?.otherRequirements || ""
                       }
                       onChange={(e) => {
                         setFormData((prev) => ({
@@ -518,7 +658,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                           selectionProcedure: {
                             ...prev.selectionProcedure,
                             requirements: {
-                              ...prev.selectionProcedure.requirements,
+                              ...(prev.selectionProcedure.requirements || {}),
                               otherRequirements: e.target.value,
                             },
                           },
@@ -527,7 +667,8 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     />
                   ) : (
                     <div>
-                      {job.selectionProcedure.requirements.otherRequirements}
+                      {job.selectionProcedure.requirements?.otherRequirements ||
+                        "N/A"}
                     </div>
                   )}
                 </div>
@@ -576,6 +717,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
             seasonType={job.season.type}
             formData={formData}
             loading={loading}
+            jafDetails={jafDetails}
           />
         </div>
       )}

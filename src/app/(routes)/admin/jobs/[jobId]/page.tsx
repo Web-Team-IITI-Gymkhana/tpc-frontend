@@ -191,7 +191,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const addNewTest = () => {
-    const newTest = { type: "", duration: 0 };
+    const newTest = { type: "", duration: "" };
     setFormData((prev) => ({
       ...prev,
       selectionProcedure: {
@@ -202,7 +202,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   };
 
   const addNewInterview = () => {
-    const newInterview = { type: "", duration: 0 };
+    const newInterview = { type: "", duration: "" };
     setFormData((prev) => ({
       ...prev,
       selectionProcedure: {
@@ -322,7 +322,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     />
                   ) : (
                     <div
-                      dangerouslySetInnerHTML={{ __html: job.description }}
+                      dangerouslySetInnerHTML={{ __html: job.description || '' }}
                     ></div>
                   )}
                 </div>
@@ -367,7 +367,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                     />
                   ) : (
                     <div>
-                      {new Date(job.offerLetterReleaseDate).toLocaleString()}
+                      {job.offerLetterReleaseDate ? new Date(job.offerLetterReleaseDate).toLocaleString() : 'Not specified'}
                     </div>
                   )}
                 </div>
@@ -381,7 +381,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{new Date(job.joiningDate).toLocaleString()}</div>
+                    <div>{job.joiningDate ? new Date(job.joiningDate).toLocaleString() : 'Not specified'}</div>
                   )}
                 </div>
                 <div>
@@ -394,22 +394,60 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                       onChange={handleChange}
                     />
                   ) : (
-                    <div>{job.duration}</div>
+                    <div>{job.duration || 'Not specified'}</div>
                   )}
                 </div>
+                {(job.minNoOfHires || job.expectedNoOfHires) && (
+                  <>
+                    {job.minNoOfHires && (
+                      <div>
+                        <div className="font-semibold my-2">Min. No. of Hires</div>{" "}
+                        {editMode ? (
+                          <input
+                            type="number"
+                            name="minNoOfHires"
+                            value={formData.minNoOfHires || ''}
+                            onChange={handleChange}
+                          />
+                        ) : (
+                          <div>{job.minNoOfHires}</div>
+                        )}
+                      </div>
+                    )}
+                    {job.expectedNoOfHires && (
+                      <div>
+                        <div className="font-semibold my-2">Expected No. of Hires</div>{" "}
+                        {editMode ? (
+                          <input
+                            type="number"
+                            name="expectedNoOfHires"
+                            value={formData.expectedNoOfHires || ''}
+                            onChange={handleChange}
+                          />
+                        ) : (
+                          <div>{job.expectedNoOfHires}</div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
                 <div>
                   <div className="font-semibold my-2">Attachments</div>{" "}
-                  {job.attachments?.map((attachment, index) => (
-                    <div
-                      className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
-                      onClick={() => handleOpenJD(attachment)}
-                      key={index}
-                    >
-                      {attachment.length > 20
-                        ? `${attachment.slice(0, 20)}...`
-                        : attachment}
-                    </div>
-                  ))}
+                  {job.attachments && job.attachments.length > 0 ? (
+                    job.attachments.map((attachment, index) => (
+                      <div
+                        className="text-blue-500 font-semibold cursor-pointer hover:text-blue-600 transition-all fade-in-out"
+                        onClick={() => handleOpenJD(attachment)}
+                        key={index}
+                      >
+                        {attachment.length > 20
+                          ? `${attachment.slice(0, 20)}...`
+                          : attachment}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">No attachments</div>
+                  )}
                 </div>
               </div>
             </div>
@@ -463,53 +501,128 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           </div>
           <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
             <div className="font-semibold text-xl my-4">Recruiter Details</div>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex flex-col flex-1">
-                <div className="font-semibold my-2">Name</div>
-                <div className="flex items-center">
-                  <div>{job.recruiter.user.name}</div>
-                </div>
+            {job.recruiterDetailsFilled && job.recruiterDetailsFilled.length > 0 ? (
+              <div className="space-y-6">
+                {job.recruiterDetailsFilled.map((recruiter, index) => (
+                  <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
+                    {job.recruiterDetailsFilled.length > 1 && (
+                      <div className="font-semibold text-lg mb-3 text-blue-600">
+                        Recruiter {index + 1}
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex flex-col flex-1">
+                        <div className="font-semibold my-2">Name</div>
+                        <div className="flex items-center">
+                          <div>{recruiter.name}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        <div className="font-semibold my-2">Designation</div>
+                        <div className="flex items-center">
+                          <div>{recruiter.designation}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        <div className="font-semibold my-2">Company</div>
+                        <div className="flex items-center">
+                          <div>{job.company.name}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        <div className="font-semibold my-2">Email</div>
+                        <div className="flex items-center">
+                          <div>{recruiter.email}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        <div className="font-semibold my-2">Contact</div>
+                        <div className="flex items-center">
+                          <div>{recruiter.contact}</div>
+                        </div>
+                      </div>
+                      {recruiter.landline && (
+                        <div className="flex flex-col flex-1">
+                          <div className="font-semibold my-2">Landline</div>
+                          <div className="flex items-center">
+                            <div>{recruiter.landline}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex flex-col flex-1">
-                <div className="font-semibold my-2">Designation</div>
-                <div className="flex items-center">
-                  <div>{job.recruiter.designation}</div>
+            ) : (
+              // Fallback to old structure if new structure is not available
+              job.recruiter && (
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-col flex-1">
+                    <div className="font-semibold my-2">Name</div>
+                    <div className="flex items-center">
+                      <div>{job.recruiter.user.name}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <div className="font-semibold my-2">Designation</div>
+                    <div className="flex items-center">
+                      <div>{job.recruiter.designation}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <div className="font-semibold my-2">Company</div>
+                    <div className="flex items-center">
+                      <div>{job.company.name}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <div className="font-semibold my-2">Email</div>
+                    <div className="flex items-center">
+                      <div>{job.recruiter.user.email}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col flex-1">
+                    <div className="font-semibold my-2">Contact</div>
+                    <div className="flex items-center">
+                      <div>{job.recruiter.user.contact}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <div className="font-semibold my-2">Company</div>
-                <div className="flex items-center">
-                  <div>{job.company.name}</div>
-                </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <div className="font-semibold my-2">Email</div>
-                <div className="flex items-center">
-                  <div>{job.recruiter.user.email}</div>
-                </div>
-              </div>
-              <div className="flex flex-col flex-1">
-                <div className="font-semibold my-2">Contact</div>
-                <div className="flex items-center">
-                  <div>{job.recruiter.user.contact}</div>
-                </div>
-              </div>
-            </div>
+              )
+            )}
           </div>
 
           {job.selectionProcedure && (
             <SelectionProcedure
               selectionProcedure={job.selectionProcedure}
               editMode={editMode}
-              handleChange={(e, field) =>
-                setFormData({
-                  ...formData,
-                  selectionProcedure: {
-                    ...formData.selectionProcedure,
-                    [field]: e.target.value,
-                  },
-                })
-              }
+              handleChange={(e, field) => {
+                const { value, type, checked } = e.target;
+                const fieldValue = type === 'checkbox' ? checked : value;
+                
+                // Handle nested requirements fields
+                if (['numberOfMembers', 'numberOfRooms', 'otherRequirements'].includes(field)) {
+                  setFormData({
+                    ...formData,
+                    selectionProcedure: {
+                      ...formData.selectionProcedure,
+                      requirements: {
+                        ...formData.selectionProcedure.requirements,
+                        [field]: fieldValue,
+                      },
+                    },
+                  });
+                } else {
+                  // Handle regular fields
+                  setFormData({
+                    ...formData,
+                    selectionProcedure: {
+                      ...formData.selectionProcedure,
+                      [field]: fieldValue,
+                    },
+                  });
+                }
+              }}
             />
           )}
           <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">

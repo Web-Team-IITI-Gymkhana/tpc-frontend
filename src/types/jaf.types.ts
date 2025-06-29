@@ -1,4 +1,5 @@
 // TypeScript interfaces matching the backend DTO structure exactly
+import { CourseEnum } from "@/dto/Programs";
 
 export enum CategoryEnum {
   GENERAL = "GENERAL",
@@ -6,7 +7,7 @@ export enum CategoryEnum {
   ST = "ST",
   OBC = "OBC",
   PWD = "PWD",
-  EWS = "EWS"
+  EWS = "EWS",
 }
 
 export enum CompanyCategoryEnum {
@@ -14,7 +15,7 @@ export enum CompanyCategoryEnum {
   MNC = "MNC",
   PSU_GOVERNMENT = "PSU/GOVERNMENT",
   STARTUP = "STARTUP",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export enum DepartmentEnum {
@@ -26,18 +27,18 @@ export enum DepartmentEnum {
   CHEM = "CHEM",
   MME = "MME",
   PIE = "PIE",
-  BT = "BT"
+  BT = "BT",
 }
 
 export enum GenderEnum {
   MALE = "MALE",
   FEMALE = "FEMALE",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export enum SeasonTypeEnum {
   PLACEMENT = "PLACEMENT",
-  INTERNSHIP = "INTERNSHIP"
+  INTERNSHIP = "INTERNSHIP",
 }
 
 export enum CountriesEnum {
@@ -55,7 +56,7 @@ export enum CountriesEnum {
   NETHERLANDS = "NETHERLANDS",
   SWITZERLAND = "SWITZERLAND",
   SWEDEN = "SWEDEN",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export enum IndustryDomainEnum {
@@ -69,7 +70,7 @@ export enum IndustryDomainEnum {
   GOVERNMENT = "GOVERNMENT",
   PSU = "PSU",
   STARTUP = "STARTUP",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export enum InterviewTypesEnum {
@@ -79,13 +80,13 @@ export enum InterviewTypesEnum {
   GROUP_DISCUSSION = "GROUP_DISCUSSION",
   PRESENTATION = "PRESENTATION",
   CODING = "CODING",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export enum SelectionModeEnum {
   ONLINE = "ONLINE",
   OFFLINE = "OFFLINE",
-  HYBRID = "HYBRID"
+  HYBRID = "HYBRID",
 }
 
 export enum TestTypesEnum {
@@ -94,13 +95,13 @@ export enum TestTypesEnum {
   CODING = "CODING",
   DOMAIN = "DOMAIN",
   PSYCHOLOGICAL = "PSYCHOLOGICAL",
-  OTHER = "OTHER"
+  OTHER = "OTHER",
 }
 
 export enum BacklogEnum {
   ACTIVE = "ACTIVE",
-  PREVIOUS = "PREVIOUS", 
-  NEVER = "NEVER"
+  PREVIOUS = "PREVIOUS",
+  NEVER = "NEVER",
 }
 
 export interface AddressDto {
@@ -191,7 +192,8 @@ export interface SalaryDto {
   // INTERNSHIP
   stipend?: number;
   foreignCurrencyStipend?: string;
-  accommodation?: number;
+  accommodation?: boolean;
+  ppoProvisionOnPerformance?: boolean;
   tentativeCTC?: number;
   PPOConfirmationDate?: Date;
 }
@@ -229,9 +231,9 @@ export interface SeasonsDto {
 export interface ProgramsDto {
   id: string;
   branch: string;
-  course: string;
+  course: CourseEnum;
   year: string;
-  department: string;
+  department: DepartmentEnum;
 }
 
 export interface GetJafValuesDto {
@@ -250,7 +252,7 @@ export interface JAFFormValues {
   // Season Details
   seasonId: string;
   terms: boolean;
-  
+
   // Recruiter Details
   recName1: string;
   designation1: string;
@@ -267,7 +269,7 @@ export interface JAFFormValues {
   email3: string;
   phoneNumber3: string;
   landline3: string;
-  
+
   // Job Details
   role: string;
   description: string;
@@ -290,4 +292,4 @@ export interface JAFFormValues {
   otherRequirements: string;
   salaries: SalaryDto[];
   jobOthers: string;
-} 
+}

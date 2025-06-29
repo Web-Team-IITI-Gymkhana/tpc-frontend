@@ -27,34 +27,42 @@ const JobPage = () => {
     fetchData();
   }, []);
   return (
-    <div className="container my-8">
-      <h1 className="text-3xl mb-8 font-bold mx-auto text-center">All Jobs</h1>
+    <div className="container mx-auto my-4 md:my-8 px-2 md:px-4">
+      <h1 className="text-2xl md:text-3xl mb-4 md:mb-8 font-bold mx-auto text-center">
+        All Jobs
+      </h1>
       {loading && (
         <div className="h-screen w-full flex justify-center items-center">
           <Loader />
         </div>
       )}
       {data && (
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <div className="w-full overflow-x-auto shadow-md rounded-lg">
+          <table className="w-full min-w-[640px] text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-3 md:px-6 py-3">
                   Role
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-3 md:px-6 py-3">
                   Active
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th
+                  scope="col"
+                  className="px-3 md:px-6 py-3 hidden sm:table-cell"
+                >
                   Current Status
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-3 md:px-6 py-3">
                   Season Type
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th
+                  scope="col"
+                  className="px-3 md:px-6 py-3 hidden md:table-cell"
+                >
                   Season Year
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-3 md:px-6 py-3">
                   Company Name
                 </th>
               </tr>
@@ -70,17 +78,21 @@ const JobPage = () => {
                 >
                   <th
                     scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    className="px-3 md:px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
                     {job.role}
                   </th>
-                  <td className="px-6 py-4">
+                  <td className="px-3 md:px-6 py-4">
                     {job.active ? "Active" : "Inactive"}
                   </td>
-                  <td className="px-6 py-4">{job.currentStatus}</td>
-                  <td className="px-6 py-4">{job.season.type}</td>
-                  <td className="px-6 py-4">{job.season.year}</td>
-                  <td className="px-6 py-4">{job.company.name}</td>
+                  <td className="px-3 md:px-6 py-4 hidden sm:table-cell">
+                    {job.currentStatus}
+                  </td>
+                  <td className="px-3 md:px-6 py-4">{job.season.type}</td>
+                  <td className="px-3 md:px-6 py-4 hidden md:table-cell">
+                    {job.season.year}
+                  </td>
+                  <td className="px-3 md:px-6 py-4">{job.company.name}</td>
                 </tr>
               ))}
             </tbody>

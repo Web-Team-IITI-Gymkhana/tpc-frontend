@@ -28,69 +28,69 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
   // Helper function to get error message
   const getErrorMessage = (field: string): string => {
     const error = errors[field];
-    return typeof error === 'string' ? error : '';
+    return typeof error === "string" ? error : "";
   };
 
   return (
-    <div style={{ padding: '0 24px' }}>
+    <div className="px-1 md:px-6">
       {/* Header Section */}
-      <div style={{ textAlign: 'center', marginBottom: 32, marginTop: 24 }}>
-        <Title level={4} style={{ 
-          marginBottom: 8, 
-          color: '#1f2937',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          fontWeight: 600
-        }}>
+      <div className="text-center mb-6 md:mb-8 mt-4 md:mt-6">
+        <Title
+          level={4}
+          className="mb-2 text-gray-800 uppercase tracking-wide font-semibold text-lg md:text-xl"
+        >
           Recruiter Details
         </Title>
-        <Text style={{ fontSize: 16, color: '#6b7280' }}>
+        <Text className="text-sm md:text-base text-gray-600">
           Provide contact information for the recruitment team
         </Text>
       </div>
 
       <Form layout="vertical">
-        <Row gutter={24} style={{ display: 'flex', alignItems: 'stretch' }}>
+        <Row
+          gutter={[16, 24]}
+          className="flex flex-col md:flex-row md:items-stretch"
+        >
           {[1, 2, 3].map((index) => (
-            <Col span={8} key={index} style={{ display: 'flex' }}>
+            <Col xs={24} md={8} key={index} className="flex w-full">
               <Card
                 title={
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
                     {index === 1 ? (
                       <>
-                        <UserOutlined style={{ color: '#374151' }} />
-                        <Text strong style={{ fontSize: 16, color: '#374151' }}>
-                          <span style={{ color: '#ef4444' }}>* </span>
+                        <UserOutlined style={{ color: "#374151" }} />
+                        <Text strong style={{ fontSize: 16, color: "#374151" }}>
+                          <span style={{ color: "#ef4444" }}>* </span>
                           Primary Contact
                         </Text>
                       </>
                     ) : (
                       <>
-                        <TeamOutlined style={{ color: '#6b7280' }} />
-                        <Text style={{ fontSize: 16, color: '#6b7280' }}>
+                        <TeamOutlined style={{ color: "#6b7280" }} />
+                        <Text style={{ fontSize: 16, color: "#6b7280" }}>
                           Additional Contact {index - 1}
                         </Text>
                       </>
                     )}
                   </div>
                 }
-                style={{ 
-                  marginBottom: 24,
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                  borderRadius: 8,
-                  border: '1px solid #e5e7eb',
-                  width: '100%',
-                  height: 'auto',
-                  minHeight: '480px'
-                }}
+                className="mb-4 md:mb-6 shadow-sm rounded-lg border border-gray-200 w-full h-auto min-h-96 md:min-h-[480px]"
               >
                 {/* Name Field */}
                 <Form.Item
-                  style={{ marginBottom: 24 }}
+                  className="mb-4 md:mb-6"
                   required={index === 1}
-                  label="Full Name"
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Full Name
+                    </span>
+                  }
                   hasFeedback
-                  validateStatus={getErrorMessage(`recName${index}`) ? "error" : ""}
+                  validateStatus={
+                    getErrorMessage(`recName${index}`) ? "error" : ""
+                  }
                   help={getErrorMessage(`recName${index}`)}
                 >
                   <Input
@@ -100,16 +100,23 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                     value={values[`recName${index}`]}
                     maxLength={100}
                     showCount
+                    className="text-xs md:text-sm"
                   />
                 </Form.Item>
 
                 {/* Designation Field */}
                 <Form.Item
-                  style={{ marginBottom: 24 }}
+                  className="mb-4 md:mb-6"
                   required={index === 1}
-                  label="Designation"
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Designation
+                    </span>
+                  }
                   hasFeedback
-                  validateStatus={getErrorMessage(`designation${index}`) ? "error" : ""}
+                  validateStatus={
+                    getErrorMessage(`designation${index}`) ? "error" : ""
+                  }
                   help={getErrorMessage(`designation${index}`)}
                 >
                   <Input
@@ -119,16 +126,23 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                     value={values[`designation${index}`]}
                     maxLength={100}
                     showCount
+                    className="text-xs md:text-sm"
                   />
                 </Form.Item>
 
                 {/* Email Field */}
                 <Form.Item
-                  style={{ marginBottom: 24 }}
+                  className="mb-4 md:mb-6"
                   required={index === 1}
-                  label="Email Address"
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Email Address
+                    </span>
+                  }
                   hasFeedback
-                  validateStatus={getErrorMessage(`email${index}`) ? "error" : ""}
+                  validateStatus={
+                    getErrorMessage(`email${index}`) ? "error" : ""
+                  }
                   help={getErrorMessage(`email${index}`)}
                 >
                   <Input
@@ -139,28 +153,32 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                     value={values[`email${index}`]}
                     maxLength={254}
                     showCount
+                    className="text-xs md:text-sm"
                   />
                 </Form.Item>
 
                 {/* Phone Field */}
                 <Form.Item
-                  style={{ marginBottom: 24 }}
+                  className="mb-4 md:mb-6"
                   required={index === 1}
-                  label="Mobile Number"
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Mobile Number
+                    </span>
+                  }
                   hasFeedback
-                  validateStatus={getErrorMessage(`phoneNumber${index}`) ? "error" : ""}
+                  validateStatus={
+                    getErrorMessage(`phoneNumber${index}`) ? "error" : ""
+                  }
                   help={getErrorMessage(`phoneNumber${index}`)}
                 >
-                  <Input.Group compact>
+                  <Input.Group compact className="flex">
                     <Input
                       name={`countryCode${index}`}
                       placeholder="+91"
                       value={values[`countryCode${index}`] || "+91"}
                       onChange={handleChange}
-                      style={{ 
-                        width: '20%',
-                        textAlign: 'center'
-                      }}
+                      className="w-1/4 md:w-1/5 text-center text-xs md:text-sm"
                       maxLength={5}
                     />
                     <Input
@@ -168,7 +186,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                       placeholder={PLACEHOLDERS.RECRUITER_PHONE}
                       onChange={handleChange}
                       value={values[`phoneNumber${index}`]}
-                      style={{ width: '80%' }}
+                      className="w-3/4 md:w-4/5 text-xs md:text-sm"
                       maxLength={15}
                       showCount
                     />
@@ -177,10 +195,16 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
 
                 {/* Landline Field */}
                 <Form.Item
-                  style={{ marginBottom: 0 }}
-                  label="Landline (Optional)"
+                  className="mb-0"
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Landline (Optional)
+                    </span>
+                  }
                   hasFeedback
-                  validateStatus={getErrorMessage(`landline${index}`) ? "error" : ""}
+                  validateStatus={
+                    getErrorMessage(`landline${index}`) ? "error" : ""
+                  }
                   help={getErrorMessage(`landline${index}`)}
                 >
                   <Input
@@ -189,6 +213,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                     onChange={handleChange}
                     value={values[`landline${index}`]}
                     maxLength={20}
+                    className="text-xs md:text-sm"
                   />
                 </Form.Item>
               </Card>
@@ -198,15 +223,21 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
 
         {/* Simplified Instructions */}
         <Alert
-          message="Contact Information Guidelines"
-          description="Primary contact information is required. Additional contacts are optional but recommended for backup communication during the recruitment process."
+          message={
+            <span className="text-sm md:text-base font-medium">
+              Contact Information Guidelines
+            </span>
+          }
+          description={
+            <span className="text-xs md:text-sm">
+              Primary contact information is required. Additional contacts are
+              optional but recommended for backup communication during the
+              recruitment process.
+            </span>
+          }
           type="info"
           showIcon
-          style={{ 
-            backgroundColor: '#f0f9ff',
-            border: '1px solid #bae6fd',
-            borderRadius: 6
-          }}
+          className="bg-blue-50 border border-blue-200 rounded-md mt-4"
         />
       </Form>
     </div>

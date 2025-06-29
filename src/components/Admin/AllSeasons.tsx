@@ -77,7 +77,7 @@ export const AddSeason = ({
               htmlFor="roundNumber"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
-              Year
+              Name
             </label>
             <input
               type="text"
@@ -154,7 +154,7 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({ seasons, setSeason }) =>
                 Type
               </th>
               <th scope="col" className="px-6 py-3">
-                Year
+                Name
               </th>
               <th  scope="col" className="px-6 py-3">Status</th>
              <th scope="col" className="px-6 py-3">Actions</th>

@@ -25,7 +25,7 @@ const Salaries = ({
     <div className="font-semibold text-lg mb-4">Salaries</div>
     {salaries.map((salary, index) => (
       <div key={index}>
-        {seasonType === 'PLACEMENT' ? (
+        {seasonType === "PLACEMENT" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <div className="font-semibold my-2">Base Salary</div>
@@ -258,7 +258,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyCode"
                   value={formData.salaries[index].foreignCurrencyCode}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyCode")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyCode")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyCode}</div>
@@ -330,7 +332,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyStipend"
                   value={formData.salaries[index].foreignCurrencyStipend}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyStipend")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyStipend")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyStipend}</div>
@@ -341,18 +345,58 @@ const Salaries = ({
               <div className="font-semibold my-2">Accommodation</div>
               {editMode ? (
                 <input
-                  type="text"
+                  type="checkbox"
                   name="accommodation"
-                  value={formData.salaries[index].accommodation}
-                  onChange={(e) => handleChange(e, index, "accommodation")}
+                  checked={formData.salaries[index].accommodation || false}
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "accommodation",
+                    )
+                  }
                 />
               ) : (
-                <div>{salary.accommodation}</div>
+                <div>{salary.accommodation ? "Yes" : "No"}</div>
               )}
             </div>
 
             <div>
-              <div className="font-semibold my-2">Tentative CTC</div>
+              <div className="font-semibold my-2">
+                PPO Provision on Performance
+              </div>
+              {editMode ? (
+                <input
+                  type="checkbox"
+                  name="ppoProvisionOnPerformance"
+                  checked={
+                    formData.salaries[index].ppoProvisionOnPerformance || false
+                  }
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "ppoProvisionOnPerformance",
+                    )
+                  }
+                />
+              ) : (
+                <div>{salary.ppoProvisionOnPerformance ? "Yes" : "No"}</div>
+              )}
+            </div>
+
+            <div>
+              <div className="font-semibold my-2"> Tentative CTC for PPO Select</div>
               {editMode ? (
                 <input
                   type="text"
@@ -411,37 +455,51 @@ const Salaries = ({
         <div>
           <h2 className="text-md font-semibold mt-4">Programs</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.programs.map((program, programIndex) => (
-              <div key={programIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {program.department} - {program.course} - {program.year}
+            {salary.programs && salary.programs.length > 0 ? (
+              salary.programs.map((program, programIndex) => (
+                <div key={programIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {program.department} - {program.course} - {program.year}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">No programs specified</div>
+            )}
           </div>
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Genders</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.genders.map((gender, genderIndex) => (
-              <div key={genderIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {gender}
+            {salary.genders && salary.genders.length > 0 ? (
+              salary.genders.map((gender, genderIndex) => (
+                <div key={genderIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {gender}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">All genders eligible</div>
+            )}
           </div>
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Categories</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.categories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {category}
+            {salary.categories && salary.categories.length > 0 ? (
+              salary.categories.map((category, categoryIndex) => (
+                <div key={categoryIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {category}
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-gray-500 italic">
+                All categories eligible
               </div>
-            ))}
+            )}
           </div>
         </div>
         <div className="flex justify-between mt-2 mb-4">
@@ -490,23 +548,31 @@ const Salaries = ({
                   X
                 </button>
               </div>
-              <div className="p-4 web overflow-auto" style={{ maxHeight: "75vh" }}>
+              <div
+                className="p-4 web overflow-auto"
+                style={{ maxHeight: "75vh" }}
+              >
                 {loading ? (
                   <Loader />
                 ) : (
                   facultyApprovals.map((approval, index) => (
-                    <div key={approval.id} className="border-b border-gray-300 py-2">
+                    <div
+                      key={approval.id}
+                      className="border-b border-gray-300 py-2"
+                    >
                       <h3 className="text-lg font-semibold">
                         {approval?.faculty.user.name}
                       </h3>
                       <p className="text-gray-600">
-                        <strong>Department:</strong> {approval.faculty.department}
+                        <strong>Department:</strong>{" "}
+                        {approval.faculty.department}
                       </p>
                       <p className="text-gray-600">
                         <strong>Email:</strong> {approval.faculty?.user.email}
                       </p>
                       <p className="text-gray-600">
-                        <strong>Contact:</strong> {approval.faculty?.user.contact}
+                        <strong>Contact:</strong>{" "}
+                        {approval.faculty?.user.contact}
                       </p>
                       <p className="text-gray-600">
                         <strong>Status:</strong> {approval.status}
@@ -530,19 +596,25 @@ const Salaries = ({
                         <input
                           type="checkbox"
                           id={`faculty-${i}`}
-                          checked={selectedFaculties[index]?.includes(faculty.id)}
-                          onChange={() => setSelectedFaculties((prev) => {
-                            const newSelection = [...(prev[index] || [])];
-                            const selectedIndex = newSelection.indexOf(faculty.id);
-                            if (selectedIndex >= 0) {
-                              newSelection.splice(selectedIndex, 1);
-                            } else {
-                              newSelection.push(faculty.id);
-                            }
-                            const newSelectedFaculties = [...prev];
-                            newSelectedFaculties[index] = newSelection;
-                            return newSelectedFaculties;
-                          })}
+                          checked={selectedFaculties[index]?.includes(
+                            faculty.id,
+                          )}
+                          onChange={() =>
+                            setSelectedFaculties((prev) => {
+                              const newSelection = [...(prev[index] || [])];
+                              const selectedIndex = newSelection.indexOf(
+                                faculty.id,
+                              );
+                              if (selectedIndex >= 0) {
+                                newSelection.splice(selectedIndex, 1);
+                              } else {
+                                newSelection.push(faculty.id);
+                              }
+                              const newSelectedFaculties = [...prev];
+                              newSelectedFaculties[index] = newSelection;
+                              return newSelectedFaculties;
+                            })
+                          }
                         />
                         <label htmlFor={`faculty-${i}`} className="ml-2">
                           {faculty.user.name} ({faculty.department})
