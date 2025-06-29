@@ -47,7 +47,7 @@ export function middleware(request: NextRequest) {
     return redirectTo("/admin/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "RECRUITER") {
-    return redirectTo("/recruiter/profile");
+    return redirectTo("/recruiter/JAF");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "FACULTY") {
     return redirectTo("/faculty");
