@@ -126,15 +126,46 @@ export const Applications = ({
       try {
         const jsonData: EventFC = await getEvent(eventId);
         jsonData.applications.forEach(async (application) => {
-          // Create display filename in format: resumename.pdf
-          const resumeName = application.resume.name || "resume";
-          const displayName = resumeName.endsWith(".pdf")
-            ? resumeName
-            : `${resumeName}.pdf`;
+
+          // Function to extract proper resume display name
+          const extractResumeDisplayName = (
+            filepath: string,
+            name?: string,
+          ): string => {
+            // Use name field if available
+            if (name) {
+              return name.endsWith(".pdf") ? name : `${name}.pdf`;
+            }
+
+            if (!filepath) return "resume.pdf";
+
+            try {
+              const filename =
+                filepath.split("/").pop() ||
+                filepath.split("\\").pop() ||
+                "resume";
+
+              if (filename.toLowerCase().endsWith(".pdf")) {
+                return filename;
+              } else {
+                const nameWithoutExt = filename.split(".")[0];
+                return `${nameWithoutExt}.pdf`;
+              }
+            } catch (error) {
+              console.error("Error extracting resume name:", error);
+              return "resume.pdf";
+            }
+          };
+
+          const displayName = extractResumeDisplayName(
+            application.resume.filepath,
+            (application.resume as any).name,
+          );
+
 
           application.resume.resumeFile = (
             <span
-              className="cursor-pointer"
+              className="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline"
               onClick={() => getResume(application.resume.filepath)}
             >
               {displayName} {application.resume.verified && <VerifiedIcon />}
@@ -222,7 +253,7 @@ export const Applications = ({
               variant="default"
               className="w-full sm:w-auto"
             >
-              Give Feedback
+              Send Direct Message
             </Button>
           </div>
         </div>
@@ -237,7 +268,7 @@ export const Applications = ({
           data={applications}
           columns={columns}
           type={"application"}
-          buttonText={"Direct feedback to students"}
+          buttonText={"Student Feedback"}
           buttonAction={handleFeedback}
           showExport={false}
         />

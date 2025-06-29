@@ -407,8 +407,7 @@ export const jobDetailsValidationSchema = Yup.object({
 
         tentativeCTC: Yup.number()
           .nullable()
-          .min(0, "Tentative CTC cannot be negative")
-          .max(10000000, "Tentative CTC seems unreasonably high"),
+          .min(0, "Tentative CTC cannot be negative"),
 
         PPOConfirmationDate: Yup.date()
           .nullable()

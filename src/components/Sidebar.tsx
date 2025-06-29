@@ -8,6 +8,7 @@ import NavButtonGroup from "@/components/NavButtonGroup";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
+import FacultyDashboard from "./SideBar/Roles/faculty";
 import { jwtDecode } from "jwt-decode";
 import TpcMemberDashboard from "./SideBar/Roles/tpcMember";
 const Sidebar = () => {
@@ -15,6 +16,7 @@ const Sidebar = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
   const [isStudent, setIsStudent] = useState<boolean>(false);
+  const [isFaculty, setIsFaculty] = useState<boolean>(false);
   const [isTpcMember, setIsTpcMember] = useState<boolean>(false);
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
@@ -29,6 +31,7 @@ const Sidebar = () => {
     setIsAdmin(user?.role === "ADMIN");
     setIsRecruiter(user?.role === "RECRUITER");
     setIsStudent(user?.role === "STUDENT");
+    setIsFaculty(user?.role === "FACULTY");
     setIsTpcMember(user?.role === "TPC_MEMBER");
   }, []);
 
@@ -100,6 +103,7 @@ const Sidebar = () => {
               {isAdmin && <AdminDashboard />}
               {isStudent && <StudentDashboard />}
               {isRecruiter && <RecruiterDashboard />}
+              {isFaculty && <FacultyDashboard />}
               {isTpcMember && <TpcMemberDashboard />}
             </div>
 
@@ -238,6 +242,7 @@ const Sidebar = () => {
           {isAdmin && <AdminDashboard />}
           {isStudent && <StudentDashboard />}
           {isRecruiter && <RecruiterDashboard />}
+          {isFaculty && <FacultyDashboard />}
           {isTpcMember && <TpcMemberDashboard />}
         </div>
       </motion.div>
