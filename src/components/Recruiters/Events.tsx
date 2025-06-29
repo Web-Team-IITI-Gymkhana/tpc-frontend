@@ -126,6 +126,7 @@ export const Applications = ({
       try {
         const jsonData: EventFC = await getEvent(eventId);
         jsonData.applications.forEach(async (application) => {
+
           // Function to extract proper resume display name
           const extractResumeDisplayName = (
             filepath: string,
@@ -160,6 +161,7 @@ export const Applications = ({
             application.resume.filepath,
             (application.resume as any).name,
           );
+
 
           application.resume.resumeFile = (
             <span
