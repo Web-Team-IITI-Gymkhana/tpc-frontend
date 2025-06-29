@@ -225,6 +225,9 @@ const Table: React.FC<TableProps> = ({
           <div className="w-full p-4 flex justify-center">
             <UIButton
               className="px-16 bg-gradient-to-br from-gray-400 to-gray-700"
+              disabled={
+                !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
+              }
               onClick={() => {
                 buttonAction(
                   table.getSelectedRowModel().rows.map((row) => row.original),
