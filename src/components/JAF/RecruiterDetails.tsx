@@ -31,6 +31,12 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
     return typeof error === "string" ? error : "";
   };
 
+  // Helper function to get ordinal number words
+  const getOrdinalText = (index: number): string => {
+    const ordinals = ["First", "Second", "Third"];
+    return ordinals[index - 1] || `${index}th`;
+  };
+
   return (
     <div className="px-1 md:px-6">
       {/* Header Section */}
@@ -63,14 +69,22 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                         <UserOutlined style={{ color: "#374151" }} />
                         <Text strong style={{ fontSize: 16, color: "#374151" }}>
                           <span style={{ color: "#ef4444" }}>* </span>
-                          Primary Contact
+                          Head HR
+                        </Text>
+                      </>
+                    ) : index === 2 ? (
+                      <>
+                        <UserOutlined style={{ color: "#374151" }} />
+                        <Text strong style={{ fontSize: 16, color: "#374151" }}>
+                          <span style={{ color: "#ef4444" }}>* </span>
+                          {getOrdinalText(index - 1)} Point of Contact
                         </Text>
                       </>
                     ) : (
                       <>
                         <TeamOutlined style={{ color: "#6b7280" }} />
                         <Text style={{ fontSize: 16, color: "#6b7280" }}>
-                          Additional Contact {index - 1}
+                          {getOrdinalText(index - 1)} Point of Contact
                         </Text>
                       </>
                     )}
@@ -81,7 +95,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                 {/* Name Field */}
                 <Form.Item
                   className="mb-4 md:mb-6"
-                  required={index === 1}
+                  required={index === 1 || index === 2}
                   label={
                     <span className="text-sm md:text-base font-medium">
                       Full Name
@@ -107,7 +121,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                 {/* Designation Field */}
                 <Form.Item
                   className="mb-4 md:mb-6"
-                  required={index === 1}
+                  required={index === 1 || index === 2}
                   label={
                     <span className="text-sm md:text-base font-medium">
                       Designation
@@ -133,7 +147,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                 {/* Email Field */}
                 <Form.Item
                   className="mb-4 md:mb-6"
-                  required={index === 1}
+                  required={index === 1 || index === 2}
                   label={
                     <span className="text-sm md:text-base font-medium">
                       Email Address
@@ -160,7 +174,7 @@ const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
                 {/* Phone Field */}
                 <Form.Item
                   className="mb-4 md:mb-6"
-                  required={index === 1}
+                  required={index === 1 || index === 2}
                   label={
                     <span className="text-sm md:text-base font-medium">
                       Mobile Number
