@@ -442,7 +442,7 @@ const ProfilePage = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-16">Sr. No.</TableHead>
-                      <TableHead className="w-20">Year</TableHead>
+                      <TableHead className="w-20">Name</TableHead>
                       <TableHead className="min-w-[100px]">Type</TableHead>
                       <TableHead className="min-w-[140px]">Status</TableHead>
                       <TableHead className="min-w-[120px]">Action</TableHead>
