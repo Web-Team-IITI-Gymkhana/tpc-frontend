@@ -1607,7 +1607,10 @@ const JobDetails = ({
                                                               fontSize: 12,
                                                             }}
                                                           >
-                                                            {branch}
+                                                            {program?.course ===
+                                                            "BTech"
+                                                              ? branch
+                                                              : `${program?.department} - ${branch}`}
                                                           </Checkbox>
                                                         </div>
                                                       );
@@ -2441,13 +2444,11 @@ const JobDetails = ({
                                 options={[
                                   {
                                     value: true,
-                                    label:
-                                      "Yes - Accommodation Stipend Provided",
+                                    label: "Yes - Accommodation Provided",
                                   },
                                   {
                                     value: false,
-                                    label:
-                                      "No - Accommodation Stipend Not Provided",
+                                    label: "No - Accommodation Not Provided",
                                   },
                                 ]}
                               />
