@@ -24,6 +24,7 @@ import {
   postRegistration,
   debarStudent,
   getResumeFile,
+  patchResumeVerify,
 } from "@/helpers/api";
 
 import toast from "react-hot-toast";
@@ -211,6 +212,28 @@ export default function StudentModal({ open, setOpen, id }) {
     } catch (error) {
       toast.error("Error debarring student:", error.message);
       return false;
+    }
+  };
+
+  const handleResumeVerification = async (resumeId: string) => {
+    try {
+      const success = await patchResumeVerify([
+        { id: resumeId, verified: true },
+      ]);
+      if (success) {
+        // Update the student data to reflect the change
+        setStudentData((prevData: any) => ({
+          ...prevData,
+          resumes: prevData.resumes.map((resume: any) =>
+            resume.id === resumeId ? { ...resume, verified: true } : resume,
+          ),
+        }));
+        toast.success("Resume verified successfully");
+      } else {
+        throw new Error("Failed to verify resume");
+      }
+    } catch (error) {
+      toast.error("Error verifying resume");
     }
   };
 
@@ -483,12 +506,14 @@ export default function StudentModal({ open, setOpen, id }) {
                     <Table>
                       <TableHead>
                         <TableRow>
-                          <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Name
+                          </TableCell>
                           <TableCell sx={{ fontWeight: "bold" }}>
                             Preview
                           </TableCell>
                           <TableCell sx={{ fontWeight: "bold" }}>
-                            Verified
+                            Actions
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -496,7 +521,9 @@ export default function StudentModal({ open, setOpen, id }) {
                         {studentData.resumes
                           ? studentData.resumes.map((resume) => (
                               <TableRow key={resume.id}>
-                                <TableCell>{resume.id}</TableCell>
+                                <TableCell>
+                                  {resume.name || `Resume ${resume.id}`}
+                                </TableCell>
                                 <TableCell>
                                   <Button
                                     variant="contained"
@@ -509,7 +536,26 @@ export default function StudentModal({ open, setOpen, id }) {
                                   </Button>
                                 </TableCell>
                                 <TableCell>
-                                  {resume.verified.toString()}
+                                  {!resume.verified ? (
+                                    <Button
+                                      variant="contained"
+                                      color="success"
+                                      onClick={() => {
+                                        handleResumeVerification(resume.id);
+                                      }}
+                                    >
+                                      Verify
+                                    </Button>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        color: "green",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      ✓ Verified
+                                    </span>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             ))

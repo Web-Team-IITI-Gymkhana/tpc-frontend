@@ -11,10 +11,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import { StudentDataType } from "@/helpers/student/types";
 import { updateOnboarding } from "@/helpers/student/api";
 import toast from "react-hot-toast";
-import { Loader2, CheckCircle, Info } from "lucide-react";
+import { Loader2, CheckCircle, Info, AlertTriangle } from "lucide-react";
 
 interface OnboardingFormProps {
   studentData: StudentDataType;
@@ -35,6 +43,10 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const [tenthMarks, setTenthMarks] = useState<string>("");
   const [twelthMarks, setTwelthMarks] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingField, setPendingField] = useState<
+    "backlog" | "tenthMarks" | "twelthMarks" | null
+  >(null);
 
   // Check which fields need to be filled
   const needsBacklog =
@@ -50,47 +62,66 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const handleSubmit = async (
     field: "backlog" | "tenthMarks" | "twelthMarks",
   ) => {
+    // Validate the field value first
+    if (field === "backlog" && !backlog) {
+      toast.error("Please select a backlog status");
+      return;
+    } else if (field === "tenthMarks" && !tenthMarks) {
+      toast.error("Please enter 10th marks");
+      return;
+    } else if (field === "twelthMarks" && !twelthMarks) {
+      toast.error("Please enter 12th marks");
+      return;
+    }
+
+    // Validate marks range
+    if (field === "tenthMarks" && tenthMarks) {
+      const marks = parseFloat(tenthMarks);
+      if (marks < 0 || marks > 100) {
+        toast.error("10th marks should be between 0 and 100");
+        return;
+      }
+    } else if (field === "twelthMarks" && twelthMarks) {
+      const marks = parseFloat(twelthMarks);
+      if (marks < 0 || marks > 100) {
+        toast.error("12th marks should be between 0 and 100");
+        return;
+      }
+    }
+
+    // Show confirmation modal
+    setPendingField(field);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    if (!pendingField) return;
+
     setLoading(true);
+    setShowConfirmModal(false);
+
     try {
       const updateData: any = {};
 
-      if (field === "backlog" && backlog) {
+      if (pendingField === "backlog" && backlog) {
         updateData.backlog = backlog;
-      } else if (field === "tenthMarks" && tenthMarks) {
-        const marks = parseFloat(tenthMarks);
-        if (marks < 0 || marks > 100) {
-          toast.error("10th marks should be between 0 and 100");
-          setLoading(false);
-          return;
-        }
-        updateData.tenthMarks = marks;
-      } else if (field === "twelthMarks" && twelthMarks) {
-        const marks = parseFloat(twelthMarks);
-        if (marks < 0 || marks > 100) {
-          toast.error("12th marks should be between 0 and 100");
-          setLoading(false);
-          return;
-        }
-        updateData.twelthMarks = marks;
-      }
-
-      if (Object.keys(updateData).length === 0) {
-        toast.error("Please fill the field before saving");
-        setLoading(false);
-        return;
+      } else if (pendingField === "tenthMarks" && tenthMarks) {
+        updateData.tenthMarks = parseFloat(tenthMarks);
+      } else if (pendingField === "twelthMarks" && twelthMarks) {
+        updateData.twelthMarks = parseFloat(twelthMarks);
       }
 
       const result = await updateOnboarding(updateData);
 
       if (result) {
         toast.success(
-          `${field === "backlog" ? "Backlog status" : field === "tenthMarks" ? "10th marks" : "12th marks"} saved successfully!`,
+          `${pendingField === "backlog" ? "Backlog status" : pendingField === "tenthMarks" ? "10th marks" : "12th marks"} saved successfully!`,
         );
 
         // Clear the form field
-        if (field === "backlog") setBacklog("");
-        else if (field === "tenthMarks") setTenthMarks("");
-        else if (field === "twelthMarks") setTwelthMarks("");
+        if (pendingField === "backlog") setBacklog("");
+        else if (pendingField === "tenthMarks") setTenthMarks("");
+        else if (pendingField === "twelthMarks") setTwelthMarks("");
 
         onUpdate(); // Refresh parent data
       } else {
@@ -100,6 +131,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       toast.error(error.message || "Failed to save data");
     } finally {
       setLoading(false);
+      setPendingField(null);
     }
   };
 
@@ -251,14 +283,64 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
           </div>
         )}
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <Info className="w-4 h-4 inline mr-2" />
-            Note: Once saved, these values cannot be modified. Please ensure
-            accuracy before saving.
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-800 font-medium mb-2">
+            <AlertTriangle className="w-4 h-4 inline mr-2" />
+            Important Verification Warning
+          </p>
+          <p className="text-sm text-red-700">
+            All information provided will be subject to verification during the placement process. 
+            Any discrepancies found during verification may lead to strict action, including 
+            <strong> removal from the placement process</strong>. Please ensure all details are 
+            accurate and can be verified with proper documentation.
           </p>
         </div>
       </CardContent>
+
+      {/* Confirmation Modal */}
+      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">
+              Confirm Save
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              Are you sure you want to save this information?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                <Info className="w-4 h-4 inline mr-2" />
+                <strong>Important:</strong> Once saved, these values cannot be modified. 
+                Please ensure accuracy before saving.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmModal(false)}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmSubmit}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
