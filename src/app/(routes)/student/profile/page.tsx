@@ -32,7 +32,9 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Info,
 } from "lucide-react";
+import { OnboardingForm } from "@/components/Students/OnboardingForm";
 
 const ProfilePage = () => {
   const [studentData, setStudentData] = useState<StudentDataType | null>(null);
@@ -41,7 +43,44 @@ const ProfilePage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
 
+  const fetchStudentData = async () => {
+    try {
+      const data = await GetStudentData();
+      console.log("Student data received:", data); // Debug log
+      setStudentData(data);
+
+      if (data) {
+        const total = data.penalties.reduce(
+          (sum: number, penalty) => sum + penalty.penalty,
+          0,
+        );
+        setTotalPenalty(total);
+
+        // Set registration status based on actual data
+        if (data.registrations && data.registrations.length > 0) {
+          console.log("Registrations found:", data.registrations); // Debug log
+          setIsRegistered(data.registrations[0].registered);
+        } else {
+          console.log("No registrations found"); // Debug log
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching student data:", error); // Debug log
+      toast.error("Error fetching data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleRegister = async (seasonId: string, registered: boolean) => {
+    // Check onboarding completion before attempting registration
+    if (needsOnboarding) {
+      toast.error(
+        "Please complete your profile onboarding before registering for seasons",
+      );
+      return;
+    }
+
     try {
       if (registered) {
         setRegistering(true);
@@ -78,43 +117,18 @@ const ProfilePage = () => {
       } else {
         toast.error("Some Error Occurred");
       }
-    } catch (error) {
-      toast.error("Registration failed. Please try again.");
+    } catch (error: any) {
+      if (error.message?.includes("onboarding")) {
+        toast.error("Please complete your profile onboarding first");
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     } finally {
       setRegistering(false);
     }
   };
 
   useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const data = await GetStudentData();
-        console.log("Student data received:", data); // Debug log
-        setStudentData(data);
-
-        if (data) {
-          const total = data.penalties.reduce(
-            (sum: number, penalty) => sum + penalty.penalty,
-            0,
-          );
-          setTotalPenalty(total);
-
-          // Set registration status based on actual data
-          if (data.registrations && data.registrations.length > 0) {
-            console.log("Registrations found:", data.registrations); // Debug log
-            setIsRegistered(data.registrations[0].registered);
-          } else {
-            console.log("No registrations found"); // Debug log
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching student data:", error); // Debug log
-        toast.error("Error fetching data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchStudentData();
   }, []); // Add empty dependency array to run only once
 
@@ -135,6 +149,17 @@ const ProfilePage = () => {
       </div>
     );
   }
+
+  // Check if onboarding is needed
+  const needsOnboarding =
+    studentData.backlog === null ||
+    studentData.backlog === undefined ||
+    studentData.tenthMarks === null ||
+    studentData.tenthMarks === undefined ||
+    studentData.twelthMarks === null ||
+    studentData.twelthMarks === undefined;
+
+  const isOnboardingComplete = !needsOnboarding;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-6">
@@ -205,13 +230,49 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Contact Information */}
+        {/* Onboarding Form */}
+        {needsOnboarding && (
+          <div className="border-b border-slate-300 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 md:p-6">
+            <OnboardingForm
+              studentData={studentData}
+              onUpdate={fetchStudentData}
+            />
+          </div>
+        )}
+
+        {/* Personal Information */}
         <div className="border-b border-slate-300 bg-slate-50/80 p-3 md:p-6">
           <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2 mb-4">
             <User className="w-5 h-5 text-slate-600" />
-            Contact Information
+            Personal Information
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5 text-amber-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Category
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.category}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-rose-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Gender
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.gender}
+                </p>
+              </div>
+            </div>
             <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
               <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Mail className="w-5 h-5 text-indigo-700" />
@@ -225,7 +286,6 @@ const ProfilePage = () => {
                 </p>
               </div>
             </div>
-
             <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
               <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Phone className="w-5 h-5 text-emerald-700" />
@@ -320,71 +380,80 @@ const ProfilePage = () => {
             <TrendingUp className="w-5 h-5 text-slate-600" />
             Academic Performance
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Users className="w-5 h-5 text-amber-700" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">
-                  Category
-                </p>
-                <p className="text-slate-900 font-medium text-sm">
-                  {studentData.category}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-5 h-5 text-rose-700" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">
-                  Gender
-                </p>
-                <p className="text-slate-900 font-medium text-sm">
-                  {studentData.gender}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-5 h-5 text-emerald-700" />
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-blue-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">CPI</p>
-                <p className="text-slate-900 font-bold text-lg">
+                <p className="text-slate-900 font-medium text-lg">
                   {studentData.cpi}
                 </p>
               </div>
             </div>
 
+            {/* Backlog Status */}
             <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Award className="w-5 h-5 text-sky-700" />
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Award className="w-5 h-5 text-purple-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Backlog Status
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.backlog ? (
+                    studentData.backlog === "NEVER" ? (
+                      "No Backlogs Ever"
+                    ) : studentData.backlog === "PREVIOUS" ? (
+                      "No Active Backlogs"
+                    ) : (
+                      "Having an Active Backlog"
+                    )
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* 10th Marks */}
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-5 h-5 text-green-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">
                   10th Marks
                 </p>
                 <p className="text-slate-900 font-medium text-sm">
-                  {studentData.tenthMarks}%
+                  {studentData.tenthMarks !== null &&
+                  studentData.tenthMarks !== undefined ? (
+                    `${studentData.tenthMarks}%`
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
                 </p>
               </div>
             </div>
 
+            {/* 12th Marks */}
             <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Award className="w-5 h-5 text-violet-700" />
+              <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-5 h-5 text-teal-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">
                   12th Marks
                 </p>
                 <p className="text-slate-900 font-medium text-sm">
-                  {studentData.twelthMarks}%
+                  {studentData.twelthMarks !== null &&
+                  studentData.twelthMarks !== undefined ? (
+                    `${studentData.twelthMarks}%`
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
                 </p>
               </div>
             </div>
@@ -436,6 +505,15 @@ const ProfilePage = () => {
               <Calendar className="w-5 h-5 text-blue-600" />
               Season Registrations
             </h2>
+            {needsOnboarding && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">
+                  <Info className="w-4 h-4 inline mr-2" />
+                  Please complete your profile onboarding above before
+                  registering for seasons.
+                </p>
+              </div>
+            )}
             <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <Table className="min-w-full">
@@ -480,28 +558,35 @@ const ProfilePage = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            onClick={() =>
-                              handleRegister(
-                                registration.season.id,
-                                registration.registered,
-                              )
-                            }
-                            disabled={registering}
-                            size="sm"
-                            variant={
-                              registration.registered ? "outline" : "default"
-                            }
-                            className="h-8 w-full sm:w-auto"
-                          >
-                            {registering ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : registration.registered ? (
-                              "Deregister"
-                            ) : (
-                              "Register"
+                          <div className="space-y-1">
+                            <Button
+                              onClick={() =>
+                                handleRegister(
+                                  registration.season.id,
+                                  registration.registered,
+                                )
+                              }
+                              disabled={registering || needsOnboarding}
+                              size="sm"
+                              variant={
+                                registration.registered ? "outline" : "default"
+                              }
+                              className="h-8 w-full sm:w-auto"
+                            >
+                              {registering ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : registration.registered ? (
+                                "Deregister"
+                              ) : (
+                                "Register"
+                              )}
+                            </Button>
+                            {needsOnboarding && (
+                              <p className="text-xs text-amber-600 text-center sm:text-left">
+                                Complete profile first
+                              </p>
                             )}
-                          </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
