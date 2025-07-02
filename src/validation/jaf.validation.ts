@@ -27,7 +27,7 @@ const requiredIfAny = (idx: 2 | 3, base: Yup.StringSchema = Yup.string()) =>
     );
     return anyFilled
       ? base.required(
-          "This field is required when any contact info is provided",
+          "This field is required when any secondary contact info is provided",
         )
       : base.notRequired();
   });
@@ -44,9 +44,9 @@ export const seasonDetailsValidationSchema = Yup.object({
 
 // Recruiter Details validation
 export const recruiterDetailsValidationSchema = Yup.object({
-  // Primary recruiter (required)
+  // Head HR (required)
   recName1: Yup.string()
-    .required("Primary recruiter name is required")
+    .required("Head HR name is required")
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name must not exceed 100 characters")
     .matches(
@@ -55,18 +55,18 @@ export const recruiterDetailsValidationSchema = Yup.object({
     ),
 
   designation1: Yup.string()
-    .required("Primary recruiter designation is required")
+    .required("Head HR designation is required")
     .min(2, "Designation must be at least 2 characters")
     .max(100, "Designation must not exceed 100 characters"),
 
   email1: Yup.string()
     .email("Please enter a valid email address")
-    .required("Primary recruiter email is required")
+    .required("Head HR email is required")
     .max(254, "Email must not exceed 254 characters"),
 
   phoneNumber1: Yup.string()
     .matches(phoneRegExp, "Please enter a valid phone number")
-    .required("Primary recruiter phone number is required")
+    .required("Head HR phone number is required")
     .min(10, "Phone number must be at least 10 digits")
     .max(15, "Phone number must not exceed 15 digits"),
 
@@ -74,39 +74,31 @@ export const recruiterDetailsValidationSchema = Yup.object({
     .matches(/^[\d\s\-\+\(\)]+$/, "Please enter a valid landline number")
     .max(20, "Landline number must not exceed 20 characters"),
 
-  // Secondary recruiters (conditional)
-  recName2: requiredIfAny(
-    2,
-    Yup.string()
-      .min(2, "Name must be at least 2 characters")
-      .max(100, "Name must not exceed 100 characters")
-      .matches(
-        /^[a-zA-Z\s.'-]+$/,
-        "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
-      ),
-  ),
+  // Primary contact (required)
+  recName2: Yup.string()
+    .required("Primary contact name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must not exceed 100 characters")
+    .matches(
+      /^[a-zA-Z\s.'-]+$/,
+      "Name can only contain letters, spaces, dots, apostrophes, and hyphens",
+    ),
 
-  designation2: requiredIfAny(
-    2,
-    Yup.string()
-      .min(2, "Designation must be at least 2 characters")
-      .max(100, "Designation must not exceed 100 characters"),
-  ),
+  designation2: Yup.string()
+    .required("Primary contact designation is required")
+    .min(2, "Designation must be at least 2 characters")
+    .max(100, "Designation must not exceed 100 characters"),
 
-  email2: requiredIfAny(
-    2,
-    Yup.string()
-      .email("Please enter a valid email address")
-      .max(254, "Email must not exceed 254 characters"),
-  ),
+  email2: Yup.string()
+    .email("Please enter a valid email address")
+    .required("Primary contact email is required")
+    .max(254, "Email must not exceed 254 characters"),
 
-  phoneNumber2: requiredIfAny(
-    2,
-    Yup.string()
-      .matches(phoneRegExp, "Please enter a valid phone number")
-      .min(10, "Phone number must be at least 10 digits")
-      .max(15, "Phone number must not exceed 15 digits"),
-  ),
+  phoneNumber2: Yup.string()
+    .matches(phoneRegExp, "Please enter a valid phone number")
+    .required("Primary contact phone number is required")
+    .min(10, "Phone number must be at least 10 digits")
+    .max(15, "Phone number must not exceed 15 digits"),
 
   landline2: Yup.string()
     .matches(/^[\d\s\-\+\(\)]+$/, "Please enter a valid landline number")
@@ -407,8 +399,7 @@ export const jobDetailsValidationSchema = Yup.object({
 
         tentativeCTC: Yup.number()
           .nullable()
-          .min(0, "Tentative CTC cannot be negative")
-          .max(10000000, "Tentative CTC seems unreasonably high"),
+          .min(0, "Tentative CTC cannot be negative"),
 
         PPOConfirmationDate: Yup.date()
           .nullable()

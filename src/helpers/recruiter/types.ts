@@ -24,6 +24,7 @@ export interface ApplicationFC {
   resume: {
     id: string;
     filepath: string;
+    name?: string;
     verified: boolean;
     resumeFile?: ReactNode;
   };
