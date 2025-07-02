@@ -340,8 +340,9 @@ export interface StudentDataType {
   category: string;
   gender: string;
   cpi: number;
-  tenthMarks: number;
-  twelthMarks: number;
+  backlog?: string;
+  tenthMarks?: number;
+  twelthMarks?: number;
   user: {
     id: string;
     email: string;

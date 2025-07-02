@@ -79,6 +79,18 @@ export const GetStudentData = async () => {
   return apiCall("/student-view", { next: { tags: ["Students"] } });
 };
 
+export const updateOnboarding = async (data: {
+  backlog?: string;
+  tenthMarks?: number;
+  twelthMarks?: number;
+}) => {
+  return apiCall("/student-view/onboarding", {
+    method: "PATCH",
+    body: data,
+    next: { tags: ["Students"] },
+  });
+};
+
 export const ApplyJob = async (salaryId: string, resumeId: string) => {
   const body = [
     {
