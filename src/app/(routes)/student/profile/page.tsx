@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { StudentDataType } from "@/helpers/student/types";
 import { GetStudentData, RegisterSeason } from "@/helpers/student/api";
+import { getSeasonPolicyDocument } from "@/helpers/api";
 import toast from "react-hot-toast";
 import Loader from "@/components/Loader/loader";
 import { ProfileNavLoader } from "@/components/Loader/loaders";
@@ -33,8 +34,12 @@ import {
   XCircle,
   Loader2,
   Info,
+  X,
+  FileText,
+  Download,
 } from "lucide-react";
 import { OnboardingForm } from "@/components/Students/OnboardingForm";
+import { Modal } from "@mui/material";
 
 const ProfilePage = () => {
   const [studentData, setStudentData] = useState<StudentDataType | null>(null);
@@ -42,6 +47,14 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
+
+  // Policy modal state
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState<any>(null);
+  const [policyAccepted, setPolicyAccepted] = useState(false);
+
+  // Remove blob/iframe/scroll logic and add viewPolicyClicked state
+  const [viewPolicyClicked, setViewPolicyClicked] = useState(false);
 
   const fetchStudentData = async () => {
     try {
@@ -72,7 +85,7 @@ const ProfilePage = () => {
     }
   };
 
-  const handleRegister = async (seasonId: string, registered: boolean) => {
+  const handleRegisterClick = (seasonId: string, registered: boolean) => {
     // Check onboarding completion before attempting registration
     if (needsOnboarding) {
       toast.error(
@@ -81,6 +94,25 @@ const ProfilePage = () => {
       return;
     }
 
+    // If deregistering, do it directly without policy modal
+    if (registered) {
+      handleRegister(seasonId, registered);
+      return;
+    }
+
+    // For registration, find the season and show policy modal
+    const season = studentData?.registrations.find(
+      (reg) => reg.season.id === seasonId,
+    );
+
+    if (season) {
+      setSelectedSeason(season);
+      setPolicyAccepted(false);
+      setPolicyModalOpen(true);
+    }
+  };
+
+  const handleRegister = async (seasonId: string, registered: boolean) => {
     try {
       if (registered) {
         setRegistering(true);
@@ -114,6 +146,11 @@ const ProfilePage = () => {
             registrations: updatedRegistrations,
           };
         });
+
+        // Close policy modal if open
+        setPolicyModalOpen(false);
+        setSelectedSeason(null);
+        setPolicyAccepted(false);
       } else {
         toast.error("Some Error Occurred");
       }
@@ -126,6 +163,17 @@ const ProfilePage = () => {
     } finally {
       setRegistering(false);
     }
+  };
+
+  const handlePolicyAccept = () => {
+    if (selectedSeason && policyAccepted) {
+      handleRegister(selectedSeason.season.id, false);
+      setViewPolicyClicked(false);
+    }
+  };
+
+  const handleDownloadPolicy = (policyDocument: string) => {
+    getSeasonPolicyDocument(policyDocument);
   };
 
   useEffect(() => {
@@ -561,7 +609,7 @@ const ProfilePage = () => {
                           <div className="space-y-1">
                             <Button
                               onClick={() =>
-                                handleRegister(
+                                handleRegisterClick(
                                   registration.season.id,
                                   registration.registered,
                                 )
@@ -596,6 +644,180 @@ const ProfilePage = () => {
             </div>
           </div>
         )}
+
+        {/* Policy Acceptance Modal */}
+        <Modal
+          open={policyModalOpen}
+          onClose={() => {
+            setPolicyModalOpen(false);
+            setSelectedSeason(null);
+            setPolicyAccepted(false);
+          }}
+          className="flex items-center justify-center p-4"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Season Policy</h2>
+                    <p className="text-blue-100 text-sm">
+                      {selectedSeason?.season.year} -{" "}
+                      {selectedSeason?.season.type}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => {
+                    setPolicyModalOpen(false);
+                    setSelectedSeason(null);
+                    setPolicyAccepted(false);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/10 h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              {/* Policy Document Section */}
+              {selectedSeason?.season?.policyDocument ? (
+                <div className="space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-slate-900">
+                          Season Policy Document
+                        </h3>
+                        <p className="text-sm text-slate-600">
+                          You must view the policy document before accepting the
+                          terms and registering.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* View Policy button in its own row */}
+                  <div className="mt-4">
+                    <Button
+                      onClick={() => {
+                        handleDownloadPolicy(
+                          selectedSeason.season.policyDocument,
+                        );
+                        setViewPolicyClicked(true);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View Policy
+                    </Button>
+                    {!viewPolicyClicked && (
+                      <div className="mt-2 text-xs text-amber-600">
+                        Please view the policy before continuing
+                      </div>
+                    )}
+                  </div>
+                  {/* Policy Acceptance Checkbox */}
+                  <div className="space-y-4 mt-4">
+                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <input
+                        type="checkbox"
+                        id="policyAccept"
+                        checked={policyAccepted}
+                        onChange={(e) => setPolicyAccepted(e.target.checked)}
+                        disabled={!viewPolicyClicked}
+                        className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      />
+                      <label
+                        htmlFor="policyAccept"
+                        className={`text-sm cursor-pointer ${viewPolicyClicked ? "text-slate-700" : "text-slate-400"}`}
+                      >
+                        I, {studentData.user.name}, Roll No {studentData.rollNo}{" "}
+                        of {studentData.program.course}, hereby agree to abide
+                        by the aforementioned Terms and Conditions and would not
+                        violate them, thus maintaining confidentiality.
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="w-8 h-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">
+                    No Policy Document
+                  </h3>
+                  <p className="text-slate-600 mb-6">
+                    This season doesn't have a specific policy document. You can
+                    proceed with registration.
+                  </p>
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <input
+                      type="checkbox"
+                      id="generalPolicyAccept"
+                      checked={policyAccepted}
+                      onChange={(e) => setPolicyAccepted(e.target.checked)}
+                      className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="generalPolicyAccept"
+                      className="text-sm text-slate-700 cursor-pointer"
+                    >
+                      I, {studentData.user.name}, Roll No {studentData.rollNo}{" "}
+                      of {studentData.program.course}, hereby agree to abide by
+                      the aforementioned Terms and Conditions and would not
+                      violate them, thus maintaining confidentiality.
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-6 pt-6 border-t border-slate-200">
+                <Button
+                  onClick={() => {
+                    setPolicyModalOpen(false);
+                    setSelectedSeason(null);
+                    setPolicyAccepted(false);
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handlePolicyAccept}
+                  disabled={
+                    !policyAccepted || !viewPolicyClicked || registering
+                  }
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  {registering ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Registering...
+                    </>
+                  ) : (
+                    "Accept & Register"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

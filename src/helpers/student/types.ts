@@ -23,6 +23,7 @@ export interface OnCampusOffers {
         id: string;
         year: string;
         type: string;
+        policyDocument?: string;
       };
     };
   };
@@ -44,6 +45,7 @@ export interface OffCampusOffer {
     id: string;
     year: string;
     type: string;
+    policyDocument?: string;
   };
 }
 
@@ -168,6 +170,7 @@ export interface Jobs {
     id: string;
     year: string;
     type: string;
+    policyDocument?: string;
   };
   company: {
     id: string;
@@ -368,6 +371,7 @@ export interface StudentDataType {
       id: string;
       year: string;
       type: string;
+      policyDocument?: string;
     };
   }[];
 }
@@ -384,5 +388,6 @@ export interface InterviewExperience {
     id: string;
     year: string;
     type: string;
+    policyDocument?: string;
   };
 }
