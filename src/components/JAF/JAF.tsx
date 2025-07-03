@@ -1,6 +1,7 @@
 "use client";
+
 import "antd/dist/reset.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Row, Col, Steps, Space, Button, Alert } from "antd";
 import { FormikWizard, RenderProps } from "formik-wizard-form";
 import axios from "axios";
@@ -17,11 +18,11 @@ import {
   recruiterDetailsValidationSchema,
   jobDetailsValidationSchema,
 } from "../../validation/jaf.validation";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const { Step } = Steps;
 
-// Helper function to extract user-friendly error messages
 const getErrorMessages = (errors: any): string[] => {
   const messages: string[] = [];
 
@@ -31,28 +32,18 @@ const getErrorMessages = (errors: any): string[] => {
 
   const traverse = (obj: any, path = "") => {
     if (typeof obj === "string") {
-      // Clean up error messages for better user experience
       let cleanMessage = obj;
-
-      // Handle specific error patterns
       if (obj.includes("must be a `number` type")) {
         cleanMessage = "Please enter a valid number";
       } else if (obj.includes("At least one program must be selected")) {
-        cleanMessage =
-          "Please select at least one program in the eligibility criteria";
+        cleanMessage = "Please select at least one program in the eligibility criteria";
       } else if (obj.includes("At least one test must be specified")) {
-        cleanMessage =
-          "Please add at least one test in the selection procedure";
-      } else if (
-        obj.includes("At least one interview round must be specified")
-      ) {
-        cleanMessage =
-          "Please add at least one interview round in the selection procedure";
+        cleanMessage = "Please add at least one test in the selection procedure";
+      } else if (obj.includes("At least one interview round must be specified")) {
+        cleanMessage = "Please add at least one interview round in the selection procedure";
       } else if (obj.includes("At least one salary entry is required")) {
-        cleanMessage =
-          "Please add at least one salary package in compensation details";
+        cleanMessage = "Please add at least one salary package in compensation details";
       }
-
       messages.push(cleanMessage);
     } else if (Array.isArray(obj)) {
       obj.forEach((item, index) => traverse(item, `${path}[${index}]`));
@@ -64,14 +55,15 @@ const getErrorMessages = (errors: any): string[] => {
   };
 
   traverse(errors);
-
-  // Remove duplicates and return
   return [...new Set(messages)];
 };
 
 function JAF() {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [showCaptcha, setShowCaptcha] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -92,15 +84,18 @@ function JAF() {
         key="jaf-form-wizard"
         initialValues={DEFAULT_FORM_VALUES}
         onSubmit={async (values: JAFFormValues) => {
-          // Filter and format recruiters
+          if (!captchaToken) {
+            setShowCaptcha(true);
+            toast.error("Please complete the CAPTCHA to submit.");
+            return;
+          }
+
           const recruiters = [1, 2, 3]
             .map((i) => ({
               name: values[`recName${i}`] || "",
               designation: values[`designation${i}`] || "",
               email: values[`email${i}`] || "",
-              contact: values[`phoneNumber${i}`]
-                ? "+91 " + values[`phoneNumber${i}`]
-                : "",
+              contact: values[`phoneNumber${i}`] ? "+91 " + values[`phoneNumber${i}`] : "",
               landline: values[`landline${i}`] || "",
             }))
             .filter(
@@ -112,13 +107,11 @@ function JAF() {
                 r.landline.trim(),
             );
 
-          // Ensure at least primary recruiter is present
           if (recruiters.length === 0) {
             toast.error("At least one recruiter contact is required");
             return;
           }
 
-          // Assemble payload matching backend DTO structure exactly
           const payload: JafDto = {
             job: {
               seasonId: values.seasonId,
@@ -173,7 +166,6 @@ function JAF() {
             salaries: values.salaries || [],
           };
 
-          // Submit to backend
           try {
             await axios.post(`${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`, payload, {
               headers: {
@@ -182,10 +174,7 @@ function JAF() {
               },
             });
 
-            toast.success(
-              "JAF Form submitted successfully! Your application has been received.",
-            );
-            // Reset form or redirect as needed
+            toast.success("JAF Form submitted successfully! Your application has been received.");
             window.location.reload();
           } catch (error: any) {
             console.error("JAF submission error:", error);
@@ -196,6 +185,10 @@ function JAF() {
               "Failed to submit JAF form. Please try again.";
 
             toast.error(errorMessage);
+          } finally {
+            setCaptchaToken("");
+            setShowCaptcha(false);
+            recaptchaRef.current?.reset();
           }
         }}
         validateOnNext
@@ -243,32 +236,61 @@ function JAF() {
 
               {renderComponent()}
 
-              <Row justify="center" className="px-2 md:px-0">
-                <Space
-                  size="large"
-                  className="w-full max-w-xs flex justify-center"
-                >
-                  <Button
-                    disabled={isPrevDisabled}
-                    onClick={handlePrev}
-                    className="flex-1 min-w-20"
-                    size="large"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    disabled={isNextDisabled}
-                    onClick={handleNext}
-                    className="flex-1 min-w-20"
-                    size="large"
-                    type="primary"
-                  >
-                    {currentStepIndex === 2 ? "Finish" : "Next"}
-                  </Button>
-                </Space>
-              </Row>
+              {currentStepIndex === 2 ? (
+                <Row justify="center" className="pt-6">
+                  <div className="flex flex-col items-center gap-4">
+                    {showCaptcha && (
+                      <ReCAPTCHA
+                        ref={recaptchaRef}
+                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                        onChange={(token) => setCaptchaToken(token || "")}
+                      />
+                    )}
+                    <div className="flex gap-2">
+                      <Button
+                        disabled={isPrevDisabled}
+                        onClick={handlePrev}
+                        className="min-w-20"
+                        size="large"
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        disabled={isNextDisabled}
+                        onClick={handleNext}
+                        className="min-w-20"
+                        size="large"
+                        type="primary"
+                      >
+                        Finish
+                      </Button>
+                    </div>
+                  </div>
+                </Row>
+              ) : (
+                <Row justify="center" className="px-2 md:px-0">
+                  <Space size="large" className="w-full max-w-xs flex justify-center">
+                    <Button
+                      disabled={isPrevDisabled}
+                      onClick={handlePrev}
+                      className="flex-1 min-w-20"
+                      size="large"
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      disabled={isNextDisabled}
+                      onClick={handleNext}
+                      className="flex-1 min-w-20"
+                      size="large"
+                      type="primary"
+                    >
+                      Next
+                    </Button>
+                  </Space>
+                </Row>
+              )}
 
-              {/* Show validation errors below the finish button */}
               {currentStepIndex === 2 &&
                 isNextDisabled &&
                 errorMessages.length > 0 && (
