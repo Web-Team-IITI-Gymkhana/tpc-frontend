@@ -392,10 +392,28 @@ export const addEvent = async (body: any) => {
 };
 
 export const addSeason = async (body: any) => {
-  return apiCall(`/seasons`, {
-    method: "POST",
-    body: body,
-  });
+  // Check if body is FormData (for file uploads)
+  if (body instanceof FormData) {
+    return apiCall(`/seasons`, {
+      method: "POST",
+      formData: body,
+    });
+  } else {
+    return apiCall(`/seasons`, {
+      method: "POST",
+      body: body,
+    });
+  }
+};
+
+export const getSeasonPolicyDocument = async (fileName: string) => {
+  // Check if user is student or admin based on the current route/context
+  // For now, we'll use the student endpoint since this is called from student profile
+  OpenFile(`/student-view/policy/${fileName}`);
+};
+
+export const getSeasonPolicyDocumentAdmin = async (fileName: string) => {
+  OpenFile(`/seasons/policy/${fileName}`);
 };
 
 export const promoteStudent = async (body: any, eventId: string) => {
