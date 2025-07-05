@@ -19,8 +19,7 @@ const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const PenaltyModal = ({ isOpen, onClose, studentId }) => {
   const [penaltyValue, setPenaltyValue] = useState("");
   const [penaltyReason, setPenaltyReason] = useState("");
-
-  const handleSubmitPenalty = async () => {
+  const [loading, setLoading] = useState(false);  const handleSubmitPenalty = async () => {
     const requestBody = [
       {
         studentId,
@@ -29,9 +28,9 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
       },
     ];
 
+    setLoading(true);
     try {
       const response = await fetchPenalties(requestBody);
-
       if (response) {
         toast.success("Penalty submitted successfully");
         onClose();
@@ -42,6 +41,8 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
       }
     } catch (error) {
       toast.error("Error submitting penalty:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,9 +85,10 @@ const PenaltyModal = ({ isOpen, onClose, studentId }) => {
         <Button
           variant="contained"
           color="primary"
+          disabled={loading}
           onClick={handleSubmitPenalty}
         >
-          Submit
+          {loading ? "Submitting..." : "Submit"}
         </Button>
       </Box>
     </Modal>

@@ -2,8 +2,6 @@ FROM node:alpine
 
 WORKDIR /usr/app
 
-ENV NEXT_PUBLIC_BACKEND_URL=https://placement.iiti.ac.in
-ENV NEXT_PUBLIC_FRONTEND_URL=https://placement.iiti.ac.in
 COPY ./package.json ./
 COPY ./yarn.lock ./
 
