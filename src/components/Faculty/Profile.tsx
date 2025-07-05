@@ -22,6 +22,7 @@ const EditForm = (params: { profile: ProfileFC }) => {
     params.profile.user.contact,
   );
   const [name, updateName] = useState<string>(params.profile.user.name);
+  const [updating, setUpdating] = useState(false);
 
   const updateProfile = () => {
     const data: updateProfileFC = {
@@ -33,11 +34,18 @@ const EditForm = (params: { profile: ProfileFC }) => {
     };
 
     const triggerUpdate = async () => {
-      const res = await patchProfile(data);
-      if (res) {
-        window.location.reload();
-      } else {
-        toast.error("Some Error Occurred");
+      setUpdating(true);
+      try {
+        const res = await patchProfile(data);
+        if (res) {
+          window.location.reload();
+        } else {
+          toast.error("Some Error Occurred");
+        }
+      } catch (error) {
+        toast.error("Error updating profile");
+      } finally {
+        setUpdating(false);
       }
     };
     triggerUpdate();
@@ -110,8 +118,10 @@ const EditForm = (params: { profile: ProfileFC }) => {
       <Button
         className="w-full bg-blue-600 hover:bg-blue-700 py-2 md:py-3 text-sm md:text-base"
         onClick={() => updateProfile()}
+        loading={updating}
+        disabled={updating}
       >
-        Update Profile
+        {updating ? "Updating..." : "Update Profile"}
       </Button>
     </div>
   );

@@ -72,6 +72,7 @@ const getErrorMessages = (errors: any): string[] => {
 function JAF() {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -87,94 +88,94 @@ function JAF() {
   }
 
   return (
-    <div className="flex flex-col w-full gap-8 md:gap-20 p-2 md:p-10">
-      <FormikWizard
+    <div className="flex flex-col w-full gap-8 md:gap-20 p-2 md:p-10">      <FormikWizard
         key="jaf-form-wizard"
         initialValues={DEFAULT_FORM_VALUES}
         onSubmit={async (values: JAFFormValues) => {
-          // Filter and format recruiters
-          const recruiters = [1, 2, 3]
-            .map((i) => ({
-              name: values[`recName${i}`] || "",
-              designation: values[`designation${i}`] || "",
-              email: values[`email${i}`] || "",
-              contact: values[`phoneNumber${i}`]
-                ? "+91 " + values[`phoneNumber${i}`]
-                : "",
-              landline: values[`landline${i}`] || "",
-            }))
-            .filter(
-              (r) =>
-                r.name.trim() ||
-                r.designation.trim() ||
-                r.email.trim() ||
-                r.contact.trim() ||
-                r.landline.trim(),
-            );
-
-          // Ensure at least primary recruiter is present
-          if (recruiters.length === 0) {
-            toast.error("At least one recruiter contact is required");
-            return;
-          }
-
-          // Assemble payload matching backend DTO structure exactly
-          const payload: JafDto = {
-            job: {
-              seasonId: values.seasonId,
-              role: values.role,
-              description: values.description || undefined,
-              recruiterDetailsFilled: recruiters,
-              attachments: values.attachments?.length
-                ? values.attachments.map((file) =>
-                    typeof file === "string" ? file : file.name,
-                  )
-                : undefined,
-              others: values.jobOthers || undefined,
-              skills: values.skills?.length ? values.skills : undefined,
-              location: values.location,
-              minNoOfHires: values.minNoOfHires
-                ? Number(values.minNoOfHires)
-                : undefined,
-              expectedNoOfHires: values.expectedNoOfHires
-                ? Number(values.expectedNoOfHires)
-                : undefined,
-              offerLetterReleaseDate: values.offerLetterReleaseDate
-                ? new Date(values.offerLetterReleaseDate)
-                : undefined,
-              joiningDate: values.joiningDate
-                ? new Date(values.joiningDate)
-                : undefined,
-              duration: values.duration || undefined,
-              selectionProcedure: {
-                selectionMode: values.selectionMode,
-                shortlistFromResume: values.shortlistFromResume,
-                groupDiscussion: values.groupDiscussion,
-                tests: values.tests || [],
-                interviews: values.interviews || [],
-                others: values.others || undefined,
-                requirements:
-                  values.numberOfMembers ||
-                  values.numberOfRooms ||
-                  values.otherRequirements
-                    ? {
-                        numberOfMembers: values.numberOfMembers
-                          ? Number(values.numberOfMembers)
-                          : undefined,
-                        numberOfRooms: values.numberOfRooms
-                          ? Number(values.numberOfRooms)
-                          : undefined,
-                        otherRequirements:
-                          values.otherRequirements || undefined,
-                      }
-                    : undefined,
-              },
-            },
-            salaries: values.salaries || [],
-          };
-
-          // Submit to backend
+          setIsSubmitting(true);
           try {
+            // Filter and format recruiters
+            const recruiters = [1, 2, 3]
+              .map((i) => ({
+                name: values[`recName${i}`] || "",
+                designation: values[`designation${i}`] || "",
+                email: values[`email${i}`] || "",
+                contact: values[`phoneNumber${i}`]
+                  ? "+91 " + values[`phoneNumber${i}`]
+                  : "",
+                landline: values[`landline${i}`] || "",
+              }))
+              .filter(
+                (r) =>
+                  r.name.trim() ||
+                  r.designation.trim() ||
+                  r.email.trim() ||
+                  r.contact.trim() ||
+                  r.landline.trim(),
+              );
+
+            // Ensure at least primary recruiter is present
+            if (recruiters.length === 0) {
+              toast.error("At least one recruiter contact is required");
+              return;
+            }
+
+            // Assemble payload matching backend DTO structure exactly
+            const payload: JafDto = {
+              job: {
+                seasonId: values.seasonId,
+                role: values.role,
+                description: values.description || undefined,
+                recruiterDetailsFilled: recruiters,
+                attachments: values.attachments?.length
+                  ? values.attachments.map((file) =>
+                      typeof file === "string" ? file : file.name,
+                    )
+                  : undefined,
+                others: values.jobOthers || undefined,
+                skills: values.skills?.length ? values.skills : undefined,
+                location: values.location,
+                minNoOfHires: values.minNoOfHires
+                  ? Number(values.minNoOfHires)
+                  : undefined,
+                expectedNoOfHires: values.expectedNoOfHires
+                  ? Number(values.expectedNoOfHires)
+                  : undefined,
+                offerLetterReleaseDate: values.offerLetterReleaseDate
+                  ? new Date(values.offerLetterReleaseDate)
+                  : undefined,
+                joiningDate: values.joiningDate
+                  ? new Date(values.joiningDate)
+                  : undefined,
+                duration: values.duration || undefined,
+                selectionProcedure: {
+                  selectionMode: values.selectionMode,
+                  shortlistFromResume: values.shortlistFromResume,
+                  groupDiscussion: values.groupDiscussion,
+                  tests: values.tests || [],
+                  interviews: values.interviews || [],
+                  others: values.others || undefined,
+                  requirements:
+                    values.numberOfMembers ||
+                    values.numberOfRooms ||
+                    values.otherRequirements
+                      ? {
+                          numberOfMembers: values.numberOfMembers
+                            ? Number(values.numberOfMembers)
+                            : undefined,
+                          numberOfRooms: values.numberOfRooms
+                            ? Number(values.numberOfRooms)
+                            : undefined,
+                          otherRequirements:
+                            values.otherRequirements || undefined,
+                        }
+                      : undefined,
+                },
+              },
+              salaries: values.salaries || [],
+            };
+
+            // Submit to backend
             await axios.post(`${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`, payload, {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -194,8 +195,9 @@ function JAF() {
               error.response?.data?.message ||
               error.response?.data?.error ||
               "Failed to submit JAF form. Please try again.";
-
             toast.error(errorMessage);
+          } finally {
+            setIsSubmitting(false);
           }
         }}
         validateOnNext
@@ -249,7 +251,7 @@ function JAF() {
                   className="w-full max-w-xs flex justify-center"
                 >
                   <Button
-                    disabled={isPrevDisabled}
+                    disabled={isPrevDisabled || isSubmitting}
                     onClick={handlePrev}
                     className="flex-1 min-w-20"
                     size="large"
@@ -257,13 +259,18 @@ function JAF() {
                     Previous
                   </Button>
                   <Button
-                    disabled={isNextDisabled}
+                    disabled={isNextDisabled || isSubmitting}
                     onClick={handleNext}
                     className="flex-1 min-w-20"
                     size="large"
                     type="primary"
+                    loading={isSubmitting && currentStepIndex === 2}
                   >
-                    {currentStepIndex === 2 ? "Finish" : "Next"}
+                    {isSubmitting && currentStepIndex === 2 
+                      ? "Submitting..." 
+                      : currentStepIndex === 2 
+                        ? "Finish" 
+                        : "Next"}
                   </Button>
                 </Space>
               </Row>

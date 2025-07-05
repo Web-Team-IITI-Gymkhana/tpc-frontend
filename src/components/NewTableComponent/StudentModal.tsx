@@ -94,6 +94,7 @@ export default function StudentModal({ open, setOpen, id }) {
   const [registrationData, setRegistrationData] = useState(null);
   const [activeSeasons, setActiveSeasons] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const fetchStudentData = async (id: any) => {
     setLoading(true);
@@ -139,6 +140,7 @@ export default function StudentModal({ open, setOpen, id }) {
     seasonId: string,
     registered: boolean,
   ) => {
+    setActionLoading(true);
     try {
       const response = await postRegistration(studentId, seasonId, false);
       setActiveSeasons((prevData: any) =>
@@ -157,6 +159,8 @@ export default function StudentModal({ open, setOpen, id }) {
       toast.error("Error creating registration:", error.message);
       alert(`Error creating registration: ${error.message}`);
       return false;
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -175,22 +179,28 @@ export default function StudentModal({ open, setOpen, id }) {
     seasonId: any,
     currentStatus: any,
   ) => {
-    const success = await handleRegistration(
-      studentId,
-      seasonId,
-      currentStatus,
-    );
-    if (success) {
-      setRegistrationData((prevData: any) =>
-        prevData.map((registration: any) =>
-          registration.season.id === seasonId
-            ? { ...registration, registered: !currentStatus }
-            : registration,
-        ),
+    setActionLoading(true);
+    try {
+      const success = await handleRegistration(
+        studentId,
+        seasonId,
+        currentStatus,
       );
+      if (success) {
+        setRegistrationData((prevData: any) =>
+          prevData.map((registration: any) =>
+            registration.season.id === seasonId
+              ? { ...registration, registered: !currentStatus }
+              : registration,
+          ),
+        );
+      }
+    } finally {
+      setActionLoading(false);
     }
   };
   const handleDebar = async (registrationId: string, seasonId: string) => {
+    setActionLoading(true);
     try {
       const response = await debarStudent(registrationId);
 
@@ -212,10 +222,13 @@ export default function StudentModal({ open, setOpen, id }) {
     } catch (error) {
       toast.error("Error debarring student:", error.message);
       return false;
+    } finally {
+      setActionLoading(false);
     }
   };
 
   const handleResumeVerification = async (resumeId: string) => {
+    setActionLoading(true);
     try {
       const success = await patchResumeVerify([
         { id: resumeId, verified: true },
@@ -234,6 +247,8 @@ export default function StudentModal({ open, setOpen, id }) {
       }
     } catch (error) {
       toast.error("Error verifying resume");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -540,11 +555,12 @@ export default function StudentModal({ open, setOpen, id }) {
                                     <Button
                                       variant="contained"
                                       color="success"
+                                      disabled={actionLoading}
                                       onClick={() => {
                                         handleResumeVerification(resume.id);
                                       }}
                                     >
-                                      Verify
+                                      {actionLoading ? "Verifying..." : "Verify"}
                                     </Button>
                                   ) : (
                                     <span
@@ -632,6 +648,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                   <Button
                                     variant="contained"
                                     color="primary"
+                                    disabled={actionLoading}
                                     onClick={() =>
                                       createRegistration(
                                         studentData.id,
@@ -640,7 +657,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                       )
                                     }
                                   >
-                                    Create Registration
+                                    {actionLoading ? "Creating..." : "Create Registration"}
                                   </Button>
                                 </TableCell>
                               </TableRow>
@@ -706,6 +723,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                         ? "secondary"
                                         : "primary"
                                     }
+                                    disabled={actionLoading}
                                     onClick={() =>
                                       handleStatusChange(
                                         studentData.id,
@@ -714,7 +732,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                       )
                                     }
                                   >
-                                    {registration.registered
+                                    {actionLoading ? "Processing..." : registration.registered
                                       ? "Deregister"
                                       : "Register"}
                                   </Button>
@@ -723,6 +741,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                   <Button
                                     variant="contained"
                                     color="secondary"
+                                    disabled={actionLoading}
                                     onClick={() =>
                                       handleDebar(
                                         registration.id,
@@ -730,7 +749,7 @@ export default function StudentModal({ open, setOpen, id }) {
                                       )
                                     }
                                   >
-                                    Debar
+                                    {actionLoading ? "Processing..." : "Debar"}
                                   </Button>
                                 </TableCell>
                               </TableRow>
