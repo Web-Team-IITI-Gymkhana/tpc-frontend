@@ -31,6 +31,7 @@ const ResumePage = () => {
   const [resumeData, setResumeData] = useState<Resume[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   const fetchResumes = async () => {
     try {
@@ -83,18 +84,25 @@ const ResumePage = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("resume", file, file.name);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("resume", file, file.name);
 
-    const data = await uploadResume(formData, resumeName);
+      const data = await uploadResume(formData, resumeName);
 
-    if (data) {
-      toast.success("Uploaded Successfully");
-      fetchResumes();
-      setFile(null);
-      setDialogOpen(false);
-    } else {
+      if (data) {
+        toast.success("Uploaded Successfully");
+        fetchResumes();
+        setFile(null);
+        setDialogOpen(false);
+      } else {
+        toast.error("Error uploading file");
+      }
+    } catch (error) {
       toast.error("Error uploading file");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -238,11 +246,16 @@ const ResumePage = () => {
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
                   className="w-full sm:w-auto"
+                  disabled={uploading}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="w-full sm:w-auto">
-                  Upload Resume
+                <Button 
+                  type="submit" 
+                  className="w-full sm:w-auto"
+                  loading={uploading}
+                >
+                  {uploading ? "Uploading..." : "Upload Resume"}
                 </Button>
               </DialogFooter>
             </form>

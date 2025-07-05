@@ -43,6 +43,7 @@ export const AddSeason = ({
     type: "",
     policy: null as File | null,
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleClose = () => setOpen(false);
 
@@ -79,6 +80,7 @@ export const AddSeason = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("year", formValues.year);
@@ -94,6 +96,8 @@ export const AddSeason = ({
       window.location.reload();
     } catch {
       toast.error("Some Error Occured");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -158,7 +162,9 @@ export const AddSeason = ({
               Optional: Upload a season policy document (PDF only, max 10MB)
             </p>
           </div>
-          <Button type="submit">Add Season</Button>
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Adding..." : "Add Season"}
+          </Button>
         </form>
       </div>
     </Modal>
