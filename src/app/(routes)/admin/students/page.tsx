@@ -110,7 +110,7 @@ const StudentPage = () => {
         const payload = selectedRows.map((student) => ({
           studentId: student.id,
           seasonId: extraData.seasonId,
-          registered: true,
+          registered: false,
         }));
         await createRegistrations(payload);
         toast.success("Registrations created successfully");
