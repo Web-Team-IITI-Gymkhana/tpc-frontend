@@ -233,14 +233,14 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
     }
   }, [selectedResume, salaryId, resumes, fetchSalaryData]);
 
-  const handleOpenResume = useCallback(async (filepath: string) => {
+  const handleOpenResume = useCallback((filepath: string) => {
     if (!filepath) {
       toast.error("Invalid resume file");
       return;
     }
 
     try {
-      await OpenResume(filepath);
+      OpenResume(filepath);
     } catch (error) {
       console.error("Error opening resume:", error);
       toast.error("Failed to open resume");

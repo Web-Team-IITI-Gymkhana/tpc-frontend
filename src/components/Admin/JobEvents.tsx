@@ -729,10 +729,8 @@ export const Applications = ({
               ...application.resume,
               resumeFile: (
                 <Button
-                  onClick={async () => {
-                    const resume = await getResumeFile(
-                      application.resume.filepath,
-                    );
+                  onClick={() => {
+                    getResumeFile(application.resume.filepath);
                   }}
                 >
                   View Resume ({displayName}){" "}
