@@ -1,5 +1,5 @@
 import { JobDetailFC, updateProfileFC, SalaryFC } from "./types";
-import { OpenFile, apiCall } from "../api";
+import { OpenFile, OpenFileViaUploads, apiCall } from "../api";
 
 export const fetchProfile = async () => {
   return apiCall(`/recruiter-view/recruiter`);
@@ -33,11 +33,11 @@ export async function getJafDetails() {
 }
 
 export const getResume = (filename: string) => {
-  OpenFile(`/recruiter-view/resume/${filename}`);
+  OpenFileViaUploads(filename, "resume");
 };
 
 export const OpenJD = (filename: string) => {
-  OpenFile(`/recruiter-view/jd/${filename}`);
+  OpenFileViaUploads(filename, "jd");
 };
 
 export const patchJobData = async (jobId: string, changes: JobDetailFC) => {
@@ -109,10 +109,18 @@ export const patchSalaryData = async (salary: SalaryFC) => {
   });
 };
 
-export const postFeedback = async (jobId: string, feedback: string, studentIds: string[]) => {
-  const data = studentIds.map((id) => ({ jobId, studentId: id, remarks: feedback }));
+export const postFeedback = async (
+  jobId: string,
+  feedback: string,
+  studentIds: string[],
+) => {
+  const data = studentIds.map((id) => ({
+    jobId,
+    studentId: id,
+    remarks: feedback,
+  }));
   return apiCall(`/recruiter-view/feedbacks`, {
     method: "POST",
     body: data,
   });
-}
+};
