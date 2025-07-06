@@ -25,6 +25,7 @@ import {
   debarStudent,
   getResumeFile,
   patchResumeVerify,
+  patchStudentData,
 } from "@/helpers/api";
 
 import toast from "react-hot-toast";
@@ -95,6 +96,8 @@ export default function StudentModal({ open, setOpen, id }) {
   const [activeSeasons, setActiveSeasons] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   const fetchStudentData = async (id: any) => {
     setLoading(true);
@@ -169,6 +172,8 @@ export default function StudentModal({ open, setOpen, id }) {
       fetchStudentData(id);
       fetchRegistrationData(id);
       fetchActiveSeasonsData(id);
+      setEditMode(false);
+      setEditData(null);
     }
   }, [open, id]);
 
@@ -252,6 +257,67 @@ export default function StudentModal({ open, setOpen, id }) {
     }
   };
 
+  // When entering edit mode, copy studentData to editData
+  const handleEdit = () => {
+    setEditMode(true);
+    setEditData({
+      ...studentData,
+      user: { ...studentData.user },
+      program: { ...studentData.program },
+    });
+  };
+
+  const handleEditChange = (field, value, nested = null) => {
+    if (nested) {
+      setEditData((prev) => ({
+        ...prev,
+        [nested]: { ...prev[nested], [field]: value },
+      }));
+    } else {
+      setEditData((prev) => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const handleEditCancel = () => {
+    setEditMode(false);
+    setEditData(null);
+  };
+
+  const handleEditSubmit = async () => {
+    setActionLoading(true);
+    try {
+      const patchBody = {
+        id: editData.id,
+        programId: editData.program?.id || studentData.programId,
+        rollNo: editData.rollNo,
+        category: editData.category,
+        gender: editData.gender,
+        cpi: editData.cpi,
+        backlog: editData.backlog || studentData.backlog,
+        tenthMarks: editData.tenthMarks,
+        twelthMarks: editData.twelthMarks,
+        user: {
+          name: editData.user.name,
+          email: editData.user.email,
+          contact: editData.user.contact,
+        },
+      };
+      const res = await patchStudentData(patchBody);
+      if (res) {
+        toast.success("Student data updated successfully");
+        setStudentData((prev) => ({ ...prev, ...editData }));
+        setEditMode(false);
+        setEditData(null);
+      } else {
+        toast.error("Failed to update student data");
+      }
+    } catch (error) {
+      toast.error("Error updating student data");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Modal
@@ -262,6 +328,38 @@ export default function StudentModal({ open, setOpen, id }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          {/* Edit button at top right */}
+          {!loading && studentData && !editMode && (
+            <Button
+              variant="outlined"
+              color="primary"
+              style={{ position: "absolute", top: 16, right: 16, zIndex: 2 }}
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
+          )}
+          {/* Edit mode action buttons */}
+          {editMode && (
+            <Box display="flex" justifyContent="flex-end" gap={2} mb={2}>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleEditSubmit}
+                disabled={actionLoading}
+              >
+                {actionLoading ? "Saving..." : "Submit"}
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleEditCancel}
+                disabled={actionLoading}
+              >
+                Cancel
+              </Button>
+            </Box>
+          )}
           {loading ? (
             <Box
               display="flex"
@@ -292,6 +390,7 @@ export default function StudentModal({ open, setOpen, id }) {
                   >
                     <Table>
                       <TableBody>
+                        {/* ID */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -300,8 +399,20 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             ID
                           </TableCell>
-                          <TableCell>{studentData.id}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.id}
+                                disabled
+                                style={{ width: "100%" }}
+                              />
+                            ) : (
+                              studentData.id
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* Roll No */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -310,8 +421,22 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             Roll No
                           </TableCell>
-                          <TableCell>{studentData.rollNo}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.rollNo}
+                                onChange={(e) =>
+                                  handleEditChange("rollNo", e.target.value)
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : (
+                              studentData.rollNo
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* Category */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -320,8 +445,27 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             Category
                           </TableCell>
-                          <TableCell>{studentData.category}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <select
+                                value={editData.category}
+                                onChange={(e) =>
+                                  handleEditChange("category", e.target.value)
+                                }
+                                style={{ width: "100%" }}
+                              >
+                                <option value="GENERAL">GENERAL</option>
+                                <option value="OBC">OBC</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                                <option value="EWS">EWS</option>
+                              </select>
+                            ) : (
+                              studentData.category
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* Gender */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -330,8 +474,25 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             Gender
                           </TableCell>
-                          <TableCell>{studentData.gender}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <select
+                                value={editData.gender}
+                                onChange={(e) =>
+                                  handleEditChange("gender", e.target.value)
+                                }
+                                style={{ width: "100%" }}
+                              >
+                                <option value="MALE">MALE</option>
+                                <option value="FEMALE">FEMALE</option>
+                                <option value="OTHER">OTHER</option>
+                              </select>
+                            ) : (
+                              studentData.gender
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* CPI */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -340,8 +501,22 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             CPI
                           </TableCell>
-                          <TableCell>{studentData.cpi}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <input
+                                type="number"
+                                value={editData.cpi}
+                                onChange={(e) =>
+                                  handleEditChange("cpi", e.target.value)
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : (
+                              studentData.cpi
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* 10th Marks */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -350,8 +525,22 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             10th Marks
                           </TableCell>
-                          <TableCell>{studentData.tenthMarks}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <input
+                                type="number"
+                                value={editData.tenthMarks}
+                                onChange={(e) =>
+                                  handleEditChange("tenthMarks", e.target.value)
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : (
+                              studentData.tenthMarks
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* 12th Marks */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -360,8 +549,25 @@ export default function StudentModal({ open, setOpen, id }) {
                           >
                             12th Marks
                           </TableCell>
-                          <TableCell>{studentData.twelthMarks}</TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <input
+                                type="number"
+                                value={editData.twelthMarks}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "twelthMarks",
+                                    e.target.value,
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : (
+                              studentData.twelthMarks
+                            )}
+                          </TableCell>
                         </TableRow>
+                        {/* Total Penalty */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -390,6 +596,7 @@ export default function StudentModal({ open, setOpen, id }) {
                   >
                     <Table>
                       <TableBody>
+                        {/* Name */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -399,9 +606,27 @@ export default function StudentModal({ open, setOpen, id }) {
                             Name
                           </TableCell>
                           <TableCell>
-                            {studentData.user ? studentData.user.name : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.user.name}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "name",
+                                    e.target.value,
+                                    "user",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.user ? (
+                              studentData.user.name
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
+                        {/* Email */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -411,9 +636,27 @@ export default function StudentModal({ open, setOpen, id }) {
                             Email
                           </TableCell>
                           <TableCell>
-                            {studentData.user ? studentData.user.email : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="email"
+                                value={editData.user.email}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "email",
+                                    e.target.value,
+                                    "user",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.user ? (
+                              studentData.user.email
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
+                        {/* Contact */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -423,9 +666,24 @@ export default function StudentModal({ open, setOpen, id }) {
                             Contact
                           </TableCell>
                           <TableCell>
-                            {studentData.user
-                              ? studentData.user.contact
-                              : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.user.contact}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "contact",
+                                    e.target.value,
+                                    "user",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.user ? (
+                              studentData.user.contact
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -446,6 +704,7 @@ export default function StudentModal({ open, setOpen, id }) {
                   >
                     <Table>
                       <TableBody>
+                        {/* Branch */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -455,11 +714,27 @@ export default function StudentModal({ open, setOpen, id }) {
                             Branch
                           </TableCell>
                           <TableCell>
-                            {studentData.program
-                              ? studentData.program.branch
-                              : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.program.branch}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "branch",
+                                    e.target.value,
+                                    "program",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.program ? (
+                              studentData.program.branch
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
+                        {/* Course */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -469,11 +744,27 @@ export default function StudentModal({ open, setOpen, id }) {
                             Course
                           </TableCell>
                           <TableCell>
-                            {studentData.program
-                              ? studentData.program.course
-                              : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.program.course}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "course",
+                                    e.target.value,
+                                    "program",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.program ? (
+                              studentData.program.course
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
+                        {/* Year */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -483,11 +774,27 @@ export default function StudentModal({ open, setOpen, id }) {
                             Year
                           </TableCell>
                           <TableCell>
-                            {studentData.program
-                              ? studentData.program.year
-                              : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="number"
+                                value={editData.program.year}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "year",
+                                    e.target.value,
+                                    "program",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.program ? (
+                              studentData.program.year
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
+                        {/* Department */}
                         <TableRow>
                           <TableCell
                             component="th"
@@ -497,9 +804,24 @@ export default function StudentModal({ open, setOpen, id }) {
                             Department
                           </TableCell>
                           <TableCell>
-                            {studentData.program
-                              ? studentData.program.department
-                              : "N/A"}
+                            {editMode ? (
+                              <input
+                                type="text"
+                                value={editData.program.department || ""}
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    "department",
+                                    e.target.value,
+                                    "program",
+                                  )
+                                }
+                                style={{ width: "100%" }}
+                              />
+                            ) : studentData.program ? (
+                              studentData.program.department
+                            ) : (
+                              "N/A"
+                            )}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -560,7 +882,9 @@ export default function StudentModal({ open, setOpen, id }) {
                                         handleResumeVerification(resume.id);
                                       }}
                                     >
-                                      {actionLoading ? "Verifying..." : "Verify"}
+                                      {actionLoading
+                                        ? "Verifying..."
+                                        : "Verify"}
                                     </Button>
                                   ) : (
                                     <span
@@ -657,7 +981,9 @@ export default function StudentModal({ open, setOpen, id }) {
                                       )
                                     }
                                   >
-                                    {actionLoading ? "Creating..." : "Create Registration"}
+                                    {actionLoading
+                                      ? "Creating..."
+                                      : "Create Registration"}
                                   </Button>
                                 </TableCell>
                               </TableRow>
@@ -732,9 +1058,11 @@ export default function StudentModal({ open, setOpen, id }) {
                                       )
                                     }
                                   >
-                                    {actionLoading ? "Processing..." : registration.registered
-                                      ? "Deregister"
-                                      : "Register"}
+                                    {actionLoading
+                                      ? "Processing..."
+                                      : registration.registered
+                                        ? "Deregister"
+                                        : "Register"}
                                   </Button>
                                 </TableCell>
                                 <TableCell>
@@ -758,6 +1086,244 @@ export default function StudentModal({ open, setOpen, id }) {
                       </TableBody>
                     </Table>
                   </TableContainer>
+                  {editMode && (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="h6" component="h4" gutterBottom>
+                        Edit Student Data
+                      </Typography>
+                      <TableContainer component={Paper} elevation={3}>
+                        <Table>
+                          <TableBody>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Roll No
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="text"
+                                  value={editData.rollNo}
+                                  onChange={(e) =>
+                                    handleEditChange("rollNo", e.target.value)
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Category
+                              </TableCell>
+                              <TableCell>
+                                <select
+                                  value={editData.category}
+                                  onChange={(e) =>
+                                    handleEditChange("category", e.target.value)
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                >
+                                  <option value="GENERAL">General</option>
+                                  <option value="OBC">OBC</option>
+                                  <option value="SC">SC</option>
+                                  <option value="ST">ST</option>
+                                </select>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Gender
+                              </TableCell>
+                              <TableCell>
+                                <select
+                                  value={editData.gender}
+                                  onChange={(e) =>
+                                    handleEditChange("gender", e.target.value)
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                >
+                                  <option value="MALE">Male</option>
+                                  <option value="FEMALE">Female</option>
+                                  <option value="OTHER">Other</option>
+                                </select>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                CPI
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="number"
+                                  value={editData.cpi}
+                                  onChange={(e) =>
+                                    handleEditChange("cpi", e.target.value)
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                10th Marks
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="number"
+                                  value={editData.tenthMarks}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "tenthMarks",
+                                      e.target.value,
+                                    )
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                12th Marks
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="number"
+                                  value={editData.twelthMarks}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "twelthMarks",
+                                      e.target.value,
+                                    )
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Backlog
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="number"
+                                  value={editData.backlog || ""}
+                                  onChange={(e) =>
+                                    handleEditChange("backlog", e.target.value)
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Name
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="text"
+                                  value={editData.user.name}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "name",
+                                      e.target.value,
+                                      "user",
+                                    )
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Email
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="email"
+                                  value={editData.user.email}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "email",
+                                      e.target.value,
+                                      "user",
+                                    )
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                sx={{ fontWeight: "bold" }}
+                              >
+                                Contact
+                              </TableCell>
+                              <TableCell>
+                                <input
+                                  type="text"
+                                  value={editData.user.contact}
+                                  onChange={(e) =>
+                                    handleEditChange(
+                                      "contact",
+                                      e.target.value,
+                                      "user",
+                                    )
+                                  }
+                                  disabled={actionLoading}
+                                  style={{ width: "100%" }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  )}
                 </>
               )}
             </>

@@ -7,9 +7,11 @@ import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
 import { CSVImportModal } from "@/components/common/CSVImportModal";
 import { addStudents } from "@/helpers/admin/api";
-import { fetchPrograms } from "@/helpers/api";
+import { fetchPrograms, fetchAllSeasons } from "@/helpers/api";
 import { Program } from "@/dto/SalaryDto";
 import { toast } from "react-hot-toast";
+import BulkActionsModal from "@/components/common/BulkActionsModal";
+import { createRegistrations } from "@/helpers/admin/api";
 
 const hiddenColumns = ["userId", "programId", "id"];
 
@@ -30,6 +32,10 @@ const StudentPage = () => {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [selectedProgram, setSelectedProgram] = useState<string>("");
   const [importLoading, setImportLoading] = useState(false);
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<DTO[]>([]);
+  const [seasons, setSeasons] = useState<{ id: string; name: string }[]>([]);
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
@@ -46,6 +52,16 @@ const StudentPage = () => {
 
   useEffect(() => {
     fetchPrograms().then((data) => setPrograms(data || []));
+    fetchAllSeasons().then((data) => {
+      if (Array.isArray(data)) {
+        setSeasons(
+          data.map((s: any) => ({
+            id: s.id,
+            name: `${s.type} - ${s.year}`,
+          })),
+        );
+      }
+    });
   }, []);
 
   const handleImport = async (data: any[]) => {
@@ -79,6 +95,32 @@ const StudentPage = () => {
   const parseStudentRow = (row: any) => {
     if (!row.rollNo || !row.name || !row.email) return null;
     return row;
+  };
+
+  const handleBulkAction = (rows: DTO[]) => {
+    setSelectedRows(rows);
+    setBulkModalOpen(true);
+  };
+
+  const handleBulkModalSubmit = async (action: string, extraData?: any) => {
+    if (action === "register-season") {
+      if (!extraData?.seasonId) return;
+      setBulkLoading(true);
+      try {
+        const payload = selectedRows.map((student) => ({
+          studentId: student.id,
+          seasonId: extraData.seasonId,
+          registered: true,
+        }));
+        await createRegistrations(payload);
+        toast.success("Registrations created successfully");
+        setBulkModalOpen(false);
+      } catch (e) {
+        toast.error("Failed to create registrations");
+      }
+      setBulkLoading(false);
+    }
+    // Add more actions here later
   };
 
   return (
@@ -118,9 +160,24 @@ const StudentPage = () => {
       />
       <div>
         {students.length > 0 && (
-          <Table data={students} columns={visibleColumns} type={"student"} />
+          <Table
+            data={students}
+            columns={visibleColumns}
+            type={"student"}
+            buttonText="Bulk Actions"
+            buttonAction={handleBulkAction}
+          />
         )}
       </div>
+      <BulkActionsModal
+        open={bulkModalOpen}
+        onClose={() => setBulkModalOpen(false)}
+        actions={[
+          { label: "Create registration for season", value: "register-season" },
+        ]}
+        onSubmit={handleBulkModalSubmit}
+        seasons={seasons}
+      />
     </div>
   );
 };
