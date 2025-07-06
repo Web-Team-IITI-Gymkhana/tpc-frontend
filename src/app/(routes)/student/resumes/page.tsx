@@ -58,7 +58,7 @@ const ResumePage = () => {
     setName(event.target.value);
   };
 
-  const handleOpenResume = async (filename: string) => {
+  const handleOpenResume = (filename: string) => {
     OpenResume(filename);
   };
 
@@ -250,8 +250,8 @@ const ResumePage = () => {
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full sm:w-auto"
                   loading={uploading}
                 >

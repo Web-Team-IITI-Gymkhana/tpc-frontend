@@ -125,6 +125,41 @@ export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
     .catch((error) => toast.error("Error fetching data"));
 };
 
+export const OpenFileViaUploads = (filePath: string, subFolder: string) => {
+  try {
+    if (!filePath) {
+      toast.error("Invalid file path");
+      return;
+    }
+
+    let baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (baseUrl) {
+      // Remove /api/v1 from the backend URL to get the base server URL
+      baseUrl = baseUrl.replace("/api/v1", "");
+    } else {
+      // Fallback to current origin
+      baseUrl = window.location.origin;
+    }
+
+    const fileUrl = `${baseUrl}/uploads/${subFolder}/${filePath}`;
+
+    const newWindow = window.open(fileUrl, "_blank");
+
+    // Check if the window was blocked
+    if (
+      !newWindow ||
+      newWindow.closed ||
+      typeof newWindow.closed == "undefined"
+    ) {
+      toast.error("Popup blocked. Please allow popups for this site.");
+    }
+  } catch (error) {
+    console.error("Error opening file:", error);
+    toast.error("Failed to open file");
+  }
+};
+
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
   if (!accessToken || accessToken === undefined) {
     redirect();
@@ -407,14 +442,12 @@ export const addSeason = async (body: any) => {
   }
 };
 
-export const getSeasonPolicyDocument = async (fileName: string) => {
-  // Check if user is student or admin based on the current route/context
-  // For now, we'll use the student endpoint since this is called from student profile
-  OpenFile(`/student-view/policy/${fileName}`);
+export const getSeasonPolicyDocument = (fileName: string) => {
+  OpenFileViaUploads(fileName, "policy");
 };
 
-export const getSeasonPolicyDocumentAdmin = async (fileName: string) => {
-  OpenFile(`/seasons/policy/${fileName}`);
+export const getSeasonPolicyDocumentAdmin = (fileName: string) => {
+  OpenFileViaUploads(fileName, "policy");
 };
 
 export const promoteStudent = async (body: any, eventId: string) => {
@@ -434,12 +467,12 @@ export const fetchResumes = async () => {
   return apiCall("/resumes");
 };
 
-export const getResumeFile = async (fileName: string) => {
-  OpenFile(`/resumes/file/${fileName}`);
+export const getResumeFile = (fileName: string) => {
+  OpenFileViaUploads(fileName, "resume");
 };
 
-export const OpenJD = async (fileName: string) => {
-  OpenFile(`/jobs/jd/${fileName}`);
+export const OpenJD = (fileName: string) => {
+  OpenFileViaUploads(fileName, "jd");
 };
 
 export const patchResumeVerify = async (changes: ResumePatchData[]) => {
