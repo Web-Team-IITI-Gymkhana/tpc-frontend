@@ -409,21 +409,11 @@ export const addSeason = async (body: any) => {
 export const getSeasonPolicyDocument = async (fileName: string) => {
   // Check if user is student or admin based on the current route/context
   // For now, we'll use the student endpoint since this is called from student profile
-  const response = await apiCall(`/student-view/policy/${fileName}/signed-url`);
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/student-view/policy/${fileName}`);
 };
 
 export const getSeasonPolicyDocumentAdmin = async (fileName: string) => {
-  const response = await apiCall(`/seasons/policy/${fileName}/signed-url`);
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/seasons/policy/${fileName}`);
 };
 
 export const promoteStudent = async (body: any, eventId: string) => {
@@ -444,21 +434,11 @@ export const fetchResumes = async () => {
 };
 
 export const getResumeFile = async (fileName: string) => {
-  const response = await apiCall(`/resumes/file/${fileName}/signed-url`);
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/resumes/file/${fileName}`);
 };
 
 export const OpenJD = async (fileName: string) => {
-  const response = await apiCall(`/jobs/jd/${fileName}/signed-url`);
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/jobs/jd/${fileName}`);
 };
 
 export const patchResumeVerify = async (changes: ResumePatchData[]) => {

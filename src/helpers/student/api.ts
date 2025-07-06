@@ -58,12 +58,7 @@ export const RegisterSeason = async (seasonId: string, registered: boolean) => {
 };
 
 export const OpenResume = async (filename: string) => {
-  const response = await apiCall(`/student-view/resume/${filename}/signed-url`);
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/student-view/resume/${filename}`);
 };
 
 export const GetInterviewExpiriences = async () => {
@@ -73,23 +68,11 @@ export const GetInterviewExpiriences = async () => {
 };
 
 export const OpenInterviewExpirience = async (filename: string) => {
-  const response = await apiCall(
-    `/student-view/interview-experiences/${filename}/signed-url`,
-  );
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/student-view/interview-experiences/${filename}`);
 };
 
 export const OpenJD = async (filename: string) => {
-  const response = await apiCall(`/student-view/jd/${filename}/signed-url`);
-  if (response && response.url) {
-    window.open(response.url);
-  } else {
-    throw new Error("Failed to get signed URL");
-  }
+  OpenFile(`/student-view/jd/${filename}`);
 };
 
 export const GetStudentData = async () => {
