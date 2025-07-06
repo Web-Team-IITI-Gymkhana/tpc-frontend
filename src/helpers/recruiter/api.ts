@@ -5,34 +5,6 @@ export const fetchProfile = async () => {
   return apiCall(`/recruiter-view/recruiter`);
 };
 
-export const OpenResume = (filename: string) => {
-  apiCall(`/recruiter-view/resume/${filename}/signed-url`)
-    .then((response) => {
-      if (response && response.url) {
-        window.open(response.url);
-      } else {
-        throw new Error("Failed to get signed URL");
-      }
-    })
-    .catch((error) => {
-      console.error("Error getting signed URL:", error);
-    });
-};
-
-export const OpenJD = (filename: string) => {
-  apiCall(`/recruiter-view/jd/${filename}/signed-url`)
-    .then((response) => {
-      if (response && response.url) {
-        window.open(response.url);
-      } else {
-        throw new Error("Failed to get signed URL");
-      }
-    })
-    .catch((error) => {
-      console.error("Error getting signed URL:", error);
-    });
-};
-
 export const patchProfile = async (changes: updateProfileFC) => {
   return apiCall(`/recruiter-view/recruiter`, {
     method: "PATCH",
@@ -61,17 +33,11 @@ export async function getJafDetails() {
 }
 
 export const getResume = (filename: string) => {
-  apiCall(`/recruiter-view/resume/${filename}/signed-url`)
-    .then((response) => {
-      if (response && response.url) {
-        window.open(response.url);
-      } else {
-        throw new Error("Failed to get signed URL");
-      }
-    })
-    .catch((error) => {
-      console.error("Error getting signed URL:", error);
-    });
+  OpenFile(`/recruiter-view/resume/${filename}`);
+};
+
+export const OpenJD = (filename: string) => {
+  OpenFile(`/recruiter-view/jd/${filename}`);
 };
 
 export const patchJobData = async (jobId: string, changes: JobDetailFC) => {
@@ -143,18 +109,10 @@ export const patchSalaryData = async (salary: SalaryFC) => {
   });
 };
 
-export const postFeedback = async (
-  jobId: string,
-  feedback: string,
-  studentIds: string[],
-) => {
-  const data = studentIds.map((id) => ({
-    jobId,
-    studentId: id,
-    remarks: feedback,
-  }));
+export const postFeedback = async (jobId: string, feedback: string, studentIds: string[]) => {
+  const data = studentIds.map((id) => ({ jobId, studentId: id, remarks: feedback }));
   return apiCall(`/recruiter-view/feedbacks`, {
     method: "POST",
     body: data,
   });
-};
+}
