@@ -15,9 +15,24 @@ export interface StudentPayload {
   user: StudentUser;
 }
 
+export interface RegistrationPayload {
+  studentId: string;
+  seasonId: string;
+  registered: boolean;
+}
+
 export async function addStudents(students: StudentPayload[]): Promise<any> {
   return apiCall("/students", {
     method: "POST",
     body: students,
+  });
+}
+
+export async function createRegistrations(
+  payload: RegistrationPayload[],
+): Promise<any> {
+  return apiCall("/registrations", {
+    method: "POST",
+    body: payload,
   });
 }

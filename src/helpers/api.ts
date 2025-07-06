@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import { ResumePatchData } from "./types";
+import type { DTO as StudentDTO } from "@/dto/StudentDto";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -742,5 +743,13 @@ export const postPrograms = async (
   return apiCall("/programs", {
     method: "POST",
     body: programs,
+  });
+};
+
+export const patchStudentData = async (student: any) => {
+  // Accepts a single student object, wraps in array for PATCH
+  return apiCall("/students", {
+    method: "PATCH",
+    body: [student],
   });
 };
