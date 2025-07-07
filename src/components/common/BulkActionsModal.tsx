@@ -18,6 +18,7 @@ interface BulkActionsModalProps {
   actions: { label: string; value: string }[];
   onSubmit: (action: string, extraData?: any) => void;
   seasons?: { id: string; name: string }[];
+  roles?: { label: string; value: string }[];
 }
 
 const BulkActionsModal: React.FC<BulkActionsModalProps> = ({
@@ -26,9 +27,11 @@ const BulkActionsModal: React.FC<BulkActionsModalProps> = ({
   actions,
   onSubmit,
   seasons = [],
+  roles = [],
 }) => {
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedSeason, setSelectedSeason] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
 
   const handleActionChange = (e: SelectChangeEvent<string>) => {
     setSelectedAction(e.target.value as string);
@@ -38,14 +41,29 @@ const BulkActionsModal: React.FC<BulkActionsModalProps> = ({
     setSelectedSeason(e.target.value as string);
   };
 
+  const handleRoleChange = (e: SelectChangeEvent<string>) => {
+    setSelectedRole(e.target.value as string);
+  };
+
   const handleSubmit = () => {
     if (selectedAction === "register-season" && !selectedSeason) return;
-    onSubmit(selectedAction, { seasonId: selectedSeason });
+    if (selectedAction === "promote-tpc" && !selectedRole) return;
+
+    let extraData = undefined;
+    if (selectedAction === "register-season") {
+      extraData = { seasonId: selectedSeason };
+    } else if (selectedAction === "promote-tpc") {
+      extraData = { role: selectedRole };
+    }
+
+    onSubmit(selectedAction, extraData);
     setSelectedAction("");
     setSelectedSeason("");
+    setSelectedRole("");
   };
 
   const showSeasonSelect = selectedAction === "register-season";
+  const showRoleSelect = selectedAction === "promote-tpc";
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -81,12 +99,32 @@ const BulkActionsModal: React.FC<BulkActionsModalProps> = ({
             </Select>
           </FormControl>
         )}
+        {showRoleSelect && (
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Role</InputLabel>
+            <Select
+              value={selectedRole}
+              onChange={handleRoleChange}
+              label="Role"
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.value} value={role.value}>
+                  {role.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           onClick={handleSubmit}
-          disabled={!selectedAction || (showSeasonSelect && !selectedSeason)}
+          disabled={
+            !selectedAction ||
+            (showSeasonSelect && !selectedSeason) ||
+            (showRoleSelect && !selectedRole)
+          }
           variant="contained"
         >
           Confirm
