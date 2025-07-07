@@ -1,4 +1,5 @@
 import { apiCall } from "../api";
+import { DTO as TPCMemberDTO } from "@/dto/TPCMemberDto";
 
 export interface StudentUser {
   name: string;
@@ -48,5 +49,11 @@ export async function promoteToManagers(
   return apiCall("/tpc-members", {
     method: "POST",
     body: payload,
+  });
+}
+
+export async function fetchTPCMembers(): Promise<TPCMemberDTO[]> {
+  return apiCall("/tpc-members", {
+    method: "GET",
   });
 }
