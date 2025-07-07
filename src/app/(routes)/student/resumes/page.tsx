@@ -91,13 +91,15 @@ const ResumePage = () => {
 
       const data = await uploadResume(formData, resumeName);
 
-      if (data) {
+      console.log("Upload response:", data);
+
+      if (data.success) {
         toast.success("Uploaded Successfully");
         fetchResumes();
         setFile(null);
         setDialogOpen(false);
       } else {
-        toast.error("Error uploading file");
+        toast.error(data.message || "Error uploading file");
       }
     } catch (error) {
       toast.error("Error uploading file");
@@ -136,6 +138,9 @@ const ResumePage = () => {
           <>
             <div className="my-4">
               <Separator />
+              <span className="text-sm text-gray-500">
+                You can only upload upto 10 resumes.
+              </span>
             </div>
             <div className="overflow-x-auto bg-white rounded-lg border border-slate-200">
               <Table className="min-w-full">

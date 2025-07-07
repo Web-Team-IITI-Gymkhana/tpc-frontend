@@ -112,6 +112,7 @@ export const uploadResume = async (formData: FormData, name: string) => {
     method: "POST",
     formData: formData,
     next: { tags: ["Resumes"] },
+    recieveResponse: true,
   });
 };
 
