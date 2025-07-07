@@ -93,7 +93,7 @@ const ResumePage = () => {
 
       console.log("Upload response:", data);
 
-      if (data.success) {
+      if (data.status) {
         toast.success("Uploaded Successfully");
         fetchResumes();
         setFile(null);
