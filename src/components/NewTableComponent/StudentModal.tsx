@@ -567,6 +567,33 @@ export default function StudentModal({ open, setOpen, id }) {
                             )}
                           </TableCell>
                         </TableRow>
+                        {/* Backlog */}
+                        <TableRow>
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            Backlog
+                          </TableCell>
+                          <TableCell>
+                            {editMode ? (
+                              <select
+                                value={editData.backlog || "NEVER"}
+                                onChange={(e) =>
+                                  handleEditChange("backlog", e.target.value)
+                                }
+                                style={{ width: "100%" }}
+                              >
+                                <option value="NEVER">NEVER</option>
+                                <option value="PREVIOUS">PREVIOUS</option>
+                                <option value="ACTIVE">ACTIVE</option>
+                              </select>
+                            ) : (
+                              studentData.backlog || "N/A"
+                            )}
+                          </TableCell>
+                        </TableRow>
                         {/* Total Penalty */}
                         <TableRow>
                           <TableCell
@@ -1236,15 +1263,18 @@ export default function StudentModal({ open, setOpen, id }) {
                                 Backlog
                               </TableCell>
                               <TableCell>
-                                <input
-                                  type="number"
-                                  value={editData.backlog || ""}
+                                <select
+                                  value={editData.backlog || "NEVER"}
                                   onChange={(e) =>
                                     handleEditChange("backlog", e.target.value)
                                   }
                                   disabled={actionLoading}
                                   style={{ width: "100%" }}
-                                />
+                                >
+                                  <option value="NEVER">NEVER</option>
+                                  <option value="PREVIOUS">PREVIOUS</option>
+                                  <option value="ACTIVE">ACTIVE</option>
+                                </select>
                               </TableCell>
                             </TableRow>
                             <TableRow>
