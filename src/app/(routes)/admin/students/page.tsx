@@ -6,7 +6,7 @@ import type { DTO } from "@/dto/StudentDto";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
 import { CSVImportModal } from "@/components/common/CSVImportModal";
-import { addStudents } from "@/helpers/admin/api";
+import { addStudents, promoteToManagers } from "@/helpers/admin/api";
 import { fetchPrograms, fetchAllSeasons } from "@/helpers/api";
 import { Program } from "@/dto/SalaryDto";
 import { toast } from "react-hot-toast";
@@ -119,6 +119,24 @@ const StudentPage = () => {
         toast.error("Failed to create registrations");
       }
       setBulkLoading(false);
+    } else if (action === "promote-tpc") {
+      if (!extraData?.role) return;
+      setBulkLoading(true);
+      try {
+        const payload = selectedRows.map((student) => ({
+          studentId: student.id,
+          role: extraData.role as "MANAGER" | "COORDINATOR",
+        }));
+        await promoteToManagers(payload);
+        const roleLabel = extraData.role.toLowerCase();
+        toast.success(
+          `Successfully promoted ${selectedRows.length} student${selectedRows.length > 1 ? "s" : ""} to ${roleLabel}${selectedRows.length > 1 ? "s" : ""}`,
+        );
+        setBulkModalOpen(false);
+      } catch (e) {
+        toast.error("Failed to promote students");
+      }
+      setBulkLoading(false);
     }
     // Add more actions here later
   };
@@ -174,9 +192,14 @@ const StudentPage = () => {
         onClose={() => setBulkModalOpen(false)}
         actions={[
           { label: "Create registration for season", value: "register-season" },
+          { label: "Promote to TPC Member", value: "promote-tpc" },
         ]}
         onSubmit={handleBulkModalSubmit}
         seasons={seasons}
+        roles={[
+          { label: "Manager", value: "MANAGER" },
+          { label: "Coordinator", value: "COORDINATOR" },
+        ]}
       />
     </div>
   );

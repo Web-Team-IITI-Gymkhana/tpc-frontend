@@ -21,6 +21,11 @@ export interface RegistrationPayload {
   registered: boolean;
 }
 
+export interface TPCMemberPayload {
+  studentId: string;
+  role: "MANAGER" | "COORDINATOR";
+}
+
 export async function addStudents(students: StudentPayload[]): Promise<any> {
   return apiCall("/students", {
     method: "POST",
@@ -32,6 +37,15 @@ export async function createRegistrations(
   payload: RegistrationPayload[],
 ): Promise<any> {
   return apiCall("/registrations", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export async function promoteToManagers(
+  payload: TPCMemberPayload[],
+): Promise<any> {
+  return apiCall("/tpc-members", {
     method: "POST",
     body: payload,
   });
