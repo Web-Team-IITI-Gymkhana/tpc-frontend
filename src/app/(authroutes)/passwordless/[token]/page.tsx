@@ -21,9 +21,9 @@ const LoginPage = ({
     const login = async () => {
       try {
         const res = await PasswordlessLogin(params.token);
-        Cookies.set("accessToken", res.body.accessToken, { expires: 365 });
+        Cookies.set("accessToken", res.body.accessToken, { expires: 6 });
         Cookies.set("user", JSON.stringify(jwtDecode(res.body.accessToken)), {
-          expires: 365,
+          expires: 6,
         });
         toast.success("Logged in successfully");
         router.push("/recruiter");
@@ -36,7 +36,7 @@ const LoginPage = ({
     };
 
     login();
-  });
+  }, [params.token, router]);
 
   return (
     <>
