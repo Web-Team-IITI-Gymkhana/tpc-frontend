@@ -26,9 +26,7 @@ const { Step } = Steps;
 const getErrorMessages = (errors: any): string[] => {
   const messages: string[] = [];
 
-  if (!errors || typeof errors !== "object") {
-    return messages;
-  }
+  if (!errors || typeof errors !== "object") return messages;
 
   const traverse = (obj: any, path = "") => {
     if (typeof obj === "string") {
@@ -111,8 +109,7 @@ function JAF() {
             toast.error("At least one recruiter contact is required");
             return;
           }
-
-          const payload: JafDto = {
+          const payload: JafDto & { captchaToken: string } = {
             job: {
               seasonId: values.seasonId,
               role: values.role,
@@ -164,6 +161,7 @@ function JAF() {
               },
             },
             salaries: values.salaries || [],
+            captchaToken: captchaToken, 
           };
 
           try {
