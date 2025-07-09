@@ -1,6 +1,6 @@
 const redirect = () => {};
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-import { OpenFile, apiCall } from "../api";
+import { OpenFile, OpenFileViaUploads, apiCall } from "../api";
 
 const url = (NextUrl: string) => {
   return `${baseUrl}/api/v1${NextUrl}`;
@@ -57,8 +57,8 @@ export const RegisterSeason = async (seasonId: string, registered: boolean) => {
   }
 };
 
-export const OpenResume = async (filename: string) => {
-  OpenFile(`/student-view/resume/${filename}`);
+export const OpenResume = (filename: string) => {
+  OpenFileViaUploads(filename, "resume");
 };
 
 export const GetInterviewExpiriences = async () => {
@@ -67,16 +67,28 @@ export const GetInterviewExpiriences = async () => {
   });
 };
 
-export const OpenInterviewExpirience = async (filename: string) => {
-  OpenFile(`/student-view/interview-experiences/${filename}`);
+export const OpenInterviewExpirience = (filename: string) => {
+  OpenFileViaUploads(filename, "ie");
 };
 
-export const OpenJD = async (filename: string) => {
-  OpenFile(`/student-view/jd/${filename}`);
+export const OpenJD = (filename: string) => {
+  OpenFileViaUploads(filename, "jd");
 };
 
 export const GetStudentData = async () => {
   return apiCall("/student-view", { next: { tags: ["Students"] } });
+};
+
+export const updateOnboarding = async (data: {
+  backlog?: string;
+  tenthMarks?: number;
+  twelthMarks?: number;
+}) => {
+  return apiCall("/student-view/onboarding", {
+    method: "PATCH",
+    body: data,
+    next: { tags: ["Students"] },
+  });
 };
 
 export const ApplyJob = async (salaryId: string, resumeId: string) => {
@@ -100,6 +112,7 @@ export const uploadResume = async (formData: FormData, name: string) => {
     method: "POST",
     formData: formData,
     next: { tags: ["Resumes"] },
+    recieveResponse: true,
   });
 };
 

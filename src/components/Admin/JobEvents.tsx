@@ -56,6 +56,7 @@ export const EditEvent = ({
     visibleToRecruiter: false,
   });
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   useEffect(() => {
     if (eventId && open) {
       fetchEventData();
@@ -99,6 +100,7 @@ export const EditEvent = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUpdating(true);
     try {
       const updatedValues = {
         ...formValues,
@@ -111,6 +113,8 @@ export const EditEvent = ({
       window.location.reload();
     } catch (error: any) {
       console.error("API Error:", error.response?.data || error.message);
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -227,7 +231,9 @@ export const EditEvent = ({
                 </span>
               </label>
             </div>
-            <Button type="submit">Update Event</Button>
+            <Button type="submit" disabled={updating}>
+              {updating ? "Updating..." : "Update Event"}
+            </Button>
           </form>
         )}
       </div>
@@ -253,6 +259,7 @@ export const AddEvent = ({
     endDateTime: "",
     visibleToRecruiter: false,
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleClose = () => setOpen(false);
 
@@ -266,12 +273,15 @@ export const AddEvent = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       await addEvent([formValues]);
       toast.success("Successfully added");
       window.location.reload();
     } catch {
       toast.error("Some Error Occured");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -383,7 +393,9 @@ export const AddEvent = ({
               </span>
             </label>
           </div>
-          <Button type="submit">Add Event</Button>
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Adding..." : "Add Event"}
+          </Button>
         </form>
       </div>
     </Modal>
@@ -404,6 +416,7 @@ const PromoteStudent = ({
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const studentIds = students.map((student) => student.id);
   const [eventId, setEventId] = useState<string>();
+  const [promoting, setPromoting] = useState(false);
   useEffect(() => {
     const setCurrentEvent = events.forEach((event) => {
       if (event.roundNumber == roundNumber) {
@@ -415,10 +428,17 @@ const PromoteStudent = ({
   }, [roundNumber]);
 
   const updateEvent = async () => {
-    console.log(studentIds);
-    await promoteStudent({ studentIds }, eventId);
-    toast.success("Successfully promoted!");
-    onClose();
+    setPromoting(true);
+    try {
+      console.log(studentIds);
+      await promoteStudent({ studentIds }, eventId);
+      toast.success("Successfully promoted!");
+      onClose();
+    } catch (error) {
+      toast.error("Error promoting students");
+    } finally {
+      setPromoting(false);
+    }
   };
 
   return (
@@ -709,10 +729,8 @@ export const Applications = ({
               ...application.resume,
               resumeFile: (
                 <Button
-                  onClick={async () => {
-                    const resume = await getResumeFile(
-                      application.resume.filepath,
-                    );
+                  onClick={() => {
+                    getResumeFile(application.resume.filepath);
                   }}
                 >
                   View Resume ({displayName}){" "}

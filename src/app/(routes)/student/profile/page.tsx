@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { StudentDataType } from "@/helpers/student/types";
 import { GetStudentData, RegisterSeason } from "@/helpers/student/api";
+import { getSeasonPolicyDocument } from "@/helpers/api";
 import toast from "react-hot-toast";
 import Loader from "@/components/Loader/loader";
 import { ProfileNavLoader } from "@/components/Loader/loaders";
@@ -32,7 +33,13 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Info,
+  X,
+  FileText,
+  Download,
 } from "lucide-react";
+import { OnboardingForm } from "@/components/Students/OnboardingForm";
+import { Modal } from "@mui/material";
 
 const ProfilePage = () => {
   const [studentData, setStudentData] = useState<StudentDataType | null>(null);
@@ -40,6 +47,70 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
+
+  // Policy modal state
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState<any>(null);
+  const [policyAccepted, setPolicyAccepted] = useState(false);
+
+  // Remove blob/iframe/scroll logic and add viewPolicyClicked state
+  const [viewPolicyClicked, setViewPolicyClicked] = useState(false);
+
+  const fetchStudentData = async () => {
+    try {
+      const data = await GetStudentData();
+      console.log("Student data received:", data); // Debug log
+      setStudentData(data);
+
+      if (data) {
+        const total = data.penalties.reduce(
+          (sum: number, penalty) => sum + penalty.penalty,
+          0,
+        );
+        setTotalPenalty(total);
+
+        // Set registration status based on actual data
+        if (data.registrations && data.registrations.length > 0) {
+          console.log("Registrations found:", data.registrations); // Debug log
+          setIsRegistered(data.registrations[0].registered);
+        } else {
+          console.log("No registrations found"); // Debug log
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching student data:", error); // Debug log
+      toast.error("Error fetching data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterClick = (seasonId: string, registered: boolean) => {
+    // Check onboarding completion before attempting registration
+    if (needsOnboarding) {
+      toast.error(
+        "Please complete your profile onboarding before registering for seasons",
+      );
+      return;
+    }
+
+    // If deregistering, do it directly without policy modal
+    if (registered) {
+      handleRegister(seasonId, registered);
+      return;
+    }
+
+    // For registration, find the season and show policy modal
+    const season = studentData?.registrations.find(
+      (reg) => reg.season.id === seasonId,
+    );
+
+    if (season) {
+      setSelectedSeason(season);
+      setPolicyAccepted(false);
+      setPolicyModalOpen(true);
+    }
+  };
 
   const handleRegister = async (seasonId: string, registered: boolean) => {
     try {
@@ -75,46 +146,37 @@ const ProfilePage = () => {
             registrations: updatedRegistrations,
           };
         });
+
+        // Close policy modal if open
+        setPolicyModalOpen(false);
+        setSelectedSeason(null);
+        setPolicyAccepted(false);
       } else {
         toast.error("Some Error Occurred");
       }
-    } catch (error) {
-      toast.error("Registration failed. Please try again.");
+    } catch (error: any) {
+      if (error.message?.includes("onboarding")) {
+        toast.error("Please complete your profile onboarding first");
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     } finally {
       setRegistering(false);
     }
   };
 
+  const handlePolicyAccept = () => {
+    if (selectedSeason && policyAccepted) {
+      handleRegister(selectedSeason.season.id, false);
+      setViewPolicyClicked(false);
+    }
+  };
+
+  const handleDownloadPolicy = (policyDocument: string) => {
+    getSeasonPolicyDocument(policyDocument);
+  };
+
   useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const data = await GetStudentData();
-        console.log("Student data received:", data); // Debug log
-        setStudentData(data);
-
-        if (data) {
-          const total = data.penalties.reduce(
-            (sum: number, penalty) => sum + penalty.penalty,
-            0,
-          );
-          setTotalPenalty(total);
-
-          // Set registration status based on actual data
-          if (data.registrations && data.registrations.length > 0) {
-            console.log("Registrations found:", data.registrations); // Debug log
-            setIsRegistered(data.registrations[0].registered);
-          } else {
-            console.log("No registrations found"); // Debug log
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching student data:", error); // Debug log
-        toast.error("Error fetching data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchStudentData();
   }, []); // Add empty dependency array to run only once
 
@@ -135,6 +197,17 @@ const ProfilePage = () => {
       </div>
     );
   }
+
+  // Check if onboarding is needed
+  const needsOnboarding =
+    studentData.backlog === null ||
+    studentData.backlog === undefined ||
+    studentData.tenthMarks === null ||
+    studentData.tenthMarks === undefined ||
+    studentData.twelthMarks === null ||
+    studentData.twelthMarks === undefined;
+
+  const isOnboardingComplete = !needsOnboarding;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-6">
@@ -205,13 +278,49 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Contact Information */}
+        {/* Onboarding Form */}
+        {needsOnboarding && (
+          <div className="border-b border-slate-300 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 md:p-6">
+            <OnboardingForm
+              studentData={studentData}
+              onUpdate={fetchStudentData}
+            />
+          </div>
+        )}
+
+        {/* Personal Information */}
         <div className="border-b border-slate-300 bg-slate-50/80 p-3 md:p-6">
           <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2 mb-4">
             <User className="w-5 h-5 text-slate-600" />
-            Contact Information
+            Personal Information
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5 text-amber-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Category
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.category}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-rose-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Gender
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.gender}
+                </p>
+              </div>
+            </div>
             <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
               <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Mail className="w-5 h-5 text-indigo-700" />
@@ -225,7 +334,6 @@ const ProfilePage = () => {
                 </p>
               </div>
             </div>
-
             <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
               <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Phone className="w-5 h-5 text-emerald-700" />
@@ -320,71 +428,80 @@ const ProfilePage = () => {
             <TrendingUp className="w-5 h-5 text-slate-600" />
             Academic Performance
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Users className="w-5 h-5 text-amber-700" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">
-                  Category
-                </p>
-                <p className="text-slate-900 font-medium text-sm">
-                  {studentData.category}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-5 h-5 text-rose-700" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-600 mb-1">
-                  Gender
-                </p>
-                <p className="text-slate-900 font-medium text-sm">
-                  {studentData.gender}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-5 h-5 text-emerald-700" />
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-blue-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">CPI</p>
-                <p className="text-slate-900 font-bold text-lg">
+                <p className="text-slate-900 font-medium text-lg">
                   {studentData.cpi}
                 </p>
               </div>
             </div>
 
+            {/* Backlog Status */}
             <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Award className="w-5 h-5 text-sky-700" />
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Award className="w-5 h-5 text-purple-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Backlog Status
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.backlog ? (
+                    studentData.backlog === "NEVER" ? (
+                      "No Backlogs Ever"
+                    ) : studentData.backlog === "PREVIOUS" ? (
+                      "No Active Backlogs"
+                    ) : (
+                      "Having an Active Backlog"
+                    )
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* 10th Marks */}
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-5 h-5 text-green-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">
                   10th Marks
                 </p>
                 <p className="text-slate-900 font-medium text-sm">
-                  {studentData.tenthMarks}%
+                  {studentData.tenthMarks !== null &&
+                  studentData.tenthMarks !== undefined ? (
+                    `${studentData.tenthMarks}%`
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
                 </p>
               </div>
             </div>
 
+            {/* 12th Marks */}
             <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
-              <div className="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <Award className="w-5 h-5 text-violet-700" />
+              <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <GraduationCap className="w-5 h-5 text-teal-700" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-slate-600 mb-1">
                   12th Marks
                 </p>
                 <p className="text-slate-900 font-medium text-sm">
-                  {studentData.twelthMarks}%
+                  {studentData.twelthMarks !== null &&
+                  studentData.twelthMarks !== undefined ? (
+                    `${studentData.twelthMarks}%`
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
                 </p>
               </div>
             </div>
@@ -436,6 +553,15 @@ const ProfilePage = () => {
               <Calendar className="w-5 h-5 text-blue-600" />
               Season Registrations
             </h2>
+            {needsOnboarding && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">
+                  <Info className="w-4 h-4 inline mr-2" />
+                  Please complete your profile onboarding above before
+                  registering for seasons.
+                </p>
+              </div>
+            )}
             <div className="bg-white rounded-xl border border-slate-300 shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <Table className="min-w-full">
@@ -480,28 +606,35 @@ const ProfilePage = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            onClick={() =>
-                              handleRegister(
-                                registration.season.id,
-                                registration.registered,
-                              )
-                            }
-                            disabled={registering}
-                            size="sm"
-                            variant={
-                              registration.registered ? "outline" : "default"
-                            }
-                            className="h-8 w-full sm:w-auto"
-                          >
-                            {registering ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : registration.registered ? (
-                              "Deregister"
-                            ) : (
-                              "Register"
+                          <div className="space-y-1">
+                            <Button
+                              onClick={() =>
+                                handleRegisterClick(
+                                  registration.season.id,
+                                  registration.registered,
+                                )
+                              }
+                              disabled={registering || needsOnboarding}
+                              size="sm"
+                              variant={
+                                registration.registered ? "outline" : "default"
+                              }
+                              className="h-8 w-full sm:w-auto"
+                            >
+                              {registering ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : registration.registered ? (
+                                "Deregister"
+                              ) : (
+                                "Register"
+                              )}
+                            </Button>
+                            {needsOnboarding && (
+                              <p className="text-xs text-amber-600 text-center sm:text-left">
+                                Complete profile first
+                              </p>
                             )}
-                          </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -511,6 +644,180 @@ const ProfilePage = () => {
             </div>
           </div>
         )}
+
+        {/* Policy Acceptance Modal */}
+        <Modal
+          open={policyModalOpen}
+          onClose={() => {
+            setPolicyModalOpen(false);
+            setSelectedSeason(null);
+            setPolicyAccepted(false);
+          }}
+          className="flex items-center justify-center p-4"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Season Policy</h2>
+                    <p className="text-blue-100 text-sm">
+                      {selectedSeason?.season.year} -{" "}
+                      {selectedSeason?.season.type}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => {
+                    setPolicyModalOpen(false);
+                    setSelectedSeason(null);
+                    setPolicyAccepted(false);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/10 h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              {/* Policy Document Section */}
+              {selectedSeason?.season?.policyDocument ? (
+                <div className="space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-slate-900">
+                          Season Policy Document
+                        </h3>
+                        <p className="text-sm text-slate-600">
+                          You must view the policy document before accepting the
+                          terms and registering.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* View Policy button in its own row */}
+                  <div className="mt-4">
+                    <Button
+                      onClick={() => {
+                        handleDownloadPolicy(
+                          selectedSeason.season.policyDocument,
+                        );
+                        setViewPolicyClicked(true);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <FileText className="w-4 h-4" />
+                      View Policy
+                    </Button>
+                    {!viewPolicyClicked && (
+                      <div className="mt-2 text-xs text-amber-600">
+                        Please view the policy before continuing
+                      </div>
+                    )}
+                  </div>
+                  {/* Policy Acceptance Checkbox */}
+                  <div className="space-y-4 mt-4">
+                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <input
+                        type="checkbox"
+                        id="policyAccept"
+                        checked={policyAccepted}
+                        onChange={(e) => setPolicyAccepted(e.target.checked)}
+                        disabled={!viewPolicyClicked}
+                        className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      />
+                      <label
+                        htmlFor="policyAccept"
+                        className={`text-sm cursor-pointer ${viewPolicyClicked ? "text-slate-700" : "text-slate-400"}`}
+                      >
+                        I, {studentData.user.name}, Roll No {studentData.rollNo}{" "}
+                        of {studentData.program.course}, hereby agree to abide
+                        by the aforementioned Terms and Conditions and would not
+                        violate them, thus maintaining confidentiality.
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FileText className="w-8 h-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">
+                    No Policy Document
+                  </h3>
+                  <p className="text-slate-600 mb-6">
+                    This season doesn't have a specific policy document. You can
+                    proceed with registration.
+                  </p>
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <input
+                      type="checkbox"
+                      id="generalPolicyAccept"
+                      checked={policyAccepted}
+                      onChange={(e) => setPolicyAccepted(e.target.checked)}
+                      className="mt-1 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="generalPolicyAccept"
+                      className="text-sm text-slate-700 cursor-pointer"
+                    >
+                      I, {studentData.user.name}, Roll No {studentData.rollNo}{" "}
+                      of {studentData.program.course}, hereby agree to abide by
+                      the aforementioned Terms and Conditions and would not
+                      violate them, thus maintaining confidentiality.
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-6 pt-6 border-t border-slate-200">
+                <Button
+                  onClick={() => {
+                    setPolicyModalOpen(false);
+                    setSelectedSeason(null);
+                    setPolicyAccepted(false);
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handlePolicyAccept}
+                  disabled={
+                    !policyAccepted || !viewPolicyClicked || registering
+                  }
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  {registering ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Registering...
+                    </>
+                  ) : (
+                    "Accept & Register"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

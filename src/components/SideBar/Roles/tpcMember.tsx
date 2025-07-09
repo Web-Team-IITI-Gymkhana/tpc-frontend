@@ -337,8 +337,8 @@ const TpcMemberDashboard = () => {
                 </div>
               </div>
             </Link>
-            <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
-              <Link href="/admin/companies">
+            <Link href="/admin/companies">
+              <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
                 <div className="flex justify-start gap-3">
                   <div className="w-5 flex-shrink-0 text-white">
                     <svg
@@ -369,9 +369,9 @@ const TpcMemberDashboard = () => {
                     Companies
                   </motion.div>
                 </div>
-              </Link>
-              {/* <CompanyDropDown userRole={userRole} /> */}
-            </div>
+                {/* <CompanyDropDown userRole={userRole} /> */}
+              </div>
+            </Link>
             <Link href={"/admin/jobs"}>
               <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
                 <div className="flex justify-start gap-3">

@@ -100,7 +100,7 @@ const LogoutButton = () => {
 
   return (
     <div
-      className="hover:bg-slate-600/50 rounded-md mb-[1vh] py-[1vh] px-[1vw]"
+      className="hover:bg-slate-600/50 rounded-md mb-[1vh] py-[1vh] px-[1vw] cursor-pointer"
       onClick={logOut}
     >
       <div className="flex justify-start gap-[1rem]">
