@@ -108,7 +108,7 @@ export default function RecruiterSignup() {
   const [companies, setCompanies] = useState<
     Array<{ id: string; name: string }>
   >([]);
-  const [createCompany, setCreateCompany] = useState(false);
+  const [createCompany, setCreateCompany] = useState(true);
   const [captchaToken, setCaptchaToken] = useState("");
   const [jaf, setJaf] = useState<JAFdetailsFC | null>(null);
   const [loading, setLoading] = useState(false);
@@ -694,7 +694,7 @@ export default function RecruiterSignup() {
           </div>
 
           <div className="flex gap-4">
-            <Button
+            {/* <Button
               variant={!createCompany ? "default" : "outline"}
               onClick={() => {
                 setCreateCompany(false);
@@ -705,7 +705,7 @@ export default function RecruiterSignup() {
               type="button"
             >
               Select Existing Company
-            </Button>
+            </Button> */}
             <Button
               variant={createCompany ? "default" : "outline"}
               onClick={() => {
@@ -720,7 +720,7 @@ export default function RecruiterSignup() {
             </Button>
           </div>
 
-          {!createCompany ? (
+          {/* {!createCompany ? (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
@@ -750,7 +750,8 @@ export default function RecruiterSignup() {
                 )}
               </div>
             </div>
-          ) : (
+          ) : ( */}
+          {createCompany && (
             <div className="space-y-4 pt-4 border-t">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
