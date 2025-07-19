@@ -786,3 +786,31 @@ export const patchStudentData = async (student: any) => {
     body: [student],
   });
 };
+
+// External Opportunities APIs
+export const fetchExternalOpportunities = async (queryParam?: object) => {
+  return apiCall("/external-opportunities", {
+    queryParam,
+  });
+};
+
+export const createExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "POST",
+    body: [opportunity],
+  });
+};
+
+export const updateExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "PATCH",
+    body: [opportunity],
+  });
+};
+
+export const deleteExternalOpportunities = async (ids: string[]) => {
+  return apiCall("/external-opportunities", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
