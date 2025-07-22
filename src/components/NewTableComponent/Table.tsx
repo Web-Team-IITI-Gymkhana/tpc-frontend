@@ -2,7 +2,6 @@
 import {
   MaterialReactTable,
   useMaterialReactTable,
-  createMRTColumnHelper,
   MRT_Row,
   MRT_TableInstance,
   MRT_RowSelectionState,
@@ -10,8 +9,6 @@ import {
 import React, { useState } from "react";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { mkConfig, generateCsv, download } from "export-to-csv";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import copy from "copy-to-clipboard";
 import { Box, Button, MenuItem } from "@mui/material";
 import { Button as UIButton } from "@/components/ui/button";
 import StudentModal from "./StudentModal";
@@ -19,7 +16,6 @@ import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
 import SeasonModal from "./SeasonModal";
 import Link from "next/link";
-import toast from "react-hot-toast";
 
 type TableProps = {
   data: any[];
@@ -44,9 +40,6 @@ const Table: React.FC<TableProps> = ({
   buttonText,
   buttonAction,
 }) => {
-  const [validationErrors, setValidationErrors] = useState<Record<string, any>>(
-    {},
-  );
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [id, setId] = useState<string | null>(null);
@@ -56,35 +49,52 @@ const Table: React.FC<TableProps> = ({
 
   const flattenObject = (obj: any, prefix = ""): Record<string, any> => {
     return Object.keys(obj).reduce((acc, key) => {
-      const pre = prefix.length ? prefix + " " : "";
-      if (typeof obj[key] === "object" && obj[key] !== null) {
-        Object.assign(acc, flattenObject(obj[key], pre + key));
-      } else {
-        acc[pre + key] = obj[key];
+      const pre = prefix.length ? prefix + "." : "";
+      const value = obj[key];
+      if (
+        typeof value === "object" &&
+        value !== null &&
+        !Array.isArray(value) &&
+        !(typeof window !== "undefined" && value && value.$$typeof)
+      ) {
+        Object.assign(acc, flattenObject(value, pre + key));
+      } else if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean" ||
+        value === null ||
+        value === undefined
+      ) {
+        acc[pre + key] = value;
       }
       return acc;
     }, {});
   };
 
-  const flattenData = (data: any[]): any[] => {
-    return data.map((item) => flattenObject(item));
+  const flattenDataForColumns = (data: any[], columns: string[]): any[] => {
+    return data.map((item) => {
+      const flat = flattenObject(item);
+      const filtered: Record<string, any> = {};
+      columns.forEach((col) => {
+        if (flat[col] !== undefined && flat[col] !== null && flat[col] !== "") {
+          filtered[col] = flat[col];
+        }
+      });
+      return filtered;
+    });
   };
 
   const handleExportRows = (rows: MRT_Row<any>[]) => {
     const rowData = rows.map((row) => row.original);
-    const csv = generateCsv(csvConfig)(flattenData(rowData));
+    const visibleColumns = table.getVisibleLeafColumns().map((col) => col.id).filter(Boolean);
+    const csv = generateCsv(csvConfig)(flattenDataForColumns(rowData, visibleColumns));
     download(csvConfig)(csv);
   };
 
   const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(flattenData(data));
+    const visibleColumns = table.getVisibleLeafColumns().map((col) => col.id).filter(Boolean);
+    const csv = generateCsv(csvConfig)(flattenDataForColumns(data, visibleColumns));
     download(csvConfig)(csv);
-  };
-
-  const handleCopyIds = (rows: MRT_Row<any>[]) => {
-    const ids = rows.map((row) => row.original.id).join(", ");
-    copy(ids);
-    toast.success(`Copied IDs`);
   };
 
   const handleOpenModal = () => setIsModalOpen(true);

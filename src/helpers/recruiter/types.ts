@@ -1,26 +1,11 @@
 import { TPCMember } from "@/components/Admin/types";
 import { Program } from "@/dto/StudentDto";
 import { ReactNode } from "react";
+import { StudentDataType } from "../student/types";
 
 export interface ApplicationFC {
   id: string;
-  student: {
-    id: string;
-    rollNo: string;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      contact: string;
-    };
-    program: {
-      id: string;
-      branch: string;
-      course: string;
-      year: string;
-      department: string;
-    };
-  };
+  student: StudentDataType;
   resume: {
     id: string;
     filepath: string;
