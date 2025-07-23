@@ -8,6 +8,7 @@ import {
   addEvent,
   fetchEventById,
   getResumeFile,
+  getResumeFileUrl,
   getStudentSalaryOffers,
   postOnCampusOffer,
   promoteStudent,
@@ -699,13 +700,27 @@ export const Applications = ({
     {
       student: {
         rollNo: "string",
+        category: "string",
+        gender: "string",
+        cpi: "number",
+        backlog: "string",
+        tenthMarks: "number",
+        twelthMarks: "number",
         user: {
           name: "string",
           email: "string",
+          contact: "string",
+        },
+        program: {
+          course: "string",
+          branch: "string",
+          department: "string",
+          year: "string",
         },
       },
       resume: {
         resumeFile: "string",
+        resumeFileUrl: "string",
       },
     },
   ]);
@@ -739,6 +754,7 @@ export const Applications = ({
                   )}
                 </Button>
               ),
+              resumeFileUrl: getResumeFileUrl(application.resume.filepath)
             },
           };
         });
@@ -788,7 +804,6 @@ export const Applications = ({
           type={"application"}
           buttonText={lastEvent.id == eventId ? "Make Offer" : "Promote"}
           buttonAction={(students) => {
-            console.log(students);
             setPromoteStudents(students.map((student) => student.student));
           }}
         />
