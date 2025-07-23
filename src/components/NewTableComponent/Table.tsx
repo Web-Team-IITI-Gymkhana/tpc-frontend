@@ -181,13 +181,6 @@ const Table: React.FC<TableProps> = ({
               Export All Rows
             </Button>
             <Button
-              disabled={table.getRowModel().rows.length === 0}
-              onClick={() => handleExportRows(table.getRowModel().rows)}
-              startIcon={<FileDownloadIcon />}
-            >
-              Export Page Rows
-            </Button>
-            <Button
               disabled={
                 !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
               }
@@ -197,13 +190,36 @@ const Table: React.FC<TableProps> = ({
               Export Selected Rows
             </Button>
             <Button
-              disabled={
-                !table.getIsSomeRowsSelected() && !table.getIsAllRowsSelected()
-              }
-              onClick={() => handleCopyIds(table.getSelectedRowModel().rows)}
-              startIcon={<ContentCopyIcon />}
+              onClick={() => {
+                const allRowIds = table
+                  .getPrePaginationRowModel()
+                  .rows.map((row) => row.id);
+                const isAllSelected =
+                  allRowIds.length === Object.keys(rowSelection).length &&
+                  allRowIds.every((id) => rowSelection[id]);
+                if (isAllSelected) {
+                  // Deselect all
+                  setRowSelection({});
+                } else {
+                  // Select all
+                  const newSelection: Record<string, boolean> = {};
+                  allRowIds.forEach((id) => {
+                    newSelection[id] = true;
+                  });
+                  setRowSelection(newSelection);
+                }
+              }}
+              disabled={table.getPrePaginationRowModel().rows.length === 0}
             >
-              Copy Selected IDs
+              {(() => {
+                const allRowIds = table
+                  .getPrePaginationRowModel()
+                  .rows.map((row) => row.id);
+                const isAllSelected =
+                  allRowIds.length === Object.keys(rowSelection).length &&
+                  allRowIds.every((id) => rowSelection[id]);
+                return isAllSelected ? "Deselect All" : "Select All";
+              })()}
             </Button>
           </>
         )}

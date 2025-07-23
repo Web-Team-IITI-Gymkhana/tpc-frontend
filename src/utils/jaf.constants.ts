@@ -38,9 +38,8 @@ export const CATEGORY_OPTIONS = [
 ];
 
 export const BACKLOG_OPTIONS = [
-  { value: "ACTIVE", label: "Backlogs Not a Concern" },
-  { value: "PREVIOUS", label: "No Active Backlogs" },
-  { value: "NEVER", label: "No Backlogs Ever" },
+  { value: "ACTIVE", label: "Yes" },
+  { value: "PREVIOUS", label: "No" },
 ];
 
 // Placeholder texts

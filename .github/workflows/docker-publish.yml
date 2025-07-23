@@ -31,6 +31,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Copy environment file
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            cp .env.production .env
+          elif [ "${{ github.ref_name }}" = "develop" ]; then
+            cp .env.development .env
+          else
+            echo "Unknown branch: ${{ github.ref_name }}"
+            exit 1
+          fi
+
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5

@@ -31,6 +31,7 @@ const ResumePage = () => {
   const [resumeData, setResumeData] = useState<Resume[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   const fetchResumes = async () => {
     try {
@@ -57,7 +58,7 @@ const ResumePage = () => {
     setName(event.target.value);
   };
 
-  const handleOpenResume = async (filename: string) => {
+  const handleOpenResume = (filename: string) => {
     OpenResume(filename);
   };
 
@@ -83,18 +84,27 @@ const ResumePage = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("resume", file, file.name);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("resume", file, file.name);
 
-    const data = await uploadResume(formData, resumeName);
+      const data = await uploadResume(formData, resumeName);
 
-    if (data) {
-      toast.success("Uploaded Successfully");
-      fetchResumes();
-      setFile(null);
-      setDialogOpen(false);
-    } else {
+      console.log("Upload response:", data);
+
+      if (data.status) {
+        toast.success("Uploaded Successfully");
+        fetchResumes();
+        setFile(null);
+        setDialogOpen(false);
+      } else {
+        toast.error(data.message || "Error uploading file");
+      }
+    } catch (error) {
       toast.error("Error uploading file");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -128,6 +138,9 @@ const ResumePage = () => {
           <>
             <div className="my-4">
               <Separator />
+              <span className="text-sm text-gray-500">
+                You can only upload upto 10 resumes.
+              </span>
             </div>
             <div className="overflow-x-auto bg-white rounded-lg border border-slate-200">
               <Table className="min-w-full">
@@ -238,11 +251,16 @@ const ResumePage = () => {
                   variant="outline"
                   onClick={() => setDialogOpen(false)}
                   className="w-full sm:w-auto"
+                  disabled={uploading}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="w-full sm:w-auto">
-                  Upload Resume
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto"
+                  loading={uploading}
+                >
+                  {uploading ? "Uploading..." : "Upload Resume"}
                 </Button>
               </DialogFooter>
             </form>

@@ -1607,7 +1607,10 @@ const JobDetails = ({
                                                               fontSize: 12,
                                                             }}
                                                           >
-                                                            {branch}
+                                                            {program?.course ===
+                                                            "BTech"
+                                                              ? branch
+                                                              : `${program?.department} - ${branch}`}
                                                           </Checkbox>
                                                         </div>
                                                       );
@@ -1795,7 +1798,7 @@ const JobDetails = ({
                               className="text-xs md:text-sm text-gray-700"
                             >
                               <span className="text-red-500">* </span>
-                              Backlog Policy
+                              Are Students With Backlogs Allowed?
                             </Text>
                           }
                           name={[field.name, "isBacklogAllowed"]}
@@ -1804,9 +1807,7 @@ const JobDetails = ({
                               ? "error"
                               : undefined
                           }
-                          help={getFieldError(
-                            `salaries.${index}.isBacklogAllowed`,
-                          )}
+                          help="Concerns students with uncleared backlogs."
                           className="mb-3 md:mb-4"
                         >
                           <Select
@@ -2441,13 +2442,11 @@ const JobDetails = ({
                                 options={[
                                   {
                                     value: true,
-                                    label:
-                                      "Yes - Accommodation Stipend Provided",
+                                    label: "Yes - Accommodation Provided",
                                   },
                                   {
                                     value: false,
-                                    label:
-                                      "No - Accommodation Stipend Not Provided",
+                                    label: "No - Accommodation Not Provided",
                                   },
                                 ]}
                               />

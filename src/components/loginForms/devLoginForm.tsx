@@ -10,6 +10,7 @@ import { login } from "@/helpers/api";
 const LoginForm = () => {
   const [email, setemail] = useState<string | null>(null);
   const [role, setrole] = useState<string | null>("STUDENT");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   return (
     <>
@@ -55,21 +56,25 @@ const LoginForm = () => {
                   <div className="md:col-span-5 text-right">
                     <div className="items-center flex justify-center flex-col gap-4">
                       <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+                        disabled={loading}
                         onClick={async () => {
                           if (email == null || email.length == 0) {
                             toast.error("Email is required");
                             return;
                           }
+                          setLoading(true);
                           try {
                             await login(email, role);
                           } catch (err) {
                             alert(err);
                             toast.error("Some error occurred");
+                          } finally {
+                            setLoading(false);
                           }
                         }}
                       >
-                        Request Access
+                        {loading ? "Requesting..." : "Request Access"}
                       </button>
                       <div className="flex flex-row gap-4">
                         <LoginWithEmail email={email} />
