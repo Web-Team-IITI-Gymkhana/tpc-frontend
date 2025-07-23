@@ -5,7 +5,7 @@ import { JobEvents } from "@/components/Admin/JobEvents";
 import { fetchJobEvents } from "@/helpers/api";
 import { EventFC } from "@/helpers/recruiter/types";
 import { Button } from "@/components/ui/button";
-import { AddEvent,EditEvent } from "@/components/Admin/JobEvents";
+import { AddEvent, EditEvent } from "@/components/Admin/JobEvents";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 
@@ -20,7 +20,10 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
     const fetchData = async () => {
       try {
         const jsonData = await fetchJobEvents(params.jobId);
-        setData(jsonData);
+        const sortedData = jsonData.sort(
+          (a, b) => a.roundNumber - b.roundNumber,
+        );
+        setData(sortedData);
       } catch (error) {
         toast.error("Some error occured");
       } finally {
@@ -59,15 +62,14 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
           Add Event
         </Button>
         {editEventId && (
-        <Button
-          onClick={() => {
-            setEditEventForm(true);
-          }}
-        >
-          Edit Event
-        </Button>
+          <Button
+            onClick={() => {
+              setEditEventForm(true);
+            }}
+          >
+            Edit Event
+          </Button>
         )}
-
       </div>
       {loading && (
         <div className="w-full flex justify-center">
@@ -76,7 +78,11 @@ const EventsPage = ({ params }: { params: { jobId: string } }) => {
       )}
       {events && (
         <div>
-          <JobEvents editEventID={editEventId} setEditEventId={setEditEventId} events={events} />
+          <JobEvents
+            editEventID={editEventId}
+            setEditEventId={setEditEventId}
+            events={events}
+          />
         </div>
       )}
     </div>
