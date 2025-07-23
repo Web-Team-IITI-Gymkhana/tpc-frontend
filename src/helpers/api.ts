@@ -487,7 +487,7 @@ export const getResumeFile = (fileName: string) => {
 };
 
 export const getResumeFileUrl = (fileName: string) => {
-  return GetFileUrl(fileName, "resumes");
+  return GetFileUrl(fileName, "resume");
 };
 
 export const OpenJD = (fileName: string) => {
