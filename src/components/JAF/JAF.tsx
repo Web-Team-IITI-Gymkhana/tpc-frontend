@@ -1,7 +1,6 @@
 "use client";
-
 import "antd/dist/reset.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Row, Col, Steps, Space, Button, Alert } from "antd";
 import { FormikWizard, RenderProps } from "formik-wizard-form";
 import axios from "axios";
@@ -18,30 +17,42 @@ import {
   recruiterDetailsValidationSchema,
   jobDetailsValidationSchema,
 } from "../../validation/jaf.validation";
-import ReCAPTCHA from "react-google-recaptcha";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const { Step } = Steps;
 
+// Helper function to extract user-friendly error messages
 const getErrorMessages = (errors: any): string[] => {
   const messages: string[] = [];
 
-  if (!errors || typeof errors !== "object") return messages;
+  if (!errors || typeof errors !== "object") {
+    return messages;
+  }
 
   const traverse = (obj: any, path = "") => {
     if (typeof obj === "string") {
+      // Clean up error messages for better user experience
       let cleanMessage = obj;
+
+      // Handle specific error patterns
       if (obj.includes("must be a `number` type")) {
         cleanMessage = "Please enter a valid number";
       } else if (obj.includes("At least one program must be selected")) {
-        cleanMessage = "Please select at least one program in the eligibility criteria";
+        cleanMessage =
+          "Please select at least one program in the eligibility criteria";
       } else if (obj.includes("At least one test must be specified")) {
-        cleanMessage = "Please add at least one test in the selection procedure";
-      } else if (obj.includes("At least one interview round must be specified")) {
-        cleanMessage = "Please add at least one interview round in the selection procedure";
+        cleanMessage =
+          "Please add at least one test in the selection procedure";
+      } else if (
+        obj.includes("At least one interview round must be specified")
+      ) {
+        cleanMessage =
+          "Please add at least one interview round in the selection procedure";
       } else if (obj.includes("At least one salary entry is required")) {
-        cleanMessage = "Please add at least one salary package in compensation details";
+        cleanMessage =
+          "Please add at least one salary package in compensation details";
       }
+
       messages.push(cleanMessage);
     } else if (Array.isArray(obj)) {
       obj.forEach((item, index) => traverse(item, `${path}[${index}]`));
@@ -53,12 +64,15 @@ const getErrorMessages = (errors: any): string[] => {
   };
 
   traverse(errors);
+
+  // Remove duplicates and return
   return [...new Set(messages)];
 };
 
 function JAF() {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -78,89 +92,90 @@ function JAF() {
         key="jaf-form-wizard"
         initialValues={DEFAULT_FORM_VALUES}
         onSubmit={async (values: JAFFormValues) => {
-          // Filter and format recruiters
-          const recruiters = [1, 2, 3]
-            .map((i) => ({
-              name: values[`recName${i}`] || "",
-              designation: values[`designation${i}`] || "",
-              email: values[`email${i}`] || "",
-              contact: values[`phoneNumber${i}`]
-                ? "+91 " + values[`phoneNumber${i}`]
-                : "",
-              landline: values[`landline${i}`] || "",
-            }))
-            .filter(
-              (r) =>
-                r.name.trim() ||
-                r.designation.trim() ||
-                r.email.trim() ||
-                r.contact.trim() ||
-                r.landline.trim(),
-            );
-
-          // Ensure at least primary recruiter is present
-          if (recruiters.length === 0) {
-            toast.error("At least one recruiter contact is required");
-            return;
-          }
-
-          // Assemble payload matching backend DTO structure exactly
-          const payload: JafDto = {
-            job: {
-              seasonId: values.seasonId,
-              role: values.role,
-              description: values.description || undefined,
-              recruiterDetailsFilled: recruiters,
-              attachments: values.attachments?.length
-                ? values.attachments.map((file) =>
-                    typeof file === "string" ? file : file.name,
-                  )
-                : undefined,
-              others: values.jobOthers || undefined,
-              skills: values.skills?.length ? values.skills : undefined,
-              location: values.location,
-              minNoOfHires: values.minNoOfHires
-                ? Number(values.minNoOfHires)
-                : undefined,
-              expectedNoOfHires: values.expectedNoOfHires
-                ? Number(values.expectedNoOfHires)
-                : undefined,
-              offerLetterReleaseDate: values.offerLetterReleaseDate
-                ? new Date(values.offerLetterReleaseDate)
-                : undefined,
-              joiningDate: values.joiningDate
-                ? new Date(values.joiningDate)
-                : undefined,
-              duration: values.duration || undefined,
-              selectionProcedure: {
-                selectionMode: values.selectionMode,
-                shortlistFromResume: values.shortlistFromResume,
-                groupDiscussion: values.groupDiscussion,
-                tests: values.tests || [],
-                interviews: values.interviews || [],
-                others: values.others || undefined,
-                requirements:
-                  values.numberOfMembers ||
-                  values.numberOfRooms ||
-                  values.otherRequirements
-                    ? {
-                        numberOfMembers: values.numberOfMembers
-                          ? Number(values.numberOfMembers)
-                          : undefined,
-                        numberOfRooms: values.numberOfRooms
-                          ? Number(values.numberOfRooms)
-                          : undefined,
-                        otherRequirements:
-                          values.otherRequirements || undefined,
-                      }
-                    : undefined,
-              },
-            },
-            salaries: values.salaries || [],
-          };
-
-          // Submit to backend
+          setIsSubmitting(true);
           try {
+            // Filter and format recruiters
+            const recruiters = [1, 2, 3]
+              .map((i) => ({
+                name: values[`recName${i}`] || "",
+                designation: values[`designation${i}`] || "",
+                email: values[`email${i}`] || "",
+                contact: values[`phoneNumber${i}`]
+                  ? "+91 " + values[`phoneNumber${i}`]
+                  : "",
+                landline: values[`landline${i}`] || "",
+              }))
+              .filter(
+                (r) =>
+                  r.name.trim() ||
+                  r.designation.trim() ||
+                  r.email.trim() ||
+                  r.contact.trim() ||
+                  r.landline.trim(),
+              );
+
+            // Ensure at least primary recruiter is present
+            if (recruiters.length === 0) {
+              toast.error("At least one recruiter contact is required");
+              return;
+            }
+
+            // Assemble payload matching backend DTO structure exactly
+            const payload: JafDto = {
+              job: {
+                seasonId: values.seasonId,
+                role: values.role,
+                description: values.description || undefined,
+                recruiterDetailsFilled: recruiters,
+                attachments: values.attachments?.length
+                  ? values.attachments.map((file) =>
+                      typeof file === "string" ? file : file.name,
+                    )
+                  : undefined,
+                others: values.jobOthers || undefined,
+                skills: values.skills?.length ? values.skills : undefined,
+                location: values.location,
+                minNoOfHires: values.minNoOfHires
+                  ? Number(values.minNoOfHires)
+                  : undefined,
+                expectedNoOfHires: values.expectedNoOfHires
+                  ? Number(values.expectedNoOfHires)
+                  : undefined,
+                offerLetterReleaseDate: values.offerLetterReleaseDate
+                  ? new Date(values.offerLetterReleaseDate)
+                  : undefined,
+                joiningDate: values.joiningDate
+                  ? new Date(values.joiningDate)
+                  : undefined,
+                duration: values.duration || undefined,
+                selectionProcedure: {
+                  selectionMode: values.selectionMode,
+                  shortlistFromResume: values.shortlistFromResume,
+                  groupDiscussion: values.groupDiscussion,
+                  tests: values.tests || [],
+                  interviews: values.interviews || [],
+                  others: values.others || undefined,
+                  requirements:
+                    values.numberOfMembers ||
+                    values.numberOfRooms ||
+                    values.otherRequirements
+                      ? {
+                          numberOfMembers: values.numberOfMembers
+                            ? Number(values.numberOfMembers)
+                            : undefined,
+                          numberOfRooms: values.numberOfRooms
+                            ? Number(values.numberOfRooms)
+                            : undefined,
+                          otherRequirements:
+                            values.otherRequirements || undefined,
+                        }
+                      : undefined,
+                },
+              },
+              salaries: values.salaries || [],
+            };
+
+            // Submit to backend
             await axios.post(`${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`, payload, {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -168,7 +183,10 @@ function JAF() {
               },
             });
 
-            toast.success("JAF Form submitted successfully! Your application has been received.");
+            toast.success(
+              "JAF Form submitted successfully! Your application has been received.",
+            );
+            // Reset form or redirect as needed
             window.location.reload();
           } catch (error: any) {
             console.error("JAF submission error:", error);
@@ -178,6 +196,8 @@ function JAF() {
               error.response?.data?.error ||
               "Failed to submit JAF form. Please try again.";
             toast.error(errorMessage);
+          } finally {
+            setIsSubmitting(false);
           }
         }}
         validateOnNext
@@ -231,7 +251,7 @@ function JAF() {
                   className="w-full max-w-xs flex justify-center"
                 >
                   <Button
-                    disabled={isPrevDisabled}
+                    disabled={isPrevDisabled || isSubmitting}
                     onClick={handlePrev}
                     className="flex-1 min-w-20"
                     size="large"
@@ -239,17 +259,23 @@ function JAF() {
                     Previous
                   </Button>
                   <Button
-                    disabled={isNextDisabled}
+                    disabled={isNextDisabled || isSubmitting}
                     onClick={handleNext}
                     className="flex-1 min-w-20"
                     size="large"
                     type="primary"
+                    loading={isSubmitting && currentStepIndex === 2}
                   >
-                    {currentStepIndex === 2 ? "Finish" : "Next"}
+                    {isSubmitting && currentStepIndex === 2 
+                      ? "Submitting..." 
+                      : currentStepIndex === 2 
+                        ? "Finish" 
+                        : "Next"}
                   </Button>
                 </Space>
               </Row>
 
+              {/* Show validation errors below the finish button */}
               {currentStepIndex === 2 &&
                 isNextDisabled &&
                 errorMessages.length > 0 && (
