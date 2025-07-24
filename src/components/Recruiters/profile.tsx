@@ -197,6 +197,8 @@ const RecruiterProfile = () => {
 
   const handleViewChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setView(e.target.value);
+    // Reset edit mode when switching views
+    setEdit(false);
   };
 
   return (
@@ -242,7 +244,21 @@ const RecruiterProfile = () => {
                   : "Company Information"}
               </h2>
 
+             
+
               <div className="flex items-center gap-4 w-full md:w-auto">
+
+                 {/* Edit Button - Only show for personal profile */}
+              {!edit && view === "PROFILE" && (
+                <Button
+                  onClick={() => setEdit(!edit)}
+                  className="bg-slate-700 hover:bg-slate-800 text-white text-sm px-3 md:px-4"
+                >
+                  <Edit3 className="w-4 h-4 mr-1 md:mr-2" />
+                  <span className="hidden sm:inline">Edit</span>
+                </Button>
+              )}
+              
                 {/* View Toggle */}
                 <div className="flex bg-slate-200 rounded-xl p-1 flex-1 md:flex-initial">
                   <label className="flex items-center cursor-pointer flex-1 md:flex-initial">
@@ -285,17 +301,6 @@ const RecruiterProfile = () => {
                     </span>
                   </label>
                 </div>
-
-                {/* Edit Button */}
-                {!edit && (
-                  <Button
-                    onClick={() => setEdit(!edit)}
-                    className="bg-slate-700 hover:bg-slate-800 text-white text-sm px-3 md:px-4"
-                  >
-                    <Edit3 className="w-4 h-4 mr-1 md:mr-2" />
-                    <span className="hidden sm:inline">Edit</span>
-                  </Button>
-                )}
               </div>
             </div>
           </div>
@@ -310,8 +315,6 @@ const RecruiterProfile = () => {
             ) : (
               <ProfileDetails profile={data} />
             )
-          ) : edit ? (
-            <EditCompanyForm profile={data} />
           ) : (
             <CompanyProfileCard profile={data} />
           )}

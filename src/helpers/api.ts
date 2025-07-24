@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import { ResumePatchData } from "./types";
+import type { DTO as StudentDTO } from "@/dto/StudentDto";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -122,6 +123,56 @@ export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
       window.open(fileUrl);
     })
     .catch((error) => toast.error("Error fetching data"));
+};
+
+export const GetFileUrl = (filePath: string, subFolder: string) => {
+  try {
+    if (!filePath) {
+      toast.error("Invalid file path");
+      return;
+    }
+
+    let baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (baseUrl) {
+      // Remove /api/v1 from the backend URL to get the base server URL
+      baseUrl = baseUrl.replace("/api/v1", "");
+    } else {
+      // Fallback to current origin
+      baseUrl = window.location.origin;
+    }
+
+    const fileUrl = `${baseUrl}/uploads/${subFolder}/${filePath}`;
+
+    return fileUrl;
+  } catch (error) {
+    console.error("Error generating file URL:", error);
+    toast.error("Failed to generate file URL");
+  }
+};
+
+export const OpenFileViaUploads = (filePath: string, subFolder: string) => {
+  try {
+    const fileUrl = GetFileUrl(filePath, subFolder);
+    if (!fileUrl) {
+      toast.error("Failed to generate file URL");
+      return;
+    }
+
+    const newWindow = window.open(fileUrl, "_blank");
+
+    // Check if the window was blocked
+    if (
+      !newWindow ||
+      newWindow.closed ||
+      typeof newWindow.closed == "undefined"
+    ) {
+      toast.error("Popup blocked. Please allow popups for this site.");
+    }
+  } catch (error) {
+    console.error("Error opening file:", error);
+    toast.error("Failed to open file");
+  }
 };
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
@@ -392,10 +443,26 @@ export const addEvent = async (body: any) => {
 };
 
 export const addSeason = async (body: any) => {
-  return apiCall(`/seasons`, {
-    method: "POST",
-    body: body,
-  });
+  // Check if body is FormData (for file uploads)
+  if (body instanceof FormData) {
+    return apiCall(`/seasons`, {
+      method: "POST",
+      formData: body,
+    });
+  } else {
+    return apiCall(`/seasons`, {
+      method: "POST",
+      body: body,
+    });
+  }
+};
+
+export const getSeasonPolicyDocument = (fileName: string) => {
+  OpenFileViaUploads(fileName, "policy");
+};
+
+export const getSeasonPolicyDocumentAdmin = (fileName: string) => {
+  OpenFileViaUploads(fileName, "policy");
 };
 
 export const promoteStudent = async (body: any, eventId: string) => {
@@ -415,12 +482,16 @@ export const fetchResumes = async () => {
   return apiCall("/resumes");
 };
 
-export const getResumeFile = async (fileName: string) => {
-  OpenFile(`/resumes/file/${fileName}`);
+export const getResumeFile = (fileName: string) => {
+  OpenFileViaUploads(fileName, "resume");
 };
 
-export const OpenJD = async (fileName: string) => {
-  OpenFile(`/jobs/jd/${fileName}`);
+export const getResumeFileUrl = (fileName: string) => {
+  return GetFileUrl(fileName, "resume");
+};
+
+export const OpenJD = (fileName: string) => {
+  OpenFileViaUploads(fileName, "jd");
 };
 
 export const patchResumeVerify = async (changes: ResumePatchData[]) => {
@@ -724,5 +795,41 @@ export const postPrograms = async (
   return apiCall("/programs", {
     method: "POST",
     body: programs,
+  });
+};
+
+export const patchStudentData = async (student: any) => {
+  // Accepts a single student object, wraps in array for PATCH
+  return apiCall("/students", {
+    method: "PATCH",
+    body: [student],
+  });
+};
+
+// External Opportunities APIs
+export const fetchExternalOpportunities = async (queryParam?: object) => {
+  return apiCall("/external-opportunities", {
+    queryParam,
+  });
+};
+
+export const createExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "POST",
+    body: [opportunity],
+  });
+};
+
+export const updateExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "PATCH",
+    body: [opportunity],
+  });
+};
+
+export const deleteExternalOpportunities = async (ids: string[]) => {
+  return apiCall("/external-opportunities", {
+    method: "DELETE",
+    queryParam: { id: ids },
   });
 };

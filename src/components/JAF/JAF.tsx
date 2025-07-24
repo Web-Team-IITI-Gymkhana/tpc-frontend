@@ -59,9 +59,6 @@ const getErrorMessages = (errors: any): string[] => {
 function JAF() {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
-  const [captchaToken, setCaptchaToken] = useState("");
-  const [showCaptcha, setShowCaptcha] = useState(false);
-  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -77,23 +74,19 @@ function JAF() {
   }
 
   return (
-    <div className="flex flex-col w-full gap-8 md:gap-20 p-2 md:p-10">
-      <FormikWizard
+    <div className="flex flex-col w-full gap-8 md:gap-20 p-2 md:p-10">      <FormikWizard
         key="jaf-form-wizard"
         initialValues={DEFAULT_FORM_VALUES}
         onSubmit={async (values: JAFFormValues) => {
-          if (!captchaToken) {
-            setShowCaptcha(true);
-            toast.error("Please complete the CAPTCHA to submit.");
-            return;
-          }
-
+          // Filter and format recruiters
           const recruiters = [1, 2, 3]
             .map((i) => ({
               name: values[`recName${i}`] || "",
               designation: values[`designation${i}`] || "",
               email: values[`email${i}`] || "",
-              contact: values[`phoneNumber${i}`] ? "+91 " + values[`phoneNumber${i}`] : "",
+              contact: values[`phoneNumber${i}`]
+                ? "+91 " + values[`phoneNumber${i}`]
+                : "",
               landline: values[`landline${i}`] || "",
             }))
             .filter(
@@ -105,11 +98,14 @@ function JAF() {
                 r.landline.trim(),
             );
 
+          // Ensure at least primary recruiter is present
           if (recruiters.length === 0) {
             toast.error("At least one recruiter contact is required");
             return;
           }
-          const payload: JafDto & { captchaToken: string } = {
+
+          // Assemble payload matching backend DTO structure exactly
+          const payload: JafDto = {
             job: {
               seasonId: values.seasonId,
               role: values.role,
@@ -161,9 +157,9 @@ function JAF() {
               },
             },
             salaries: values.salaries || [],
-            captchaToken: captchaToken, 
           };
 
+          // Submit to backend
           try {
             await axios.post(`${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`, payload, {
               headers: {
@@ -181,12 +177,7 @@ function JAF() {
               error.response?.data?.message ||
               error.response?.data?.error ||
               "Failed to submit JAF form. Please try again.";
-
             toast.error(errorMessage);
-          } finally {
-            setCaptchaToken("");
-            setShowCaptcha(false);
-            recaptchaRef.current?.reset();
           }
         }}
         validateOnNext
@@ -234,60 +225,30 @@ function JAF() {
 
               {renderComponent()}
 
-              {currentStepIndex === 2 ? (
-                <Row justify="center" className="pt-6">
-                  <div className="flex flex-col items-center gap-4">
-                    {showCaptcha && (
-                      <ReCAPTCHA
-                        ref={recaptchaRef}
-                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                        onChange={(token) => setCaptchaToken(token || "")}
-                      />
-                    )}
-                    <div className="flex gap-2">
-                      <Button
-                        disabled={isPrevDisabled}
-                        onClick={handlePrev}
-                        className="min-w-20"
-                        size="large"
-                      >
-                        Previous
-                      </Button>
-                      <Button
-                        disabled={isNextDisabled}
-                        onClick={handleNext}
-                        className="min-w-20"
-                        size="large"
-                        type="primary"
-                      >
-                        Finish
-                      </Button>
-                    </div>
-                  </div>
-                </Row>
-              ) : (
-                <Row justify="center" className="px-2 md:px-0">
-                  <Space size="large" className="w-full max-w-xs flex justify-center">
-                    <Button
-                      disabled={isPrevDisabled}
-                      onClick={handlePrev}
-                      className="flex-1 min-w-20"
-                      size="large"
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      disabled={isNextDisabled}
-                      onClick={handleNext}
-                      className="flex-1 min-w-20"
-                      size="large"
-                      type="primary"
-                    >
-                      Next
-                    </Button>
-                  </Space>
-                </Row>
-              )}
+              <Row justify="center" className="px-2 md:px-0">
+                <Space
+                  size="large"
+                  className="w-full max-w-xs flex justify-center"
+                >
+                  <Button
+                    disabled={isPrevDisabled}
+                    onClick={handlePrev}
+                    className="flex-1 min-w-20"
+                    size="large"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    disabled={isNextDisabled}
+                    onClick={handleNext}
+                    className="flex-1 min-w-20"
+                    size="large"
+                    type="primary"
+                  >
+                    {currentStepIndex === 2 ? "Finish" : "Next"}
+                  </Button>
+                </Space>
+              </Row>
 
               {currentStepIndex === 2 &&
                 isNextDisabled &&
