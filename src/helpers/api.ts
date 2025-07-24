@@ -125,7 +125,7 @@ export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
     .catch((error) => toast.error("Error fetching data"));
 };
 
-export const OpenFileViaUploads = (filePath: string, subFolder: string) => {
+export const GetFileUrl = (filePath: string, subFolder: string) => {
   try {
     if (!filePath) {
       toast.error("Invalid file path");
@@ -143,6 +143,21 @@ export const OpenFileViaUploads = (filePath: string, subFolder: string) => {
     }
 
     const fileUrl = `${baseUrl}/uploads/${subFolder}/${filePath}`;
+
+    return fileUrl;
+  } catch (error) {
+    console.error("Error generating file URL:", error);
+    toast.error("Failed to generate file URL");
+  }
+};
+
+export const OpenFileViaUploads = (filePath: string, subFolder: string) => {
+  try {
+    const fileUrl = GetFileUrl(filePath, subFolder);
+    if (!fileUrl) {
+      toast.error("Failed to generate file URL");
+      return;
+    }
 
     const newWindow = window.open(fileUrl, "_blank");
 
@@ -471,6 +486,10 @@ export const getResumeFile = (fileName: string) => {
   OpenFileViaUploads(fileName, "resume");
 };
 
+export const getResumeFileUrl = (fileName: string) => {
+  return GetFileUrl(fileName, "resume");
+};
+
 export const OpenJD = (fileName: string) => {
   OpenFileViaUploads(fileName, "jd");
 };
@@ -784,5 +803,33 @@ export const patchStudentData = async (student: any) => {
   return apiCall("/students", {
     method: "PATCH",
     body: [student],
+  });
+};
+
+// External Opportunities APIs
+export const fetchExternalOpportunities = async (queryParam?: object) => {
+  return apiCall("/external-opportunities", {
+    queryParam,
+  });
+};
+
+export const createExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "POST",
+    body: [opportunity],
+  });
+};
+
+export const updateExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "PATCH",
+    body: [opportunity],
+  });
+};
+
+export const deleteExternalOpportunities = async (ids: string[]) => {
+  return apiCall("/external-opportunities", {
+    method: "DELETE",
+    queryParam: { id: ids },
   });
 };

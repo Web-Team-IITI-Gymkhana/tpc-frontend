@@ -335,6 +335,39 @@ const AdminDashboard = () => {
             {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
           </div>
         </Link>
+        <Link href={"/admin/external-opportunities"}>
+          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
+            <div className="flex justify-start gap-3">
+              <div className="w-5 flex-shrink-0 text-white">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-white"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <motion.div
+                initial={{ opacity: 1 }}
+                animate={context.isOpen ? "open" : "closed"}
+                transition={{ duration: 0.1 }}
+                variants={{
+                  closed: { opacity: 0 },
+                  open: { opacity: 1 },
+                }}
+                className="flex-1 text-white"
+              >
+                External Opportunities
+              </motion.div>
+            </div>
+          </div>
+        </Link>
         <Link href={"/events"}>
           <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 cursor-pointer text-white">
             <div className="flex justify-start gap-3">
