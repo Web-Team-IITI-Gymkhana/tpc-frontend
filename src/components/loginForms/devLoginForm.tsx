@@ -47,7 +47,7 @@ const LoginForm = () => {
                         <option>Student</option>
                         <option>Faculty</option>
                         <option>Recruiter</option>
-                        <option>Manager</option>
+                        <option>TPC_Member</option>
                         <option>Admin</option>
                       </select>
                     </div>
