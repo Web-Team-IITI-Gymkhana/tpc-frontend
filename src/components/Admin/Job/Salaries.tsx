@@ -37,7 +37,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "baseSalary")}
                 />
               ) : (
-                <div>{salary.baseSalary}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.baseSalary}
+                </div>
               )}
             </div>
 
@@ -51,7 +53,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "totalCTC")}
                 />
               ) : (
-                <div>{salary.totalCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.totalCTC}
+                </div>
               )}
             </div>
 
@@ -65,7 +69,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "takeHomeSalary")}
                 />
               ) : (
-                <div>{salary.takeHomeSalary}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.takeHomeSalary}
+                </div>
               )}
             </div>
 
@@ -79,7 +85,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "grossSalary")}
                 />
               ) : (
-                <div>{salary.grossSalary}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.grossSalary}
+                </div>
               )}
             </div>
 
@@ -93,7 +101,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "joiningBonus")}
                 />
               ) : (
-                <div>{salary.joiningBonus}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.joiningBonus}
+                </div>
               )}
             </div>
 
@@ -107,7 +117,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "performanceBonus")}
                 />
               ) : (
-                <div>{salary.performanceBonus}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.performanceBonus}
+                </div>
               )}
             </div>
 
@@ -121,7 +133,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "relocation")}
                 />
               ) : (
-                <div>{salary.relocation}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.relocation}
+                </div>
               )}
             </div>
 
@@ -135,7 +149,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "bondAmount")}
                 />
               ) : (
-                <div>{salary.bondAmount}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.bondAmount}
+                </div>
               )}
             </div>
 
@@ -149,7 +165,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "esopAmount")}
                 />
               ) : (
-                <div>{salary.esopAmount}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.esopAmount}
+                </div>
               )}
             </div>
 
@@ -177,7 +195,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "firstYearCTC")}
                 />
               ) : (
-                <div>{salary.firstYearCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.firstYearCTC}
+                </div>
               )}
             </div>
 
@@ -191,7 +211,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "retentionBonus")}
                 />
               ) : (
-                <div>{salary.retentionBonus}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.retentionBonus}
+                </div>
               )}
             </div>
 
@@ -205,7 +227,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "deductions")}
                 />
               ) : (
-                <div>{salary.deductions}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.deductions}
+                </div>
               )}
             </div>
 
@@ -219,7 +243,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "medicalAllowance")}
                 />
               ) : (
-                <div>{salary.medicalAllowance}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.medicalAllowance}
+                </div>
               )}
             </div>
 
@@ -247,7 +273,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "foreignCurrencyCTC")}
                 />
               ) : (
-                <div>{salary.foreignCurrencyCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.foreignCurrencyCTC}
+                </div>
               )}
             </div>
 
@@ -277,7 +305,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "otherCompensations")}
                 />
               ) : (
-                <div>{salary.otherCompensations}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.otherCompensations}
+                </div>
               )}
             </div>
 
@@ -321,7 +351,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "stipend")}
                 />
               ) : (
-                <div>{salary.stipend}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.stipend}
+                </div>
               )}
             </div>
 
@@ -337,7 +369,9 @@ const Salaries = ({
                   }
                 />
               ) : (
-                <div>{salary.foreignCurrencyStipend}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.foreignCurrencyStipend}
+                </div>
               )}
             </div>
 
@@ -396,7 +430,10 @@ const Salaries = ({
             </div>
 
             <div>
-              <div className="font-semibold my-2"> Tentative CTC for PPO Select</div>
+              <div className="font-semibold my-2">
+                {" "}
+                Tentative CTC for PPO Select
+              </div>
               {editMode ? (
                 <input
                   type="text"
@@ -405,7 +442,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "tentativeCTC")}
                 />
               ) : (
-                <div>{salary.tentativeCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.tentativeCTC}
+                </div>
               )}
             </div>
           </div>
@@ -500,6 +539,24 @@ const Salaries = ({
                 All categories eligible
               </div>
             )}
+          </div>
+        </div>
+        <div>
+          <h2 className="text-md font-semibold mt-4">
+            Are Students with Backlogs Allowed?
+          </h2>
+          <div className="flex flex-wrap items-center mt-2">
+            <div className="mx-2 my-2">
+              <span
+                className={`inline-block border-2 p-2 px-6 rounded-full font-semibold shadow-sm transition-colors duration-200 ${
+                  salary.isBacklogAllowed
+                    ? "bg-green-50 border-green-400 text-green-700"
+                    : "bg-red-50 border-red-400 text-red-700"
+                }`}
+              >
+                {salary.isBacklogAllowed === "ACTIVE" ? "Yes" : "No"}
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex justify-between mt-2 mb-4">
