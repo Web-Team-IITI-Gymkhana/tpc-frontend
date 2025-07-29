@@ -24,6 +24,7 @@ import Select from "react-select";
 import Salaries from "@/components/Admin/Job/Salaries";
 import SelectionProcedure from "@/components/Admin/Job/SelectionProcedure";
 import Clashes from "@/components/Admin/Job/Clashes";
+import JobAnalytics from "@/components/Admin/Job/JobAnalytics";
 import { ClashesFC } from "@/dto/Clashes";
 const currentStatusOptions = [
   "INITIALIZED",
@@ -700,6 +701,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             setFacultyDropdown={setFacultyDropdown}
             loading={loading}
           />
+          {job && <JobAnalytics jobId={job.id} />}
           {clashes ? <Clashes clashes={clashes} /> : <Loader />}
         </div>
       )}
