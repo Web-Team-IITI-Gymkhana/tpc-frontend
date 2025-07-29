@@ -26,6 +26,7 @@ import {
   getResumeFile,
   patchResumeVerify,
   patchStudentData,
+  fetchStudentOffers,
 } from "@/helpers/api";
 
 import toast from "react-hot-toast";
@@ -94,6 +95,7 @@ export default function StudentModal({ open, setOpen, id }) {
   const [studentData, setStudentData] = useState(null);
   const [registrationData, setRegistrationData] = useState(null);
   const [activeSeasons, setActiveSeasons] = useState(null);
+  const [offers, setOffers] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -167,11 +169,24 @@ export default function StudentModal({ open, setOpen, id }) {
     }
   };
 
+  const fetchOffersData = async (studentId: any) => {
+    setLoading(true);
+    try {
+      const data = await fetchStudentOffers(studentId);
+      setOffers(data);
+    } catch (error) {
+      toast.error("Error fetching offers data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (open && id) {
       fetchStudentData(id);
       fetchRegistrationData(id);
       fetchActiveSeasonsData(id);
+      fetchOffersData(id);
       setEditMode(false);
       setEditData(null);
     }
@@ -1110,6 +1125,91 @@ export default function StudentModal({ open, setOpen, id }) {
                               </TableRow>
                             ))
                           : "N/A"}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Typography
+                    variant="h5"
+                    component="h3"
+                    gutterBottom
+                    sx={{ mt: 2, mb: 2 }}
+                  >
+                    Offers
+                  </Typography>
+                  <TableContainer
+                    component={Paper}
+                    elevation={3}
+                    sx={{ mb: 2 }}
+                  >
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Company
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Role
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Package (CTC)
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Status
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {offers && offers.length > 0 ? (
+                          offers.map((offer) => (
+                            <TableRow key={offer.id}>
+                              <TableCell>
+                                {offer.salary?.job?.company?.name || "N/A"}
+                              </TableCell>
+                              <TableCell>
+                                {offer.salary?.job?.role || "N/A"}
+                              </TableCell>
+                              <TableCell>
+                                ₹
+                                {offer.salary?.totalCTC?.toLocaleString() ||
+                                  "N/A"}
+                              </TableCell>
+                              <TableCell>
+                                <span
+                                  style={{
+                                    padding: "4px 8px",
+                                    borderRadius: "4px",
+                                    fontSize: "12px",
+                                    fontWeight: "bold",
+                                    backgroundColor:
+                                      offer.status === "ACCEPTED"
+                                        ? "#d4edda"
+                                        : offer.status === "PENDING"
+                                          ? "#fff3cd"
+                                          : offer.status === "REJECTED"
+                                            ? "#f8d7da"
+                                            : "#e2e3e5",
+                                    color:
+                                      offer.status === "ACCEPTED"
+                                        ? "#155724"
+                                        : offer.status === "PENDING"
+                                          ? "#856404"
+                                          : offer.status === "REJECTED"
+                                            ? "#721c24"
+                                            : "#383d41",
+                                  }}
+                                >
+                                  {offer.status}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={4} align="center">
+                              No offers available
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </TableContainer>

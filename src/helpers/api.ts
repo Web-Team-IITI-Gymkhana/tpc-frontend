@@ -508,6 +508,22 @@ export const getStudentSalaryOffers = async (
   return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
 };
 
+export const fetchStudentOffers = async (studentId: string) => {
+  return apiCall(`/on-campus-offers`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          student: {
+            id: {
+              eq: [studentId],
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
 export const postOnCampusOffer = async (
   body: {
     salaryId: string;
