@@ -524,6 +524,10 @@ export const fetchStudentOffers = async (studentId: string) => {
   });
 };
 
+export const fetchJobOffers = async (jobId: string) => {
+  return apiCall(`/on-campus-offers/job/${jobId}`);
+};
+
 export const postOnCampusOffer = async (
   body: {
     salaryId: string;
