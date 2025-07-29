@@ -551,6 +551,47 @@ const TpcMemberDashboard = () => {
                 {/* <SessionDropDown AllSeasons={AllSeasons} /> */}
               </div>
             </Link>
+            <Link href={"/admin/oncampus-offers"}>
+              <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
+                <div className="flex justify-start gap-3">
+                  <div className="w-5 flex-shrink-0 text-white">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-white"
+                    >
+                      <path
+                        d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M19 15L18.09 19.26L12 20L18.09 20.74L19 25L19.91 20.74L26 20L19.91 19.26L19 15Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M5 15L4.09 19.26L-2 20L4.09 20.74L5 25L5.91 20.74L12 20L5.91 19.26L5 15Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={context.isOpen ? "open" : "closed"}
+                    transition={{ duration: 0.1 }}
+                    variants={{
+                      closed: { opacity: 0 },
+                      open: { opacity: 1 },
+                    }}
+                    className={`${context.isOpen ? "visible" : "hidden"} flex-1 text-white`}
+                  >
+                    On Campus Offers
+                  </motion.div>
+                </div>
+              </div>
+            </Link>
             <Link href={"/admin/dashboard"}>
               <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 cursor-pointer text-white">
                 <div className="flex justify-start gap-3">
