@@ -274,6 +274,7 @@ function JAF() {
                         className="min-w-20"
                         size="large"
                         type="primary"
+                        loading={isSubmitting && currentStepIndex === 2}
                       >
                         Finish
                       </Button>
