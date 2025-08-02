@@ -91,6 +91,10 @@ function JAF() {
     );
   }
 
+  function setIsSubmitting(arg0: boolean) {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="flex flex-col w-full gap-8 md:gap-20 p-2 md:p-10">
       <FormikWizard
@@ -199,6 +203,7 @@ function JAF() {
 
             toast.error(errorMessage);
           } finally {
+            setIsSubmitting(false);
             setCaptchaToken("");
             setShowCaptcha(false);
             recaptchaRef.current?.reset();
@@ -229,6 +234,7 @@ function JAF() {
           isNextDisabled,
           isPrevDisabled,
           errors,
+          isSubmitting,
         }: RenderProps) => {
           const errorMessages = getErrorMessages(errors);
 
@@ -261,7 +267,7 @@ function JAF() {
                     )}
                     <div className="flex gap-2">
                       <Button
-                        disabled={isPrevDisabled}
+                        disabled={isPrevDisabled || isSubmitting}
                         onClick={handlePrev}
                         className="min-w-20"
                         size="large"
@@ -269,7 +275,7 @@ function JAF() {
                         Previous
                       </Button>
                       <Button
-                        disabled={isNextDisabled}
+                        disabled={isPrevDisabled || isSubmitting}
                         onClick={handleNext}
                         className="min-w-20"
                         size="large"
