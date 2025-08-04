@@ -23,6 +23,7 @@ import {
   Typography,
   Alert,
   Divider,
+  Switch,
 } from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -1691,23 +1692,69 @@ const JobDetails = ({
                               strong
                               className="text-xs md:text-sm text-gray-700"
                             >
-                              Minimum CPI Required
+                              Is there a minimum CPI criterion?
                             </Text>
                           }
-                          name={[field.name, "minCPI"]}
-                          help="Enter minimum CPI requirement (leave empty if no minimum)"
+                          name={[field.name, "hasCpiCriterion"]}
+                          initialValue={false}
+                          valuePropName="checked"
                           className="mb-3 md:mb-4"
                         >
-                          <Input
-                            placeholder={PLACEHOLDERS.MIN_CPI}
-                            type="number"
-                            min={0}
-                            max={FIELD_LIMITS.CPI_MAX}
-                            step={0.1}
-                            className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
+                          <Switch
+                            checkedChildren="Yes"
+                            unCheckedChildren="No"
+                            onChange={(checked) => {
+                              form.setFieldValue(
+                                ["salaries", index, "hasCpiCriterion"],
+                                checked,
+                              );
+                              if (!checked) {
+                                form.setFieldValue(
+                                  ["salaries", index, "minCPI"],
+                                  undefined,
+                                );
+                              }
+                            }}
                           />
                         </Form.Item>
                       </Col>
+                      {form.getFieldValue([
+                        "salaries",
+                        index,
+                        "hasCpiCriterion",
+                      ]) && (
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            label={
+                              <Text
+                                strong
+                                className="text-xs md:text-sm text-gray-700"
+                              >
+                                Minimum CPI Required
+                              </Text>
+                            }
+                            name={[field.name, "minCPI"]}
+                            help="Enter minimum CPI requirement"
+                            className="mb-3 md:mb-4"
+                            rules={[
+                              {
+                                required: true,
+                                message:
+                                  "Please enter minimum CPI if criterion is enabled",
+                              },
+                            ]}
+                          >
+                            <Input
+                              placeholder={PLACEHOLDERS.MIN_CPI}
+                              type="number"
+                              min={0}
+                              max={FIELD_LIMITS.CPI_MAX}
+                              step={0.1}
+                              className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
+                            />
+                          </Form.Item>
+                        </Col>
+                      )}
 
                       <Col xs={24} md={12}>
                         <Form.Item
