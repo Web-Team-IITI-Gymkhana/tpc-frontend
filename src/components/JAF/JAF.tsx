@@ -73,10 +73,10 @@ const getErrorMessages = (errors: any): string[] => {
 function JAF() {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
-    const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [showCaptcha, setShowCaptcha] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA | null>(null);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -199,6 +199,7 @@ function JAF() {
 
             toast.error(errorMessage);
           } finally {
+            setIsSubmitting(false);
             setCaptchaToken("");
             setShowCaptcha(false);
             recaptchaRef.current?.reset();
@@ -229,6 +230,7 @@ function JAF() {
           isNextDisabled,
           isPrevDisabled,
           errors,
+          isSubmitting,
         }: RenderProps) => {
           const errorMessages = getErrorMessages(errors);
 
@@ -261,7 +263,7 @@ function JAF() {
                     )}
                     <div className="flex gap-2">
                       <Button
-                        disabled={isPrevDisabled}
+                        disabled={isPrevDisabled || isSubmitting}
                         onClick={handlePrev}
                         className="min-w-20"
                         size="large"
@@ -269,11 +271,12 @@ function JAF() {
                         Previous
                       </Button>
                       <Button
-                        disabled={isNextDisabled}
+                        disabled={isPrevDisabled || isSubmitting}
                         onClick={handleNext}
                         className="min-w-20"
                         size="large"
                         type="primary"
+                        loading={isSubmitting && currentStepIndex === 2}
                       >
                         Finish
                       </Button>
