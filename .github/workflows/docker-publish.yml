@@ -34,9 +34,9 @@ jobs:
       - name: Copy environment file
         run: |
           if [ "${{ github.ref_name }}" = "main" ]; then
-            cp .env.production .env
+            cp .env.production .env.production.local
           elif [ "${{ github.ref_name }}" = "develop" ]; then
-            cp .env.development .env
+            cp .env.development .env.production.local
           else
             echo "Unknown branch: ${{ github.ref_name }}"
             exit 1
