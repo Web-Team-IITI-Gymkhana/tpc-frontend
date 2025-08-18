@@ -84,8 +84,14 @@ const StudentPage = () => {
         },
       }));
       await addStudents(payload);
-      toast.success("Students added successfully");
+      toast.success(
+        `Successfully imported ${data.length} student${data.length > 1 ? "s" : ""}`,
+      );
       setImportOpen(false);
+
+      // Refresh student data
+      const updatedData = await fetchStudentData();
+      setStudents(updatedData);
     } catch (e) {
       toast.error("Failed to add students");
     }
@@ -94,7 +100,47 @@ const StudentPage = () => {
 
   const parseStudentRow = (row: any) => {
     if (!row.rollNo || !row.name || !row.email) return null;
-    return row;
+
+    // Convert enum fields to uppercase for backend compatibility
+    const category = row.category?.toUpperCase();
+    const gender = row.gender?.toUpperCase();
+
+    // Validate enum values
+    const validCategories = [
+      "GENERAL",
+      "OBC",
+      "SC",
+      "ST",
+      "EWS",
+      "GENERAL_PWD",
+      "OBC_PWD",
+      "SC_PWD",
+      "ST_PWD",
+      "EWS_PWD",
+    ];
+    const validGenders = ["MALE", "FEMALE", "OTHER"];
+
+    if (category && !validCategories.includes(category)) {
+      console.warn(`Invalid category: ${category} for student ${row.rollNo}`);
+      return null;
+    }
+
+    if (gender && !validGenders.includes(gender)) {
+      console.warn(`Invalid gender: ${gender} for student ${row.rollNo}`);
+      return null;
+    }
+
+    const processedRow = {
+      rollNo: row.rollNo,
+      category: category,
+      gender: gender,
+      cpi: row.cpi,
+      name: row.name,
+      email: row.email,
+      contact: row.contact,
+    };
+
+    return processedRow;
   };
 
   const handleBulkAction = (rows: DTO[]) => {
@@ -175,6 +221,7 @@ const StudentPage = () => {
         templateFileName="students_template.csv"
         parseRow={parseStudentRow}
         entityName="students"
+        cleanData={true}
       />
       <div>
         {students.length > 0 && (

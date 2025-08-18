@@ -13,6 +13,7 @@ interface CSVImportModalProps<T> {
   templateFileName: string;
   parseRow: (row: any) => T | null;
   entityName?: string;
+  cleanData?: boolean; // Option to automatically clean string data
 }
 
 export function CSVImportModal<T>({
@@ -23,9 +24,11 @@ export function CSVImportModal<T>({
   templateFileName,
   parseRow,
   entityName = "data",
+  cleanData = false,
 }: CSVImportModalProps<T>) {
   const [parsedData, setParsedData] = useState<T[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDownloadTemplate = () => {
@@ -41,6 +44,7 @@ export function CSVImportModal<T>({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null);
+    setWarnings([]);
     const file = e.target.files?.[0];
     if (!file) return;
     Papa.parse(file, {
@@ -48,11 +52,43 @@ export function CSVImportModal<T>({
       skipEmptyLines: true,
       complete: (results) => {
         const rows = results.data as any[];
-        const parsed = rows.map(parseRow).filter(Boolean) as T[];
+
+        // Clean data if enabled
+        const cleanedRows = cleanData
+          ? rows.map((row) => {
+              const cleaned: any = {};
+              Object.keys(row).forEach((key) => {
+                const value = row[key];
+                if (typeof value === "string") {
+                  cleaned[key] = value.trim();
+                } else {
+                  cleaned[key] = value;
+                }
+              });
+              return cleaned;
+            })
+          : rows;
+
+        const warnings: string[] = [];
+        const parsed = cleanedRows
+          .map((row, index) => {
+            const parsedRow = parseRow(row);
+            if (!parsedRow && row.rollNo) {
+              warnings.push(
+                `Row ${index + 1}: Invalid data for student ${row.rollNo}`,
+              );
+            }
+            return parsedRow;
+          })
+          .filter(Boolean) as T[];
+
         if (parsed.length === 0) {
           setError("No valid rows found.");
         } else {
           setParsedData(parsed);
+          if (warnings.length > 0) {
+            setWarnings(warnings);
+          }
         }
       },
       error: (err) => setError(err.message),
@@ -63,8 +99,18 @@ export function CSVImportModal<T>({
     if (parsedData) onSubmit(parsedData);
   };
 
+  const handleClose = () => {
+    setParsedData(null);
+    setError(null);
+    setWarnings([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] max-w-[80vw] overflow-y-auto">
         <DialogTitle className="text-black">
           Import {entityName} from CSV
@@ -85,6 +131,16 @@ export function CSVImportModal<T>({
             className="text-black"
           />
           {error && <div className="text-red-500">{error}</div>}
+          {warnings.length > 0 && (
+            <div className="text-yellow-600">
+              <div className="font-semibold mb-1">Warnings:</div>
+              {warnings.map((warning, index) => (
+                <div key={index} className="text-sm">
+                  {warning}
+                </div>
+              ))}
+            </div>
+          )}
           {parsedData && (
             <div className="text-black">
               <div className="font-semibold mb-2">Preview:</div>
