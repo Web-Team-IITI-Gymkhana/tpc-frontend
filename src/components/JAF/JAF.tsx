@@ -74,7 +74,6 @@ function JAF() {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
   const [captchaToken, setCaptchaToken] = useState("");
-  const [showCaptcha, setShowCaptcha] = useState(false);
   const recaptchaRef = useRef<ReCAPTCHA | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -98,7 +97,6 @@ function JAF() {
         initialValues={DEFAULT_FORM_VALUES}
         onSubmit={async (values: JAFFormValues) => {
           if (!captchaToken) {
-            setShowCaptcha(true);
             toast.error("Please complete the CAPTCHA to submit.");
             return;
           }
@@ -201,7 +199,6 @@ function JAF() {
           } finally {
             setIsSubmitting(false);
             setCaptchaToken("");
-            setShowCaptcha(false);
             recaptchaRef.current?.reset();
           }
         }}
@@ -254,13 +251,11 @@ function JAF() {
               {currentStepIndex === 2 ? (
                 <Row justify="center" className="pt-6">
                   <div className="flex flex-col items-center gap-4">
-                    {showCaptcha && (
                       <ReCAPTCHA
                         ref={recaptchaRef}
                         sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
                         onChange={(token) => setCaptchaToken(token || "")}
                       />
-                    )}
                     <div className="flex gap-2">
                       <Button
                         disabled={isPrevDisabled || isSubmitting}
