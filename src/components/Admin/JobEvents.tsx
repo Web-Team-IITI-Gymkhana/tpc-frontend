@@ -22,6 +22,7 @@ import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 
 const typeOptions = [
+  "VERIFICATION",
   "POLL",
   "PPT",
   "INTERVIEW",
