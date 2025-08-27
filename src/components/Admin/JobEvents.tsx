@@ -967,35 +967,37 @@ export const Applications = ({
   const [loading, setLoading] = useState(true);
   const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
   const [seed, setSeed] = useState(0);
-
-  const columns = generateColumns([
-    {
-      student: {
-        rollNo: "string",
-        category: "string",
-        gender: "string",
-        cpi: "number",
-        backlog: "string",
-        tenthMarks: "number",
-        twelthMarks: "number",
-        user: {
-          name: "string",
-          email: "string",
-          contact: "string",
+  
+  const [columns, setColumns] = useState(
+    generateColumns([
+      {
+        student: {
+          rollNo: "string",
+          category: "string",
+          gender: "string",
+          cpi: "number",
+          backlog: "string",
+          tenthMarks: "number",
+          twelthMarks: "number",
+          user: {
+            name: "string",
+            email: "string",
+            contact: "string",
+          },
+          program: {
+            course: "string",
+            branch: "string",
+            department: "string",
+            year: "string",
+          },
         },
-        program: {
-          course: "string",
-          branch: "string",
-          department: "string",
-          year: "string",
+        resume: {
+          resumeFile: "string",
+          resumeFileUrl: "string",
         },
       },
-      resume: {
-        resumeFile: "string",
-        resumeFileUrl: "string",
-      },
-    },
-  ]);
+    ])
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -1003,6 +1005,31 @@ export const Applications = ({
     const fetchData = async () => {
       try {
         const jsonData: EventFC = await fetchEventById(eventId);
+
+        // Build dynamic columns for additionalData keys configured on this event
+        const additionalDataKeys = Object.keys((jsonData as any).additionalData || {});
+        const dynamicSeed: any = {
+          student: {
+            rollNo: "string",
+            category: "string",
+            gender: "string",
+            cpi: "number",
+            backlog: "string",
+            tenthMarks: "number",
+            twelthMarks: "number",
+            user: { name: "string", email: "string", contact: "string" },
+            program: { course: "string", branch: "string", department: "string", year: "string" },
+          },
+          resume: { resumeFile: "string", resumeFileUrl: "string" },
+        };
+        if (additionalDataKeys.length > 0) {
+          dynamicSeed.additionalData = {} as any;
+          additionalDataKeys.forEach((key) => {
+            dynamicSeed.additionalData[key] = "string";
+          });
+        }
+        setColumns(generateColumns([dynamicSeed]));
+
         const applications = jsonData.applications.map((application) => {
           // Create display filename in format: resumename.pdf
           const resumeName = application.resume.name || "resume";
@@ -1017,7 +1044,7 @@ export const Applications = ({
               resumeFile: (
                 <Button
                   onClick={() => {
-                    getResumeFile(application.resume.filepath);
+                  getResumeFile(application.resume.filepath);
                   }}
                 >
                   View Resume ({displayName}){" "}
@@ -1028,6 +1055,8 @@ export const Applications = ({
               ),
               resumeFileUrl: getResumeFileUrl(application.resume.filepath)
             },
+            // Ensure additionalData exists for dynamic columns (additionalData.key)
+            additionalData: (application as any).additionalData || {},
           };
         });
         setApplications(applications);
