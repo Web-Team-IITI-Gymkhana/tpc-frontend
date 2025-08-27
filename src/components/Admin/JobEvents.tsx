@@ -55,18 +55,35 @@ export const EditEvent = ({
     startDateTime: "",
     endDateTime: "",
     visibleToRecruiter: false,
+    additionalData: {} as Record<string, string>,
   });
+  const [additionalFields, setAdditionalFields] = useState<Array<{key: string, placeholder: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  
   useEffect(() => {
     if (eventId && open) {
       fetchEventData();
     }
   }, [eventId, open]);
 
+  // Convert additionalData to fields for display
+  const convertDataToFields = (data: Record<string, string>) => {
+    return Object.entries(data || {}).map(([key, placeholder]) => ({
+      key,
+      placeholder: placeholder as string,
+    }));
+  };
+
+  // Update fields when additionalData changes
+  useEffect(() => {
+    setAdditionalFields(convertDataToFields(formValues.additionalData));
+  }, [formValues.additionalData]);
+
   const fetchEventData = async () => {
     try {
       const eventData = await fetchEventById(eventId);
+      
       setFormValues({
         id: eventData.id,
         jobId: jobId,
@@ -78,6 +95,7 @@ export const EditEvent = ({
           .slice(0, 16),
         endDateTime: new Date(eventData.endDateTime).toISOString().slice(0, 16),
         visibleToRecruiter: eventData.visibleToRecruiter,
+        additionalData: eventData.additionalData || {},
       });
       setLoading(false);
     } catch {
@@ -95,6 +113,50 @@ export const EditEvent = ({
     });
   };
 
+  const addAdditionalField = () => {
+    setAdditionalFields([...additionalFields, { key: "", placeholder: "" }]);
+  };
+
+  const removeAdditionalField = (index: number) => {
+    const newFields = additionalFields.filter((_, i) => i !== index);
+    setAdditionalFields(newFields);
+    
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    const fieldToRemove = additionalFields[index];
+    if (fieldToRemove.key) {
+      delete newAdditionalData[fieldToRemove.key];
+    }
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
+  const updateAdditionalField = (index: number, field: 'key' | 'placeholder', value: string) => {
+    const newFields = [...additionalFields];
+    const oldKey = newFields[index].key;
+    newFields[index][field] = value;
+    setAdditionalFields(newFields);
+
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    
+    if (field === 'key' && oldKey && oldKey !== value) {
+      // Key changed, remove old key and add new one
+      const placeholderValue = newAdditionalData[oldKey];
+      delete newAdditionalData[oldKey];
+      if (value) {
+        newAdditionalData[value] = placeholderValue || newFields[index].placeholder;
+      }
+    } else if (field === 'placeholder' && newFields[index].key) {
+      // Placeholder changed, update the value
+      newAdditionalData[newFields[index].key] = value;
+    } else if (field === 'key' && value) {
+      // New key added
+      newAdditionalData[value] = newFields[index].placeholder;
+    }
+    
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
   const convertToISOFormat = (date: string) => {
     return new Date(date).toISOString();
   };
@@ -107,6 +169,8 @@ export const EditEvent = ({
         ...formValues,
         startDateTime: convertToISOFormat(formValues.startDateTime),
         endDateTime: convertToISOFormat(formValues.endDateTime),
+        // Only include additionalData if round number is 0
+        additionalData: Number(formValues.roundNumber) === 0 ? formValues.additionalData : {},
       };
 
       await updateEvent([updatedValues]);
@@ -232,6 +296,87 @@ export const EditEvent = ({
                 </span>
               </label>
             </div>
+            
+            {/* Additional Data Fields Section - Only for Round 0 */}
+            {Number(formValues.roundNumber) === 0 && (
+              <div className="mb-5">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-900">
+                    Additional Data Required
+                  </label>
+                  <Button 
+                    type="button" 
+                    onClick={addAdditionalField}
+                    className="text-xs px-3 py-1 h-auto"
+                  >
+                    Add Field
+                  </Button>
+                </div>
+                
+                {additionalFields.map((field, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Field Name (e.g., preferredLocation)"
+                      value={field.key}
+                      onChange={(e) => updateAdditionalField(index, 'key', e.target.value)}
+                      className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Placeholder text for students"
+                      value={field.placeholder}
+                      onChange={(e) => updateAdditionalField(index, 'placeholder', e.target.value)}
+                      className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    />
+                    <Button 
+                      type="button" 
+                      onClick={() => removeAdditionalField(index)}
+                      className="text-xs px-3 py-1 h-auto bg-red-500 hover:bg-red-600"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                
+                {additionalFields.length === 0 && (
+                  <p className="text-sm text-gray-500 italic">
+                    No additional fields required. Click "Add Field" to add custom fields for student applications.
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {Number(formValues.roundNumber) !== 0 && additionalFields.length > 0 && (
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Additional Data Required (Read-only)
+                </label>
+                <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>Note:</strong> Additional data fields can only be modified for Round 0. 
+                    The following fields were configured for the initial application round:
+                  </p>
+                  {additionalFields.map((field, index) => (
+                    <div key={index} className="text-sm text-gray-700 mb-1">
+                      <strong>{field.key}:</strong> {field.placeholder}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {Number(formValues.roundNumber) !== 0 && additionalFields.length === 0 && (
+              <div className="mb-5">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700">
+                    <strong>Note:</strong> Additional data fields can only be configured for Round 0. 
+                    No additional data was configured for this job's round.
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <Button type="submit" disabled={updating}>
               {updating ? "Updating..." : "Update Event"}
             </Button>
@@ -259,8 +404,23 @@ export const AddEvent = ({
     startDateTime: "",
     endDateTime: "",
     visibleToRecruiter: false,
+    additionalData: {} as Record<string, string>,
   });
+  const [additionalFields, setAdditionalFields] = useState<Array<{key: string, placeholder: string}>>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Convert additionalData to fields for display
+  const convertDataToFields = (data: Record<string, string>) => {
+    return Object.entries(data || {}).map(([key, placeholder]) => ({
+      key,
+      placeholder: placeholder as string,
+    }));
+  };
+
+  // Update fields when additionalData changes
+  useEffect(() => {
+    setAdditionalFields(convertDataToFields(formValues.additionalData));
+  }, [formValues.additionalData]);
 
   const handleClose = () => setOpen(false);
 
@@ -272,11 +432,61 @@ export const AddEvent = ({
     });
   };
 
+  const addAdditionalField = () => {
+    setAdditionalFields([...additionalFields, { key: "", placeholder: "" }]);
+  };
+
+  const removeAdditionalField = (index: number) => {
+    const newFields = additionalFields.filter((_, i) => i !== index);
+    setAdditionalFields(newFields);
+    
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    const fieldToRemove = additionalFields[index];
+    if (fieldToRemove.key) {
+      delete newAdditionalData[fieldToRemove.key];
+    }
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
+  const updateAdditionalField = (index: number, field: 'key' | 'placeholder', value: string) => {
+    const newFields = [...additionalFields];
+    const oldKey = newFields[index].key;
+    newFields[index][field] = value;
+    setAdditionalFields(newFields);
+
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    
+    if (field === 'key' && oldKey && oldKey !== value) {
+      // Key changed, remove old key and add new one
+      const placeholderValue = newAdditionalData[oldKey];
+      delete newAdditionalData[oldKey];
+      if (value) {
+        newAdditionalData[value] = placeholderValue || newFields[index].placeholder;
+      }
+    } else if (field === 'placeholder' && newFields[index].key) {
+      // Placeholder changed, update the value
+      newAdditionalData[newFields[index].key] = value;
+    } else if (field === 'key' && value) {
+      // New key added
+      newAdditionalData[value] = newFields[index].placeholder;
+    }
+    
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await addEvent([formValues]);
+      const eventData = {
+        ...formValues,
+        // Only include additionalData if round number is 0
+        additionalData: Number(formValues.roundNumber) === 0 ? formValues.additionalData : {},
+      };
+      
+      await addEvent([eventData]);
       toast.success("Successfully added");
       window.location.reload();
     } catch {
@@ -394,6 +604,68 @@ export const AddEvent = ({
               </span>
             </label>
           </div>
+          
+          {/* Additional Data Fields Section - Only for Round 0 */}
+          {Number(formValues.roundNumber) === 0 && (
+            <div className="mb-5">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-900">
+                  Additional Data Required
+                </label>
+                <Button 
+                  type="button" 
+                  onClick={addAdditionalField}
+                  className="text-xs px-3 py-1 h-auto"
+                >
+                  Add Field
+                </Button>
+              </div>
+              
+              {additionalFields.map((field, index) => (
+                <div key={index} className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Field Name (e.g., preferredLocation)"
+                    value={field.key}
+                    onChange={(e) => updateAdditionalField(index, 'key', e.target.value)}
+                    className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Placeholder text for students"
+                    value={field.placeholder}
+                    onChange={(e) => updateAdditionalField(index, 'placeholder', e.target.value)}
+                    className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={() => removeAdditionalField(index)}
+                    className="text-xs px-3 py-1 h-auto bg-red-500 hover:bg-red-600"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              
+              {additionalFields.length === 0 && (
+                <p className="text-sm text-gray-500 italic">
+                  No additional fields required. Click "Add Field" to add custom fields for student applications.
+                </p>
+              )}
+            </div>
+          )}
+          
+          {Number(formValues.roundNumber) !== 0 && (
+            <div className="mb-5">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <strong>Note:</strong> Additional data fields can only be configured for Round 0. 
+                  Subsequent rounds will use the same additional data collected during the initial application.
+                </p>
+              </div>
+            </div>
+          )}
+          
           <Button type="submit" disabled={submitting}>
             {submitting ? "Adding..." : "Add Event"}
           </Button>
