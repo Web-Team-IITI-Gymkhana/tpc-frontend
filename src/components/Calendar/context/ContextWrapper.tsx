@@ -9,11 +9,13 @@ import { jwtDecode } from "jwt-decode";
 import { fetchStudentEvents } from "@/helpers/student/api";
 
 export const labelsClasses = new Map([
+  ["VERIFICATION", "amber"],
   ["INTERVIEW", "green"],
   ["PPT", "red"],
   ["TEST", "indigo"],
   ["COMPLETED", "blue"],
   ["APPLICATION", "purple"],
+  ["POLL", "gray"],
 ]);
 
 function savedEventsReducer(

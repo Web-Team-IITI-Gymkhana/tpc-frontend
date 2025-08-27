@@ -39,6 +39,7 @@ interface Application {
   id: string;
   eventId: string;
   resume: ApplicationResume;
+  additionalData?: Record<string, string>;
 }
 
 interface SalaryCardProps {
@@ -124,6 +125,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
     message: "",
   });
   const [isApplying, setIsApplying] = useState<boolean>(false);
+  const [additionalData, setAdditionalData] = useState<Record<string, string>>({});
 
   const hasApplied = useMemo(() => {
     return salaryData?.job?.applications?.length > 0;
@@ -135,6 +137,16 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
       ? `CTC Offered: ${formatNumber(salaryData.totalCTC || 0)}`
       : `Stipend: ${formatNumber(salaryData.stipend || 0)}`;
   }, [salaryData, seasonType]);
+
+  // Get additional data requirements from the event student is applying to
+  const eventAdditionalData = useMemo(() => {
+    if (!salaryData?.job?.events?.length) return {};
+    // Find event with lowest round number
+    const applicationEvent = salaryData.job.events.reduce((lowest, current) => 
+      current.roundNumber < lowest.roundNumber ? current : lowest
+    );
+    return applicationEvent?.additionalData || {};
+  }, [salaryData?.job?.events]);
 
   const fetchSalaryData = useCallback(async () => {
     if (!salaryId) {
@@ -202,9 +214,20 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
       return;
     }
 
+    // Validate required additional data
+    const requiredFields = Object.keys(eventAdditionalData);
+    if (requiredFields.length > 0) {
+      for (const field of requiredFields) {
+        if (!additionalData[field] || additionalData[field].trim() === "") {
+          toast.error(`Please fill in the required field: ${field}`);
+          return;
+        }
+      }
+    }
+
     try {
       setIsApplying(true);
-      const data = await ApplyJob(salaryId, selectedResume);
+      const data = await ApplyJob(salaryId, selectedResume, additionalData);
 
       if (data) {
         toast.success("Applied Successfully");
@@ -231,7 +254,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
     } finally {
       setIsApplying(false);
     }
-  }, [selectedResume, salaryId, resumes, fetchSalaryData]);
+  }, [selectedResume, salaryId, resumes, fetchSalaryData, additionalData, eventAdditionalData]);
 
   const handleOpenResume = useCallback((filepath: string) => {
     if (!filepath) {
@@ -741,6 +764,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                       <TableHead className="w-16">Sr.</TableHead>
                       <TableHead>Resume</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Additional Data</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -787,6 +811,20 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                                   : "Not Verified"}
                               </span>
                             </TableCell>
+                            <TableCell>
+                              {application.additionalData && Object.keys(application.additionalData).length > 0 ? (
+                                <div className="max-w-xs">
+                                  {Object.entries(application.additionalData).map(([key, value]) => (
+                                    <div key={key} className="text-xs mb-1">
+                                      <span className="font-medium text-gray-600">{key}:</span>{" "}
+                                      <span className="text-gray-800">{String(value)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-gray-400 text-xs">No additional data</span>
+                              )}
+                            </TableCell>
                           </TableRow>
                         );
                       },
@@ -795,6 +833,35 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                 </Table>
               </div>
             </>
+          )}
+
+          {/* Additional Data Fields - Only show if event requires additional data and user hasn't applied yet */}
+          {Object.keys(eventAdditionalData).length > 0 && !hasApplied && (
+            <div className="my-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="text-lg font-semibold text-blue-900 mb-4">
+                Additional Information Required
+              </h4>
+              <div className="space-y-4">
+                {Object.entries(eventAdditionalData).map(([key, placeholder]) => (
+                  <div key={key}>
+                    <label className="block text-sm font-medium text-blue-800 mb-2">
+                      {key} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={additionalData[key] || ""}
+                      onChange={(e) => setAdditionalData(prev => ({
+                        ...prev,
+                        [key]: e.target.value
+                      }))}
+                      placeholder={placeholder as string}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 my-6 p-4 bg-gray-50 rounded-lg">
