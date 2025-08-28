@@ -120,10 +120,8 @@ const ResumePage = () => {
   };
 
   useEffect(() => {
-    if (resumeData.length === 0) {
-      fetchResumes();
-    }
-  });
+    fetchResumes();
+  }, []);
 
   return (
     <div className="min-h-screen p-2 md:p-4 lg:p-6">
