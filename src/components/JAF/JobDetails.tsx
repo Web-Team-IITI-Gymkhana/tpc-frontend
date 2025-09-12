@@ -716,8 +716,8 @@ const JobDetails = ({
                 minCPI: s?.minCPI ?? 0,
                 tenthMarks: s?.tenthMarks ?? 0,
                 twelthMarks: s?.twelthMarks ?? 0,
-                baseSalary: s?.baseSalary ?? 0,
-                totalCTC: s?.totalCTC ?? 0,
+                baseSalary: s?.baseSalary ?? undefined,
+                totalCTC: s?.totalCTC ?? undefined,
                 takeHomeSalary: s?.takeHomeSalary ?? 0,
                 grossSalary: s?.grossSalary ?? 0,
                 joiningBonus: s?.joiningBonus ?? 0,
@@ -726,7 +726,7 @@ const JobDetails = ({
                 bondAmount: s?.bondAmount ?? 0,
                 esopAmount: s?.esopAmount ?? 0,
                 esopVestPeriod: s?.esopVestPeriod ?? "",
-                firstYearCTC: s?.firstYearCTC ?? 0,
+                firstYearCTC: s?.firstYearCTC ?? undefined,
                 retentionBonus: s?.retentionBonus ?? 0,
                 deductions: s?.deductions ?? 0,
                 medicalAllowance: s?.medicalAllowance ?? 0,
@@ -1954,6 +1954,7 @@ const JobDetails = ({
                                   strong
                                   className="text-xs md:text-sm text-gray-700"
                                 >
+                                  <span className="text-red-500">* </span>
                                   Base Salary (Annual)
                                 </Text>
                               }
@@ -1966,6 +1967,7 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.BASE_SALARY}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
+                                step={1}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -1990,6 +1992,7 @@ const JobDetails = ({
                                   strong
                                   className="text-xs md:text-sm text-gray-700"
                                 >
+                                  <span className="text-red-500">* </span>
                                   Total CTC (Annual)
                                 </Text>
                               }
@@ -2002,6 +2005,7 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.TOTAL_CTC}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
+                                step={1}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -2220,6 +2224,7 @@ const JobDetails = ({
                                   strong
                                   style={{ fontSize: 14, color: "#374151" }}
                                 >
+                                  <span className="text-red-500">* </span>
                                   First Year CTC
                                 </Text>
                               }
@@ -2229,6 +2234,7 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.FIRST_YEAR_CTC}
                                 min={0}
+                                step={1}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
