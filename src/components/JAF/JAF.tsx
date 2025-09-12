@@ -178,7 +178,10 @@ function JAF() {
             });
 
             toast.success("JAF Form submitted successfully! Your application has been received.");
-            window.location.reload();
+            
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           } catch (error: any) {
             console.error("JAF submission error:", error);
 
