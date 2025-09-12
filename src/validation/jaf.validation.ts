@@ -281,7 +281,6 @@ export const jobDetailsValidationSchema = Yup.object({
           ),
       }),
     )
-    .min(1, "At least one test must be specified")
     .max(10, "Maximum 10 tests allowed"),
 
   interviews: Yup.array()
@@ -303,7 +302,6 @@ export const jobDetailsValidationSchema = Yup.object({
           ),
       }),
     )
-    .min(1, "At least one interview round must be specified")
     .max(10, "Maximum 10 interview rounds allowed"),
 
   // Requirements (optional)
@@ -368,14 +366,16 @@ export const jobDetailsValidationSchema = Yup.object({
 
         // Placement salary fields
         baseSalary: Yup.number()
-          .nullable()
+          .required("Base salary is required")
           .min(0, "Salary cannot be negative")
-          .max(10000000, "Salary seems unreasonably high"),
+          .max(10000000, "Salary seems unreasonably high")
+          .integer("Base salary must be an integer"),
 
         totalCTC: Yup.number()
-          .nullable()
+          .required("Total CTC is required")
           .min(0, "CTC cannot be negative")
-          .max(10000000, "CTC seems unreasonably high"),
+          .max(10000000, "CTC seems unreasonably high")
+          .integer("Total CTC must be an integer"),
 
         takeHomeSalary: Yup.number()
           .nullable()
@@ -443,8 +443,9 @@ export const jobDetailsValidationSchema = Yup.object({
         ),
 
         firstYearCTC: Yup.number()
-          .nullable()
-          .min(0, "First year CTC cannot be negative"),
+          .required("First Year CTC is required")
+          .min(0, "First year CTC cannot be negative")
+          .integer("First Year CTC must be an integer"),
 
         retentionBonus: Yup.number()
           .nullable()
