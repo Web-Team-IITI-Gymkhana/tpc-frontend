@@ -1202,7 +1202,10 @@ const JobDetails = ({
           </Title>
           <div className="mb-4 md:mb-6 p-3 md:p-4 bg-amber-50 border-l-4 border-amber-400 rounded-lg shadow-sm">
             <Text className="text-sm md:text-base text-amber-800">
-              <strong>{"Note:"}</strong> {"You can add multiple compensation packages, each tied to a specific eligibility set (Programs, CPI, 10th/12th marks, etc.). Candidates will only see the package that matches their profile."}
+              <strong>{"Note:"}</strong>{" "}
+              {
+                "You can add multiple compensation packages, each tied to a specific eligibility set (Programs, CPI, 10th/12th marks, etc.). Candidates will only see the package that matches their profile."
+              }
             </Text>
           </div>
 
@@ -1764,7 +1767,7 @@ const JobDetails = ({
                       )}
 
                       <Col xs={24} md={12}>
-                        <Form.Item        
+                        <Form.Item
                           label={
                             <Text
                               strong
@@ -1968,6 +1971,23 @@ const JobDetails = ({
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
                                 step={1}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "baseSalary"],
+                                    value,
+                                  );
+                                }}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -2006,6 +2026,23 @@ const JobDetails = ({
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
                                 step={1}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "totalCTC"],
+                                    value,
+                                  );
+                                }}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -2043,6 +2080,23 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.TAKE_HOME_SALARY}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "takeHomeSalary"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2080,6 +2134,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.GROSS_SALARY}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "grossSalary"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2119,6 +2190,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.JOINING_BONUS}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "joiningBonus"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2156,6 +2244,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.PERFORMANCE_BONUS}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "performanceBonus"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2195,6 +2300,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.RELOCATION}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "relocation"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2235,6 +2357,23 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.FIRST_YEAR_CTC}
                                 min={0}
                                 step={1}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "firstYearCTC"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2275,6 +2414,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.RETENTION_BONUS}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "retentionBonus"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2313,6 +2469,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="Deductions"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "deductions"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2352,6 +2525,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="Medical Allowance"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "medicalAllowance"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2391,6 +2581,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="ESOP Amount"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "esopAmount"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2452,6 +2659,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="Bond Amount"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "bondAmount"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2525,6 +2749,23 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.STIPEND}
                                 min={0}
                                 max={FIELD_LIMITS.STIPEND_MAX}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "stipend"],
+                                    value,
+                                  );
+                                }}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -2625,6 +2866,23 @@ const JobDetails = ({
                                   type="number"
                                   placeholder="Tentative CTC"
                                   min={0}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      [".", "e", "E", "+", "-"].includes(e.key)
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  onChange={(e) => {
+                                    const value = Math.floor(
+                                      parseFloat(e.target.value) || 0,
+                                    );
+                                    e.target.value = value.toString();
+                                    form.setFieldValue(
+                                      ["salaries", index, "tentativeCTC"],
+                                      value,
+                                    );
+                                  }}
                                   style={{
                                     borderRadius: 8,
                                     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2702,10 +2960,19 @@ const JobDetails = ({
                             placeholder={PLACEHOLDERS.OTHER_COMPENSATIONS}
                             type="number"
                             min={0}
+                            onKeyDown={(e) => {
+                              if ([".", "e", "E", "+", "-"].includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
                             onChange={(e) => {
+                              const value = Math.floor(
+                                parseFloat(e.target.value) || 0,
+                              );
+                              e.target.value = value.toString();
                               form.setFieldValue(
                                 ["salaries", index, "otherCompensations"],
-                                e.target.value,
+                                value,
                               );
                             }}
                             className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
