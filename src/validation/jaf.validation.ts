@@ -281,7 +281,6 @@ export const jobDetailsValidationSchema = Yup.object({
           ),
       }),
     )
-    .min(1, "At least one test must be specified")
     .max(10, "Maximum 10 tests allowed"),
 
   interviews: Yup.array()
@@ -303,7 +302,6 @@ export const jobDetailsValidationSchema = Yup.object({
           ),
       }),
     )
-    .min(1, "At least one interview round must be specified")
     .max(10, "Maximum 10 interview rounds allowed"),
 
   // Requirements (optional)

@@ -41,14 +41,6 @@ const getErrorMessages = (errors: any): string[] => {
       } else if (obj.includes("At least one program must be selected")) {
         cleanMessage =
           "Please select at least one program in the eligibility criteria";
-      } else if (obj.includes("At least one test must be specified")) {
-        cleanMessage =
-          "Please add at least one test in the selection procedure";
-      } else if (
-        obj.includes("At least one interview round must be specified")
-      ) {
-        cleanMessage =
-          "Please add at least one interview round in the selection procedure";
       } else if (obj.includes("At least one salary entry is required")) {
         cleanMessage =
           "Please add at least one salary package in compensation details";
