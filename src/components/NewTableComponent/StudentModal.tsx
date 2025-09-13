@@ -20,6 +20,7 @@ import {
   fetchStudentDataById,
   fetchRegistrationDataById,
   fetchAllSeasons,
+  fetchPrograms,
   fetchSeasonDataById,
   postRegistration,
   debarStudent,
@@ -100,6 +101,39 @@ export default function StudentModal({ open, setOpen, id }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState(null);
+  // Cascading program selection (Year -> Course -> Branch)
+  const [programsData, setProgramsData] = useState({
+    programs: [],
+    coursesMap: new Map(),
+    branchesMap: new Map(),
+  });
+  const [years, setYears] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [expandedYears, setExpandedYears] = useState<Set<string>>(new Set());
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
+
+  const toggleYearExpanded = (year: string) => {
+    setExpandedYears((prev) => {
+      const next = new Set(prev);
+      if (next.has(year)) next.delete(year);
+      else next.add(year);
+      return next;
+    });
+  };
+
+  const toggleCourseExpanded = (year: string, course: string) => {
+    const key = `${year}-${course}`;
+    setExpandedCourses((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const fetchStudentData = async (id: any) => {
     setLoading(true);
@@ -191,6 +225,101 @@ export default function StudentModal({ open, setOpen, id }) {
       setEditData(null);
     }
   }, [open, id]);
+
+  // Load programs for cascading selection when modal opens
+  useEffect(() => {
+    if (!open) return;
+    (async () => {
+      try {
+        const data = await fetchPrograms();
+        const programs = (data || []).map((p: any) => ({
+          id: p.id,
+          year: String(p.year),
+          course: String(p.course),
+          branch: String(p.branch),
+        }));
+        const uniqueYears = new Set<string>();
+        const coursesMap = new Map<string, Set<string>>();
+        const branchesMap = new Map<string, Set<string>>();
+        programs.forEach((p: any) => {
+          uniqueYears.add(p.year);
+          if (!coursesMap.has(p.year)) coursesMap.set(p.year, new Set());
+          coursesMap.get(p.year)?.add(p.course);
+          const key = `${p.year}-${p.course}`;
+          if (!branchesMap.has(key)) branchesMap.set(key, new Set());
+          branchesMap.get(key)?.add(p.branch);
+        });
+        setProgramsData({ programs, coursesMap, branchesMap });
+        setYears(Array.from(uniqueYears));
+      } catch (_) {
+        // noop
+      }
+    })();
+  }, [open]);
+
+  // Initialize cascading selection when entering edit mode
+  useEffect(() => {
+    if (!editMode || !studentData || programsData.programs.length === 0) return;
+    const current = (studentData as any).program;
+    if (current) {
+      const year = String(current.year || "");
+      const course = String(current.course || "");
+      const branch = String(current.branch || "");
+      setSelectedYear(year);
+      const yearCourses = Array.from((programsData.coursesMap as any).get(year) || []);
+      setCourses(yearCourses as any);
+      setSelectedCourse(course);
+      const key = `${year}-${course}`;
+      const yearCourseBranches = Array.from((programsData.branchesMap as any).get(key) || []);
+      setBranches(yearCourseBranches as any);
+      setSelectedBranch(branch);
+    }
+  }, [editMode, studentData, programsData]);
+
+  const updateSelectedProgramInEditData = (
+    year: string,
+    course: string,
+    branch: string,
+  ) => {
+    const program = (programsData.programs as any).find(
+      (p: any) => p.year === year && p.course === course && p.branch === branch,
+    );
+    if (program) {
+      setEditData((prev: any) => ({
+        ...prev,
+        program: { ...(prev?.program || {}), id: program.id, year, course, branch },
+      }));
+    }
+  };
+
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year);
+    const newCourses = Array.from((programsData.coursesMap as any).get(year) || []);
+    setCourses(newCourses as any);
+    const nextCourse = (newCourses as any).includes(selectedCourse) ? selectedCourse : (newCourses as any)[0] || "";
+    setSelectedCourse(nextCourse);
+    const key = `${year}-${nextCourse}`;
+    const newBranches = Array.from((programsData.branchesMap as any).get(key) || []);
+    setBranches(newBranches as any);
+    const nextBranch = (newBranches as any).includes(selectedBranch) ? selectedBranch : (newBranches as any)[0] || "";
+    setSelectedBranch(nextBranch);
+    if (year && nextCourse && nextBranch) updateSelectedProgramInEditData(year, nextCourse, nextBranch);
+  };
+
+  const handleCourseChange = (course: string) => {
+    setSelectedCourse(course);
+    const key = `${selectedYear}-${course}`;
+    const newBranches = Array.from((programsData.branchesMap as any).get(key) || []);
+    setBranches(newBranches as any);
+    const nextBranch = (newBranches as any).includes(selectedBranch) ? selectedBranch : (newBranches as any)[0] || "";
+    setSelectedBranch(nextBranch);
+    if (selectedYear && course && nextBranch) updateSelectedProgramInEditData(selectedYear, course, nextBranch);
+  };
+
+  const handleBranchChange = (branch: string) => {
+    setSelectedBranch(branch);
+    if (selectedYear && selectedCourse && branch) updateSelectedProgramInEditData(selectedYear, selectedCourse, branch);
+  };
 
   const handleClose = () => setOpen(false);
 
@@ -320,7 +449,8 @@ export default function StudentModal({ open, setOpen, id }) {
       const res = await patchStudentData(patchBody);
       if (res) {
         toast.success("Student data updated successfully");
-        setStudentData((prev) => ({ ...prev, ...editData }));
+        // Refresh student data from server instead of updating local state
+        await fetchStudentData(id);
         setEditMode(false);
         setEditData(null);
       } else {
@@ -757,18 +887,74 @@ export default function StudentModal({ open, setOpen, id }) {
                           </TableCell>
                           <TableCell>
                             {editMode ? (
-                              <input
-                                type="text"
-                                value={editData.program.branch}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "branch",
-                                    e.target.value,
-                                    "program",
-                                  )
-                                }
-                                style={{ width: "100%" }}
-                              />
+                              <div style={{ border: "1px solid #e5e7eb", borderRadius: 6 }}>
+                                <div style={{ padding: "8px 12px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                                  <span style={{ fontWeight: 600, color: "#374151" }}>Program Selection (Based on Course Completion Year)</span>
+                                </div>
+                                <div style={{ padding: 8 }}>
+                                  {(years as any).map((year: string) => (
+                                    <div key={year} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                                      <div style={{ padding: "8px 12px", background: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                          <button
+                                            type="button"
+                                            onClick={() => toggleYearExpanded(year)}
+                                            style={{ minWidth: 20, height: 20, padding: 0, fontSize: 10, color: "#6b7280", background: "transparent", border: "none" }}
+                                            aria-label="Toggle Year"
+                                          >
+                                            {expandedYears.has(year) ? "▼" : "▶"}
+                                          </button>
+                                          <span style={{ fontWeight: 600, fontSize: 14 }}>{year} Batch</span>
+                                        </div>
+                                      </div>
+                                      {expandedYears.has(year) && (
+                                        <div style={{ paddingLeft: 32, background: "#fafbfc" }}>
+                                          {Array.from((programsData.coursesMap as any).get(year) || []).map((course: string) => (
+                                            <div key={`${year}-${course}`}>
+                                              <div style={{ padding: "6px 12px", background: "#ffffff", margin: "2px 0", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                                  <button
+                                                    type="button"
+                                                    onClick={() => toggleCourseExpanded(year, course)}
+                                                    style={{ minWidth: 16, height: 16, padding: 0, fontSize: 8, color: "#6b7280", background: "transparent", border: "none" }}
+                                                    aria-label="Toggle Course"
+                                                  >
+                                                    {expandedCourses.has(`${year}-${course}`) ? "▼" : "▶"}
+                                                  </button>
+                                                  <span style={{ fontWeight: 500, fontSize: 13 }}>{course}</span>
+                                                </div>
+                                              </div>
+                                              {expandedCourses.has(`${year}-${course}`) && (
+                                                <div style={{ paddingLeft: 24, marginBottom: 4 }}>
+                                                  {Array.from((programsData.branchesMap as any).get(`${year}-${course}`) || []).map((branch: string) => (
+                                                    <label
+                                                      key={`${year}-${course}-${branch}`}
+                                                      style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", background: selectedYear === year && selectedCourse === course && selectedBranch === branch ? "#f0fdf4" : "#ffffff", margin: "1px 0", borderRadius: 4 }}
+                                                    >
+                                                      <input
+                                                        type="radio"
+                                                        name="single-branch"
+                                                        value={branch}
+                                                        checked={selectedYear === year && selectedCourse === course && selectedBranch === branch}
+                                                        onChange={() => {
+                                                          setSelectedYear(year);
+                                                          setSelectedCourse(course);
+                                                          handleBranchChange(branch);
+                                                        }}
+                                                      />
+                                                      <span style={{ fontSize: 12 }}>{branch}</span>
+                                                    </label>
+                                                  ))}
+                                                </div>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             ) : studentData.program ? (
                               studentData.program.branch
                             ) : (
@@ -777,95 +963,50 @@ export default function StudentModal({ open, setOpen, id }) {
                           </TableCell>
                         </TableRow>
                         {/* Course */}
-                        <TableRow>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            Course
-                          </TableCell>
-                          <TableCell>
-                            {editMode ? (
-                              <input
-                                type="text"
-                                value={editData.program.course}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "course",
-                                    e.target.value,
-                                    "program",
-                                  )
-                                }
-                                style={{ width: "100%" }}
-                              />
-                            ) : studentData.program ? (
-                              studentData.program.course
-                            ) : (
-                              "N/A"
-                            )}
-                          </TableCell>
-                        </TableRow>
+                        {!editMode && (
+                          <TableRow>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Course
+                            </TableCell>
+                            <TableCell>
+                              {studentData.program ? studentData.program.course : "N/A"}
+                            </TableCell>
+                          </TableRow>
+                        )}
                         {/* Year */}
-                        <TableRow>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            Year
-                          </TableCell>
-                          <TableCell>
-                            {editMode ? (
-                              <input
-                                type="number"
-                                value={editData.program.year}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "year",
-                                    e.target.value,
-                                    "program",
-                                  )
-                                }
-                                style={{ width: "100%" }}
-                              />
-                            ) : studentData.program ? (
-                              studentData.program.year
-                            ) : (
-                              "N/A"
-                            )}
-                          </TableCell>
-                        </TableRow>
+                        {!editMode && (
+                          <TableRow>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Year
+                            </TableCell>
+                            <TableCell>
+                              {studentData.program ? studentData.program.year : "N/A"}
+                            </TableCell>
+                          </TableRow>
+                        )}
                         {/* Department */}
-                        <TableRow>
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            sx={{ fontWeight: "bold" }}
-                          >
-                            Department
-                          </TableCell>
-                          <TableCell>
-                            {editMode ? (
-                              <input
-                                type="text"
-                                value={editData.program.department || ""}
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    "department",
-                                    e.target.value,
-                                    "program",
-                                  )
-                                }
-                                style={{ width: "100%" }}
-                              />
-                            ) : studentData.program ? (
-                              studentData.program.department
-                            ) : (
-                              "N/A"
-                            )}
-                          </TableCell>
-                        </TableRow>
+                        {!editMode && (
+                          <TableRow>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              Department
+                            </TableCell>
+                            <TableCell>
+                              {studentData.program ? studentData.program.department : "N/A"}
+                            </TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </TableContainer>

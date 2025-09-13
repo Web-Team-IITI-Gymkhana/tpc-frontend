@@ -801,7 +801,9 @@ const ProfilePage = () => {
                 <Button
                   onClick={handlePolicyAccept}
                   disabled={
-                    !policyAccepted || !viewPolicyClicked || registering
+                    !policyAccepted || 
+                    (selectedSeason?.season?.policyDocument && !viewPolicyClicked) || 
+                    registering
                   }
                   className="flex-1 bg-blue-600 hover:bg-blue-700"
                 >

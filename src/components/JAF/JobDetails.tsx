@@ -716,8 +716,8 @@ const JobDetails = ({
                 minCPI: s?.minCPI ?? 0,
                 tenthMarks: s?.tenthMarks ?? 0,
                 twelthMarks: s?.twelthMarks ?? 0,
-                baseSalary: s?.baseSalary ?? 0,
-                totalCTC: s?.totalCTC ?? 0,
+                baseSalary: s?.baseSalary ?? undefined,
+                totalCTC: s?.totalCTC ?? undefined,
                 takeHomeSalary: s?.takeHomeSalary ?? 0,
                 grossSalary: s?.grossSalary ?? 0,
                 joiningBonus: s?.joiningBonus ?? 0,
@@ -726,7 +726,7 @@ const JobDetails = ({
                 bondAmount: s?.bondAmount ?? 0,
                 esopAmount: s?.esopAmount ?? 0,
                 esopVestPeriod: s?.esopVestPeriod ?? "",
-                firstYearCTC: s?.firstYearCTC ?? 0,
+                firstYearCTC: s?.firstYearCTC ?? undefined,
                 retentionBonus: s?.retentionBonus ?? 0,
                 deductions: s?.deductions ?? 0,
                 medicalAllowance: s?.medicalAllowance ?? 0,
@@ -1200,6 +1200,14 @@ const JobDetails = ({
           >
             Compensation/Eligibility Details
           </Title>
+          <div className="mb-4 md:mb-6 p-3 md:p-4 bg-amber-50 border-l-4 border-amber-400 rounded-lg shadow-sm">
+            <Text className="text-sm md:text-base text-amber-800">
+              <strong>{"Note:"}</strong>{" "}
+              {
+                "You can add multiple compensation packages, each tied to a specific eligibility set (Programs, CPI, 10th/12th marks, etc.). Candidates will only see the package that matches their profile."
+              }
+            </Text>
+          </div>
 
           <Form.List name="salaries">
             {(fields, { add, remove }) => (
@@ -1209,7 +1217,13 @@ const JobDetails = ({
                 {fields.map((field, index) => (
                   <Card
                     size="small"
-                    title={<Text strong>Compensation Package {index + 1}</Text>}
+                    title={
+                      <div className="text-center">
+                        <Text strong className="uppercase">
+                          Compensation Package {index + 1}
+                        </Text>
+                      </div>
+                    }
                     key={field.key}
                     extra={
                       <Button
@@ -1226,7 +1240,7 @@ const JobDetails = ({
                   >
                     <Title
                       level={5}
-                      className="mb-3 md:mb-5 text-gray-700 font-semibold text-xs md:text-sm uppercase tracking-wide"
+                      className="mb-3 md:mb-5 text-gray-700 font-semibold text-xs md:text-sm capitalize underline tracking-wide"
                     >
                       Eligibility Criteria
                     </Title>
@@ -1697,24 +1711,27 @@ const JobDetails = ({
                           }
                           name={[field.name, "hasCpiCriterion"]}
                           initialValue={false}
-                          valuePropName="checked"
                           className="mb-3 md:mb-4"
                         >
-                          <Switch
-                            checkedChildren="Yes"
-                            unCheckedChildren="No"
-                            onChange={(checked) => {
+                          <Select
+                            placeholder="Select option"
+                            options={[
+                              { value: true, label: "Yes" },
+                              { value: false, label: "No" },
+                            ]}
+                            onChange={(value) => {
                               form.setFieldValue(
                                 ["salaries", index, "hasCpiCriterion"],
-                                checked,
+                                value,
                               );
-                              if (!checked) {
+                              if (!value) {
                                 form.setFieldValue(
                                   ["salaries", index, "minCPI"],
                                   undefined,
                                 );
                               }
                             }}
+                            className="rounded-md"
                           />
                         </Form.Item>
                       </Col>
@@ -1736,13 +1753,6 @@ const JobDetails = ({
                             name={[field.name, "minCPI"]}
                             help="Enter minimum CPI requirement"
                             className="mb-3 md:mb-4"
-                            rules={[
-                              {
-                                required: true,
-                                message:
-                                  "Please enter minimum CPI if criterion is enabled",
-                              },
-                            ]}
                           >
                             <Input
                               placeholder={PLACEHOLDERS.MIN_CPI}
@@ -1761,43 +1771,140 @@ const JobDetails = ({
                           label={
                             <Text
                               strong
-                              style={{ fontSize: 14, color: "#374151" }}
+                              className="text-xs md:text-sm text-gray-700"
                             >
-                              Minimum 10th Marks (%)
+                              Is there a high school percentage criteria?
                             </Text>
                           }
-                          name={[field.name, "tenthMarks"]}
-                          validateStatus={
-                            getFieldError(`salaries.${index}.tenthMarks`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={
-                            getFieldError(`salaries.${index}.tenthMarks`) ||
-                            "Enter minimum 10th standard marks requirement (leave empty if no minimum)"
-                          }
+                          name={[field.name, "hasHighSchoolCriteria"]}
+                          initialValue={false}
+                          className="mb-3 md:mb-4"
                         >
-                          <Input
-                            placeholder={PLACEHOLDERS.TENTH_MARKS}
-                            type="number"
-                            min={0}
-                            max={100}
-                            step={0.1}
-                            onChange={(e) => {
+                          <Select
+                            placeholder="Select option"
+                            options={[
+                              { value: true, label: "Yes" },
+                              { value: false, label: "No" },
+                            ]}
+                            onChange={(value) => {
                               form.setFieldValue(
-                                ["salaries", index, "tenthMarks"],
-                                e.target.value,
+                                ["salaries", index, "hasHighSchoolCriteria"],
+                                value,
                               );
+                              if (!value) {
+                                form.setFieldValue(
+                                  ["salaries", index, "tenthMarks"],
+                                  undefined,
+                                );
+                                form.setFieldValue(
+                                  ["salaries", index, "twelthMarks"],
+                                  undefined,
+                                );
+                              }
                             }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
+                            className="rounded-md"
                           />
                         </Form.Item>
                       </Col>
+                      {form.getFieldValue([
+                        "salaries",
+                        index,
+                        "hasHighSchoolCriteria",
+                      ]) && (
+                        <>
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              label={
+                                <Text
+                                  strong
+                                  style={{ fontSize: 14, color: "#374151" }}
+                                >
+                                  Minimum 10th Marks (%)
+                                </Text>
+                              }
+                              name={[field.name, "tenthMarks"]}
+                              validateStatus={
+                                getFieldError(`salaries.${index}.tenthMarks`)
+                                  ? "error"
+                                  : undefined
+                              }
+                              help={
+                                getFieldError(`salaries.${index}.tenthMarks`) ||
+                                "Enter minimum 10th standard marks requirement"
+                              }
+                            >
+                              <Input
+                                placeholder={PLACEHOLDERS.TENTH_MARKS}
+                                type="number"
+                                min={0}
+                                max={100}
+                                step={0.1}
+                                onChange={(e) => {
+                                  form.setFieldValue(
+                                    ["salaries", index, "tenthMarks"],
+                                    e.target.value,
+                                  );
+                                }}
+                                style={{
+                                  borderRadius: 8,
+                                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                                  border: "1px solid #d1d5db",
+                                }}
+                              />
+                            </Form.Item>
+                          </Col>
+                        </>
+                      )}
                     </Row>
+                    {form.getFieldValue([
+                      "salaries",
+                      index,
+                      "hasHighSchoolCriteria",
+                    ]) && (
+                      <Row gutter={[16, 12]} className="md:gutter-24">
+                        <Col xs={24} md={12}>
+                          {/* Empty column for alignment */}
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            label={
+                              <Text
+                                strong
+                                className="text-xs md:text-sm text-gray-700"
+                              >
+                                Minimum 12th Marks (%)
+                              </Text>
+                            }
+                            name={[field.name, "twelthMarks"]}
+                            validateStatus={
+                              getFieldError(`salaries.${index}.twelthMarks`)
+                                ? "error"
+                                : undefined
+                            }
+                            help={
+                              getFieldError(`salaries.${index}.twelthMarks`) ||
+                              "Enter minimum 12th standard marks requirement"
+                            }
+                            className="mb-3 md:mb-4"
+                          >
+                            <Input
+                              placeholder={PLACEHOLDERS.TWELFTH_MARKS}
+                              type="number"
+                              min={0}
+                              max={100}
+                              step={0.1}
+                              onChange={(e) => {
+                                form.setFieldValue(
+                                  ["salaries", index, "twelthMarks"],
+                                  e.target.value,
+                                );
+                              }}
+                              className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
                     <Row gutter={[16, 12]} className="md:gutter-24">
                       <Col xs={24} md={12}>
                         <Form.Item
@@ -1806,49 +1913,11 @@ const JobDetails = ({
                               strong
                               className="text-xs md:text-sm text-gray-700"
                             >
-                              Minimum 12th Marks (%)
-                            </Text>
-                          }
-                          name={[field.name, "twelthMarks"]}
-                          validateStatus={
-                            getFieldError(`salaries.${index}.twelthMarks`)
-                              ? "error"
-                              : undefined
-                          }
-                          help={
-                            getFieldError(`salaries.${index}.twelthMarks`) ||
-                            "Enter minimum 12th standard marks requirement (leave empty if no minimum)"
-                          }
-                          className="mb-3 md:mb-4"
-                        >
-                          <Input
-                            placeholder={PLACEHOLDERS.TWELFTH_MARKS}
-                            type="number"
-                            min={0}
-                            max={100}
-                            step={0.1}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                ["salaries", index, "twelthMarks"],
-                                e.target.value,
-                              );
-                            }}
-                            className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          label={
-                            <Text
-                              strong
-                              className="text-xs md:text-sm text-gray-700"
-                            >
-                              <span className="text-red-500">* </span>
                               Are Students With Backlogs Allowed?
                             </Text>
                           }
                           name={[field.name, "isBacklogAllowed"]}
+                          initialValue="ACTIVE"
                           validateStatus={
                             getFieldError(`salaries.${index}.isBacklogAllowed`)
                               ? "error"
@@ -1875,7 +1944,7 @@ const JobDetails = ({
                       <>
                         <Title
                           level={5}
-                          className="mt-4 md:mt-6 mb-3 md:mb-4 text-gray-800 font-semibold text-sm md:text-base"
+                          className="mt-4 md:mt-6 mb-3 md:mb-4 text-gray-800 font-semibold underline capitalize text-sm md:text-base"
                         >
                           Placement Compensation Details
                         </Title>
@@ -1888,6 +1957,7 @@ const JobDetails = ({
                                   strong
                                   className="text-xs md:text-sm text-gray-700"
                                 >
+                                  <span className="text-red-500">* </span>
                                   Base Salary (Annual)
                                 </Text>
                               }
@@ -1900,6 +1970,24 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.BASE_SALARY}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
+                                step={1}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "baseSalary"],
+                                    value,
+                                  );
+                                }}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -1924,6 +2012,7 @@ const JobDetails = ({
                                   strong
                                   className="text-xs md:text-sm text-gray-700"
                                 >
+                                  <span className="text-red-500">* </span>
                                   Total CTC (Annual)
                                 </Text>
                               }
@@ -1936,6 +2025,24 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.TOTAL_CTC}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
+                                step={1}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "totalCTC"],
+                                    value,
+                                  );
+                                }}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -1973,6 +2080,23 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.TAKE_HOME_SALARY}
                                 min={0}
                                 max={FIELD_LIMITS.SALARY_MAX}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "takeHomeSalary"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2010,6 +2134,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.GROSS_SALARY}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "grossSalary"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2049,6 +2190,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.JOINING_BONUS}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "joiningBonus"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2086,6 +2244,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.PERFORMANCE_BONUS}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "performanceBonus"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2125,6 +2300,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.RELOCATION}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "relocation"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2154,6 +2346,7 @@ const JobDetails = ({
                                   strong
                                   style={{ fontSize: 14, color: "#374151" }}
                                 >
+                                  <span className="text-red-500">* </span>
                                   First Year CTC
                                 </Text>
                               }
@@ -2163,6 +2356,24 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.FIRST_YEAR_CTC}
                                 min={0}
+                                step={1}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "firstYearCTC"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2203,6 +2414,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder={PLACEHOLDERS.RETENTION_BONUS}
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "retentionBonus"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2241,6 +2469,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="Deductions"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "deductions"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2280,6 +2525,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="Medical Allowance"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "medicalAllowance"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2319,6 +2581,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="ESOP Amount"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "esopAmount"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2380,6 +2659,23 @@ const JobDetails = ({
                                 type="number"
                                 placeholder="Bond Amount"
                                 min={0}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "bondAmount"],
+                                    value,
+                                  );
+                                }}
                                 style={{
                                   borderRadius: 8,
                                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2453,6 +2749,23 @@ const JobDetails = ({
                                 placeholder={PLACEHOLDERS.STIPEND}
                                 min={0}
                                 max={FIELD_LIMITS.STIPEND_MAX}
+                                onKeyDown={(e) => {
+                                  if (
+                                    [".", "e", "E", "+", "-"].includes(e.key)
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onChange={(e) => {
+                                  const value = Math.floor(
+                                    parseFloat(e.target.value) || 0,
+                                  );
+                                  e.target.value = value.toString();
+                                  form.setFieldValue(
+                                    ["salaries", index, "stipend"],
+                                    value,
+                                  );
+                                }}
                                 className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                                 addonBefore={
                                   <CurrencySelect
@@ -2553,6 +2866,23 @@ const JobDetails = ({
                                   type="number"
                                   placeholder="Tentative CTC"
                                   min={0}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      [".", "e", "E", "+", "-"].includes(e.key)
+                                    ) {
+                                      e.preventDefault();
+                                    }
+                                  }}
+                                  onChange={(e) => {
+                                    const value = Math.floor(
+                                      parseFloat(e.target.value) || 0,
+                                    );
+                                    e.target.value = value.toString();
+                                    form.setFieldValue(
+                                      ["salaries", index, "tentativeCTC"],
+                                      value,
+                                    );
+                                  }}
                                   style={{
                                     borderRadius: 8,
                                     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
@@ -2630,10 +2960,19 @@ const JobDetails = ({
                             placeholder={PLACEHOLDERS.OTHER_COMPENSATIONS}
                             type="number"
                             min={0}
+                            onKeyDown={(e) => {
+                              if ([".", "e", "E", "+", "-"].includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
                             onChange={(e) => {
+                              const value = Math.floor(
+                                parseFloat(e.target.value) || 0,
+                              );
+                              e.target.value = value.toString();
                               form.setFieldValue(
                                 ["salaries", index, "otherCompensations"],
-                                e.target.value,
+                                value,
                               );
                             }}
                             className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
@@ -2659,14 +2998,18 @@ const JobDetails = ({
                   style={{
                     marginTop: 24,
                     borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
+                    height: 44,
+                    fontSize: 15,
+                    fontWeight: 600,
+                    borderColor: "#6b7280",
+                    borderWidth: 2,
+                    backgroundColor: "#f9fafb",
+                    color: "#374151",
+                    boxShadow: "0 2px 4px rgba(107, 114, 128, 0.1)",
                   }}
                   disabled={fields.length >= FIELD_LIMITS.SALARY_ENTRIES_MAX}
                 >
-                  + Add Salary Package ({fields.length}/
+                  + Add Compensation Package ({fields.length}/
                   {FIELD_LIMITS.SALARY_ENTRIES_MAX})
                 </Button>
               </div>
@@ -2887,10 +3230,14 @@ const JobDetails = ({
                   style={{
                     marginBottom: 16,
                     borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
+                    height: 44,
+                    fontSize: 15,
+                    fontWeight: 600,
+                    borderColor: "#6b7280",
+                    borderWidth: 2,
+                    backgroundColor: "#f9fafb",
+                    color: "#374151",
+                    boxShadow: "0 2px 4px rgba(107, 114, 128, 0.1)",
                   }}
                   disabled={fields.length >= FIELD_LIMITS.TESTS_MAX}
                 >
@@ -3042,10 +3389,14 @@ const JobDetails = ({
                   style={{
                     marginBottom: 16,
                     borderRadius: 8,
-                    height: 40,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    borderColor: "#d1d5db",
+                    height: 44,
+                    fontSize: 15,
+                    fontWeight: 600,
+                    borderColor: "#6b7280",
+                    borderWidth: 2,
+                    backgroundColor: "#f9fafb",
+                    color: "#374151",
+                    boxShadow: "0 2px 4px rgba(107, 114, 128, 0.1)",
                   }}
                   disabled={fields.length >= FIELD_LIMITS.INTERVIEWS_MAX}
                 >
