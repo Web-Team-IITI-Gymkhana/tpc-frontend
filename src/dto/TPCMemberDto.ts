@@ -7,7 +7,7 @@ export interface TPCMemberDTO {
     program: {
       id: string;
       branch: string;
-      course: "BTech" | "MTech" | "PhD";
+      course: "BTech" | "MTech" | "MTech / MS(Research)" | "PhD";
       year: string;
       department: string;
     };
