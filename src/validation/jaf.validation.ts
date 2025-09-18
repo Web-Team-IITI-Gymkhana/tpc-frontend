@@ -368,30 +368,23 @@ export const jobDetailsValidationSchema = Yup.object({
         baseSalary: Yup.number()
           .required("Base salary is required")
           .min(0, "Salary cannot be negative")
-          .max(10000000, "Salary seems unreasonably high")
           .integer("Base salary must be an integer"),
 
         totalCTC: Yup.number()
           .required("Total CTC is required")
           .min(0, "CTC cannot be negative")
-          .max(10000000, "CTC seems unreasonably high")
           .integer("Total CTC must be an integer"),
 
         takeHomeSalary: Yup.number()
           .nullable()
-          .min(0, "Take home salary cannot be negative")
-          .max(10000000, "Take home salary seems unreasonably high"),
+          .min(0, "Take home salary cannot be negative"),
 
         grossSalary: Yup.number()
           .nullable()
-          .min(0, "Gross salary cannot be negative")
-          .max(10000000, "Gross salary seems unreasonably high"),
+          .min(0, "Gross salary cannot be negative"),
 
         // Internship fields
-        stipend: Yup.number()
-          .nullable()
-          .min(0, "Stipend cannot be negative")
-          .max(1000000, "Stipend seems unreasonably high"),
+        stipend: Yup.number().nullable().min(0, "Stipend cannot be negative"),
 
         accommodation: Yup.boolean().nullable(),
 
