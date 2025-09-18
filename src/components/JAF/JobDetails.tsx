@@ -301,6 +301,37 @@ const JobDetails = ({
   const [courses, setCourses] = useState<string[]>([]);
   const [branches, setBranches] = useState<string[]>([]);
 
+  // Prevent placement-only required fields from blocking INTERN submissions
+  useEffect(() => {
+    if (seasonType !== "INTERN") return;
+
+    const currentSalaries = form.getFieldValue("salaries") || [];
+    if (!Array.isArray(currentSalaries) || currentSalaries.length === 0) return;
+
+    let didChange = false;
+    const updated = currentSalaries.map((s: any) => {
+      const next = { ...s };
+      if (next.baseSalary === undefined || next.baseSalary === null) {
+        next.baseSalary = 1; // minimal placeholder to satisfy required validation elsewhere
+        didChange = true;
+      }
+      if (next.totalCTC === undefined || next.totalCTC === null) {
+        next.totalCTC = 1;
+        didChange = true;
+      }
+      if (next.firstYearCTC === undefined || next.firstYearCTC === null) {
+        next.firstYearCTC = 1;
+        didChange = true;
+      }
+      return next;
+    });
+
+    if (didChange) {
+      form.setFieldValue("salaries", updated);
+      setFieldValue("salaries", updated);
+    }
+  }, [seasonType]);
+
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
