@@ -51,6 +51,9 @@ export default function ContextWrapper(props: any) {
   const [timeTo, setTimeTo] = useState("to");
 
   const filteredEvents = useMemo(() => {
+    if (savedEvents === null) {
+      return [];
+    }
     return savedEvents.filter((evt: selectedDayEvent) =>
       labels
         .filter((lbl) => lbl.checked)
@@ -78,14 +81,17 @@ export default function ContextWrapper(props: any) {
 
         switch (user.role) {
           case "ADMIN":
+          case "TPC_MEMBER":
             data = await fetchEvents();
             break;
           case "RECRUITER":
-            data = await fetchStudentEvents();
-            break;
           case "STUDENT":
+          case "FACULTY":
             data = await fetchStudentEvents();
             break;
+          default:
+            toast.error("Unauthorized user");
+            return;
         }
 
         dispatchCallEvents({ type: "fetch", payload: data });
