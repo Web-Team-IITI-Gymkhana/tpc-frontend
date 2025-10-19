@@ -130,6 +130,7 @@ export interface Salary {
         filepath: string;
         verified: boolean;
       };
+      additionalData?: Record<string, string>;
     }[];
     events: {
       id: string;
@@ -137,6 +138,7 @@ export interface Salary {
       type: string;
       startDateTime: string;
       endDateTime: string;
+      additionalData?: Record<string, string>;
     }[];
     jobCoordinators: {
       id: string;
@@ -271,6 +273,7 @@ export interface Job {
     startDateTime: string;
     endDateTime: string;
     visibleToRecruiter: boolean;
+    additionalData?: Record<string, string>;
   }[];
 
   feedbacks: {
