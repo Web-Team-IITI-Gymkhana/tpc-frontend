@@ -789,7 +789,7 @@ const JobDetails = ({
                   }}
                   maxLength={FIELD_LIMITS.JOB_TITLE_MAX}
                   showCount
-                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm h-10"
                 />
               </Form.Item>
             </Col>
@@ -849,7 +849,7 @@ const JobDetails = ({
                   }}
                   maxLength={FIELD_LIMITS.LOCATION_MAX}
                   showCount
-                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm h-10"
                 />
               </Form.Item>
             </Col>
@@ -878,7 +878,7 @@ const JobDetails = ({
                   }}
                   min={0}
                   max={FIELD_LIMITS.HIRES_MAX}
-                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm h-10"
                 />
               </Form.Item>
             </Col>
@@ -989,6 +989,7 @@ const JobDetails = ({
                 help={getFieldError("skills")}
               >
                 <Select
+                  className="h-10"
                   mode="tags"
                   style={{
                     width: "100%",
@@ -1684,7 +1685,7 @@ const JobDetails = ({
                         </Form.Item>
                       </Col>
                     </Row> */}
-                    <Row gutter={[16, 12]} className="md:gutter-24">
+                    <Row gutter={[16, 12]} className="md:gutter-24 py-5">
                       <Col xs={24} md={12}>
                         <Form.Item
                           label={
@@ -1760,8 +1761,8 @@ const JobDetails = ({
                         <Form.Item
                           label={
                             <Text
-                              strong
-                              style={{ fontSize: 14, color: "#374151" }}
+                              strong  
+                              className="text-xs md:text-sm text-gray-700"
                             >
                               Minimum 10th Marks (%)
                             </Text>
@@ -1789,11 +1790,7 @@ const JobDetails = ({
                                 e.target.value,
                               );
                             }}
-                            style={{
-                              borderRadius: 8,
-                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                              border: "1px solid #d1d5db",
-                            }}
+                            className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                           />
                         </Form.Item>
                       </Col>
@@ -1866,7 +1863,7 @@ const JobDetails = ({
                                 value,
                               );
                             }}
-                            className="rounded-md"
+                            className="rounded-md h-10"
                           />
                         </Form.Item>
                       </Col>
@@ -2485,7 +2482,7 @@ const JobDetails = ({
                             >
                               <Select
                                 placeholder="Select accommodation provision"
-                                className="rounded-md"
+                                className="rounded-md h-10"
                                 options={[
                                   {
                                     value: true,
@@ -2514,7 +2511,7 @@ const JobDetails = ({
                             >
                               <Select
                                 placeholder="Select PPO provision"
-                                className="rounded-md"
+                                className="rounded-md h-10"
                                 options={[
                                   {
                                     value: true,
@@ -2812,6 +2809,7 @@ const JobDetails = ({
                           help={getFieldError(`tests.${index}.type`)}
                         >
                           <Select
+                            className="h-10"
                             placeholder="Select type"
                             options={testType}
                             showSearch
@@ -2967,6 +2965,7 @@ const JobDetails = ({
                           help={getFieldError(`interviews.${index}.type`)}
                         >
                           <Select
+                            className="h-10"
                             placeholder="Select type"
                             options={interviewType}
                             showSearch
