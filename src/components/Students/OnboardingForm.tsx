@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
@@ -48,10 +48,52 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const [pendingField, setPendingField] = useState<
     "backlog" | "tenthMarks" | "twelthMarks" | "numberOfBacklogs" | null
   >(null);
+  const [autoSaving, setAutoSaving] = useState(false);
+
+  // Determine saved backlog status (from server)
+  const savedBacklogStatus = studentData.backlog as
+    | "NEVER"
+    | "PREVIOUS"
+    | "ACTIVE"
+    | undefined;
+
+  // Auto-save numberOfBacklogs = 0 when saved backlog is NEVER or PREVIOUS
+  useEffect(() => {
+    const shouldAutoSaveZero =
+      (savedBacklogStatus === "NEVER" || savedBacklogStatus === "PREVIOUS") &&
+      studentData.numberOfBacklogs !== 0;
+
+    if (!shouldAutoSaveZero || autoSaving) return;
+
+    let cancelled = false;
+    const run = async () => {
+      try {
+        setAutoSaving(true);
+        setNumberOfBacklogs("0");
+        const result = await updateOnboarding({ numberOfBacklogs: 0 });
+        if (!cancelled && result) {
+          toast.success("Number of backlogs saved as 0");
+          onUpdate();
+        }
+      } catch (error: any) {
+        if (!cancelled) {
+          toast.error(error?.message || "Failed to save number of backlogs");
+        }
+      } finally {
+        if (!cancelled) setAutoSaving(false);
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [savedBacklogStatus, studentData.numberOfBacklogs]);
 
   // Check which fields need to be filled
   const needsBacklog =
-    studentData.backlog === null || studentData.backlog === undefined;
+    studentData.backlog === null ||
+    studentData.backlog === undefined ||
+    studentData.backlog === "";
   const needsTenthMarks =
     studentData.tenthMarks === null || studentData.tenthMarks === undefined;
   const needsTwelthMarks =
@@ -92,10 +134,29 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
         toast.error("12th marks should be between 0 and 100");
         return;
       }
-    } else if (field === "numberOfBacklogs" && numberOfBacklogs) {
+    } else if (field === "numberOfBacklogs" && numberOfBacklogs !== "") {
       const backlogs = parseInt(numberOfBacklogs);
-      if (backlogs < 0 || backlogs > 20) {
+      if (Number.isNaN(backlogs) || backlogs < 0 || backlogs > 20) {
         toast.error("Number of backlogs should be between 0 and 20");
+        return;
+      }
+      // Logical consistency with saved backlog status
+      if (savedBacklogStatus === "NEVER" && backlogs !== 0) {
+        toast.error(
+          "If you never had backlogs, the number of backlogs must be 0",
+        );
+        return;
+      }
+      if (savedBacklogStatus !== "ACTIVE" && backlogs !== 0) {
+        toast.error(
+          "If you do not have an active backlog, the number of backlogs must be 0",
+        );
+        return;
+      }
+      if (savedBacklogStatus === "ACTIVE" && backlogs === 0) {
+        toast.error(
+          "If you have an active backlog, the number of backlogs must be at least 1",
+        );
         return;
       }
     }
@@ -217,6 +278,44 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
           </div>
         )}
 
+        {needsNumberOfBacklogs && savedBacklogStatus === "ACTIVE" && (
+          <div className="space-y-3">
+            <Label
+              htmlFor="numberOfBacklogs"
+              className="text-sm font-medium text-slate-700"
+            >
+              Number of Backlogs *
+            </Label>
+            <p className="text-xs text-slate-500 mb-2">
+              Enter the total number of backlogs you currently have. If you have no backlogs, enter <strong>0</strong>.
+            </p>
+            <div className="flex gap-3">
+              <Input
+                id="numberOfBacklogs"
+                type="number"
+                min={1}
+                max={20}
+                step="1"
+                value={numberOfBacklogs}
+                onChange={(e) => setNumberOfBacklogs(e.target.value)}
+                placeholder="Enter number of backlogs (e.g., 1)"
+                className="flex-1"
+              />
+              <Button
+                onClick={() => handleSubmit("numberOfBacklogs")}
+                disabled={!numberOfBacklogs || loading}
+                className="min-w-[80px]"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {needsTenthMarks && (
           <div className="space-y-3">
             <Label
@@ -297,43 +396,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
           </div>
         )}
 
-        {needsNumberOfBacklogs && (
-          <div className="space-y-3">
-            <Label
-              htmlFor="numberOfBacklogs"
-              className="text-sm font-medium text-slate-700"
-            >
-              Number of Backlogs *
-            </Label>
-            <p className="text-xs text-slate-500 mb-2">
-              Enter the total number of backlogs you currently have. If you have no backlogs, enter <strong>0</strong>.
-            </p>
-            <div className="flex gap-3">
-              <Input
-                id="numberOfBacklogs"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
-                value={numberOfBacklogs}
-                onChange={(e) => setNumberOfBacklogs(e.target.value)}
-                placeholder="Enter number of backlogs (e.g., 0)"
-                className="flex-1"
-              />
-              <Button
-                onClick={() => handleSubmit("numberOfBacklogs")}
-                disabled={!numberOfBacklogs || loading}
-                className="min-w-[80px]"
-              >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  "Save"
-                )}
-              </Button>
-            </div>
-          </div>
-        )}
+        
 
         <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-sm text-red-800 font-medium mb-2">
