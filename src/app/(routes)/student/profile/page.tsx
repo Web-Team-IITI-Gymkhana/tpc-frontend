@@ -205,7 +205,9 @@ const ProfilePage = () => {
     studentData.tenthMarks === null ||
     studentData.tenthMarks === undefined ||
     studentData.twelthMarks === null ||
-    studentData.twelthMarks === undefined;
+    studentData.twelthMarks === undefined ||
+    studentData.numberOfBacklogs === null ||
+    studentData.numberOfBacklogs === undefined;
 
   const isOnboardingComplete = !needsOnboarding;
 
@@ -499,6 +501,29 @@ const ProfilePage = () => {
                   {studentData.twelthMarks !== null &&
                   studentData.twelthMarks !== undefined ? (
                     `${studentData.twelthMarks}%`
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
+                </p>
+              </div>
+            </div>
+            {/* Number of Backlogs */}
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-orange-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Number of Backlogs
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.numberOfBacklogs !== null &&
+                  studentData.numberOfBacklogs !== undefined ? (
+                    studentData.numberOfBacklogs === 0 ? (
+                      "No Backlogs"
+                    ) : (
+                      `${studentData.numberOfBacklogs} Backlog${studentData.numberOfBacklogs > 1 ? 's' : ''}`
+                    )
                   ) : (
                     <span className="text-amber-600 font-medium">Pending</span>
                   )}

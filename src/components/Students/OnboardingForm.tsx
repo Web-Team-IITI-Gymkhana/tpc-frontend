@@ -42,10 +42,11 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const [backlog, setBacklog] = useState<string>("");
   const [tenthMarks, setTenthMarks] = useState<string>("");
   const [twelthMarks, setTwelthMarks] = useState<string>("");
+  const [numberOfBacklogs, setNumberOfBacklogs] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingField, setPendingField] = useState<
-    "backlog" | "tenthMarks" | "twelthMarks" | null
+    "backlog" | "tenthMarks" | "twelthMarks" | "numberOfBacklogs" | null
   >(null);
 
   // Check which fields need to be filled
@@ -55,12 +56,13 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
     studentData.tenthMarks === null || studentData.tenthMarks === undefined;
   const needsTwelthMarks =
     studentData.twelthMarks === null || studentData.twelthMarks === undefined;
-
+  const needsNumberOfBacklogs =
+    studentData.numberOfBacklogs === null || studentData.numberOfBacklogs === undefined;
   const hasAnyPendingFields =
-    needsBacklog || needsTenthMarks || needsTwelthMarks;
+    needsBacklog || needsTenthMarks || needsTwelthMarks || needsNumberOfBacklogs;
 
   const handleSubmit = async (
-    field: "backlog" | "tenthMarks" | "twelthMarks",
+    field: "backlog" | "tenthMarks" | "twelthMarks" | "numberOfBacklogs",
   ) => {
     // Validate the field value first
     if (field === "backlog" && !backlog) {
@@ -71,6 +73,9 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       return;
     } else if (field === "twelthMarks" && !twelthMarks) {
       toast.error("Please enter 12th marks");
+      return;
+    } else if (field === "numberOfBacklogs" && !numberOfBacklogs) {
+      toast.error("Please enter number of backlogs");
       return;
     }
 
@@ -85,6 +90,12 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       const marks = parseFloat(twelthMarks);
       if (marks < 0 || marks > 100) {
         toast.error("12th marks should be between 0 and 100");
+        return;
+      }
+    } else if (field === "numberOfBacklogs" && numberOfBacklogs) {
+      const backlogs = parseInt(numberOfBacklogs);
+      if (backlogs < 0 || backlogs > 20) {
+        toast.error("Number of backlogs should be between 0 and 20");
         return;
       }
     }
@@ -109,19 +120,22 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
         updateData.tenthMarks = parseFloat(tenthMarks);
       } else if (pendingField === "twelthMarks" && twelthMarks) {
         updateData.twelthMarks = parseFloat(twelthMarks);
+      } else if (pendingField === "numberOfBacklogs" && numberOfBacklogs) {
+        updateData.numberOfBacklogs = parseInt(numberOfBacklogs);
       }
 
       const result = await updateOnboarding(updateData);
 
       if (result) {
         toast.success(
-          `${pendingField === "backlog" ? "Backlog status" : pendingField === "tenthMarks" ? "10th marks" : "12th marks"} saved successfully!`,
+          `${pendingField === "backlog" ? "Backlog status" : pendingField === "tenthMarks" ? "10th marks" : pendingField === "twelthMarks" ? "12th marks" : "Number of backlogs"} saved successfully!`,
         );
 
         // Clear the form field
         if (pendingField === "backlog") setBacklog("");
         else if (pendingField === "tenthMarks") setTenthMarks("");
         else if (pendingField === "twelthMarks") setTwelthMarks("");
+        else if (pendingField === "numberOfBacklogs") setNumberOfBacklogs("");
 
         onUpdate(); // Refresh parent data
       } else {
@@ -271,6 +285,44 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
               <Button
                 onClick={() => handleSubmit("twelthMarks")}
                 disabled={!twelthMarks || loading}
+                className="min-w-[80px]"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {needsNumberOfBacklogs && (
+          <div className="space-y-3">
+            <Label
+              htmlFor="numberOfBacklogs"
+              className="text-sm font-medium text-slate-700"
+            >
+              Number of Backlogs *
+            </Label>
+            <p className="text-xs text-slate-500 mb-2">
+              Enter the total number of backlogs you currently have. If you have no backlogs, enter <strong>0</strong>.
+            </p>
+            <div className="flex gap-3">
+              <Input
+                id="numberOfBacklogs"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                value={numberOfBacklogs}
+                onChange={(e) => setNumberOfBacklogs(e.target.value)}
+                placeholder="Enter number of backlogs (e.g., 0)"
+                className="flex-1"
+              />
+              <Button
+                onClick={() => handleSubmit("numberOfBacklogs")}
+                disabled={!numberOfBacklogs || loading}
                 className="min-w-[80px]"
               >
                 {loading ? (
