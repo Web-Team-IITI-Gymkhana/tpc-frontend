@@ -9,7 +9,7 @@ export default function Labels() {
 
   return (
     <React.Fragment>
-      <p className="text-gray-500 font-bold ">Label</p>
+      <p className="text-white font-bold ">Label</p>
       {Array.from(labelsClasses.entries()).map(([label, color], idx) => {
         const checked =
           labels.find((lbl) => lbl.label === label)?.checked || false;
@@ -21,7 +21,7 @@ export default function Labels() {
               onChange={() => updateLabel({ label, checked: !checked })}
               className={`form-checkbox h-5 w-5 text-${color}-400 rounded focus:ring-0 cursor-pointer`}
             />
-            <span className="ml-2 text-gray-700 font-medium capitalize">
+            <span className="ml-2 text-white font-medium capitalize">
               {label}
             </span>
           </label>
