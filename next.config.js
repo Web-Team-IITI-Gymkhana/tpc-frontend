@@ -5,20 +5,15 @@ const nextConfig = {
   },
   reactStrictMode: false,
   images: {
-    remotePatterns: [
-      {
-        protocol: "http",
-        hostname: "localhost",
-      },
-    ],
+    domains: ["localhost"],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      config.resolve.fallback = { ...config.resolve.fallback, fs: false };
+      config.resolve.fallback.fs = false;
     }
     return config;
   },
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   assetPrefix: "/portal",
 };
 
