@@ -8,12 +8,12 @@ import { patchProfile } from "@/helpers/recruiter/api";
 import { getDomains } from "@/helpers/recruiter/api";
 import { MultiSelect } from "@/components/ui/multiselect";
 import { CompanyDetailsLoader } from "../Loader/loaders";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Building, 
-  MapPin, 
+import {
+  User,
+  Mail,
+  Phone,
+  Building,
+  MapPin,
   Calendar,
   Globe,
   Users,
@@ -55,7 +55,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
           contact: contact,
         },
       };
-      
+
       const res = await patchProfile(data);
       if (res) {
         toast.success("Profile updated successfully!");
@@ -86,7 +86,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
             </div>
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="p-6 space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
@@ -94,7 +94,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
               <User className="w-5 h-5 text-slate-600" />
               <h4 className="font-semibold text-slate-800">Basic Information</h4>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium text-slate-700">
@@ -109,7 +109,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
                   className="h-11 border-slate-300 focus:border-slate-500"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="designation" className="text-sm font-medium text-slate-700">
                   Designation *
@@ -132,7 +132,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
               <Phone className="w-5 h-5 text-slate-600" />
               <h4 className="font-semibold text-slate-800">Contact Information</h4>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium text-slate-700">
@@ -150,7 +150,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="contact" className="text-sm font-medium text-slate-700">
                   Mobile Number *
@@ -168,7 +168,7 @@ export const EditForm = (params: { profile: ProfileFC }) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="landline" className="text-sm font-medium text-slate-700">
                 Landline Number
@@ -242,7 +242,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   );
 
   const [domainOptions, setDomainsOptions] = useState<[string] | []>([]);
-  
+
   useEffect(() => {
     const fetchDomains = async () => {
       try {
@@ -258,6 +258,10 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   }, []);
 
   const updateCompanyProfile = async () => {
+      if (!domains || domains.length === 0) {
+    toast.error("Please select at least one domain");
+    return;
+  }
     setUpdating(true);
     try {
       const data: updateProfileFC = {
@@ -271,7 +275,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
           socialMediaLink: socialMediaLink,
         },
       };
-      
+
       const res = await patchProfile(data);
       if (res) {
         toast.success("Company information updated successfully!");
@@ -306,7 +310,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
             </div>
           </CardTitle>
         </CardHeader>
-        
+
         <CardContent className="p-6 space-y-8">
           {/* Basic Company Info */}
           <div className="space-y-4">
@@ -314,7 +318,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
               <Building className="w-5 h-5 text-slate-600" />
               <h4 className="font-semibold text-slate-800">Company Details</h4>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="companyName" className="text-sm font-medium text-slate-700">
@@ -329,7 +333,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                   className="h-11 border-slate-300 focus:border-slate-500"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="category" className="text-sm font-medium text-slate-700">
                   Category *
@@ -344,7 +348,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="size" className="text-sm font-medium text-slate-700">
@@ -362,7 +366,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="yearOfEstablishment" className="text-sm font-medium text-slate-700">
                   Year of Establishment *
@@ -380,7 +384,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="socialMediaLink" className="text-sm font-medium text-slate-700">
                 Website / Social Media Link
@@ -405,7 +409,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
               <Briefcase className="w-5 h-5 text-slate-600" />
               <h4 className="font-semibold text-slate-800">Business Domains</h4>
             </div>
-            
+
             <div className="space-y-2">
               <Label className="text-sm font-medium text-slate-700">
                 Select Domains *
@@ -425,7 +429,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
               <MapPin className="w-5 h-5 text-slate-600" />
               <h4 className="font-semibold text-slate-800">Company Address</h4>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="city" className="text-sm font-medium text-slate-700">
@@ -440,7 +444,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                   className="h-11 border-slate-300 focus:border-slate-500"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="state" className="text-sm font-medium text-slate-700">
                   State *
@@ -455,7 +459,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="line1" className="text-sm font-medium text-slate-700">
                 Address Line 1 *
@@ -469,7 +473,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                 className="h-11 border-slate-300 focus:border-slate-500"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="line2" className="text-sm font-medium text-slate-700">
                 Address Line 2
@@ -483,7 +487,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                 className="h-11 border-slate-300 focus:border-slate-500"
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="country" className="text-sm font-medium text-slate-700">
@@ -498,7 +502,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
                   className="h-11 border-slate-300 focus:border-slate-500"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="zipcode" className="text-sm font-medium text-slate-700">
                   Zip Code
@@ -548,7 +552,7 @@ const EditProfilePage = ({ data }: { data: ProfileFC }) => {
         <h1 className="text-2xl font-bold text-slate-800 mb-2">Edit Profile</h1>
         <p className="text-slate-600">Update your personal and company information</p>
       </div>
-      
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <EditForm profile={data} />
         <EditCompanyForm profile={data} />
