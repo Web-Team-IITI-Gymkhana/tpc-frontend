@@ -258,6 +258,10 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
   }, []);
 
   const updateCompanyProfile = async () => {
+      if (!domains || domains.length === 0) {
+    toast.error("Please select at least one domain");
+    return;
+  }
     setUpdating(true);
     try {
       const data: updateProfileFC = {
