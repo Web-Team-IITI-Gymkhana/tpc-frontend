@@ -951,7 +951,7 @@ export default function RecruiterSignup() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
-                    Domains
+                    Domains *
                   </Label>
                   <MultiSelect
                     givenOptions={jaf?.domains || []}
