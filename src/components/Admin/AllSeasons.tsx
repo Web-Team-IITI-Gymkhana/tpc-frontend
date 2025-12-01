@@ -14,6 +14,7 @@ import {
   addSeason,
   activateSeason,
   getSeasonPolicyDocumentAdmin,
+  deleteSeasons,
 } from "@/helpers/api";
 
 const hiddenColumns = [
@@ -213,6 +214,22 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
     }
   };
 
+  const handleDelete = async (seasonID: string, year: string, type: string) => {
+    const confirmMessage = `⚠️ WARNING: Are you sure you want to delete season "${year} - ${type}"?\n\nThis will CASCADE DELETE:\n- All jobs in this season\n- All events, salaries, and offers for those jobs\n\nRegistrations and students will NOT be deleted.\n\nThis action CANNOT be undone!`;
+    
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      await deleteSeasons([seasonID]);
+      toast.success("Season deleted successfully");
+      setSeason((prev) => prev.filter((s) => s.id !== seasonID));
+    } catch (error) {
+      toast.error("Failed to delete season");
+    }
+  };
+
   return (
     <div>
       <div className="overflow-y-auto">
@@ -233,6 +250,9 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
               </th>
               <th scope="col" className="px-6 py-3">
                 Actions
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Delete
               </th>
             </tr>
           </thead>
@@ -286,6 +306,18 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
                     }}
                   >
                     {season.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                  </Button>
+                </td>
+                <td className="px-6 py-4">
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(season.id, season.year, season.type);
+                    }}
+                    variant="destructive"
+                    size="sm"
+                  >
+                    🗑️ Delete
                   </Button>
                 </td>
               </tr>

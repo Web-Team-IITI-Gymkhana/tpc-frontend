@@ -57,3 +57,25 @@ export async function fetchTPCMembers(): Promise<TPCMemberDTO[]> {
     method: "GET",
   });
 }
+
+// Delete functions
+export async function deleteStudents(ids: string[]): Promise<any> {
+  return apiCall("/students", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+}
+
+export async function deleteTPCMembers(ids: string[]): Promise<any> {
+  return apiCall("/tpc-members", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+}
+
+export async function deleteRegistrations(ids: string[]): Promise<any> {
+  return apiCall("/registrations", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+}
