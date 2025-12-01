@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchPrograms, postPrograms } from "@/helpers/api";
+import { fetchPrograms, postPrograms, deletePrograms } from "@/helpers/api";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import Table from "@/components/NewTableComponent/Table";
 import Loader from "@/components/Loader/loader";
@@ -126,6 +126,27 @@ const ProgramsPage = () => {
     setSubmitting(false);
   };
 
+  const handleDelete = async (selectedPrograms: any[]) => {
+    if (selectedPrograms.length === 0) {
+      toast.error("Please select at least one program to delete");
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to delete ${selectedPrograms.length} program(s)? This action cannot be undone.`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const ids = selectedPrograms.map((program) => program.id);
+      await deletePrograms(ids);
+      toast.success(`Successfully deleted ${selectedPrograms.length} program(s)`);
+      await getPrograms(); // Refresh the list
+    } catch (error) {
+      toast.error("Failed to delete programs. They might have associated students.");
+    }
+  };
+
   return (
     <div className="m-10">
       <h1 className="text-center font-bold text-3xl my-5 py-5">Programs</h1>
@@ -138,7 +159,13 @@ const ProgramsPage = () => {
             <Loader />
           </div>
         ) : (
-          <Table data={programs} columns={visibleColumns} type={"program"} />
+          <Table
+            data={programs}
+            columns={visibleColumns}
+            type={"program"}
+            buttonText="Delete Selected"
+            buttonAction={handleDelete}
+          />
         )}
       </div>
       <Dialog open={open} onOpenChange={setOpen}>

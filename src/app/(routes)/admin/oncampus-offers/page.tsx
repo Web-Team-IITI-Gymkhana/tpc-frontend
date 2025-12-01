@@ -1,5 +1,5 @@
 "use client";
-import { fetchAllSeasons, fetchOnCampusOffers } from "@/helpers/api";
+import { fetchAllSeasons, fetchOnCampusOffers, deleteOnCampusOffers } from "@/helpers/api";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { onCampusOfferDTO } from "@/dto/onCampusOfferDTO";
 import Table from "@/components/NewTableComponent/Table";
@@ -18,6 +18,26 @@ const OnCampusOffersPage = () => {
   const [loading, setLoading] = useState(true);
   const [allOffers, setAllOffers] = useState();
   const [visibleColumns, setVisibleColumns] = useState<any[]>([]);
+
+  const loadOffers = async () => {
+    if (!selectedSeason) return;
+    
+    setLoading(true);
+    try {
+      const data = await fetchOnCampusOffers(selectedSeason);
+      setAllOffers(data);
+      
+      if (seasons.find(season => season.id === selectedSeason)?.type === "INTERN") {
+        setVisibleColumns(columns.filter((column: any) => !internHiddenColumns.includes(column?.accessorKey)));
+      } else {
+        setVisibleColumns(columns.filter((column: any) => !placementHiddenColumns.includes(column?.accessorKey)));
+      }
+    } catch (error) {
+      toast.error("Failed to fetch on campus offers");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const getData = async () => {
@@ -42,24 +62,29 @@ const OnCampusOffersPage = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedSeason) {
-      try {
-      setLoading(true);
-      fetchOnCampusOffers(selectedSeason).then((data) => {
-        setAllOffers(data);
-      });
-      if (seasons.find(season => season.id === selectedSeason)?.type === "INTERN") {
-        setVisibleColumns(columns.filter((column: any) => !internHiddenColumns.includes(column?.accessorKey)));
-      } else {
-          setVisibleColumns(columns.filter((column: any) => !placementHiddenColumns.includes(column?.accessorKey)));
-        }
-      } catch (error) {
-        toast.error("Failed to fetch on campus offers");
-      } finally {
-        setLoading(false);
-      }
-    }
+    loadOffers();
   }, [selectedSeason]);
+
+  const handleDelete = async (selectedOffers: any[]) => {
+    if (selectedOffers.length === 0) {
+      toast.error("Please select at least one offer to delete");
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to delete ${selectedOffers.length} on-campus offer(s)? This action cannot be undone.`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const ids = selectedOffers.map((offer) => offer.id);
+      await deleteOnCampusOffers(ids);
+      toast.success(`Successfully deleted ${selectedOffers.length} offer(s)`);
+      await loadOffers(); // Refresh the list
+    } catch (error) {
+      toast.error("Failed to delete offers");
+    }
+  };
 
   return (
     <div className="container mx-auto my-4 md:my-8 px-2 md:px-4">
@@ -93,6 +118,8 @@ const OnCampusOffersPage = () => {
             data={allOffers}
             columns={visibleColumns}
             type={"on-campus-offers"}
+            buttonText="Delete Selected"
+            buttonAction={handleDelete}
           />
         </div>
       )}
