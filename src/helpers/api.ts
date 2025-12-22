@@ -550,7 +550,7 @@ export const postOnCampusOffer = async (
 };
 
 export const fetchTpcMembers = async () => {
-  return apiCall(`/tpc-members`);
+  return apiCall(`/camc-members`);
 };
 
 export const postJobCoordinator = async (
@@ -857,6 +857,70 @@ export const updateExternalOpportunity = async (opportunity: any) => {
 
 export const deleteExternalOpportunities = async (ids: string[]) => {
   return apiCall("/external-opportunities", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+// Delete functions for admin components
+export const deleteCompanies = async (ids: string[]) => {
+  return apiCall("/companies", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteRecruiters = async (ids: string[]) => {
+  return apiCall("/recruiters", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteJobs = async (ids: string[]) => {
+  return apiCall("/jobs", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deletePrograms = async (ids: string[]) => {
+  return apiCall("/programs", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteSeasons = async (ids: string[]) => {
+  return apiCall("/seasons", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteOnCampusOffers = async (ids: string[]) => {
+  return apiCall("/on-campus-offers", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteOffCampusOffers = async (ids: string[]) => {
+  return apiCall("/off-campus-offers", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteSalaries = async (ids: string[]) => {
+  return apiCall("/salaries", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteEvents = async (ids: string[]) => {
+  return apiCall("/events", {
     method: "DELETE",
     queryParam: { id: ids },
   });

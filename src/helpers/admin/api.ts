@@ -46,14 +46,36 @@ export async function createRegistrations(
 export async function promoteToManagers(
   payload: TPCMemberPayload[],
 ): Promise<any> {
-  return apiCall("/tpc-members", {
+  return apiCall("/camc-members", {
     method: "POST",
     body: payload,
   });
 }
 
 export async function fetchTPCMembers(): Promise<TPCMemberDTO[]> {
-  return apiCall("/tpc-members", {
+  return apiCall("/camc-members", {
     method: "GET",
+  });
+}
+
+// Delete functions
+export async function deleteStudents(ids: string[]): Promise<any> {
+  return apiCall("/students", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+}
+
+export async function deleteTPCMembers(ids: string[]): Promise<any> {
+  return apiCall("/camc-members", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+}
+
+export async function deleteRegistrations(ids: string[]): Promise<any> {
+  return apiCall("/registrations", {
+    method: "DELETE",
+    queryParam: { id: ids },
   });
 }

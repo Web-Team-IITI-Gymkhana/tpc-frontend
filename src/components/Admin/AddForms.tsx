@@ -62,7 +62,7 @@ const JobCoordinatorForm = ({ jobId }: { jobId: string }) => {
             />
             <br />
             <label htmlFor="tpcMember" className="mt-2 text-sm md:text-base">
-              Select TPC Member
+              Select CAMC Member
             </label>
             <Select
               options={options}

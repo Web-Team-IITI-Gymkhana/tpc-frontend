@@ -15,7 +15,7 @@ const AuthLayout = async ({ children }: Props) => {
         <div className="min-h-screen flex">
           {/* Left side - Brand/Info section - Fixed */}
           <div className="hidden lg:flex lg:w-[560px] lg:flex-col lg:justify-center lg:px-12 bg-gradient-to-br from-slate-800 to-slate-800 lg:fixed lg:top-0 lg:left-0 lg:h-screen lg:z-10">
-         
+
             <div className="space-y-12 opacity-80">
               {/* Logo/Brand Section */}
               <div className="text-center space-y-4">
@@ -29,7 +29,7 @@ const AuthLayout = async ({ children }: Props) => {
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold text-white mb-2">
-                    Training & Placement Cell
+                   Career Advancement & Mentoring Centre
                   </h1>
                   <div className="flex items-center justify-center gap-2 text-slate-300">
                     <GraduationCap className="h-5 w-5" />
@@ -37,11 +37,11 @@ const AuthLayout = async ({ children }: Props) => {
                   </div>
                 </div>
               </div>
-              
-              
+
+
             </div>
           </div>
-          
+
           {/* Right side - Form section - Scrollable */}
           <div className="flex-1 flex flex-col justify-center px-8 py-12 lg:px-12 xl:px-16 bg-white lg:ml-[560px]">
             <div className="sm:mx-auto sm:w-full sm:max-w-lg lg:max-w-xl xl:max-w-2xl">

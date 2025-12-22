@@ -98,6 +98,7 @@ const VALIDATION_MESSAGES = {
   MAX_VALUE: (max: number) => `Value must not exceed ${max}`,
   INVALID_YEAR: "Please enter a valid year",
   INVALID_SIZE: "Please enter a valid company size",
+  DOMAINS_REQUIRED: "Please select at least one domain",
 };
 
 interface ValidationErrors {
@@ -182,6 +183,14 @@ export default function RecruiterSignup() {
     };
     loadData();
   }, []);
+
+  // Validation function for domains array
+  const validateDomainsField = (domains: string[]): string => {
+    if (createCompany && (!domains || domains.length === 0)) {
+      return VALIDATION_MESSAGES.DOMAINS_REQUIRED;
+    }
+    return "";
+  };
 
   // Real-time validation functions
   const validateField = (field: string, value: string): string => {
@@ -291,7 +300,7 @@ export default function RecruiterSignup() {
   const isRequiredField = (field: string): boolean => {
     const requiredPersonalFields = ["name", "email", "contact", "designation"];
     const requiredCompanyFields = createCompany
-      ? ["companyName", "category", "line1", "city", "state", "country"]
+      ? ["companyName", "category", "line1", "city", "state", "country", "domains"]
       : ["companyId"];
 
     return (
@@ -324,6 +333,11 @@ export default function RecruiterSignup() {
 
   const handleDomainsChange = (value: string[]) => {
     setCompanyInfo((prev) => ({ ...prev, domains: value }));
+
+    // Real-time validation for domains
+    const error = validateDomainsField(value);
+    setValidationErrors((prev) => ({ ...prev, domains: error }));
+    setTouched((prev) => ({ ...prev, domains: true }));
   };
 
   const handleAddressChange = (field: string, value: string) => {
@@ -381,6 +395,13 @@ export default function RecruiterSignup() {
           isValid = false;
         }
       });
+
+      // Validate domains
+      const domainsError = validateDomainsField(companyInfo.domains);
+      if (domainsError) {
+        errors.domains = domainsError;
+        isValid = false;
+      }
     } else {
       // Validate company selection
       if (!companyInfo.companyId) {
@@ -957,7 +978,14 @@ export default function RecruiterSignup() {
                     givenOptions={jaf?.domains || []}
                     formData={companyInfo.domains}
                     setFormData={handleDomainsChange}
+                    hasError={isFieldInvalid("domains")}
                   />
+                  {getFieldError("domains") && (
+                    <div className="flex items-center gap-1 text-red-500 text-sm">
+                      <AlertCircle className="h-3 w-3" />
+                      {getFieldError("domains")}
+                    </div>
+                  )}
                 </div>
               </div>
 

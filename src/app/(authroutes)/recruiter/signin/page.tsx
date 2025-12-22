@@ -14,7 +14,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full">
-    
+
 
       {/* Form Card */}
       <Card className="shadow-lg border-0 bg-white">
@@ -54,7 +54,7 @@ const LoginForm = () => {
 
           <div className="space-y-4">
             <LoginWithEmail email={email} />
-            
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-gray-300" />
@@ -65,8 +65,8 @@ const LoginForm = () => {
             </div>
 
             <Link href="/recruiter/signup/" className="block">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full h-12 border-gray-300 hover:bg-gray-50 text-gray-700 font-medium"
               >
                 Create New Account

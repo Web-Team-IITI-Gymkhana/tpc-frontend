@@ -42,7 +42,7 @@ export function middleware(request: NextRequest) {
   }
   if (
     request.nextUrl.pathname === "/" &&
-    (user?.role === "STUDENT" || user?.role === "TPC_MEMBER")
+    (user?.role === "STUDENT" || user?.role === "CAMC_MEMBER")
   ) {
     return redirectTo("/student/profile");
   }
@@ -57,21 +57,21 @@ export function middleware(request: NextRequest) {
   }
   if (
     user?.role !== "ADMIN" &&
-    user?.role !== "TPC_MEMBER" &&
+    user?.role !== "CAMC_MEMBER" &&
     request.nextUrl.pathname.startsWith(adminRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
     user?.role !== "ADMIN" &&
-    user?.role !== "TPC_MEMBER" &&
+    user?.role !== "CAMC_MEMBER" &&
     request.nextUrl.pathname.startsWith(dashBoardRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
     user?.role !== "STUDENT" &&
-    user?.role !== "TPC_MEMBER" &&
+    user?.role !== "CAMC_MEMBER" &&
     request.nextUrl.pathname.startsWith(studentRoutes)
   ) {
     return redirectTo("/login");

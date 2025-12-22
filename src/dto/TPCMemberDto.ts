@@ -1,4 +1,4 @@
-// TPC Member DTO matching the API response structure
+// CAMC Member DTO matching the API response structure
 export interface TPCMemberDTO {
   id: string;
   role: "MANAGER" | "COORDINATOR";

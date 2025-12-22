@@ -81,7 +81,7 @@ export default function ContextWrapper(props: any) {
 
         switch (user.role) {
           case "ADMIN":
-          case "TPC_MEMBER":
+          case "CAMC_MEMBER":
             data = await fetchEvents();
             break;
           case "RECRUITER":

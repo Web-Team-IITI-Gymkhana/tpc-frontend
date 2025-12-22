@@ -46,7 +46,7 @@ jobs:
         with:
           repository: Web-Team-IITI-Gymkhana/tpc-pipeline-testing
           ref: "main"
-          token: ${{ secrets.TPC_GITHUB_ACTION_ADMIN }}
+          token: ${{ secrets.tpc_GITHUB_ACTION_ADMIN }}
           path: base_dir
 
       - name: Changing Chart version
