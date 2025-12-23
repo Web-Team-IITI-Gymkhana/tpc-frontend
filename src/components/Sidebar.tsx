@@ -42,7 +42,7 @@ const Sidebar = () => {
         {/* Mobile Navbar Header - Always visible */}
         <div className="flex items-center justify-between p-4 bg-slate-800 border-b border-slate-600">
           <Link href="/" className="text-white font-bold text-xl">
-            TPC
+            CAMC
           </Link>
           <button
             onClick={context.sidebarToggle}
