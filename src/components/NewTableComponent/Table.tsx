@@ -141,6 +141,15 @@ const Table: React.FC<TableProps> = ({
               <MenuItem>View {type}</MenuItem>
             </Link>,
           ]
+        : type === "feedback"
+        ? [
+            <Link
+              href={`/admin/feedback/${row.original.id}`}
+              key="view"
+            >
+              <MenuItem>View Feedback</MenuItem>
+            </Link>,
+          ]
         : type === "season"
           ? [
               <MenuItem
