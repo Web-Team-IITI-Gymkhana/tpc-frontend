@@ -139,7 +139,7 @@ const RecruiterDashboard = () => {
             </div>
           </div>
         </Link>
-        <Link href="/feedback">
+        <Link href="/recruiter/feedback">
           <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
             <div className="flex justify-start gap-3">
               <div className="w-5 flex-shrink-0 text-white">

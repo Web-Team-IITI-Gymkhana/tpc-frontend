@@ -479,6 +479,12 @@ export const addRecruiterFeedback = async (body: any) => {
   });
 };
 
+export const getRecruiterFeedbackSeasons = async () => {
+  return apiCall("/recruiter-feedback/seasons", {
+    method: "GET",
+  });
+};
+
 export const getSeasonPolicyDocument = (fileName: string) => {
   OpenFileViaUploads(fileName, "policy");
 };

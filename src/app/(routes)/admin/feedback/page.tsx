@@ -36,7 +36,7 @@ const FeedbackPage = () => {
   }, []);
 
   return (
-    <div className="m-2 md:m-6 lg:m-10">
+    <div className="bg-gray-200">
       <h1 className="text-center font-bold text-3xl my-5 py-5">
         Recruiter Feedback
       </h1>
