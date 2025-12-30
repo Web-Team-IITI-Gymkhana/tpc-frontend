@@ -7,6 +7,7 @@ import Loader from "@/components/Loader/loader";
 import { Button } from "antd";
 import jsPDF from "jspdf";
 import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
+import { generateFeedbackPdf } from "@/utils/generateFeedbackPdf";
 
 /* ---------------- Rating Mapping ---------------- */
 
@@ -42,193 +43,7 @@ const FeedbackDetailPage = ({ params }: any) => {
   /* ---------------- PDF ---------------- */
 
   const downloadPdf = () => {
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
-
-    let y = 50;
-    const left = 60;
-    const right = 535;
-    const colGap = 260;
-    const lineGap = 18;
-
-    const centerText = (text: string, size: number) => {
-      doc.setFontSize(size);
-      doc.text(text, 297.5, y, { align: "center" });
-      y += lineGap;
-    };
-
-    const sectionTitle = (text: string) => {
-      y += 10;
-      doc.setFontSize(13);
-      doc.text(text, left, y);
-      y += lineGap;
-    };
-
-    const twoColRow = (
-  items: { label: string; value: string }[],
-) => {
-  doc.setFontSize(11);
-
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const usableWidth = pageWidth - left * 2;
-
-  const colWidth = usableWidth / 2; // EXACTLY 2 columns
-
-  let maxLines = 1;
-
-  items.slice(0, 2).forEach((item, index) => {
-    if (!item.label) return;
-
-    const x = left + index * colWidth;
-
-    // label (bold)
-    doc.setFont(undefined, "bold");
-    doc.text(`${item.label}:`, x, y);
-
-    // value (normal)
-    doc.setFont(undefined, "normal");
-    const valueX = x + 90;
-    const maxValueWidth = colWidth - 95;
-
-    const wrapped = doc.splitTextToSize(
-      item.value || "-",
-      maxValueWidth,
-    );
-
-    doc.text(wrapped, valueX, y);
-
-    maxLines = Math.max(maxLines, wrapped.length);
-  });
-
-  y += maxLines * lineGap;
-};
-
-
-
-
-    const singleLine = (label: string, value: string) => {
-      doc.setFontSize(11);
-      doc.text(`${label}:`, left, y);
-      doc.text(value || "-", left + 180, y);
-      y += lineGap;
-    };
-
-    /* Header */
-    centerText("TRAINING AND PLACEMENT OFFICE", 18);
-    y += 10;
-
-    centerText("INDIAN INSTITUTE OF TECHNOLOGY, INDORE", 18);
-    doc.line(left, y, right, y);
-    y += 30;
-
-    /* Title */
-    centerText("Recruiter Feedback", 14);
-    y += 10;
-
-    /* Recruiter Info */
-    sectionTitle("General Information");
-    y += 4;
-
-    twoColRow([
-      {
-        label: "Name of official",
-        value: feedback.recruiter.user.name,
-      },
-      {
-        label: "Email ID",
-        value: feedback.recruiter.user.email,
-      },
-    ]);
-    y += 1;
-    twoColRow([
-      {
-        label: "Designation",
-        value: feedback.recruiter.designation,
-      },
-      {
-        label: "Company Name",
-        value: feedback.company.name,
-      },
-    ]);
-    y += 1;
-    twoColRow([
-      {
-        label: "Date",
-        value: new Date(feedback.createdAt).toLocaleDateString('en-GB'),
-      },
-      {
-        label: "Season",
-        value: `${feedback.season.year} ${feedback.season.type}`,
-      },
-    ]);
-
-    y += 12;
-
-    /* Ratings */
-    sectionTitle("Feedback Ratings");
-    y += 4;
-
-    singleLine(
-      "Communication Promptness",
-      getRatingLabel(feedback.communicationPromptness),
-    );
-    y += 1;
-    singleLine(
-      "Query Handling",
-      getRatingLabel(feedback.queryHandling),
-    );
-    y += 1;
-    singleLine(
-      "Logistics Arrangement",
-      getRatingLabel(feedback.logisticsArrangement),
-    );
-    y += 1;
-    singleLine(
-      "Student Familiarity",
-      getRatingLabel(feedback.studentFamiliarity),
-    );
-    y += 1;
-    singleLine(
-      "Student Communication",
-      getRatingLabel(feedback.studentCommunication),
-    );
-    y += 1;
-    singleLine(
-      "Resume Quality",
-      getRatingLabel(feedback.resumeQuality),
-    );
-    y += 1;
-    singleLine(
-      "Student Preparedness",
-      getRatingLabel(feedback.studentPreparedness),
-    );
-    y += 1;
-    singleLine(
-      "Discipline & Punctuality",
-      getRatingLabel(feedback.disciplineAndPunctuality),
-    );
-
-    y += 14;
-
-    /* Free text */
-    sectionTitle("Right Time to Contact");
-    doc.setFontSize(11);
-    const rtc = doc.splitTextToSize(
-      feedback.rightTimeToContact || "-",
-      420,
-    );
-    doc.text(rtc, left, y);
-    y += rtc.length * lineGap + 10;
-
-    sectionTitle("Recommendations");
-    const rec = doc.splitTextToSize(
-      feedback.recommendations || "-",
-      420,
-    );
-    doc.text(rec, left, y);
-
-    doc.save(
-      `Feedback_${feedback.company.name}_${feedback.season.year}.pdf`,
-    );
+    generateFeedbackPdf(feedback);
   };
 
   /* ---------------- Loading ---------------- */
@@ -281,13 +96,6 @@ const FeedbackDetailPage = ({ params }: any) => {
           <Info label="Date" value={new Date(feedback.createdAt).toLocaleDateString('en-GB')} />
           <Info label="Season" value={`${feedback.season.year} ${feedback.season.type}`} />
         </div>
-
-        {/* <div className="mt-4">
-          <Info
-            label="Season"
-            value={`${feedback.season.year} ${feedback.season.type}`}
-          />
-        </div> */}
 
         {/* Ratings */}
         <h3 className="text-xl font-semibold mt-10 mb-4">
