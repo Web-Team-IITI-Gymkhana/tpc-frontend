@@ -512,7 +512,7 @@ const AdminDashboard = () => {
                 }}
                 className="flex-1 text-white"
               >
-                Feedbacks
+                Recruiter Feedback
               </motion.div>
             </div>
           </div>
