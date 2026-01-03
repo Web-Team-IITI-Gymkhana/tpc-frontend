@@ -76,9 +76,9 @@ const RecruiterDashboard = () => {
                   closed: { opacity: 0 },
                   open: { opacity: 1 },
                 }}
-                className="w-[5rem] text-white"
+                className="w-[10rem] text-white"
               >
-                JAF
+                {"New Job (Fill JAF)"}
               </motion.div>
             </div>
           </div>

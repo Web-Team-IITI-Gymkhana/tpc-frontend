@@ -6,7 +6,7 @@ import type { DTO } from "@/dto/StudentDto";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
 import { CSVImportModal } from "@/components/common/CSVImportModal";
-import { addStudents, promoteToManagers } from "@/helpers/admin/api";
+import { addStudents, promoteToManagers, deleteStudents } from "@/helpers/admin/api";
 import { fetchPrograms, fetchAllSeasons } from "@/helpers/api";
 import { Program } from "@/dto/SalaryDto";
 import { toast } from "react-hot-toast";
@@ -183,6 +183,26 @@ const StudentPage = () => {
         toast.error("Failed to promote students");
       }
       setBulkLoading(false);
+    } else if (action === "delete-students") {
+      const confirmMessage = `⚠️ WARNING: Are you sure you want to delete ${selectedRows.length} student(s)? This will permanently delete:\n- Student profiles\n- All associated resumes\n- All registrations\n- All applications\n- All penalties\n\nThis action CANNOT be undone!`;
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+      
+      setBulkLoading(true);
+      try {
+        const ids = selectedRows.map((student) => student.id);
+        await deleteStudents(ids);
+        toast.success(`Successfully deleted ${selectedRows.length} student(s)`);
+        setBulkModalOpen(false);
+        
+        // Refresh student data
+        const updatedData = await fetchStudentData();
+        setStudents(updatedData);
+      } catch (e) {
+        toast.error("Failed to delete students");
+      }
+      setBulkLoading(false);
     }
     // Add more actions here later
   };
@@ -240,6 +260,7 @@ const StudentPage = () => {
         actions={[
           { label: "Create registration for season", value: "register-season" },
           { label: "Promote to TPC Member", value: "promote-tpc" },
+          { label: "🗑️ Delete Students (Admin Only)", value: "delete-students" },
         ]}
         onSubmit={handleBulkModalSubmit}
         seasons={seasons}

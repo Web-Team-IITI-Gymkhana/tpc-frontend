@@ -1,7 +1,10 @@
-import React from "react";
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Loader from "@/components/Loader/loader";
+import { getJafDetails } from "@/helpers/recruiter/api";
+import { ProgramsDto } from "@/types/jaf.types";
 
 const Salaries = ({
   salaries,
@@ -20,7 +23,169 @@ const Salaries = ({
   setFacultyDropdown,
   formData,
   loading,
-}) => (
+}) => {
+  const [allPrograms, setAllPrograms] = useState<ProgramsDto[]>([]);
+  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(false);
+
+  // Per-salary temporary selection state (year/course/branch)
+  const [expandedYears, setExpandedYears] = useState<Set<string>>(new Set());
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
+  const [selectedProgramsBySalary, setSelectedProgramsBySalary] = useState<Map<number, { year: string; course: string; branch: string; id: string }[]>>(new Map());
+  const [expandProgramsEditor, setExpandProgramsEditor] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoadingPrograms(true);
+        const jaf = await getJafDetails();
+        setAllPrograms(jaf?.programs || []);
+      } finally {
+        setLoadingPrograms(false);
+      }
+    };
+    load();
+  }, []);
+
+  // Derived options
+  const allYears = useMemo(() => Array.from(new Set(allPrograms.map((p) => p.year))).sort(), [allPrograms]);
+  const coursesMap = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    allPrograms.forEach((p) => {
+      if (!map.has(p.year)) map.set(p.year, new Set());
+      map.get(p.year)?.add(String(p.course));
+    });
+    return map;
+  }, [allPrograms]);
+  const branchesMap = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    allPrograms.forEach((p) => {
+      const key = `${p.year}-${p.course}`;
+      if (!map.has(key)) map.set(key, new Set());
+      map.get(key)?.add(p.branch);
+    });
+    return map;
+  }, [allPrograms]);
+
+  // Initialize selected programs from incoming formData once programs are loaded
+  useEffect(() => {
+    if (!formData?.salaries || allPrograms.length === 0) return;
+    const map = new Map<number, { year: string; course: string; branch: string; id: string }[]>();
+    formData.salaries.forEach((salary: any, idx: number) => {
+      if (Array.isArray(salary?.programs) && salary.programs.length > 0) {
+        const selected = salary.programs
+          .map((prog: any) => {
+            const found = allPrograms.find((p) => p.id === (prog?.id || prog));
+            return found
+              ? { year: found.year, course: String(found.course), branch: found.branch, id: found.id }
+              : null;
+          })
+          .filter(Boolean) as { year: string; course: string; branch: string; id: string }[];
+        if (selected.length > 0) map.set(idx, selected);
+      }
+    });
+    setSelectedProgramsBySalary(map);
+  }, [formData?.salaries, allPrograms]);
+
+  const getSelectedPrograms = (index: number) => selectedProgramsBySalary.get(index) || [];
+  const updateSelectedPrograms = (index: number, programs: { year: string; course: string; branch: string; id: string }[]) => {
+    const newMap = new Map(selectedProgramsBySalary);
+    newMap.set(index, programs);
+    setSelectedProgramsBySalary(newMap);
+
+    // reflect to parent formData
+    const selectedIds = programs.map((p) => p.id);
+    const selectedObjects = allPrograms.filter((p) => selectedIds.includes(p.id));
+    handleChange({ target: { value: selectedObjects } }, index, "programs");
+  };
+
+  const isYearIndeterminate = (year: string, index: number) => {
+    const selected = getSelectedPrograms(index);
+    const yearPrograms = allPrograms.filter((p) => p.year === year);
+    const selectedYearPrograms = selected.filter((p) => p.year === year);
+    return selectedYearPrograms.length > 0 && selectedYearPrograms.length < yearPrograms.length;
+  };
+
+  const isCourseIndeterminate = (year: string, course: string, index: number) => {
+    const selected = getSelectedPrograms(index);
+    const coursePrograms = allPrograms.filter((p) => p.year === year && String(p.course) === course);
+    const selectedCoursePrograms = selected.filter((p) => p.year === year && p.course === course);
+    return selectedCoursePrograms.length > 0 && selectedCoursePrograms.length < coursePrograms.length;
+  };
+
+  const handleYearToggle = (year: string, checked: boolean, index: number) => {
+    if (checked) {
+      const yearPrograms = allPrograms
+        .filter((p) => p.year === year)
+        .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+      const current = getSelectedPrograms(index);
+      const other = current.filter((p) => p.year !== year);
+      updateSelectedPrograms(index, [...other, ...yearPrograms]);
+    } else {
+      const current = getSelectedPrograms(index);
+      const remaining = current.filter((p) => p.year !== year);
+      updateSelectedPrograms(index, remaining);
+    }
+  };
+
+  const handleCourseToggle = (year: string, course: string, checked: boolean, index: number) => {
+    if (checked) {
+      const coursePrograms = allPrograms
+        .filter((p) => p.year === year && String(p.course) === course)
+        .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+      const current = getSelectedPrograms(index);
+      const other = current.filter((p) => !(p.year === year && p.course === course));
+      updateSelectedPrograms(index, [...other, ...coursePrograms]);
+    } else {
+      const current = getSelectedPrograms(index);
+      const remaining = current.filter((p) => !(p.year === year && p.course === course));
+      updateSelectedPrograms(index, remaining);
+    }
+  };
+
+  const handleBranchToggle = (year: string, course: string, branch: string, checked: boolean, index: number) => {
+    const program = allPrograms.find((p) => p.year === year && String(p.course) === course && p.branch === branch);
+    if (!program) return;
+    const current = getSelectedPrograms(index);
+    if (checked) {
+      const newProgram = { year: program.year, course: String(program.course), branch: program.branch, id: program.id };
+      updateSelectedPrograms(index, [...current, newProgram]);
+    } else {
+      const remaining = current.filter((p) => p.id !== program.id);
+      updateSelectedPrograms(index, remaining);
+    }
+  };
+
+  const handleSelectAllForYear = (year: string, index: number) => {
+    const yearPrograms = allPrograms
+      .filter((p) => p.year === year)
+      .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+    const current = getSelectedPrograms(index);
+    const other = current.filter((p) => p.year !== year);
+    updateSelectedPrograms(index, [...other, ...yearPrograms]);
+  };
+
+  const handleSelectAllForCourse = (year: string, course: string, index: number) => {
+    const coursePrograms = allPrograms
+      .filter((p) => p.year === year && String(p.course) === course)
+      .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+    const current = getSelectedPrograms(index);
+    const other = current.filter((p) => !(p.year === year && p.course === course));
+    updateSelectedPrograms(index, [...other, ...coursePrograms]);
+  };
+
+  const toggleYearExpanded = (year: string) => {
+    const next = new Set(expandedYears);
+    if (next.has(year)) next.delete(year); else next.add(year);
+    setExpandedYears(next);
+  };
+  const toggleCourseExpanded = (year: string, course: string) => {
+    const key = `${year}-${course}`;
+    const next = new Set(expandedCourses);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    setExpandedCourses(next);
+  };
+
+  return (
   <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
     <div className="font-semibold text-lg mb-4">Salaries</div>
     {salaries.map((salary, index) => (
@@ -506,6 +671,130 @@ const Salaries = ({
               <div className="text-gray-500 italic">No programs specified</div>
             )}
           </div>
+          {editMode && (
+            <div className="mt-3">
+              <Button
+                onClick={() =>
+                  setExpandProgramsEditor((prev) => ({ ...prev, [index]: !prev[index] }))
+                }
+              >
+                {expandProgramsEditor[index] ? "Hide Program Selector" : "Edit Programs"}
+              </Button>
+              {expandProgramsEditor[index] && (
+                <div className="mt-3 border border-gray-200 rounded-md overflow-hidden">
+                  {loadingPrograms ? (
+                    <Loader />
+                  ) : (
+                    <div>
+                      <div className="bg-gray-50 border-b px-4 py-2 flex justify-between">
+                        <span className="font-semibold text-sm">Program Selection (Based on Course Completion Year)</span>
+                        <span className="text-xs text-gray-600">{getSelectedPrograms(index).length} selected</span>
+                      </div>
+                      <div className="py-2">
+                        {allYears.map((year) => {
+                          const yearPrograms = allPrograms.filter((p) => p.year === year);
+                          const selectedYearPrograms = getSelectedPrograms(index).filter((p) => p.year === year);
+                          const isYearSelected = selectedYearPrograms.length === yearPrograms.length && yearPrograms.length > 0;
+                          const isYearInd = isYearIndeterminate(year, index);
+                          return (
+                            <div key={year} className="border-b last:border-b-0">
+                              <div className="px-4 py-2 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    className="text-gray-500 text-xs"
+                                    onClick={() => toggleYearExpanded(year)}
+                                  >
+                                    {expandedYears.has(year) ? "▼" : "▶"}
+                                  </button>
+                                  <label className="flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={isYearSelected}
+                                      ref={(el) => { if (el) el.indeterminate = !isYearSelected && isYearInd; }}
+                                      onChange={(e) => handleYearToggle(year, e.target.checked, index)}
+                                    />
+                                    <span className="font-medium text-sm">{year} Batch ({yearPrograms.length} programs)</span>
+                                  </label>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="text-blue-600 text-xs"
+                                  onClick={() => handleSelectAllForYear(year, index)}
+                                >
+                                  Select All
+                                </button>
+                              </div>
+                              {expandedYears.has(year) && (
+                                <div className="bg-gray-50 pl-8">
+                                  {Array.from(coursesMap.get(year) || []).map((course) => {
+                                    const coursePrograms = allPrograms.filter((p) => p.year === year && String(p.course) === course);
+                                    const selectedCoursePrograms = getSelectedPrograms(index).filter((p) => p.year === year && p.course === course);
+                                    const isCourseSelected = selectedCoursePrograms.length === coursePrograms.length && coursePrograms.length > 0;
+                                    const isCourseInd = isCourseIndeterminate(year, course, index);
+                                    const courseKey = `${year}-${course}`;
+                                    return (
+                                      <div key={courseKey}>
+                                        <div className="px-4 py-1 flex items-center justify-between">
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              type="button"
+                                              className="text-gray-500 text-[10px]"
+                                              onClick={() => toggleCourseExpanded(year, course)}
+                                            >
+                                              {expandedCourses.has(courseKey) ? "▼" : "▶"}
+                                            </button>
+                                            <label className="flex items-center gap-2">
+                                              <input
+                                                type="checkbox"
+                                                checked={isCourseSelected}
+                                                ref={(el) => { if (el) el.indeterminate = !isCourseSelected && isCourseInd; }}
+                                                onChange={(e) => handleCourseToggle(year, course, e.target.checked, index)}
+                                              />
+                                              <span className="text-sm">{course} ({coursePrograms.length})</span>
+                                            </label>
+                                          </div>
+                                          <button
+                                            type="button"
+                                            className="text-blue-600 text-xs"
+                                            onClick={() => handleSelectAllForCourse(year, course, index)}
+                                          >
+                                            All Branches
+                                          </button>
+                                        </div>
+                                        {expandedCourses.has(courseKey) && (
+                                          <div className="pl-6 pb-2">
+                                            {Array.from(branchesMap.get(courseKey) || []).map((branch) => {
+                                              const program = allPrograms.find((p) => p.year === year && String(p.course) === course && p.branch === branch);
+                                              const isSelected = getSelectedPrograms(index).some((p) => p.id === program?.id);
+                                              return (
+                                                <label key={`${courseKey}-${branch}`} className="flex items-center gap-2 px-2 py-1 rounded">
+                                                  <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={(e) => handleBranchToggle(year, course, branch, e.target.checked, index)}
+                                                  />
+                                                  <span className="text-sm">{program?.course === "BTech" ? branch : `${program?.department} - ${branch}`}</span>
+                                                </label>
+                                              );
+                                            })}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Genders</h2>
@@ -688,5 +977,7 @@ const Salaries = ({
     ))}
   </div>
 );
+
+};
 
 export default Salaries;

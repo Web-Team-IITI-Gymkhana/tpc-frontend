@@ -120,10 +120,8 @@ const ResumePage = () => {
   };
 
   useEffect(() => {
-    if (resumeData.length === 0) {
-      fetchResumes();
-    }
-  });
+    fetchResumes();
+  }, []);
 
   return (
     <div className="min-h-screen p-2 md:p-4 lg:p-6">
@@ -139,7 +137,7 @@ const ResumePage = () => {
             <div className="my-4">
               <Separator />
               <span className="text-sm text-gray-500">
-                You can only upload upto 10 resumes.
+                You can only upload upto 15 resumes.
               </span>
             </div>
             <div className="overflow-x-auto bg-white rounded-lg border border-slate-200">

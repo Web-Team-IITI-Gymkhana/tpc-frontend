@@ -47,7 +47,7 @@ const InterviewExpiriencePage = () => {
   return (
     <>
       <div className="rounded-xl bg-white text-black p-5">
-        <div className="font-bold text-lg">Interview Expiriences</div>
+        <div className="font-bold text-lg">Interview Experiences</div>
         <div className="my-4">
           <Separator />
         </div>
