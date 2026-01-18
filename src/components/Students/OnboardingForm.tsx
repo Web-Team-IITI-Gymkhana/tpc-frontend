@@ -91,15 +91,14 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
 
   // Check which fields need to be filled
   const needsBacklog =
-    studentData.backlog === null ||
-    studentData.backlog === undefined ||
+    studentData?.backlog == null ||
     studentData.backlog === "";
   const needsTenthMarks =
-    studentData.tenthMarks === null || studentData.tenthMarks === undefined;
+    studentData?.tenthMarks == null;
   const needsTwelthMarks =
-    studentData.twelthMarks === null || studentData.twelthMarks === undefined;
+    studentData?.twelthMarks == null;
   const needsNumberOfBacklogs =
-    studentData.numberOfBacklogs === null || studentData.numberOfBacklogs === undefined;
+    studentData?.numberOfBacklogs == null;
   const hasAnyPendingFields =
     needsBacklog || needsTenthMarks || needsTwelthMarks || needsNumberOfBacklogs;
 
