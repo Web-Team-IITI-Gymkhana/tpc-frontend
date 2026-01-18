@@ -200,14 +200,10 @@ const ProfilePage = () => {
 
   // Check if onboarding is needed
   const needsOnboarding =
-    studentData.backlog === null ||
-    studentData.backlog === undefined ||
-    studentData.tenthMarks === null ||
-    studentData.tenthMarks === undefined ||
-    studentData.twelthMarks === null ||
-    studentData.twelthMarks === undefined ||
-    studentData.numberOfBacklogs === null ||
-    studentData.numberOfBacklogs === undefined;
+    studentData?.backlog == null ||
+    studentData?.tenthMarks == null ||
+    studentData?.twelthMarks == null ||
+    studentData?.numberOfBacklogs == null;
 
   const isOnboardingComplete = !needsOnboarding;
 
