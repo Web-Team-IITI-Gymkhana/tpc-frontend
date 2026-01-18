@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { fetchTPCMembers } from "@/helpers/admin/api";
+import { fetchTPCMembers, deleteTPCMembers } from "@/helpers/admin/api";
 import Table from "@/components/NewTableComponent/Table";
 import type { DTO } from "@/dto/TPCMemberDto";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
@@ -18,22 +18,43 @@ const TPCMembersPage = () => {
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchTPCMembers();
-        setTPCMembers(data);
-      } catch (error) {
-        console.error("Error fetching TPC members:", error);
-        toast.error("Failed to fetch TPC members");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchTPCMembers();
+      setTPCMembers(data);
+    } catch (error) {
+      console.error("Error fetching TPC members:", error);
+      toast.error("Failed to fetch TPC members");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const handleDelete = async (selectedMembers: any[]) => {
+    if (selectedMembers.length === 0) {
+      toast.error("Please select at least one TPC member to delete");
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to remove ${selectedMembers.length} TPC member(s)? This will revoke their TPC member status. This action cannot be undone.`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const ids = selectedMembers.map((member) => member.id);
+      await deleteTPCMembers(ids);
+      toast.success(`Successfully removed ${selectedMembers.length} TPC member(s)`);
+      await fetchData(); // Refresh the list
+    } catch (error) {
+      toast.error("Failed to delete TPC members");
+    }
+  };
 
   if (loading) {
     return (
@@ -75,6 +96,8 @@ const TPCMembersPage = () => {
           data={tpcMembers}
           columns={visibleColumns}
           type={"tpc-member"}
+          buttonText="Remove Selected"
+          buttonAction={handleDelete}
         />
       ) : (
         <div className="text-center py-8">

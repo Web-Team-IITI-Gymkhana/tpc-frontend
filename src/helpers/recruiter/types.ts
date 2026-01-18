@@ -13,6 +13,7 @@ export interface ApplicationFC {
     verified: boolean;
     resumeFile?: ReactNode;
   };
+  additionalData?: Record<string, string>;
 }
 
 export interface EventFC {

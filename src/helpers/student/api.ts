@@ -92,11 +92,12 @@ export const updateOnboarding = async (data: {
   });
 };
 
-export const ApplyJob = async (salaryId: string, resumeId: string) => {
+export const ApplyJob = async (salaryId: string, resumeId: string, additionalData?: Record<string, string>) => {
   const body = [
     {
       salaryId: salaryId,
       resumeId: resumeId,
+      additionalData: additionalData || {},
     },
   ];
 
