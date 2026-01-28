@@ -42,7 +42,7 @@ const Sidebar = () => {
         {/* Mobile Navbar Header - Always visible */}
         <div className="flex items-center justify-between p-4 bg-slate-800 border-b border-slate-600">
           <Link href="/" className="text-white font-bold text-xl">
-            TPC
+            CAMC
           </Link>
           <button
             onClick={context.sidebarToggle}
@@ -194,7 +194,7 @@ const Sidebar = () => {
 
         <div className="flex-shrink-0 flex items-center justify-center">
           <Link href="/" className="text-white font-bold text-2xl">
-            <div className="sm:block mx-2">TPC</div>
+            <div className="sm:block mx-2">CAMC</div>
           </Link>
         </div>
 
