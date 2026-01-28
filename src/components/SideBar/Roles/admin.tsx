@@ -221,7 +221,7 @@ const AdminDashboard = () => {
                 }}
                 className="flex-1 text-white"
               >
-                TPC Members
+                CAMC Members
               </motion.div>
             </div>
           </div>
