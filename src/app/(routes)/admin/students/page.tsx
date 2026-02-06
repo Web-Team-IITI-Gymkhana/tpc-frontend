@@ -188,14 +188,14 @@ const StudentPage = () => {
       if (!window.confirm(confirmMessage)) {
         return;
       }
-      
+
       setBulkLoading(true);
       try {
         const ids = selectedRows.map((student) => student.id);
         await deleteStudents(ids);
         toast.success(`Successfully deleted ${selectedRows.length} student(s)`);
         setBulkModalOpen(false);
-        
+
         // Refresh student data
         const updatedData = await fetchStudentData();
         setStudents(updatedData);
@@ -259,7 +259,7 @@ const StudentPage = () => {
         onClose={() => setBulkModalOpen(false)}
         actions={[
           { label: "Create registration for season", value: "register-season" },
-          { label: "Promote to TPC Member", value: "promote-tpc" },
+          { label: "Promote to CAMC Member", value: "promote-tpc" },
           { label: "🗑️ Delete Students (Admin Only)", value: "delete-students" },
         ]}
         onSubmit={handleBulkModalSubmit}
