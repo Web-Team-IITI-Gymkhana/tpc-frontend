@@ -10,8 +10,8 @@ interface Props {
 
 const RouteLayout = async ({ children }: Props) => {
   return (
-    <div className="flex-auto flex h-[92vh] ">
-      {/* sidebar and main content share this space */}
+    <div className="flex-auto flex flex-col md:flex-row min-h-screen">
+      {/* Mobile: navbar on top, Desktop: sidebar on left */}
       <Suspense fallback={<>Loading...</>}>
         <Sidebar />
       </Suspense>

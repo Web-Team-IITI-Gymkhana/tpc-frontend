@@ -83,6 +83,7 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
   const [registrationData, setRegistrationData] = useState(null);
   const [registrationDataCurrent, setRegistrationDataCurrent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [datachange, setDataChange] = useState(false);
   const fetchStudentData = async (id: any) => {
     setLoading(true);
@@ -138,19 +139,24 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
     seasonId: any,
     currentStatus: any,
   ) => {
-    const success = await handleRegistration(
-      studentId,
-      seasonId,
-      currentStatus,
-    );
-    if (success) {
-      setRegistrationDataCurrent((prevData: any) =>
-        prevData.map((registration: any) =>
-          registration.season.id === seasonId
-            ? { ...registration, registered: !currentStatus }
-            : registration,
-        ),
+    setActionLoading(true);
+    try {
+      const success = await handleRegistration(
+        studentId,
+        seasonId,
+        currentStatus,
       );
+      if (success) {
+        setRegistrationDataCurrent((prevData: any) =>
+          prevData.map((registration: any) =>
+            registration.season.id === seasonId
+              ? { ...registration, registered: !currentStatus }
+              : registration,
+          ),
+        );
+      }
+    } finally {
+      setActionLoading(false);
     }
   };
   const handleStatusChange = async (
@@ -158,19 +164,24 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
     seasonId: any,
     currentStatus: any,
   ) => {
-    const success = await handleRegistration(
-      studentId,
-      seasonId,
-      currentStatus,
-    );
-    if (success) {
-      setRegistrationData((prevData: any) =>
-        prevData.map((registration: any) =>
-          registration.season.id === seasonId
-            ? { ...registration, registered: !currentStatus }
-            : registration,
-        ),
+    setActionLoading(true);
+    try {
+      const success = await handleRegistration(
+        studentId,
+        seasonId,
+        currentStatus,
       );
+      if (success) {
+        setRegistrationData((prevData: any) =>
+          prevData.map((registration: any) =>
+            registration.season.id === seasonId
+              ? { ...registration, registered: !currentStatus }
+              : registration,
+          ),
+        );
+      }
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -577,7 +588,7 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                                     }
                                     }
                                   >
-                                    {registration.registered
+                                    {actionLoading ? "Processing..." : registration.registered
                                       ? "Deregister"
                                       : "Register"}
                                   </Button>
@@ -641,6 +652,7 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                                         ? "secondary"
                                         : "primary"
                                     }
+                                    disabled={actionLoading}
                                     onClick={() =>{
                                       handleStatusChangeCurrent(
                                         studentData.id,
@@ -656,7 +668,7 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                                     }
                                     }
                                   >
-                                    {registration.registered
+                                    {actionLoading ? "Processing..." : registration.registered
                                       ? "Deregister"
                                       : "Register"}
                                   </Button>

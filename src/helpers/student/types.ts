@@ -23,6 +23,7 @@ export interface OnCampusOffers {
         id: string;
         year: string;
         type: string;
+        policyDocument?: string;
       };
     };
   };
@@ -44,6 +45,7 @@ export interface OffCampusOffer {
     id: string;
     year: string;
     type: string;
+    policyDocument?: string;
   };
 }
 
@@ -76,12 +78,13 @@ export interface Salary {
   foreignCurrencyCode?: string;
   otherCompensations?: number;
   others?: string;
-  
+
   // Internship-specific fields
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accomodation?: number;
-  tenetativeCTC?: number;
+  accommodation?: boolean;
+  ppoProvisionOnPerformance?: boolean;
+  tentativeCTC?: number;
   PPOConfirmationDate?: string;
   job: {
     id: string;
@@ -127,6 +130,7 @@ export interface Salary {
         filepath: string;
         verified: boolean;
       };
+      additionalData?: Record<string, string>;
     }[];
     events: {
       id: string;
@@ -134,6 +138,7 @@ export interface Salary {
       type: string;
       startDateTime: string;
       endDateTime: string;
+      additionalData?: Record<string, string>;
     }[];
     jobCoordinators: {
       id: string;
@@ -157,8 +162,8 @@ export interface Jobs {
   id: string;
   role: string;
   duration: string;
-  attachments: string[];
-  skills: string[];
+  attachments?: string[];
+  skills?: string[];
   description: string;
   active: boolean;
   currentStatus: string;
@@ -167,6 +172,7 @@ export interface Jobs {
     id: string;
     year: string;
     type: string;
+    policyDocument?: string;
   };
   company: {
     id: string;
@@ -256,7 +262,7 @@ export interface Job {
   jobCoordinators: {
     id: string;
     role: string;
-    tpcMember: TPCMember
+    tpcMember: TPCMember;
   }[];
 
   events: {
@@ -267,6 +273,7 @@ export interface Job {
     startDateTime: string;
     endDateTime: string;
     visibleToRecruiter: boolean;
+    additionalData?: Record<string, string>;
   }[];
 
   feedbacks: {
@@ -339,8 +346,9 @@ export interface StudentDataType {
   category: string;
   gender: string;
   cpi: number;
-  tenthMarks: number;
-  twelthMarks: number;
+  backlog?: string;
+  tenthMarks?: number;
+  twelthMarks?: number;
   user: {
     id: string;
     email: string;
@@ -366,6 +374,7 @@ export interface StudentDataType {
       id: string;
       year: string;
       type: string;
+      policyDocument?: string;
     };
   }[];
 }
@@ -382,5 +391,6 @@ export interface InterviewExperience {
     id: string;
     year: string;
     type: string;
+    policyDocument?: string;
   };
 }

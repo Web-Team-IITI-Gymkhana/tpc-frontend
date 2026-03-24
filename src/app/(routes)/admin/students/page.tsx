@@ -5,12 +5,37 @@ import Table from "@/components/NewTableComponent/Table";
 import type { DTO } from "@/dto/StudentDto";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
+import { CSVImportModal } from "@/components/common/CSVImportModal";
+import { addStudents, promoteToManagers, deleteStudents } from "@/helpers/admin/api";
+import { fetchPrograms, fetchAllSeasons } from "@/helpers/api";
+import { Program } from "@/dto/SalaryDto";
+import { toast } from "react-hot-toast";
+import BulkActionsModal from "@/components/common/BulkActionsModal";
+import { createRegistrations } from "@/helpers/admin/api";
 
 const hiddenColumns = ["userId", "programId", "id"];
+
+const studentTemplateHeaders = [
+  "rollNo",
+  "category",
+  "gender",
+  "cpi",
+  "name",
+  "email",
+  "contact",
+];
 
 const StudentPage = () => {
   const [students, setStudents] = useState<DTO[]>([]);
   const columns = generateColumns(jsondto);
+  const [importOpen, setImportOpen] = useState(false);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [selectedProgram, setSelectedProgram] = useState<string>("");
+  const [importLoading, setImportLoading] = useState(false);
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<DTO[]>([]);
+  const [seasons, setSeasons] = useState<{ id: string; name: string }[]>([]);
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
@@ -25,14 +50,225 @@ const StudentPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    fetchPrograms().then((data) => setPrograms(data || []));
+    fetchAllSeasons().then((data) => {
+      if (Array.isArray(data)) {
+        setSeasons(
+          data.map((s: any) => ({
+            id: s.id,
+            name: `${s.type} - ${s.year}`,
+          })),
+        );
+      }
+    });
+  }, []);
+
+  const handleImport = async (data: any[]) => {
+    if (!selectedProgram) {
+      toast.error("Please select a program");
+      return;
+    }
+    setImportLoading(true);
+    try {
+      const payload = data.map((row) => ({
+        programId: selectedProgram,
+        rollNo: row.rollNo,
+        category: row.category,
+        gender: row.gender,
+        cpi: Number(row.cpi),
+        user: {
+          name: row.name,
+          email: row.email,
+          contact: row.contact,
+        },
+      }));
+      await addStudents(payload);
+      toast.success(
+        `Successfully imported ${data.length} student${data.length > 1 ? "s" : ""}`,
+      );
+      setImportOpen(false);
+
+      // Refresh student data
+      const updatedData = await fetchStudentData();
+      setStudents(updatedData);
+    } catch (e) {
+      toast.error("Failed to add students");
+    }
+    setImportLoading(false);
+  };
+
+  const parseStudentRow = (row: any) => {
+    if (!row.rollNo || !row.name || !row.email) return null;
+
+    // Convert enum fields to uppercase for backend compatibility
+    const category = row.category?.toUpperCase();
+    const gender = row.gender?.toUpperCase();
+
+    // Validate enum values
+    const validCategories = [
+      "GENERAL",
+      "OBC",
+      "SC",
+      "ST",
+      "EWS",
+      "GENERAL_PWD",
+      "OBC_PWD",
+      "SC_PWD",
+      "ST_PWD",
+      "EWS_PWD",
+    ];
+    const validGenders = ["MALE", "FEMALE", "OTHER"];
+
+    if (category && !validCategories.includes(category)) {
+      console.warn(`Invalid category: ${category} for student ${row.rollNo}`);
+      return null;
+    }
+
+    if (gender && !validGenders.includes(gender)) {
+      console.warn(`Invalid gender: ${gender} for student ${row.rollNo}`);
+      return null;
+    }
+
+    const processedRow = {
+      rollNo: row.rollNo,
+      category: category,
+      gender: gender,
+      cpi: row.cpi,
+      name: row.name,
+      email: row.email,
+      contact: row.contact,
+    };
+
+    return processedRow;
+  };
+
+  const handleBulkAction = (rows: DTO[]) => {
+    setSelectedRows(rows);
+    setBulkModalOpen(true);
+  };
+
+  const handleBulkModalSubmit = async (action: string, extraData?: any) => {
+    if (action === "register-season") {
+      if (!extraData?.seasonId) return;
+      setBulkLoading(true);
+      try {
+        const payload = selectedRows.map((student) => ({
+          studentId: student.id,
+          seasonId: extraData.seasonId,
+          registered: false,
+        }));
+        await createRegistrations(payload);
+        toast.success("Registrations created successfully");
+        setBulkModalOpen(false);
+      } catch (e) {
+        toast.error("Failed to create registrations");
+      }
+      setBulkLoading(false);
+    } else if (action === "promote-tpc") {
+      if (!extraData?.role) return;
+      setBulkLoading(true);
+      try {
+        const payload = selectedRows.map((student) => ({
+          studentId: student.id,
+          role: extraData.role as "MANAGER" | "COORDINATOR",
+        }));
+        await promoteToManagers(payload);
+        const roleLabel = extraData.role.toLowerCase();
+        toast.success(
+          `Successfully promoted ${selectedRows.length} student${selectedRows.length > 1 ? "s" : ""} to ${roleLabel}${selectedRows.length > 1 ? "s" : ""}`,
+        );
+        setBulkModalOpen(false);
+      } catch (e) {
+        toast.error("Failed to promote students");
+      }
+      setBulkLoading(false);
+    } else if (action === "delete-students") {
+      const confirmMessage = `⚠️ WARNING: Are you sure you want to delete ${selectedRows.length} student(s)? This will permanently delete:\n- Student profiles\n- All associated resumes\n- All registrations\n- All applications\n- All penalties\n\nThis action CANNOT be undone!`;
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+
+      setBulkLoading(true);
+      try {
+        const ids = selectedRows.map((student) => student.id);
+        await deleteStudents(ids);
+        toast.success(`Successfully deleted ${selectedRows.length} student(s)`);
+        setBulkModalOpen(false);
+
+        // Refresh student data
+        const updatedData = await fetchStudentData();
+        setStudents(updatedData);
+      } catch (e) {
+        toast.error("Failed to delete students");
+      }
+      setBulkLoading(false);
+    }
+    // Add more actions here later
+  };
+
   return (
-    <div className="m-10">
-      <h1 className="text-center font-bold text-3xl my-5 py-5">Students</h1>
+    <div className="m-2 md:m-6 lg:m-10">
+      <h1 className="text-center font-bold text-2xl md:text-3xl my-3 md:my-5 py-3 md:py-5">
+        Students
+      </h1>
+      <div className="mb-4 flex flex-col md:flex-row gap-2 items-start md:items-center">
+        <select
+          className="border rounded px-2 py-1"
+          value={selectedProgram}
+          onChange={(e) => setSelectedProgram(e.target.value)}
+        >
+          <option value="">Select Program</option>
+          {programs.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.department} - {p.course} - {p.branch} - {p.year}
+            </option>
+          ))}
+        </select>
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          onClick={() => setImportOpen(true)}
+          disabled={!selectedProgram}
+        >
+          Import Students from CSV
+        </button>
+      </div>
+      <CSVImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onSubmit={handleImport}
+        templateHeaders={studentTemplateHeaders}
+        templateFileName="students_template.csv"
+        parseRow={parseStudentRow}
+        entityName="students"
+        cleanData={true}
+      />
       <div>
         {students.length > 0 && (
-          <Table data={students} columns={visibleColumns} type={"student"} />
+          <Table
+            data={students}
+            columns={visibleColumns}
+            type={"student"}
+            buttonText="Bulk Actions"
+            buttonAction={handleBulkAction}
+          />
         )}
       </div>
+      <BulkActionsModal
+        open={bulkModalOpen}
+        onClose={() => setBulkModalOpen(false)}
+        actions={[
+          { label: "Create registration for season", value: "register-season" },
+          { label: "Promote to CAMC Member", value: "promote-tpc" },
+          { label: "🗑️ Delete Students (Admin Only)", value: "delete-students" },
+        ]}
+        onSubmit={handleBulkModalSubmit}
+        seasons={seasons}
+        roles={[
+          { label: "Manager", value: "MANAGER" },
+          { label: "Coordinator", value: "COORDINATOR" },
+        ]}
+      />
     </div>
   );
 };

@@ -23,7 +23,6 @@ export interface ApplicationFC {
       name: string;
     };
   };
-  
 }
 
 export interface SeasonFC {
@@ -31,11 +30,6 @@ export interface SeasonFC {
   year: string;
   type: string;
   status: string;
+  policyDocument?: string;
   applications?: [ApplicationFC];
 }
-
-
-
-
-
-

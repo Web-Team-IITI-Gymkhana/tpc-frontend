@@ -8,10 +8,11 @@ import {
   addEvent,
   fetchEventById,
   getResumeFile,
+  getResumeFileUrl,
   getStudentSalaryOffers,
   postOnCampusOffer,
   promoteStudent,
-  updateEvent
+  updateEvent,
 } from "@/helpers/api";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
@@ -21,6 +22,7 @@ import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 
 const typeOptions = [
+  "VERIFICATION",
   "POLL",
   "PPT",
   "INTERVIEW",
@@ -38,7 +40,7 @@ export const EditEvent = ({
   open,
   setOpen,
   eventId,
-  jobId
+  jobId,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -54,28 +56,47 @@ export const EditEvent = ({
     startDateTime: "",
     endDateTime: "",
     visibleToRecruiter: false,
+    additionalData: {} as Record<string, string>,
   });
-const [loading, setLoading] = useState(true);
+  const [additionalFields, setAdditionalFields] = useState<Array<{key: string, placeholder: string}>>([]);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  
   useEffect(() => {
     if (eventId && open) {
       fetchEventData();
-
     }
-
   }, [eventId, open]);
+
+  // Convert additionalData to fields for display
+  const convertDataToFields = (data: Record<string, string>) => {
+    return Object.entries(data || {}).map(([key, placeholder]) => ({
+      key,
+      placeholder: placeholder as string,
+    }));
+  };
+
+  // Update fields when additionalData changes
+  useEffect(() => {
+    setAdditionalFields(convertDataToFields(formValues.additionalData));
+  }, [formValues.additionalData]);
 
   const fetchEventData = async () => {
     try {
       const eventData = await fetchEventById(eventId);
+      
       setFormValues({
         id: eventData.id,
         jobId: jobId,
         roundNumber: eventData.roundNumber,
         type: eventData.type,
         metadata: eventData.metadata,
-        startDateTime: new Date(eventData.startDateTime).toISOString().slice(0, 16),
+        startDateTime: new Date(eventData.startDateTime)
+          .toISOString()
+          .slice(0, 16),
         endDateTime: new Date(eventData.endDateTime).toISOString().slice(0, 16),
         visibleToRecruiter: eventData.visibleToRecruiter,
+        additionalData: eventData.additionalData || {},
       });
       setLoading(false);
     } catch {
@@ -93,6 +114,49 @@ const [loading, setLoading] = useState(true);
     });
   };
 
+  const addAdditionalField = () => {
+    setAdditionalFields([...additionalFields, { key: "", placeholder: "" }]);
+  };
+
+  const removeAdditionalField = (index: number) => {
+    const newFields = additionalFields.filter((_, i) => i !== index);
+    setAdditionalFields(newFields);
+    
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    const fieldToRemove = additionalFields[index];
+    if (fieldToRemove.key) {
+      delete newAdditionalData[fieldToRemove.key];
+    }
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
+  const updateAdditionalField = (index: number, field: 'key' | 'placeholder', value: string) => {
+    const newFields = [...additionalFields];
+    const oldKey = newFields[index].key;
+    newFields[index][field] = value;
+    setAdditionalFields(newFields);
+
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    
+    if (field === 'key' && oldKey && oldKey !== value) {
+      // Key changed, remove old key and add new one
+      const placeholderValue = newAdditionalData[oldKey];
+      delete newAdditionalData[oldKey];
+      if (value) {
+        newAdditionalData[value] = placeholderValue || newFields[index].placeholder;
+      }
+    } else if (field === 'placeholder' && newFields[index].key) {
+      // Placeholder changed, update the value
+      newAdditionalData[newFields[index].key] = value;
+    } else if (field === 'key' && value) {
+      // New key added
+      newAdditionalData[value] = newFields[index].placeholder;
+    }
+    
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
 
   const convertToISOFormat = (date: string) => {
     return new Date(date).toISOString();
@@ -100,12 +164,14 @@ const [loading, setLoading] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUpdating(true);
     try {
-
       const updatedValues = {
         ...formValues,
         startDateTime: convertToISOFormat(formValues.startDateTime),
         endDateTime: convertToISOFormat(formValues.endDateTime),
+        // Only include additionalData if round number is 0
+        additionalData: Number(formValues.roundNumber) === 0 ? formValues.additionalData : {},
       };
 
       await updateEvent([updatedValues]);
@@ -113,8 +179,9 @@ const [loading, setLoading] = useState(true);
       window.location.reload();
     } catch (error: any) {
       console.error("API Error:", error.response?.data || error.message);
+    } finally {
+      setUpdating(false);
     }
-    
   };
 
   return (
@@ -123,115 +190,198 @@ const [loading, setLoading] = useState(true);
       onClose={handleClose}
       className="!text-black flex justify-center items-center"
     >
-      
       <div className="p-4 bg-white rounded-xl md:w-1/3 w-11/12">
-      {loading && (
-        <div className="w-full flex justify-center">
-          <CircularProgress />
+        {loading && (
+          <div className="w-full flex justify-center">
+            <CircularProgress />
           </div>
-          )}
+        )}
 
-        {!loading &&(  <form className="max-w-sm mx-auto p-8" onSubmit={handleSubmit}>
-          <div className="mb-5">
-            <label
-              htmlFor="roundNumber"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Round Number
-            </label>
-            <input
-              type="number"
-              name="roundNumber"
-              value={formValues.roundNumber}
-              onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="0"
-              required
-            />
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="type"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Type
-            </label>
-            <Select
-              name="type"
-              value={{ value: formValues.type, label: formValues.type }}
-              options={options} // Add appropriate options here
-              onChange={(value: any) => {
-                setFormValues({ ...formValues, type: value.value });
-              }}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
-            />
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="metadata"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Metadata
-            </label>
-            <input
-              type="text"
-              name="metadata"
-              value={formValues.metadata}
-              onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
-            />
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="startDateTime"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Start Date
-            </label>
-            <input
-              type="datetime-local"
-              name="startDateTime"
-              value={formValues.startDateTime}
-              onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
-            />
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="endDateTime"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              End Date
-            </label>
-            <input
-              type="datetime-local"
-              name="endDateTime"
-              value={formValues.endDateTime}
-              onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
-            />
-          </div>
-          <div className="flex items-start mb-5">
-            <label className="inline-flex items-center mb-5 cursor-pointer">
+        {!loading && (
+          <form className="max-w-sm mx-auto p-8" onSubmit={handleSubmit}>
+            <div className="mb-5">
+              <label
+                htmlFor="roundNumber"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Round Number
+              </label>
               <input
-                type="checkbox"
-                className="sr-only peer"
-                name="visibleToRecruiter"
-                checked={formValues.visibleToRecruiter}
+                type="number"
+                name="roundNumber"
+                value={formValues.roundNumber}
                 onChange={handleChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="0"
+                required
               />
-              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-                Visible To Recruiters
-              </span>
-            </label>
-          </div>
-          <Button type="submit">Update Event</Button>
-        </form>
+            </div>
+            <div className="mb-5">
+              <label
+                htmlFor="type"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Type
+              </label>
+              <Select
+                name="type"
+                value={{ value: formValues.type, label: formValues.type }}
+                options={options} // Add appropriate options here
+                onChange={(value: any) => {
+                  setFormValues({ ...formValues, type: value.value });
+                }}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                required
+              />
+            </div>
+            <div className="mb-5">
+              <label
+                htmlFor="metadata"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Metadata
+              </label>
+              <input
+                type="text"
+                name="metadata"
+                value={formValues.metadata}
+                onChange={handleChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                required
+              />
+            </div>
+            <div className="mb-5">
+              <label
+                htmlFor="startDateTime"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Start Date
+              </label>
+              <input
+                type="datetime-local"
+                name="startDateTime"
+                value={formValues.startDateTime}
+                onChange={handleChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                required
+              />
+            </div>
+            <div className="mb-5">
+              <label
+                htmlFor="endDateTime"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                End Date
+              </label>
+              <input
+                type="datetime-local"
+                name="endDateTime"
+                value={formValues.endDateTime}
+                onChange={handleChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                required
+              />
+            </div>
+            <div className="flex items-start mb-5">
+              <label className="inline-flex items-center mb-5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  name="visibleToRecruiter"
+                  checked={formValues.visibleToRecruiter}
+                  onChange={handleChange}
+                />
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                  Visible To Recruiters
+                </span>
+              </label>
+            </div>
+            
+            {/* Additional Data Fields Section - Only for Round 0 */}
+            {Number(formValues.roundNumber) === 0 && (
+              <div className="mb-5">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-900">
+                    Additional Data Required
+                  </label>
+                  <Button 
+                    type="button" 
+                    onClick={addAdditionalField}
+                    className="text-xs px-3 py-1 h-auto"
+                  >
+                    Add Field
+                  </Button>
+                </div>
+                
+                {additionalFields.map((field, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Field Name (e.g., preferredLocation)"
+                      value={field.key}
+                      onChange={(e) => updateAdditionalField(index, 'key', e.target.value)}
+                      className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Placeholder text for students"
+                      value={field.placeholder}
+                      onChange={(e) => updateAdditionalField(index, 'placeholder', e.target.value)}
+                      className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                    />
+                    <Button 
+                      type="button" 
+                      onClick={() => removeAdditionalField(index)}
+                      className="text-xs px-3 py-1 h-auto bg-red-500 hover:bg-red-600"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                
+                {additionalFields.length === 0 && (
+                  <p className="text-sm text-gray-500 italic">
+                    No additional fields required. Click "Add Field" to add custom fields for student applications.
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {Number(formValues.roundNumber) !== 0 && additionalFields.length > 0 && (
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Additional Data Required (Read-only)
+                </label>
+                <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>Note:</strong> Additional data fields can only be modified for Round 0. 
+                    The following fields were configured for the initial application round:
+                  </p>
+                  {additionalFields.map((field, index) => (
+                    <div key={index} className="text-sm text-gray-700 mb-1">
+                      <strong>{field.key}:</strong> {field.placeholder}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {Number(formValues.roundNumber) !== 0 && additionalFields.length === 0 && (
+              <div className="mb-5">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700">
+                    <strong>Note:</strong> Additional data fields can only be configured for Round 0. 
+                    No additional data was configured for this job's round.
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <Button type="submit" disabled={updating}>
+              {updating ? "Updating..." : "Update Event"}
+            </Button>
+          </form>
         )}
       </div>
     </Modal>
@@ -255,7 +405,23 @@ export const AddEvent = ({
     startDateTime: "",
     endDateTime: "",
     visibleToRecruiter: false,
+    additionalData: {} as Record<string, string>,
   });
+  const [additionalFields, setAdditionalFields] = useState<Array<{key: string, placeholder: string}>>([]);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Convert additionalData to fields for display
+  const convertDataToFields = (data: Record<string, string>) => {
+    return Object.entries(data || {}).map(([key, placeholder]) => ({
+      key,
+      placeholder: placeholder as string,
+    }));
+  };
+
+  // Update fields when additionalData changes
+  useEffect(() => {
+    setAdditionalFields(convertDataToFields(formValues.additionalData));
+  }, [formValues.additionalData]);
 
   const handleClose = () => setOpen(false);
 
@@ -267,14 +433,67 @@ export const AddEvent = ({
     });
   };
 
+  const addAdditionalField = () => {
+    setAdditionalFields([...additionalFields, { key: "", placeholder: "" }]);
+  };
+
+  const removeAdditionalField = (index: number) => {
+    const newFields = additionalFields.filter((_, i) => i !== index);
+    setAdditionalFields(newFields);
+    
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    const fieldToRemove = additionalFields[index];
+    if (fieldToRemove.key) {
+      delete newAdditionalData[fieldToRemove.key];
+    }
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
+  const updateAdditionalField = (index: number, field: 'key' | 'placeholder', value: string) => {
+    const newFields = [...additionalFields];
+    const oldKey = newFields[index].key;
+    newFields[index][field] = value;
+    setAdditionalFields(newFields);
+
+    // Update additionalData in formValues
+    const newAdditionalData = { ...formValues.additionalData };
+    
+    if (field === 'key' && oldKey && oldKey !== value) {
+      // Key changed, remove old key and add new one
+      const placeholderValue = newAdditionalData[oldKey];
+      delete newAdditionalData[oldKey];
+      if (value) {
+        newAdditionalData[value] = placeholderValue || newFields[index].placeholder;
+      }
+    } else if (field === 'placeholder' && newFields[index].key) {
+      // Placeholder changed, update the value
+      newAdditionalData[newFields[index].key] = value;
+    } else if (field === 'key' && value) {
+      // New key added
+      newAdditionalData[value] = newFields[index].placeholder;
+    }
+    
+    setFormValues({ ...formValues, additionalData: newAdditionalData });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
-      await addEvent([formValues]);
+      const eventData = {
+        ...formValues,
+        // Only include additionalData if round number is 0
+        additionalData: Number(formValues.roundNumber) === 0 ? formValues.additionalData : {},
+      };
+      
+      await addEvent([eventData]);
       toast.success("Successfully added");
       window.location.reload();
     } catch {
       toast.error("Some Error Occured");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -386,7 +605,71 @@ export const AddEvent = ({
               </span>
             </label>
           </div>
-          <Button type="submit">Add Event</Button>
+          
+          {/* Additional Data Fields Section - Only for Round 0 */}
+          {Number(formValues.roundNumber) === 0 && (
+            <div className="mb-5">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-gray-900">
+                  Additional Data Required
+                </label>
+                <Button 
+                  type="button" 
+                  onClick={addAdditionalField}
+                  className="text-xs px-3 py-1 h-auto"
+                >
+                  Add Field
+                </Button>
+              </div>
+              
+              {additionalFields.map((field, index) => (
+                <div key={index} className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Field Name (e.g., preferredLocation)"
+                    value={field.key}
+                    onChange={(e) => updateAdditionalField(index, 'key', e.target.value)}
+                    className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Placeholder text for students"
+                    value={field.placeholder}
+                    onChange={(e) => updateAdditionalField(index, 'placeholder', e.target.value)}
+                    className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={() => removeAdditionalField(index)}
+                    className="text-xs px-3 py-1 h-auto bg-red-500 hover:bg-red-600"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+              
+              {additionalFields.length === 0 && (
+                <p className="text-sm text-gray-500 italic">
+                  No additional fields required. Click "Add Field" to add custom fields for student applications.
+                </p>
+              )}
+            </div>
+          )}
+          
+          {Number(formValues.roundNumber) !== 0 && (
+            <div className="mb-5">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <strong>Note:</strong> Additional data fields can only be configured for Round 0. 
+                  Subsequent rounds will use the same additional data collected during the initial application.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Adding..." : "Add Event"}
+          </Button>
         </form>
       </div>
     </Modal>
@@ -407,6 +690,7 @@ const PromoteStudent = ({
   const [roundNumber, setRoundNumber] = useState<number>(0);
   const studentIds = students.map((student) => student.id);
   const [eventId, setEventId] = useState<string>();
+  const [promoting, setPromoting] = useState(false);
   useEffect(() => {
     const setCurrentEvent = events.forEach((event) => {
       if (event.roundNumber == roundNumber) {
@@ -418,10 +702,17 @@ const PromoteStudent = ({
   }, [roundNumber]);
 
   const updateEvent = async () => {
-    console.log(studentIds);
-    await promoteStudent({ studentIds }, eventId);
-    toast.success("Successfully promoted!");
-    onClose();
+    setPromoting(true);
+    try {
+      console.log(studentIds);
+      await promoteStudent({ studentIds }, eventId);
+      toast.success("Successfully promoted!");
+      onClose();
+    } catch (error) {
+      toast.error("Error promoting students");
+    } finally {
+      setPromoting(false);
+    }
   };
 
   return (
@@ -573,7 +864,15 @@ const MakeJobOfferModal = ({
   );
 };
 
-export const JobEvents = ({ events, editEventID, setEditEventId }: { events: EventFC[], editEventID: string, setEditEventId: (id: string) => void }) => {
+export const JobEvents = ({
+  events,
+  editEventID,
+  setEditEventId,
+}: {
+  events: EventFC[];
+  editEventID: string;
+  setEditEventId: (id: string) => void;
+}) => {
   const [eventId, setEventId] = useState<string>(null);
 
   const changeApplications = (eventId: string) => {
@@ -669,21 +968,37 @@ export const Applications = ({
   const [loading, setLoading] = useState(true);
   const [promoteStudents, setPromoteStudents] = useState<any[]>([]);
   const [seed, setSeed] = useState(0);
-
-  const columns = generateColumns([
-    {
-      student: {
-        rollNo: "string",
-        user: {
-          name: "string",
-          email: "string",
+  
+  const [columns, setColumns] = useState(
+    generateColumns([
+      {
+        student: {
+          rollNo: "string",
+          category: "string",
+          gender: "string",
+          cpi: "number",
+          backlog: "string",
+          tenthMarks: "number",
+          twelthMarks: "number",
+          user: {
+            name: "string",
+            email: "string",
+            contact: "string",
+          },
+          program: {
+            course: "string",
+            branch: "string",
+            department: "string",
+            year: "string",
+          },
+        },
+        resume: {
+          resumeFile: "string",
+          resumeFileUrl: "string",
         },
       },
-      resume: {
-        resumeFile: "string",
-      },
-    },
-  ]);
+    ])
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -691,26 +1006,60 @@ export const Applications = ({
     const fetchData = async () => {
       try {
         const jsonData: EventFC = await fetchEventById(eventId);
-        const applications = jsonData.applications.map((application) => ({
-          ...application,
-          resume: {
-            ...application.resume,
-            resumeFile: (
-              <Button
-                onClick={async () => {
-                  const resume = await getResumeFile(
-                    application.resume.filepath,
-                  );
-                }}
-              >
-                View Resume{" "}
-                {application.resume.verified && (
-                  <VerifiedIcon sx={{ marginLeft: "1rem" }} />
-                )}
-              </Button>
-            ),
+
+        // Build dynamic columns for additionalData keys configured on this event
+        const additionalDataKeys = Object.keys((jsonData as any).additionalData || {});
+        const dynamicSeed: any = {
+          student: {
+            rollNo: "string",
+            category: "string",
+            gender: "string",
+            cpi: "number",
+            backlog: "string",
+            tenthMarks: "number",
+            twelthMarks: "number",
+            user: { name: "string", email: "string", contact: "string" },
+            program: { course: "string", branch: "string", department: "string", year: "string" },
           },
-        }));
+          resume: { resumeFile: "string", resumeFileUrl: "string" },
+        };
+        if (additionalDataKeys.length > 0) {
+          dynamicSeed.additionalData = {} as any;
+          additionalDataKeys.forEach((key) => {
+            dynamicSeed.additionalData[key] = "string";
+          });
+        }
+        setColumns(generateColumns([dynamicSeed]));
+
+        const applications = jsonData.applications.map((application) => {
+          // Create display filename in format: resumename.pdf
+          const resumeName = application.resume.name || "resume";
+          const displayName = resumeName.endsWith(".pdf")
+            ? resumeName
+            : `${resumeName}.pdf`;
+
+          return {
+            ...application,
+            resume: {
+              ...application.resume,
+              resumeFile: (
+                <Button
+                  onClick={() => {
+                  getResumeFile(application.resume.filepath);
+                  }}
+                >
+                  View Resume ({displayName}){" "}
+                  {application.resume.verified && (
+                    <VerifiedIcon sx={{ marginLeft: "1rem" }} />
+                  )}
+                </Button>
+              ),
+              resumeFileUrl: getResumeFileUrl(application.resume.filepath)
+            },
+            // Ensure additionalData exists for dynamic columns (additionalData.key)
+            additionalData: (application as any).additionalData || {},
+          };
+        });
         setApplications(applications);
       } catch (error) {
         toast.error("Some error occured");
@@ -757,7 +1106,6 @@ export const Applications = ({
           type={"application"}
           buttonText={lastEvent.id == eventId ? "Make Offer" : "Promote"}
           buttonAction={(students) => {
-            console.log(students);
             setPromoteStudents(students.map((student) => student.student));
           }}
         />

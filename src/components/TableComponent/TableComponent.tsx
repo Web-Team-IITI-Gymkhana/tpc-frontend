@@ -142,13 +142,13 @@ export default function TableComponent({
         />
       </Modal>
       <div className="flex flex-col items-center py-4 bg-white rounded-lg">
-        <div className="flex md:flex-row flex-col gap-4 items-center justify-between w-full mb-4">
-          <div className="md:ml-4 flex flex-row justify-between flex-wrap md:flex-nowrap">
+        <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 items-center justify-between w-full mb-4">
+          <div className="flex flex-wrap md:flex-nowrap gap-2 justify-center lg:justify-start">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="md:ml-auto ml-4 md:mb-0 mr-2 mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm"
                 >
                   <span className="text-gray-800">Filters</span>{" "}
                   <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
@@ -158,7 +158,7 @@ export default function TableComponent({
                 onClick={() => {
                   handleSubmit(filterOutput, setTableData);
                 }}
-                className="rounded-md mx-2 mb-4 md:mb-0 bg-indigo-500 hover:bg-indigo-600 text-white"
+                className="rounded-md bg-indigo-500 hover:bg-indigo-600 text-white text-sm"
               >
                 Submit Filters
               </Button>
@@ -166,7 +166,7 @@ export default function TableComponent({
                 onClick={async () => {
                   setFilters([]);
                 }}
-                className="rounded-md ml-4 md:mx-2 bg-red-500 hover:bg-red-600 text-white"
+                className="rounded-md bg-red-500 hover:bg-red-600 text-white text-sm"
               >
                 Clear Filters
               </Button>
@@ -199,12 +199,12 @@ export default function TableComponent({
             </DropdownMenu>
           </div>
 
-          <div className="flex flex-row justify-between flex-wrap w-full">
+          <div className="flex flex-wrap gap-2 justify-center lg:justify-end w-full lg:w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="md:ml-auto ml-4 mr-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm"
                 >
                   <span className="text-gray-800">Columns</span>{" "}
                   <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
@@ -236,7 +236,7 @@ export default function TableComponent({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="mr-2 bg-gray-200 hover:bg-gray-300 text-gray-800"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm"
                   >
                     <span className="text-gray-800">Actions</span>{" "}
                     <ChevronDown className="ml-2 h-4 w-4 text-gray-800" />
@@ -258,16 +258,16 @@ export default function TableComponent({
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-          </div>
 
-          {isAddButton && (
-            <Button
-              variant="default"
-              className="mx-2 bg-indigo-500 hover:bg-indigo-600 text-white"
-            >
-              {AddButtonText}
-            </Button>
-          )}
+            {isAddButton && (
+              <Button
+                variant="default"
+                className="bg-indigo-500 hover:bg-indigo-600 text-white text-sm w-full sm:w-auto"
+              >
+                {AddButtonText}
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-center w-full">
@@ -416,38 +416,38 @@ export default function TableComponent({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center flex-col md:flex-row justify-between space-x-2 py-4 text-gray-800">
-        <div className="flex items-center">
-          <div className="flex-1 text-sm text-gray-600 items-center">
+      <div className="flex items-center flex-col lg:flex-row justify-between gap-4 py-4 text-gray-800">
+        <div className="flex items-center order-1">
+          <div className="text-sm text-gray-600 text-center lg:text-left">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows?.length || 0} row(s) selected.
           </div>
         </div>
-        <div className="order-3 md:order-2 relative flex flex-1 flex-col">
+        <div className="order-3 lg:order-2 flex flex-1 flex-col w-full lg:w-auto">
           {isFeedbackForm && <FeedbackForm checkedRows={checkedRows} />}
           {!isFeedbackForm && (
             <Button
               onClick={() => {
                 setisDeleteModal(true);
               }}
-              className="ml-3 rounded-md bg-red-500 hover:bg-red-600 text-white"
+              className="rounded-md bg-red-500 hover:bg-red-600 text-white text-sm w-full lg:w-auto"
             >
               Remove Selected Students
             </Button>
           )}
         </div>
-        <div className="space-x-2 order-2 md:order-3">
+        <div className="flex gap-2 order-2 lg:order-3">
           <Button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700"
+            className="rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm flex-1 sm:flex-initial"
           >
             Previous
           </Button>
           <Button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700"
+            className="rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm flex-1 sm:flex-initial"
           >
             Next
           </Button>

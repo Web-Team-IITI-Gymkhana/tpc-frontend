@@ -1,7 +1,10 @@
-import React from "react";
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Loader from "@/components/Loader/loader";
+import { getJafDetails } from "@/helpers/recruiter/api";
+import { ProgramsDto } from "@/types/jaf.types";
 
 const Salaries = ({
   salaries,
@@ -20,12 +23,174 @@ const Salaries = ({
   setFacultyDropdown,
   formData,
   loading,
-}) => (
+}) => {
+  const [allPrograms, setAllPrograms] = useState<ProgramsDto[]>([]);
+  const [loadingPrograms, setLoadingPrograms] = useState<boolean>(false);
+
+  // Per-salary temporary selection state (year/course/branch)
+  const [expandedYears, setExpandedYears] = useState<Set<string>>(new Set());
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
+  const [selectedProgramsBySalary, setSelectedProgramsBySalary] = useState<Map<number, { year: string; course: string; branch: string; id: string }[]>>(new Map());
+  const [expandProgramsEditor, setExpandProgramsEditor] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoadingPrograms(true);
+        const jaf = await getJafDetails();
+        setAllPrograms(jaf?.programs || []);
+      } finally {
+        setLoadingPrograms(false);
+      }
+    };
+    load();
+  }, []);
+
+  // Derived options
+  const allYears = useMemo(() => Array.from(new Set(allPrograms.map((p) => p.year))).sort(), [allPrograms]);
+  const coursesMap = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    allPrograms.forEach((p) => {
+      if (!map.has(p.year)) map.set(p.year, new Set());
+      map.get(p.year)?.add(String(p.course));
+    });
+    return map;
+  }, [allPrograms]);
+  const branchesMap = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    allPrograms.forEach((p) => {
+      const key = `${p.year}-${p.course}`;
+      if (!map.has(key)) map.set(key, new Set());
+      map.get(key)?.add(p.branch);
+    });
+    return map;
+  }, [allPrograms]);
+
+  // Initialize selected programs from incoming formData once programs are loaded
+  useEffect(() => {
+    if (!formData?.salaries || allPrograms.length === 0) return;
+    const map = new Map<number, { year: string; course: string; branch: string; id: string }[]>();
+    formData.salaries.forEach((salary: any, idx: number) => {
+      if (Array.isArray(salary?.programs) && salary.programs.length > 0) {
+        const selected = salary.programs
+          .map((prog: any) => {
+            const found = allPrograms.find((p) => p.id === (prog?.id || prog));
+            return found
+              ? { year: found.year, course: String(found.course), branch: found.branch, id: found.id }
+              : null;
+          })
+          .filter(Boolean) as { year: string; course: string; branch: string; id: string }[];
+        if (selected.length > 0) map.set(idx, selected);
+      }
+    });
+    setSelectedProgramsBySalary(map);
+  }, [formData?.salaries, allPrograms]);
+
+  const getSelectedPrograms = (index: number) => selectedProgramsBySalary.get(index) || [];
+  const updateSelectedPrograms = (index: number, programs: { year: string; course: string; branch: string; id: string }[]) => {
+    const newMap = new Map(selectedProgramsBySalary);
+    newMap.set(index, programs);
+    setSelectedProgramsBySalary(newMap);
+
+    // reflect to parent formData
+    const selectedIds = programs.map((p) => p.id);
+    const selectedObjects = allPrograms.filter((p) => selectedIds.includes(p.id));
+    handleChange({ target: { value: selectedObjects } }, index, "programs");
+  };
+
+  const isYearIndeterminate = (year: string, index: number) => {
+    const selected = getSelectedPrograms(index);
+    const yearPrograms = allPrograms.filter((p) => p.year === year);
+    const selectedYearPrograms = selected.filter((p) => p.year === year);
+    return selectedYearPrograms.length > 0 && selectedYearPrograms.length < yearPrograms.length;
+  };
+
+  const isCourseIndeterminate = (year: string, course: string, index: number) => {
+    const selected = getSelectedPrograms(index);
+    const coursePrograms = allPrograms.filter((p) => p.year === year && String(p.course) === course);
+    const selectedCoursePrograms = selected.filter((p) => p.year === year && p.course === course);
+    return selectedCoursePrograms.length > 0 && selectedCoursePrograms.length < coursePrograms.length;
+  };
+
+  const handleYearToggle = (year: string, checked: boolean, index: number) => {
+    if (checked) {
+      const yearPrograms = allPrograms
+        .filter((p) => p.year === year)
+        .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+      const current = getSelectedPrograms(index);
+      const other = current.filter((p) => p.year !== year);
+      updateSelectedPrograms(index, [...other, ...yearPrograms]);
+    } else {
+      const current = getSelectedPrograms(index);
+      const remaining = current.filter((p) => p.year !== year);
+      updateSelectedPrograms(index, remaining);
+    }
+  };
+
+  const handleCourseToggle = (year: string, course: string, checked: boolean, index: number) => {
+    if (checked) {
+      const coursePrograms = allPrograms
+        .filter((p) => p.year === year && String(p.course) === course)
+        .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+      const current = getSelectedPrograms(index);
+      const other = current.filter((p) => !(p.year === year && p.course === course));
+      updateSelectedPrograms(index, [...other, ...coursePrograms]);
+    } else {
+      const current = getSelectedPrograms(index);
+      const remaining = current.filter((p) => !(p.year === year && p.course === course));
+      updateSelectedPrograms(index, remaining);
+    }
+  };
+
+  const handleBranchToggle = (year: string, course: string, branch: string, checked: boolean, index: number) => {
+    const program = allPrograms.find((p) => p.year === year && String(p.course) === course && p.branch === branch);
+    if (!program) return;
+    const current = getSelectedPrograms(index);
+    if (checked) {
+      const newProgram = { year: program.year, course: String(program.course), branch: program.branch, id: program.id };
+      updateSelectedPrograms(index, [...current, newProgram]);
+    } else {
+      const remaining = current.filter((p) => p.id !== program.id);
+      updateSelectedPrograms(index, remaining);
+    }
+  };
+
+  const handleSelectAllForYear = (year: string, index: number) => {
+    const yearPrograms = allPrograms
+      .filter((p) => p.year === year)
+      .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+    const current = getSelectedPrograms(index);
+    const other = current.filter((p) => p.year !== year);
+    updateSelectedPrograms(index, [...other, ...yearPrograms]);
+  };
+
+  const handleSelectAllForCourse = (year: string, course: string, index: number) => {
+    const coursePrograms = allPrograms
+      .filter((p) => p.year === year && String(p.course) === course)
+      .map((p) => ({ year: p.year, course: String(p.course), branch: p.branch, id: p.id }));
+    const current = getSelectedPrograms(index);
+    const other = current.filter((p) => !(p.year === year && p.course === course));
+    updateSelectedPrograms(index, [...other, ...coursePrograms]);
+  };
+
+  const toggleYearExpanded = (year: string) => {
+    const next = new Set(expandedYears);
+    if (next.has(year)) next.delete(year); else next.add(year);
+    setExpandedYears(next);
+  };
+  const toggleCourseExpanded = (year: string, course: string) => {
+    const key = `${year}-${course}`;
+    const next = new Set(expandedCourses);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    setExpandedCourses(next);
+  };
+
+  return (
   <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
     <div className="font-semibold text-lg mb-4">Salaries</div>
     {salaries.map((salary, index) => (
       <div key={index}>
-        {seasonType === 'PLACEMENT' ? (
+        {seasonType === "PLACEMENT" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <div className="font-semibold my-2">Base Salary</div>
@@ -37,7 +202,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "baseSalary")}
                 />
               ) : (
-                <div>{salary.baseSalary}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.baseSalary}
+                </div>
               )}
             </div>
 
@@ -51,7 +218,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "totalCTC")}
                 />
               ) : (
-                <div>{salary.totalCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.totalCTC}
+                </div>
               )}
             </div>
 
@@ -65,7 +234,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "takeHomeSalary")}
                 />
               ) : (
-                <div>{salary.takeHomeSalary}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.takeHomeSalary}
+                </div>
               )}
             </div>
 
@@ -79,7 +250,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "grossSalary")}
                 />
               ) : (
-                <div>{salary.grossSalary}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.grossSalary}
+                </div>
               )}
             </div>
 
@@ -93,7 +266,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "joiningBonus")}
                 />
               ) : (
-                <div>{salary.joiningBonus}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.joiningBonus}
+                </div>
               )}
             </div>
 
@@ -107,7 +282,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "performanceBonus")}
                 />
               ) : (
-                <div>{salary.performanceBonus}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.performanceBonus}
+                </div>
               )}
             </div>
 
@@ -121,7 +298,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "relocation")}
                 />
               ) : (
-                <div>{salary.relocation}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.relocation}
+                </div>
               )}
             </div>
 
@@ -135,7 +314,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "bondAmount")}
                 />
               ) : (
-                <div>{salary.bondAmount}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.bondAmount}
+                </div>
               )}
             </div>
 
@@ -149,7 +330,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "esopAmount")}
                 />
               ) : (
-                <div>{salary.esopAmount}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.esopAmount}
+                </div>
               )}
             </div>
 
@@ -177,7 +360,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "firstYearCTC")}
                 />
               ) : (
-                <div>{salary.firstYearCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.firstYearCTC}
+                </div>
               )}
             </div>
 
@@ -191,7 +376,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "retentionBonus")}
                 />
               ) : (
-                <div>{salary.retentionBonus}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.retentionBonus}
+                </div>
               )}
             </div>
 
@@ -205,7 +392,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "deductions")}
                 />
               ) : (
-                <div>{salary.deductions}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.deductions}
+                </div>
               )}
             </div>
 
@@ -219,7 +408,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "medicalAllowance")}
                 />
               ) : (
-                <div>{salary.medicalAllowance}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.medicalAllowance}
+                </div>
               )}
             </div>
 
@@ -247,7 +438,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "foreignCurrencyCTC")}
                 />
               ) : (
-                <div>{salary.foreignCurrencyCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.foreignCurrencyCTC}
+                </div>
               )}
             </div>
 
@@ -258,7 +451,9 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyCode"
                   value={formData.salaries[index].foreignCurrencyCode}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyCode")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyCode")
+                  }
                 />
               ) : (
                 <div>{salary.foreignCurrencyCode}</div>
@@ -275,7 +470,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "otherCompensations")}
                 />
               ) : (
-                <div>{salary.otherCompensations}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.otherCompensations}
+                </div>
               )}
             </div>
 
@@ -319,7 +516,9 @@ const Salaries = ({
                   onChange={(e) => handleChange(e, index, "stipend")}
                 />
               ) : (
-                <div>{salary.stipend}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.stipend}
+                </div>
               )}
             </div>
 
@@ -330,10 +529,14 @@ const Salaries = ({
                   type="text"
                   name="foreignCurrencyStipend"
                   value={formData.salaries[index].foreignCurrencyStipend}
-                  onChange={(e) => handleChange(e, index, "foreignCurrencyStipend")}
+                  onChange={(e) =>
+                    handleChange(e, index, "foreignCurrencyStipend")
+                  }
                 />
               ) : (
-                <div>{salary.foreignCurrencyStipend}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.foreignCurrencyStipend}
+                </div>
               )}
             </div>
 
@@ -341,27 +544,72 @@ const Salaries = ({
               <div className="font-semibold my-2">Accommodation</div>
               {editMode ? (
                 <input
-                  type="text"
-                  name="accomodation"
-                  value={formData.salaries[index].accomodation}
-                  onChange={(e) => handleChange(e, index, "accomodation")}
+                  type="checkbox"
+                  name="accommodation"
+                  checked={formData.salaries[index].accommodation || false}
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "accommodation",
+                    )
+                  }
                 />
               ) : (
-                <div>{salary.accomodation}</div>
+                <div>{salary.accommodation ? "Yes" : "No"}</div>
               )}
             </div>
 
             <div>
-              <div className="font-semibold my-2">Tentative CTC</div>
+              <div className="font-semibold my-2">
+                PPO Provision on Performance
+              </div>
+              {editMode ? (
+                <input
+                  type="checkbox"
+                  name="ppoProvisionOnPerformance"
+                  checked={
+                    formData.salaries[index].ppoProvisionOnPerformance || false
+                  }
+                  onChange={(e) =>
+                    handleChange(
+                      {
+                        target: {
+                          name: e.target.name,
+                          value: e.target.checked,
+                        },
+                      },
+                      index,
+                      "ppoProvisionOnPerformance",
+                    )
+                  }
+                />
+              ) : (
+                <div>{salary.ppoProvisionOnPerformance ? "Yes" : "No"}</div>
+              )}
+            </div>
+
+            <div>
+              <div className="font-semibold my-2">
+                {" "}
+                Tentative CTC for PPO Select
+              </div>
               {editMode ? (
                 <input
                   type="text"
-                  name="tenetativeCTC"
-                  value={formData.salaries[index].tenetativeCTC}
-                  onChange={(e) => handleChange(e, index, "tenetativeCTC")}
+                  name="tentativeCTC"
+                  value={formData.salaries[index].tentativeCTC}
+                  onChange={(e) => handleChange(e, index, "tentativeCTC")}
                 />
               ) : (
-                <div>{salary.tenetativeCTC}</div>
+                <div>
+                  {salary.foreignCurrencyCode} {salary.tentativeCTC}
+                </div>
               )}
             </div>
           </div>
@@ -411,37 +659,193 @@ const Salaries = ({
         <div>
           <h2 className="text-md font-semibold mt-4">Programs</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.programs.map((program, programIndex) => (
-              <div key={programIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {program.department} - {program.course} - {program.year}
+            {salary.programs && salary.programs.length > 0 ? (
+              salary.programs.map((program, programIndex) => (
+                <div key={programIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {program.department} - {program.course} - {program.year}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">No programs specified</div>
+            )}
           </div>
+          {editMode && (
+            <div className="mt-3">
+              <Button
+                onClick={() =>
+                  setExpandProgramsEditor((prev) => ({ ...prev, [index]: !prev[index] }))
+                }
+              >
+                {expandProgramsEditor[index] ? "Hide Program Selector" : "Edit Programs"}
+              </Button>
+              {expandProgramsEditor[index] && (
+                <div className="mt-3 border border-gray-200 rounded-md overflow-hidden">
+                  {loadingPrograms ? (
+                    <Loader />
+                  ) : (
+                    <div>
+                      <div className="bg-gray-50 border-b px-4 py-2 flex justify-between">
+                        <span className="font-semibold text-sm">Program Selection (Based on Course Completion Year)</span>
+                        <span className="text-xs text-gray-600">{getSelectedPrograms(index).length} selected</span>
+                      </div>
+                      <div className="py-2">
+                        {allYears.map((year) => {
+                          const yearPrograms = allPrograms.filter((p) => p.year === year);
+                          const selectedYearPrograms = getSelectedPrograms(index).filter((p) => p.year === year);
+                          const isYearSelected = selectedYearPrograms.length === yearPrograms.length && yearPrograms.length > 0;
+                          const isYearInd = isYearIndeterminate(year, index);
+                          return (
+                            <div key={year} className="border-b last:border-b-0">
+                              <div className="px-4 py-2 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    className="text-gray-500 text-xs"
+                                    onClick={() => toggleYearExpanded(year)}
+                                  >
+                                    {expandedYears.has(year) ? "▼" : "▶"}
+                                  </button>
+                                  <label className="flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={isYearSelected}
+                                      ref={(el) => { if (el) el.indeterminate = !isYearSelected && isYearInd; }}
+                                      onChange={(e) => handleYearToggle(year, e.target.checked, index)}
+                                    />
+                                    <span className="font-medium text-sm">{year} Batch ({yearPrograms.length} programs)</span>
+                                  </label>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="text-blue-600 text-xs"
+                                  onClick={() => handleSelectAllForYear(year, index)}
+                                >
+                                  Select All
+                                </button>
+                              </div>
+                              {expandedYears.has(year) && (
+                                <div className="bg-gray-50 pl-8">
+                                  {Array.from(coursesMap.get(year) || []).map((course) => {
+                                    const coursePrograms = allPrograms.filter((p) => p.year === year && String(p.course) === course);
+                                    const selectedCoursePrograms = getSelectedPrograms(index).filter((p) => p.year === year && p.course === course);
+                                    const isCourseSelected = selectedCoursePrograms.length === coursePrograms.length && coursePrograms.length > 0;
+                                    const isCourseInd = isCourseIndeterminate(year, course, index);
+                                    const courseKey = `${year}-${course}`;
+                                    return (
+                                      <div key={courseKey}>
+                                        <div className="px-4 py-1 flex items-center justify-between">
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              type="button"
+                                              className="text-gray-500 text-[10px]"
+                                              onClick={() => toggleCourseExpanded(year, course)}
+                                            >
+                                              {expandedCourses.has(courseKey) ? "▼" : "▶"}
+                                            </button>
+                                            <label className="flex items-center gap-2">
+                                              <input
+                                                type="checkbox"
+                                                checked={isCourseSelected}
+                                                ref={(el) => { if (el) el.indeterminate = !isCourseSelected && isCourseInd; }}
+                                                onChange={(e) => handleCourseToggle(year, course, e.target.checked, index)}
+                                              />
+                                              <span className="text-sm">{course} ({coursePrograms.length})</span>
+                                            </label>
+                                          </div>
+                                          <button
+                                            type="button"
+                                            className="text-blue-600 text-xs"
+                                            onClick={() => handleSelectAllForCourse(year, course, index)}
+                                          >
+                                            All Branches
+                                          </button>
+                                        </div>
+                                        {expandedCourses.has(courseKey) && (
+                                          <div className="pl-6 pb-2">
+                                            {Array.from(branchesMap.get(courseKey) || []).map((branch) => {
+                                              const program = allPrograms.find((p) => p.year === year && String(p.course) === course && p.branch === branch);
+                                              const isSelected = getSelectedPrograms(index).some((p) => p.id === program?.id);
+                                              return (
+                                                <label key={`${courseKey}-${branch}`} className="flex items-center gap-2 px-2 py-1 rounded">
+                                                  <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={(e) => handleBranchToggle(year, course, branch, e.target.checked, index)}
+                                                  />
+                                                  <span className="text-sm">{program?.course === "BTech" ? branch : `${program?.department} - ${branch}`}</span>
+                                                </label>
+                                              );
+                                            })}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Genders</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.genders.map((gender, genderIndex) => (
-              <div key={genderIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {gender}
+            {salary.genders && salary.genders.length > 0 ? (
+              salary.genders.map((gender, genderIndex) => (
+                <div key={genderIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {gender}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-gray-500 italic">All genders eligible</div>
+            )}
           </div>
         </div>
         <div>
           <h2 className="text-md font-semibold mt-4">Categories</h2>
           <div className="flex flex-wrap !text-md">
-            {salary.categories.map((category, categoryIndex) => (
-              <div key={categoryIndex} className="mx-2 my-2">
-                <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
-                  {category}
+            {salary.categories && salary.categories.length > 0 ? (
+              salary.categories.map((category, categoryIndex) => (
+                <div key={categoryIndex} className="mx-2 my-2">
+                  <div className="border-2 border-gray-300 p-2 px-4 rounded-full bg-gray-200 text-gray-600">
+                    {category}
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-gray-500 italic">
+                All categories eligible
               </div>
-            ))}
+            )}
+          </div>
+        </div>
+        <div>
+          <h2 className="text-md font-semibold mt-4">
+            Are Students with Backlogs Allowed?
+          </h2>
+          <div className="flex flex-wrap items-center mt-2">
+            <div className="mx-2 my-2">
+              <span
+                className={`inline-block border-2 p-2 px-6 rounded-full font-semibold shadow-sm transition-colors duration-200 ${
+                  salary.isBacklogAllowed
+                    ? "bg-green-50 border-green-400 text-green-700"
+                    : "bg-red-50 border-red-400 text-red-700"
+                }`}
+              >
+                {salary.isBacklogAllowed === "ACTIVE" ? "Yes" : "No"}
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex justify-between mt-2 mb-4">
@@ -490,23 +894,31 @@ const Salaries = ({
                   X
                 </button>
               </div>
-              <div className="p-4 web overflow-auto" style={{ maxHeight: "75vh" }}>
+              <div
+                className="p-4 web overflow-auto"
+                style={{ maxHeight: "75vh" }}
+              >
                 {loading ? (
                   <Loader />
                 ) : (
                   facultyApprovals.map((approval, index) => (
-                    <div key={approval.id} className="border-b border-gray-300 py-2">
+                    <div
+                      key={approval.id}
+                      className="border-b border-gray-300 py-2"
+                    >
                       <h3 className="text-lg font-semibold">
                         {approval?.faculty.user.name}
                       </h3>
                       <p className="text-gray-600">
-                        <strong>Department:</strong> {approval.faculty.department}
+                        <strong>Department:</strong>{" "}
+                        {approval.faculty.department}
                       </p>
                       <p className="text-gray-600">
                         <strong>Email:</strong> {approval.faculty?.user.email}
                       </p>
                       <p className="text-gray-600">
-                        <strong>Contact:</strong> {approval.faculty?.user.contact}
+                        <strong>Contact:</strong>{" "}
+                        {approval.faculty?.user.contact}
                       </p>
                       <p className="text-gray-600">
                         <strong>Status:</strong> {approval.status}
@@ -530,19 +942,25 @@ const Salaries = ({
                         <input
                           type="checkbox"
                           id={`faculty-${i}`}
-                          checked={selectedFaculties[index]?.includes(faculty.id)}
-                          onChange={() => setSelectedFaculties((prev) => {
-                            const newSelection = [...(prev[index] || [])];
-                            const selectedIndex = newSelection.indexOf(faculty.id);
-                            if (selectedIndex >= 0) {
-                              newSelection.splice(selectedIndex, 1);
-                            } else {
-                              newSelection.push(faculty.id);
-                            }
-                            const newSelectedFaculties = [...prev];
-                            newSelectedFaculties[index] = newSelection;
-                            return newSelectedFaculties;
-                          })}
+                          checked={selectedFaculties[index]?.includes(
+                            faculty.id,
+                          )}
+                          onChange={() =>
+                            setSelectedFaculties((prev) => {
+                              const newSelection = [...(prev[index] || [])];
+                              const selectedIndex = newSelection.indexOf(
+                                faculty.id,
+                              );
+                              if (selectedIndex >= 0) {
+                                newSelection.splice(selectedIndex, 1);
+                              } else {
+                                newSelection.push(faculty.id);
+                              }
+                              const newSelectedFaculties = [...prev];
+                              newSelectedFaculties[index] = newSelection;
+                              return newSelectedFaculties;
+                            })
+                          }
                         />
                         <label htmlFor={`faculty-${i}`} className="ml-2">
                           {faculty.user.name} ({faculty.department})
@@ -559,5 +977,7 @@ const Salaries = ({
     ))}
   </div>
 );
+
+};
 
 export default Salaries;

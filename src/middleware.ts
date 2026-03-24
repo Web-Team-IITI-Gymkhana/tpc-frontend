@@ -40,40 +40,46 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === "/" && !user) {
     return redirectTo("/login");
   }
-  if (request.nextUrl.pathname === "/" && (user?.role === "STUDENT" || user?.role === "TPC_MEMBER")) {
+  if (
+    request.nextUrl.pathname === "/" &&
+    (user?.role === "STUDENT" || user?.role === "TPC_MEMBER")
+  ) {
     return redirectTo("/student/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "ADMIN") {
     return redirectTo("/admin/profile");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "RECRUITER") {
-    return redirectTo("/recruiter/profile");
+    return redirectTo("/JAF");
   }
   if (request.nextUrl.pathname === "/" && user?.role === "FACULTY") {
     return redirectTo("/faculty");
   }
   if (
-    (user?.role !== "ADMIN" && user?.role !== "TPC_MEMBER") &&
-      request.nextUrl.pathname.startsWith(adminRoutes)
+    user?.role !== "ADMIN" &&
+    user?.role !== "TPC_MEMBER" &&
+    request.nextUrl.pathname.startsWith(adminRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
     user?.role !== "ADMIN" &&
-      request.nextUrl.pathname.startsWith(dashBoardRoutes)
+    user?.role !== "TPC_MEMBER" &&
+    request.nextUrl.pathname.startsWith(dashBoardRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
-    (user?.role !== "STUDENT" && user?.role !== "TPC_MEMBER") &&
+    user?.role !== "STUDENT" &&
+    user?.role !== "TPC_MEMBER" &&
     request.nextUrl.pathname.startsWith(studentRoutes)
   ) {
     return redirectTo("/login");
   }
   if (
     user?.role !== "RECRUITER" &&
-    request.nextUrl.pathname.startsWith(recruiterRoutes)
-    && !recruiterAuthRoutes.includes(request.nextUrl.pathname)
+    request.nextUrl.pathname.startsWith(recruiterRoutes) &&
+    !recruiterAuthRoutes.includes(request.nextUrl.pathname)
   ) {
     return redirectTo("/recruiter/signin");
   }

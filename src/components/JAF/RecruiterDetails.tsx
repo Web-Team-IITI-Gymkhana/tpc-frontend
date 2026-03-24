@@ -1,5 +1,9 @@
 import { FormikErrors, FormikValues, FormikHandlers } from "formik";
-import { Form, Input, Row, Col, InputNumber, Space } from "antd";
+import { Form, Input, Row, Col, Typography, Card, Alert } from "antd";
+import { PLACEHOLDERS } from "../../utils/jaf.constants";
+import { UserOutlined, TeamOutlined } from "@ant-design/icons";
+
+const { Title, Text } = Typography;
 
 type StepProps = {
   errors: FormikErrors<FormikValues>;
@@ -10,131 +14,247 @@ type StepProps = {
 const RecruiterDetails = ({ errors, values, handleChange }: StepProps) => {
   const [form] = Form.useForm();
 
+  // Helper function to check if any field for a recruiter index is filled
+  const hasAnyRecruiterInfo = (index: number): boolean => {
+    return !!(
+      values[`recName${index}`] ||
+      values[`designation${index}`] ||
+      values[`email${index}`] ||
+      values[`phoneNumber${index}`] ||
+      values[`landline${index}`]
+    );
+  };
+
+  // Helper function to get error message
+  const getErrorMessage = (field: string): string => {
+    const error = errors[field];
+    return typeof error === "string" ? error : "";
+  };
+
+  // Helper function to get ordinal number words
+  const getOrdinalText = (index: number): string => {
+    const ordinals = ["First", "Second", "Third"];
+    return ordinals[index - 1] || `${index}th`;
+  };
+
   return (
-    <Form layout="vertical">
-      <h1 className="text-xl">Recruiter Details</h1>
-      <h3 className="text-lg my-3">Point of Contacts</h3>
-      <Row gutter={24}>
-        {[1, 2, 3].map((index) => (
-          <Col
-            span={8}
-            key={index}
-            style={{ border: "0px 0px 0px 2 px", padding: "0 65px" }}
-          >
-            <h3 className="text-md my-3">
-              {index === 1 ? "Head HR" : `Point of Contact ${index - 1}`}
-            </h3>
-            <Form.Item
-              style={{ marginBottom: "35px" }}
-              required={
-                index === 1 ||
-                values[`recName${index}`] ||
-                values[`designation${index}`] ||
-                values[`email${index}`] ||
-                values[`phoneNumber${index}`] ||
-                values[`landline${index}`]
-              }
-              label={`Name`}
-              hasFeedback={true}
-              validateStatus={!!errors[`recName${index}`] ? "error" : ""}
-              help={
-                errors[`recName${index}`] ? `${errors[`recName${index}`]}` : ""
-              }
-            >
-              <Input
-                name={`recName${index}`}
-                placeholder="Name"
-                onChange={handleChange}
-                value={values[`recName${index}`]}
-              />
-            </Form.Item>
-            <Form.Item
-              label={`Designation`}
-              style={{ marginBottom: "35px" }}
-              required={
-                index === 1 ||
-                values[`recName${index}`] ||
-                values[`designation${index}`] ||
-                values[`email${index}`] ||
-                values[`phoneNumber${index}`] ||
-                values[`landline${index}`]
-              }
-              hasFeedback={true}
-              validateStatus={!!errors[`designation${index}`] ? "error" : ""}
-              help={
-                errors[`designation${index}`]
-                  ? `${errors[`designation${index}`]}`
-                  : ""
-              }
-            >
-              <Input
-                name={`designation${index}`}
-                placeholder="Designation"
-                onChange={handleChange}
-                value={values[`designation${index}`]}
-              />
-            </Form.Item>
-            <Form.Item
-              label={`Email`}
-              style={{ marginBottom: "35px" }}
-              hasFeedback={true}
-              required={
-                index === 1 ||
-                values[`recName${index}`] ||
-                values[`designation${index}`] ||
-                values[`email${index}`] ||
-                values[`phoneNumber${index}`] ||
-                values[`landline${index}`]
-              }
-              validateStatus={!!errors[`email${index}`] ? "error" : ""}
-              help={errors[`email${index}`] ? `${errors[`email${index}`]}` : ""}
-            >
-              <Input
-                name={`email${index}`}
-                placeholder="Email"
-                onChange={handleChange}
-                value={values[`email${index}`]}
-              />
-            </Form.Item>
-            <Form.Item
-              label={`Phone`}
-              style={{ marginBottom: "35px" }}
-              hasFeedback={true}
-              required={
-                index === 1 ||
-                values[`recName${index}`] ||
-                values[`designation${index}`] ||
-                values[`email${index}`] ||
-                values[`phoneNumber${index}`] ||
-                values[`landline${index}`]
-              }
-              validateStatus={!!errors[`phoneNumber${index}`] ? "error" : ""}
-              help={
-                errors[`phoneNumber${index}`]
-                  ? `${errors[`phoneNumber${index}`]}`
-                  : ""
-              }
-            >
-              <Input
-                name={`phoneNumber${index}`}
-                placeholder="Phone"
-                onChange={handleChange}
-                value={values[`phoneNumber${index}`]}
-                addonBefore="+91"
-              />
-            </Form.Item>
-            <Form.Item label={`Landline`} hasFeedback={true}>
-              <Input
-                name={`landline${index}`}
-                placeholder="Landline"
-                onChange={handleChange}
-                value={values[`landline${index}`]}
-              />
-            </Form.Item>
-          </Col>
-        ))}
-      </Row>
-    </Form>
+    <div className="px-1 md:px-6">
+      {/* Header Section */}
+      <div className="text-center mb-6 md:mb-8 mt-4 md:mt-6">
+        <Title
+          level={4}
+          className="mb-2 text-gray-800 uppercase tracking-wide font-semibold text-lg md:text-xl"
+        >
+          Recruiter Details
+        </Title>
+        <Text className="text-sm md:text-base text-gray-600">
+          Provide contact information for the recruitment team
+        </Text>
+      </div>
+
+      <Form layout="vertical">
+        <Row
+          gutter={[16, 24]}
+          className="flex flex-col md:flex-row md:items-stretch"
+        >
+          {[1, 2, 3].map((index) => (
+            <Col xs={24} md={8} key={index} className="flex w-full">
+              <Card
+                title={
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 8 }}
+                  >
+                    {index === 1 ? (
+                      <>
+                        <UserOutlined style={{ color: "#374151" }} />
+                        <Text strong style={{ fontSize: 16, color: "#374151" }}>
+                          <span style={{ color: "#ef4444" }}>* </span>
+                          Head HR
+                        </Text>
+                      </>
+                    ) : index === 2 ? (
+                      <>
+                        <UserOutlined style={{ color: "#374151" }} />
+                        <Text strong style={{ fontSize: 16, color: "#374151" }}>
+                          <span style={{ color: "#ef4444" }}>* </span>
+                          {getOrdinalText(index - 1)} Point of Contact
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <TeamOutlined style={{ color: "#6b7280" }} />
+                        <Text style={{ fontSize: 16, color: "#6b7280" }}>
+                          {getOrdinalText(index - 1)} Point of Contact
+                        </Text>
+                      </>
+                    )}
+                  </div>
+                }
+                className="mb-4 md:mb-6 shadow-sm rounded-lg border border-gray-200 w-full h-auto min-h-96 md:min-h-[480px]"
+              >
+                {/* Name Field */}
+                <Form.Item
+                  className="mb-4 md:mb-6"
+                  required={index === 1 || index === 2}
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Full Name
+                    </span>
+                  }
+                  hasFeedback
+                  validateStatus={
+                    getErrorMessage(`recName${index}`) ? "error" : ""
+                  }
+                  help={getErrorMessage(`recName${index}`)}
+                >
+                  <Input
+                    name={`recName${index}`}
+                    placeholder={PLACEHOLDERS.RECRUITER_NAME}
+                    onChange={handleChange}
+                    value={values[`recName${index}`]}
+                    maxLength={100}
+                    showCount
+                    className="text-xs md:text-sm"
+                  />
+                </Form.Item>
+
+                {/* Designation Field */}
+                <Form.Item
+                  className="mb-4 md:mb-6"
+                  required={index === 1 || index === 2}
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Designation
+                    </span>
+                  }
+                  hasFeedback
+                  validateStatus={
+                    getErrorMessage(`designation${index}`) ? "error" : ""
+                  }
+                  help={getErrorMessage(`designation${index}`)}
+                >
+                  <Input
+                    name={`designation${index}`}
+                    placeholder={PLACEHOLDERS.RECRUITER_DESIGNATION}
+                    onChange={handleChange}
+                    value={values[`designation${index}`]}
+                    maxLength={100}
+                    showCount
+                    className="text-xs md:text-sm"
+                  />
+                </Form.Item>
+
+                {/* Email Field */}
+                <Form.Item
+                  className="mb-4 md:mb-6"
+                  required={index === 1 || index === 2}
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Email Address
+                    </span>
+                  }
+                  hasFeedback
+                  validateStatus={
+                    getErrorMessage(`email${index}`) ? "error" : ""
+                  }
+                  help={getErrorMessage(`email${index}`)}
+                >
+                  <Input
+                    name={`email${index}`}
+                    type="email"
+                    placeholder={PLACEHOLDERS.RECRUITER_EMAIL}
+                    onChange={handleChange}
+                    value={values[`email${index}`]}
+                    maxLength={254}
+                    showCount
+                    className="text-xs md:text-sm"
+                  />
+                </Form.Item>
+
+                {/* Phone Field */}
+                <Form.Item
+                  className="mb-4 md:mb-6"
+                  required={index === 1 || index === 2}
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Mobile Number
+                    </span>
+                  }
+                  hasFeedback
+                  validateStatus={
+                    getErrorMessage(`phoneNumber${index}`) ? "error" : ""
+                  }
+                  help={getErrorMessage(`phoneNumber${index}`)}
+                >
+                  <Input.Group compact className="flex">
+                    <Input
+                      name={`countryCode${index}`}
+                      placeholder="+91"
+                      value={values[`countryCode${index}`] || "+91"}
+                      onChange={handleChange}
+                      className="w-1/4 md:w-1/5 text-center text-xs md:text-sm"
+                      maxLength={5}
+                    />
+                    <Input
+                      name={`phoneNumber${index}`}
+                      placeholder={PLACEHOLDERS.RECRUITER_PHONE}
+                      onChange={handleChange}
+                      value={values[`phoneNumber${index}`]}
+                      className="w-3/4 md:w-4/5 text-xs md:text-sm"
+                      maxLength={15}
+                      showCount
+                    />
+                  </Input.Group>
+                </Form.Item>
+
+                {/* Landline Field */}
+                <Form.Item
+                  className="mb-0"
+                  label={
+                    <span className="text-sm md:text-base font-medium">
+                      Landline (Optional)
+                    </span>
+                  }
+                  hasFeedback
+                  validateStatus={
+                    getErrorMessage(`landline${index}`) ? "error" : ""
+                  }
+                  help={getErrorMessage(`landline${index}`)}
+                >
+                  <Input
+                    name={`landline${index}`}
+                    placeholder={PLACEHOLDERS.RECRUITER_LANDLINE}
+                    onChange={handleChange}
+                    value={values[`landline${index}`]}
+                    maxLength={20}
+                    className="text-xs md:text-sm"
+                  />
+                </Form.Item>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+
+        {/* Simplified Instructions */}
+        <Alert
+          message={
+            <span className="text-sm md:text-base font-medium">
+              Contact Information Guidelines
+            </span>
+          }
+          description={
+            <span className="text-xs md:text-sm">
+              Primary contact information is required. Additional contacts are
+              optional but recommended for backup communication during the
+              recruitment process.
+            </span>
+          }
+          type="info"
+          showIcon
+          className="bg-blue-50 border border-blue-200 rounded-md mt-4"
+        />
+      </Form>
+    </div>
   );
 };
 

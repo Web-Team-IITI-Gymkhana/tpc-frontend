@@ -1,3 +1,5 @@
+import { CourseEnum, DepartmentEnum } from "@/dto/Programs";
+
 // SeasonDTO
 interface SeasonsDTO {
   id: string;
@@ -16,8 +18,8 @@ interface StudentDTO {
 // ProgramDTO
 interface ProgramDTO {
   branch: string;
-  course: string;
-  department: string;
+  course: CourseEnum;
+  department: DepartmentEnum;
   id: string;
   year: string;
 }
@@ -38,33 +40,32 @@ interface SeasonDTO {
   student: StudentDTO;
 }
 
-
 const seasonDTO = [
   {
     id: "string",
     registered: "boolean",
-  season: {
-    id: "string",
-    type: "string",
-    year: "string",
-  },
-  student: {
-    id: "string",
-    program: {
-      branch: "string",
-      course: "string",
-      department: "string",
+    season: {
       id: "string",
+      type: "string",
       year: "string",
     },
-    rollNo: "string",
-    user: {
-      name: "string",
-      contact: "string",
-      email: "string",
+    student: {
       id: "string",
+      program: {
+        branch: "string",
+        course: "string",
+        department: "string",
+        id: "string",
+        year: "string",
+      },
+      rollNo: "string",
+      user: {
+        name: "string",
+        contact: "string",
+        email: "string",
+        id: "string",
+      },
     },
-  },
   },
 ];
 

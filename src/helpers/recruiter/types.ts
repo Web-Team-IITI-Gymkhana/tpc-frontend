@@ -1,32 +1,19 @@
 import { TPCMember } from "@/components/Admin/types";
 import { Program } from "@/dto/StudentDto";
 import { ReactNode } from "react";
+import { StudentDataType } from "../student/types";
 
 export interface ApplicationFC {
   id: string;
-  student: {
-    id: string;
-    rollNo: string;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      contact: string;
-    };
-    program: {
-      id: string;
-      branch: string;
-      course: string;
-      year: string;
-      department: string;
-    };
-  };
+  student: StudentDataType;
   resume: {
     id: string;
     filepath: string;
+    name?: string;
     verified: boolean;
     resumeFile?: ReactNode;
   };
+  additionalData?: Record<string, string>;
 }
 
 export interface EventFC {
@@ -95,22 +82,25 @@ export interface JobDetailFC {
       contact: string;
     };
   };
+  recruiterDetailsFilled: Array<{
+    name: string;
+    email: string;
+    contact: string;
+    designation: string;
+    landline?: string;
+  }>;
   selectionProcedure: {
     selectionMode: string;
-    shortlistFromResume: true;
-    groupDiscussion: true;
-    tests: [
-      {
-        type: string;
-        duration: number;
-      },
-    ];
-    interviews: [
-      {
-        type: string;
-        duration: number;
-      },
-    ];
+    shortlistFromResume: boolean;
+    groupDiscussion: boolean;
+    tests: Array<{
+      type: string;
+      duration: string;
+    }>;
+    interviews: Array<{
+      type: string;
+      duration: string;
+    }>;
     requirements: {
       numberOfMembers: number;
       numberOfRooms: number;
@@ -123,27 +113,24 @@ export interface JobDetailFC {
   offerLetterReleaseDate: string;
   joiningDate: string;
   location: string;
-  noOfVacancies: number;
-  duration: number;
+  minNoOfHires?: number;
+  expectedNoOfHires?: number;
+  duration: string;
   feedback: string;
-  jobCoordinators: [
-    {
-      id: string;
-      role: string;
-      tpcMember: TPCMember;
-    },
-  ];
-  events: [
-    {
-      id: string;
-      roundNumber: number;
-      type: string;
-      metadata: string;
-      startDateTime: string;
-      endDateTime: string;
-      visibleToRecruiter: true;
-    },
-  ];
+  jobCoordinators: Array<{
+    id: string;
+    role: string;
+    tpcMember: TPCMember;
+  }>;
+  events: Array<{
+    id: string;
+    roundNumber: number;
+    type: string;
+    metadata: string;
+    startDateTime: string;
+    endDateTime: string;
+    visibleToRecruiter: boolean;
+  }>;
   salaries: SalaryFC[];
 }
 
@@ -182,8 +169,9 @@ export interface SalaryFC {
   // INTERNSHIP
   stipend?: number;
   foreignCurrencyStipend?: number;
-  accomodation?: number;
-  tenetativeCTC?: number;
+  accommodation?: boolean;
+  ppoProvisionOnPerformance?: boolean;
+  tentativeCTC?: number;
   PPOConfirmationDate?: Date;
 }
 
@@ -263,7 +251,7 @@ export interface CompanyPostFC {
   category: string;
   yearOfEstablishment: string;
   website: string;
-  size: 0;
+  size: number;
   annualTurnover: string;
   socialMediaLink: string;
   domains: string[];

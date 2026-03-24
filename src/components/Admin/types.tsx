@@ -1,10 +1,11 @@
+import { CourseEnum, DepartmentEnum } from "@/dto/Programs";
 
-interface Program {
+export interface Program {
   id: string;
   branch: string;
-  course: string;
+  course: CourseEnum;
   year: string;
-  department: string;
+  department: DepartmentEnum;
 }
 
 interface User {
@@ -23,7 +24,7 @@ interface Student {
 export interface TPCMember {
   id: string;
   role: string;
-  student: Student; 
+  student: Student;
 }
 export interface JobCoordinatorFC {
   id: string;

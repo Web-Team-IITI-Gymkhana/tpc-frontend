@@ -1,32 +1,34 @@
-'use client'
+"use client";
 
-import { Info } from 'lucide-react'
+import { Info } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { SeasonDataFC } from '@/helpers/analytics-dashboard/types'
+} from "@/components/ui/tooltip";
+import { SeasonDataFC } from "@/helpers/analytics-dashboard/types";
 
 interface StatCardProps {
-  value: string | number
-  label: string
-  subtext?: string | string[]
-  info?: string
-  className?: string
+  value: string | number;
+  label: string;
+  subtext?: string | string[];
+  info?: string;
+  className?: string;
 }
 
 function StatCard({ value, label, subtext, info, className }: StatCardProps) {
   return (
-    <div className={`relative p-4 rounded-lg ${'bg-white'} border ${className} min-w-[200px] transition-colors duration-200 ease-in-out hover:bg-gray-50`}>
+    <div
+      className={`relative p-3 md:p-4 rounded-lg ${"bg-white"} border ${className} min-w-[160px] md:min-w-[200px] transition-colors duration-200 ease-in-out hover:bg-gray-50`}
+    >
       <div className="flex justify-between items-start">
-        <span className="text-2xl font-bold">{value}</span>
+        <span className="text-xl md:text-2xl font-bold">{value}</span>
         {info && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-4 w-4 text-muted-foreground " />
+                <Info className="h-4 w-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs">{info}</p>
@@ -40,15 +42,24 @@ function StatCard({ value, label, subtext, info, className }: StatCardProps) {
         {Array.isArray(subtext) ? (
           <div className="space-y-0.5 mt-0.5">
             {subtext.map((text, index) => (
-              <div key={index} className="text-sm text-muted-foreground">{text}</div>
+              <div
+                key={index}
+                className="text-xs md:text-sm text-muted-foreground"
+              >
+                {text}
+              </div>
             ))}
           </div>
         ) : (
-          subtext && <div className="text-sm text-muted-foreground mt-0.5">{subtext}</div>
+          subtext && (
+            <div className="text-xs md:text-sm text-muted-foreground mt-0.5">
+              {subtext}
+            </div>
+          )
         )}
       </div>
     </div>
-  )
+  );
 }
 
 interface DataRibbonProps {
@@ -68,8 +79,8 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
   }
 
   return (
-    <div className="mb-6 space-y-4  max-w-full overflow-x-scroll">
-      <div className="flex space-x-4 pb-4 md:pb-0">
+    <div className="mb-4 md:mb-6 space-y-4 max-w-full">
+      <div className="flex space-x-3 md:space-x-4 pb-4 md:pb-0 overflow-x-auto no-scrollbar">
         <StatCard
           value={`${overallStats.placementPercentage.toFixed(2)}%`}
           label={`${typeLabel} Percentage`}
@@ -124,6 +135,5 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
         />
       </div>
     </div>
-  )
+  );
 }
-

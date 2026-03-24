@@ -35,6 +35,7 @@ const JobModal = ({
   const [job, setData] = useState<JobDetailFC>(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState(null);
   const [jafDetails, setJafDetails] = useState<JAFdetailsFC>();
   const handleClose = () => setOpen(false);
@@ -60,9 +61,14 @@ const JobModal = ({
     fetchData();
   }, [jobID]);
 
-  const handleEditClick = () => {
+  const handleEditClick = async () => {
     if (editMode) {
-      handleSubmit();
+      setSaving(true);
+      try {
+        await handleSubmit();
+      } finally {
+        setSaving(false);
+      }
     }
     setEditMode(!editMode);
   };
@@ -150,8 +156,8 @@ const JobModal = ({
                     <Button variant="default">Events and Applications</Button>
                   </Link>
                   {!job.active && (
-                    <Button onClick={handleEditClick}>
-                      {editMode ? "Save Application" : "Edit Application"}
+                    <Button onClick={handleEditClick} disabled={saving}>
+                      {saving ? "Saving..." : editMode ? "Save Application" : "Edit Application"}
                     </Button>
                   )}
                 </div>

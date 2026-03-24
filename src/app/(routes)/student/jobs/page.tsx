@@ -25,9 +25,11 @@ const StudentPage = () => {
   }, []);
 
   return (
-    <div>
-      <div className="my-3 mx-5 font-bold text-xl">
-        <h1>Jobs</h1>
+    <div className="min-h-screen p-2 md:p-4 lg:p-6">
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+          Jobs
+        </h1>
       </div>
       <div>
         {loading && (
@@ -35,17 +37,26 @@ const StudentPage = () => {
             <Loader />
           </div>
         )}
-        {jobs ? (
-          jobs.map((job) => (
-            <div key={job.id} className="my-3">
-              <JobCard jobItem={job} type="job" />
-            </div>
-          ))
-        ) : (
-          <div className="h-screen w-full flex justify-center items-center">
-            <h1 className="text-2xl font-bold">No Jobs Available</h1>
+        {jobs && jobs.length > 0 ? (
+          <div className="space-y-4">
+            {jobs.map((job) => (
+              <div key={job.id} className="w-full">
+                <JobCard jobItem={job} type="job" />
+              </div>
+            ))}
           </div>
-        )}
+        ) : !loading ? (
+          <div className="h-64 w-full flex justify-center items-center">
+            <div className="text-center">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-600 mb-2">
+                No Jobs Available
+              </h1>
+              <p className="text-gray-500">
+                Check back later for new opportunities
+              </p>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

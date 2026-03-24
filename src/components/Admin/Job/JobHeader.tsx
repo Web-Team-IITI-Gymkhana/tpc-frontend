@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { JobDetailFC } from "@/helpers/recruiter/types";
 import Select from "react-select";
 import Link from "next/link";
@@ -20,14 +20,20 @@ const currentStatusOptions = [
 ];
 
 const JobHeader = ({ job, formData, setFormData, editMode, setEditMode }) => {
+  const [saving, setSaving] = useState(false);
   const newCurrentStatusOptions = currentStatusOptions.map((option) => ({
     value: option,
     label: option,
   }));
 
-  const handleEditClick = () => {
+  const handleEditClick = async () => {
     if (editMode) {
-      handleSubmit();
+      setSaving(true);
+      try {
+        await handleSubmit();
+      } finally {
+        setSaving(false);
+      }
     }
     setEditMode(!editMode);
   };
@@ -125,8 +131,8 @@ const JobHeader = ({ job, formData, setFormData, editMode, setEditMode }) => {
             <Button variant="default">Events and Applications</Button>
           </Link>
           {!job.active && (
-            <Button onClick={handleEditClick}>
-              {editMode ? "Save Application" : "Edit Application"}
+            <Button onClick={handleEditClick} disabled={saving}>
+              {saving ? "Saving..." : editMode ? "Save Application" : "Edit Application"}
             </Button>
           )}
         </div>

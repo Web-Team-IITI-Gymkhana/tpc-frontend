@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import { ResumePatchData } from "./types";
+import type { DTO as StudentDTO } from "@/dto/StudentDto";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -84,7 +85,7 @@ export const apiCall = async (
   const res = await fetch(requestUrl, req);
   if (method === "GET" || recieveResponse) {
     if (res.ok) return await res.json();
-    else throw new Error("Cannot fetch");
+    else return res.json();
   } else return res.ok;
 };
 
@@ -122,6 +123,56 @@ export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
       window.open(fileUrl);
     })
     .catch((error) => toast.error("Error fetching data"));
+};
+
+export const GetFileUrl = (filePath: string, subFolder: string) => {
+  try {
+    if (!filePath) {
+      toast.error("Invalid file path");
+      return;
+    }
+
+    let baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (baseUrl) {
+      // Remove /api/v1 from the backend URL to get the base server URL
+      baseUrl = baseUrl.replace("/api/v1", "");
+    } else {
+      // Fallback to current origin
+      baseUrl = window.location.origin;
+    }
+
+    const fileUrl = `${baseUrl}/uploads/${subFolder}/${filePath}`;
+
+    return fileUrl;
+  } catch (error) {
+    console.error("Error generating file URL:", error);
+    toast.error("Failed to generate file URL");
+  }
+};
+
+export const OpenFileViaUploads = (filePath: string, subFolder: string) => {
+  try {
+    const fileUrl = GetFileUrl(filePath, subFolder);
+    if (!fileUrl) {
+      toast.error("Failed to generate file URL");
+      return;
+    }
+
+    const newWindow = window.open(fileUrl, "_blank");
+
+    // Check if the window was blocked
+    if (
+      !newWindow ||
+      newWindow.closed ||
+      typeof newWindow.closed == "undefined"
+    ) {
+      toast.error("Popup blocked. Please allow popups for this site.");
+    }
+  } catch (error) {
+    console.error("Error opening file:", error);
+    toast.error("Failed to open file");
+  }
 };
 
 export const PasswordlessLogin = async (accessToken: string | undefined) => {
@@ -392,10 +443,26 @@ export const addEvent = async (body: any) => {
 };
 
 export const addSeason = async (body: any) => {
-  return apiCall(`/seasons`, {
-    method: "POST",
-    body: body,
-  });
+  // Check if body is FormData (for file uploads)
+  if (body instanceof FormData) {
+    return apiCall(`/seasons`, {
+      method: "POST",
+      formData: body,
+    });
+  } else {
+    return apiCall(`/seasons`, {
+      method: "POST",
+      body: body,
+    });
+  }
+};
+
+export const getSeasonPolicyDocument = (fileName: string) => {
+  OpenFileViaUploads(fileName, "policy");
+};
+
+export const getSeasonPolicyDocumentAdmin = (fileName: string) => {
+  OpenFileViaUploads(fileName, "policy");
 };
 
 export const promoteStudent = async (body: any, eventId: string) => {
@@ -415,12 +482,16 @@ export const fetchResumes = async () => {
   return apiCall("/resumes");
 };
 
-export const getResumeFile = async (fileName: string) => {
-  OpenFile(`/resumes/file/${fileName}`);
+export const getResumeFile = (fileName: string) => {
+  OpenFileViaUploads(fileName, "resume");
 };
 
-export const OpenJD = async (fileName: string) => {
-  OpenFile(`/jobs/jd/${fileName}`);
+export const getResumeFileUrl = (fileName: string) => {
+  return GetFileUrl(fileName, "resume");
+};
+
+export const OpenJD = (fileName: string) => {
+  OpenFileViaUploads(fileName, "jd");
 };
 
 export const patchResumeVerify = async (changes: ResumePatchData[]) => {
@@ -435,6 +506,34 @@ export const getStudentSalaryOffers = async (
   studentId: string,
 ) => {
   return apiCall(`/on-campus-offers/salaries/${jobId}/student/${studentId}`);
+};
+
+export const fetchOnCampusOffers = async (seasonId: string) => {
+  return apiCall(`/on-campus-offers`, {
+    queryParam: {
+      "q[filterBy][salary][job][season][id][eq][]": seasonId,
+    },
+  });
+};
+
+export const fetchStudentOffers = async (studentId: string) => {
+  return apiCall(`/on-campus-offers`, {
+    queryParam: {
+      q: {
+        filterBy: {
+          student: {
+            id: {
+              eq: [studentId],
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const fetchJobOffers = async (jobId: string) => {
+  return apiCall(`/on-campus-offers/job/${jobId}`);
 };
 
 export const postOnCampusOffer = async (
@@ -550,25 +649,24 @@ export const createJobEvent = async (
 };
 
 export const updateEvent = async (
-  body:
-[
-   {
-    id: string;
-    jobId: string;
-    roundNumber: number;
-    type: string;
-    metadata: string;
-    startDateTime: string;
-    endDateTime: string;
-    visibleToRecruiter: boolean;
-  }]
+  body: [
+    {
+      id: string;
+      jobId: string;
+      roundNumber: number;
+      type: string;
+      metadata: string;
+      startDateTime: string;
+      endDateTime: string;
+      visibleToRecruiter: boolean;
+    },
+  ],
 ) => {
   return apiCall(`/events`, {
     method: "PATCH",
     body: body,
   });
 };
-
 
 export const login = async (email: string, role: string) => {
   const response = await apiCall("/auth/login/", {
@@ -601,11 +699,12 @@ export const deleteEvent = async (jobId: string, eventId: string) => {
   }
 };
 
-export const loginWithEmail = async (email: string) => {
+export const loginWithEmail = async (email: string, token: string) => {
   return apiCall("/auth/passwordless", {
     method: "POST",
-    body: { email },
+    body: { email, token },
     isAuth: false,
+    recieveResponse: true,
   });
 };
 
@@ -696,4 +795,133 @@ export const fetchcompanies = async () => {
 
 export const fetchClashes = async (jobId: string) => {
   return apiCall(`/clashes/${jobId}`);
+};
+
+export const validateCaptcha = async (captcha: string) => {
+  const res = await apiCall("/auth/verify-captcha", {
+    method: "POST",
+    body: { token: captcha },
+    isAuth: false,
+  });
+  return res;
+};
+
+export const fetchPrograms = async (queryParam?: object) => {
+  return apiCall("/programs", {
+    queryParam,
+  });
+};
+
+export const postPrograms = async (
+  programs: {
+    branch: string;
+    course: string;
+    year: string;
+    department: string;
+  }[],
+) => {
+  return apiCall("/programs", {
+    method: "POST",
+    body: programs,
+  });
+};
+
+export const patchStudentData = async (student: any) => {
+  // Accepts a single student object, wraps in array for PATCH
+  return apiCall("/students", {
+    method: "PATCH",
+    body: [student],
+  });
+};
+
+// External Opportunities APIs
+export const fetchExternalOpportunities = async (queryParam?: object) => {
+  return apiCall("/external-opportunities", {
+    queryParam,
+  });
+};
+
+export const createExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "POST",
+    body: [opportunity],
+  });
+};
+
+export const updateExternalOpportunity = async (opportunity: any) => {
+  return apiCall("/external-opportunities", {
+    method: "PATCH",
+    body: [opportunity],
+  });
+};
+
+export const deleteExternalOpportunities = async (ids: string[]) => {
+  return apiCall("/external-opportunities", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+// Delete functions for admin components
+export const deleteCompanies = async (ids: string[]) => {
+  return apiCall("/companies", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteRecruiters = async (ids: string[]) => {
+  return apiCall("/recruiters", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteJobs = async (ids: string[]) => {
+  return apiCall("/jobs", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deletePrograms = async (ids: string[]) => {
+  return apiCall("/programs", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteSeasons = async (ids: string[]) => {
+  return apiCall("/seasons", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteOnCampusOffers = async (ids: string[]) => {
+  return apiCall("/on-campus-offers", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteOffCampusOffers = async (ids: string[]) => {
+  return apiCall("/off-campus-offers", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteSalaries = async (ids: string[]) => {
+  return apiCall("/salaries", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const deleteEvents = async (ids: string[]) => {
+  return apiCall("/events", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
 };

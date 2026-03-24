@@ -1,23 +1,32 @@
 "use client";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 
 const MainContent = ({ children }: { children: ReactNode }) => {
   const context = useContext(ToggleContext);
+
   return (
-    <motion.div
-      initial={{ width: context.isOpen ? "82vw" : "95vw" }}
-      animate={context.isOpen ? "open" : "closed"}
-      transition={{ duration: 0.2 }}
-      variants={{
-        closed: { width: "95vw" },
-        open: { width: "82vw" },
-      }}
-      className="flex-grow bg-gray-200 p-4 text-black overflow-y-scroll h-screen"
-    >
-      {children}
-    </motion.div>
+    <div className="flex-grow bg-gray-200 text-black overflow-y-auto min-h-screen">
+      {/* Single responsive container */}
+      <motion.div
+        animate={context.isOpen ? "open" : "closed"}
+        transition={{ duration: 0.2 }}
+        variants={{
+          closed: {
+            width: "100%",
+            marginLeft: "0",
+          },
+          open: {
+            width: "100%",
+            marginLeft: "0",
+          },
+        }}
+        className="w-full px-1 py-2 md:p-4"
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 };
 export default MainContent;
