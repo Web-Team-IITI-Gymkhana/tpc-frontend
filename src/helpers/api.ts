@@ -435,6 +435,21 @@ export const fetchEventById = async (eventId: any) => {
   return apiCall(`/events/${eventId}`);
 };
 
+export const fetchAllFeedbacks = async (filter?: string) => {
+  return apiCall(
+    filter ? `/admin/feedback?${filter}` : "/admin/feedback",
+    {
+      next: { tags: ["AllFeedbacks"] },
+    },
+  );
+};
+
+export const fetchFeedbackById = async (feedbackId: string) => {
+  return apiCall(`/admin/feedback/${feedbackId}`, {
+    next: { tags: ["FeedbackDetail"] },
+  });
+};
+
 export const addEvent = async (body: any) => {
   return apiCall(`/events`, {
     method: "POST",
@@ -455,6 +470,19 @@ export const addSeason = async (body: any) => {
       body: body,
     });
   }
+};
+
+export const addRecruiterFeedback = async (body: any) => {
+  return apiCall("/recruiter-feedback", {
+    method: "POST",
+    body,
+  });
+};
+
+export const getRecruiterFeedbackSeasons = async () => {
+  return apiCall("/recruiter-feedback/seasons", {
+    method: "GET",
+  });
 };
 
 export const getSeasonPolicyDocument = (fileName: string) => {
