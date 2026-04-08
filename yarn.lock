@@ -2045,6 +2045,11 @@
   resolved "https://registry.yarnpkg.com/@types/use-sync-external-store/-/use-sync-external-store-0.0.3.tgz#b6725d5f4af24ace33b36fafd295136e75509f43"
   integrity sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==
 
+"@types/validator@^13.15.3":
+  version "13.15.10"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-13.15.10.tgz#742b77ec34d58554b94a76a14cef30d59e3c16b9"
+  integrity sha512-T8L6i7wCuyoK8A/ZeLYt1+q0ty3Zb9+qbSSvrIVitzT3YjZqkTZ40IbRsPanlB4h1QB3JVL1SYCdR6ngtFYcuA==
+
 "@typescript-eslint/parser@^5.4.2 || ^6.0.0 || 7.0.0 - 7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-7.2.0.tgz#44356312aea8852a3a82deebdacd52ba614ec07a"
@@ -2536,6 +2541,15 @@ chokidar@^3.5.3:
     readdirp "~3.6.0"
   optionalDependencies:
     fsevents "~2.3.2"
+
+class-validator@^0.15.1:
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.15.1.tgz#002600c101bcebb16e7240870cb50535340c9600"
+  integrity sha512-LqoS80HBBSCVhz/3KloUly0ovokxpdOLR++Al3J3+dHXWt9sTKlKd4eYtoxhxyUjoe5+UcIM+5k9MIxyBWnRTw==
+  dependencies:
+    "@types/validator" "^13.15.3"
+    libphonenumber-js "^1.11.1"
+    validator "^13.15.22"
 
 class-variance-authority@^0.7.0:
   version "0.7.0"
@@ -4145,6 +4159,11 @@ levn@^0.4.1:
   dependencies:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
+
+libphonenumber-js@^1.11.1:
+  version "1.12.40"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.40.tgz#4b743571462a0f3fdafab7a941d89ee842aa25e0"
+  integrity sha512-HKGs7GowShNls3Zh+7DTr6wYpPk5jC78l508yQQY3e8ZgJChM3A9JZghmMJZuK+5bogSfuTafpjksGSR3aMIEg==
 
 lilconfig@^2.1.0:
   version "2.1.0"
@@ -6111,6 +6130,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+validator@^13.15.22:
+  version "13.15.26"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.15.26.tgz#36c3deeab30e97806a658728a155c66fcaa5b944"
+  integrity sha512-spH26xU080ydGggxRyR1Yhcbgx+j3y5jbNXk/8L+iRvdIEQ4uTRH2Sgf2dokud6Q4oAtsbNvJ1Ft+9xmm6IZcA==
 
 victory-vendor@^36.6.8:
   version "36.9.2"
