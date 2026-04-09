@@ -820,7 +820,7 @@ const JobDetails = ({
                   }}
                   maxLength={FIELD_LIMITS.JOB_TITLE_MAX}
                   showCount
-                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm h-10"
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
@@ -880,7 +880,7 @@ const JobDetails = ({
                   }}
                   maxLength={FIELD_LIMITS.LOCATION_MAX}
                   showCount
-                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm h-10"
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
@@ -909,7 +909,7 @@ const JobDetails = ({
                   }}
                   min={0}
                   max={FIELD_LIMITS.HIRES_MAX}
-                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm h-10"
+                  className="rounded-md shadow-sm border-gray-300 text-xs md:text-sm"
                 />
               </Form.Item>
             </Col>
@@ -1020,7 +1020,6 @@ const JobDetails = ({
                 help={getFieldError("skills")}
               >
                 <Select
-                  className="h-10"
                   mode="tags"
                   style={{
                     width: "100%",
@@ -1730,7 +1729,7 @@ const JobDetails = ({
                         </Form.Item>
                       </Col>
                     </Row> */}
-                    <Row gutter={[16, 12]} className="md:gutter-24 py-5">
+                    <Row gutter={[16, 12]} className="md:gutter-24">
                       <Col xs={24} md={12}>
                         <Form.Item
                           label={
@@ -1967,7 +1966,7 @@ const JobDetails = ({
                                 value,
                               );
                             }}
-                            className="rounded-md h-10"
+                            className="rounded-md"
                           />
                         </Form.Item>
                       </Col>
@@ -2830,7 +2829,7 @@ const JobDetails = ({
                             >
                               <Select
                                 placeholder="Select accommodation provision"
-                                className="rounded-md h-10"
+                                className="rounded-md"
                                 options={[
                                   {
                                     value: true,
@@ -2859,7 +2858,7 @@ const JobDetails = ({
                             >
                               <Select
                                 placeholder="Select PPO provision"
-                                className="rounded-md h-10"
+                                className="rounded-md"
                                 options={[
                                   {
                                     value: true,
@@ -3187,7 +3186,6 @@ const JobDetails = ({
                           help={getFieldError(`tests.${index}.type`)}
                         >
                           <Select
-                            className="h-10"
                             placeholder="Select type"
                             options={testType}
                             showSearch
@@ -3347,7 +3345,6 @@ const JobDetails = ({
                           help={getFieldError(`interviews.${index}.type`)}
                         >
                           <Select
-                            className="h-10"
                             placeholder="Select type"
                             options={interviewType}
                             showSearch
