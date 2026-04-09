@@ -18,6 +18,7 @@ import {
   jobDetailsValidationSchema,
 } from "../../validation/jaf.validation";
 import ReCAPTCHA from "react-google-recaptcha";
+import { isEmail } from "class-validator";
 
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const { Step } = Steps;
@@ -103,11 +104,12 @@ function JAF() {
             }))
             .filter(
               (r) =>
-                r.name.trim() ||
-                r.designation.trim() ||
-                r.email.trim() ||
-                r.contact.trim() ||
-                r.landline.trim(),
+                (r.name.trim() ||
+                  r.designation.trim() ||
+                  r.email.trim() ||
+                  r.contact.trim() ||
+                  r.landline.trim()) &&
+                isEmail(r.email),
             );
 
           if (recruiters.length === 0) {

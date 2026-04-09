@@ -36,6 +36,7 @@
     "antd": "^5.19.1",
     "axios": "^1.6.3",
     "chartjs": "^0.3.24",
+    "class-validator": "^0.15.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^0.2.0",
