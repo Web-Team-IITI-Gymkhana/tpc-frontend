@@ -69,8 +69,6 @@ interface DataRibbonProps {
 
 export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
   const overallStats = stats.overallStats;
-  const unplacedCount =
-    overallStats.totalRegisteredStudentsCount - overallStats.placedStudentsCount;
   let packageLabel = "Stipend";
   if (seasonType === "PLACEMENT") {
     packageLabel = "Package";
@@ -116,10 +114,9 @@ export function DataRibbon({ stats, seasonType }: DataRibbonProps) {
           info="Number of students placed"
         />
         <StatCard
-          value={unplacedCount}
+          value={`${overallStats.unplacedPercentage.toFixed(2)}%`}
           label="Total Unplaced Students"
-          subtext={`${overallStats.unplacedPercentage.toFixed(2)}% unplaced`}
-          info="Unplaced students among total registered"
+          info="Percentage of eligible students yet to be placed"
         />
         <StatCard
           value={overallStats.lowestPackage.toFixed(2)}
