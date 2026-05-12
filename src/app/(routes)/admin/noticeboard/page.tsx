@@ -263,6 +263,7 @@ export default function Announce(): JSX.Element {
                         >
                             <option value="none">None</option>
                             <option value="all@iiti.ac.in">All Students</option>
+                            <option value="managerplacement@iiti.ac.in">Manager</option>
                         </select>
                     </div>
 
