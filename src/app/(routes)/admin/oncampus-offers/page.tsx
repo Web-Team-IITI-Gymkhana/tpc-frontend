@@ -1,7 +1,7 @@
 "use client";
 import { fetchAllSeasons, fetchOnCampusOffers, deleteOnCampusOffers } from "@/helpers/api";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
-import { onCampusOfferDTO } from "@/dto/onCampusOfferDTO";
+import { onCampusOfferDTO, ON_CAMPUS_OFFER_STATUS_LABELS } from "@/dto/onCampusOfferDTO";
 import Table from "@/components/NewTableComponent/Table";
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader/loader";
@@ -12,7 +12,17 @@ const internHiddenColumns = ["salary.firstYearCTC", "salary.totalCTC", "salary.s
 const placementHiddenColumns = ["salary.stipend", "salary.otherCompensations", "salary.salaryPeriod"];
 
 const OnCampusOffersPage = () => {
-  const columns = generateColumns(onCampusOfferDTO);
+  const columns = generateColumns(onCampusOfferDTO).map((col: any) =>
+    col.accessorKey === "status"
+      ? {
+          ...col,
+          cell: ({ getValue }: { getValue: () => unknown }) => {
+            const val = getValue() as string;
+            return ON_CAMPUS_OFFER_STATUS_LABELS[val] ?? val;
+          },
+        }
+      : col,
+  );
   const [seasons, setSeasons] = useState<{ id: string; name: string, type: string }[]>([]);
   const [selectedSeason, setSelectedSeason] = useState<string>("");
   const [loading, setLoading] = useState(true);
