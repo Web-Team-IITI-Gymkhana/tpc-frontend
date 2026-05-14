@@ -22,11 +22,13 @@ import {
   getCompanies,
   postCompany,
   signupRecruiter,
+  signupRecruiterWithJaf,
 } from "@/helpers/recruiter/signup";
 import { getJafDetails } from "@/helpers/recruiter/api";
 import toast from "react-hot-toast";
 import { useEffect, useState, useRef } from "react";
 import { CompanyPostFC, JAFdetailsFC } from "@/helpers/recruiter/types";
+import JAF from "@/components/JAF/JAF";
 import { MultiSelect } from "../ui/multiselect";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,6 +36,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { validateCaptcha } from "@/helpers/api";
 import { Combobox } from "../ui/combobox";
 import { handleApiError } from "@/utils/errorHandling";
+import { JafDto } from "@/types/jaf.types";
 import {
   User,
   Building,
@@ -114,6 +117,9 @@ export default function RecruiterSignup() {
   const [jaf, setJaf] = useState<JAFdetailsFC | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [includeJaf, setIncludeJaf] = useState(false);
+  const [jafPayload, setJafPayload] = useState<JafDto | null>(null);
+  const [jafSaved, setJafSaved] = useState(false);
   const router = useRouter();
   const captchaRef = useRef<ReCAPTCHA | null>(null);
 
@@ -478,7 +484,14 @@ export default function RecruiterSignup() {
         landline: personalInfo.landline.trim() || undefined,
       };
 
-      const signupRes = await signupRecruiter(recruiterData);
+      if (includeJaf && !jafPayload) {
+        toast.error("Please complete the JAF section or turn it off.");
+        return;
+      }
+
+      const signupRes = includeJaf
+        ? await signupRecruiterWithJaf({ ...recruiterData, jaf: jafPayload })
+        : await signupRecruiter(recruiterData);
 
       if (signupRes.success) {
         toast.success(
@@ -507,6 +520,9 @@ export default function RecruiterSignup() {
         });
         setValidationErrors({});
         setTouched({});
+        setIncludeJaf(false);
+        setJafPayload(null);
+        setJafSaved(false);
 
         // Redirect after brief delay
         setTimeout(() => {
@@ -525,6 +541,11 @@ export default function RecruiterSignup() {
       setCaptchaToken("");
       setSubmitting(false);
     }
+  };
+
+  const handleJafSubmit = async (payload: JafDto) => {
+    setJafPayload(payload);
+    setJafSaved(true);
   };
 
   const getFieldError = (field: string): string => {
@@ -1108,11 +1129,60 @@ export default function RecruiterSignup() {
 
         <Separator />
 
-        {/* Step 3: Security Verification */}
+        {/* Step 3: Optional JAF */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-8 h-8 bg-slate-700 text-white rounded-full text-sm font-medium">
               3
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Job Announcement Form (Optional)
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              id="include-jaf"
+              type="checkbox"
+              checked={includeJaf}
+              onChange={(e) => {
+                const enabled = e.target.checked;
+                setIncludeJaf(enabled);
+                if (!enabled) {
+                  setJafPayload(null);
+                  setJafSaved(false);
+                }
+              }}
+              className="h-4 w-4 rounded border-gray-300 text-slate-700 focus:ring-slate-700"
+            />
+            <Label htmlFor="include-jaf" className="text-sm text-gray-700">
+              Fill JAF now and submit with registration
+            </Label>
+          </div>
+
+          {includeJaf && (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <JAF
+                mode="embedded"
+                submitLabel="Save JAF Details"
+                onSubmit={handleJafSubmit}
+              />
+              {jafSaved && (
+                <p className="mt-2 text-sm text-green-700">
+                  JAF details saved. Complete registration to submit.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <Separator />
+
+        {/* Step 4: Security Verification */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-8 h-8 bg-slate-700 text-white rounded-full text-sm font-medium">
+              {includeJaf ? 4 : 3}
             </div>
             <h3 className="text-lg font-semibold text-gray-900">
               Security Verification
