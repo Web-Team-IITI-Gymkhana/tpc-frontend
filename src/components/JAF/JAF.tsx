@@ -23,6 +23,12 @@ import { isEmail } from "class-validator";
 const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const { Step } = Steps;
 
+type JAFProps = {
+  mode?: "standalone" | "embedded";
+  onSubmit?: (payload: JafDto) => Promise<void> | void;
+  submitLabel?: string;
+};
+
 // Helper function to extract user-friendly error messages
 const getErrorMessages = (errors: any): string[] => {
   const messages: string[] = [];
@@ -63,12 +69,15 @@ const getErrorMessages = (errors: any): string[] => {
   return [...new Set(messages)];
 };
 
-function JAF() {
+function JAF({ mode = "standalone", onSubmit, submitLabel }: JAFProps) {
   const accessToken = Cookies.get("accessToken");
   const [isLoading, setIsLoading] = useState(true);
   const [captchaToken, setCaptchaToken] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEmbedded = mode === "embedded";
+  const showCaptcha = !isEmbedded;
+  const finishLabel = submitLabel || "Finish";
 
  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
@@ -89,7 +98,7 @@ function JAF() {
         key="jaf-form-wizard"
         initialValues={DEFAULT_FORM_VALUES}
         onSubmit={async (values: JAFFormValues) => {
-          if (!captchaToken) {
+          if (showCaptcha && !captchaToken) {
             toast.error("Please complete the CAPTCHA to submit.");
             return;
           }
@@ -116,7 +125,7 @@ function JAF() {
             toast.error("At least one recruiter contact is required");
             return;
           }
-          const payload: JafDto & { captchaToken: string } = {
+          const payload: JafDto = {
             job: {
               seasonId: values.seasonId,
               role: values.role,
@@ -168,19 +177,37 @@ function JAF() {
               },
             },
             salaries: values.salaries || [],
-            captchaToken: captchaToken, 
           };
 
           try {
-            await axios.post(`${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`, payload, {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-              },
-            });
+            setIsSubmitting(true);
 
-            toast.success("JAF Form submitted successfully! Your application has been received.");
-            
+            if (isEmbedded) {
+              if (!onSubmit) {
+                toast.error("JAF submission is not configured.");
+                return;
+              }
+
+              await onSubmit(payload);
+              toast.success("JAF details saved. Complete registration to submit.");
+              return;
+            }
+
+            await axios.post(
+              `${baseUrl}${API_ENDPOINTS.SUBMIT_JAF}`,
+              { ...payload, captchaToken },
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+              },
+            );
+
+            toast.success(
+              "JAF Form submitted successfully! Your application has been received.",
+            );
+
             setTimeout(() => {
               window.location.reload();
             }, 1000);
@@ -195,8 +222,10 @@ function JAF() {
             toast.error(errorMessage);
           } finally {
             setIsSubmitting(false);
-            setCaptchaToken("");
-            recaptchaRef.current?.reset();
+            if (showCaptcha) {
+              setCaptchaToken("");
+              recaptchaRef.current?.reset();
+            }
           }
         }}
         validateOnNext
@@ -248,11 +277,13 @@ function JAF() {
               {currentStepIndex === 2 ? (
                 <Row justify="center" className="pt-6">
                   <div className="flex flex-col items-center gap-4">
-                      <ReCAPTCHA
-                        ref={recaptchaRef}
-                        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                        onChange={(token) => setCaptchaToken(token || "")}
-                      />
+                      {showCaptcha && (
+                        <ReCAPTCHA
+                          ref={recaptchaRef}
+                          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                          onChange={(token) => setCaptchaToken(token || "")}
+                        />
+                      )}
                     <div className="flex gap-2">
                       <Button
                         disabled={isPrevDisabled || isSubmitting}
@@ -270,7 +301,7 @@ function JAF() {
                         type="primary"
                         loading={isSubmitting && currentStepIndex === 2}
                       >
-                        Finish
+                        {finishLabel}
                       </Button>
                     </div>
                   </div>
