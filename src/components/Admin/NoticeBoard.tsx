@@ -10,11 +10,13 @@ interface AnnouncementFormData {
     announcelogo: string;
 }
 
-export default function NoticeBoard(): JSX.Element {
+export default function Announce(): JSX.Element {
     const router = useRouter();
 
-    const [errors, setErrors] = useState<string[]>([]);
+    const [group, setGroup] = useState("all");
+    const [manualEmails, setManualEmails] = useState("");
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState<string[]>([]);
     const [logoPreview, setLogoPreview] = useState("");
 
     const [formData, setFormData] = useState<AnnouncementFormData>({
@@ -89,6 +91,11 @@ export default function NoticeBoard(): JSX.Element {
         setErrors([]);
 
         try {
+            const emailsArray = manualEmails
+                .split(",")
+                .map((email) => email.trim())
+                .filter((email) => email.length > 0);
+
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/announce`,
                 {
@@ -97,7 +104,11 @@ export default function NoticeBoard(): JSX.Element {
                         "Content-Type": "application/json",
                     },
                     credentials: "include",
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        group,
+                        emails: emailsArray,
+                    }),
                 }
             );
 
@@ -107,18 +118,13 @@ export default function NoticeBoard(): JSX.Element {
                 if (result.errors && Array.isArray(result.errors)) {
                     setErrors(result.errors);
                 } else {
-                    setErrors([
-                        result.message ||
-                        "Failed to publish announcement.",
-                    ]);
+                    setErrors([result.message || "Failed to publish announcement."]);
                 }
 
                 return;
             }
 
-            alert(
-                result.message || "Announcement published successfully."
-            );
+            alert(result.message || "Announcement published successfully.");
 
             setFormData({
                 clubname: "CAMC",
@@ -128,12 +134,13 @@ export default function NoticeBoard(): JSX.Element {
             });
 
             setLogoPreview("");
+            setManualEmails("");
+            setGroup("all");
 
             router.push("/admin/noticeboardview");
         } catch (error: any) {
             setErrors([
-                error?.message ||
-                "Something went wrong while publishing announcement.",
+                error?.message || "Something went wrong while publishing announcement.",
             ]);
         } finally {
             setLoading(false);
@@ -141,8 +148,8 @@ export default function NoticeBoard(): JSX.Element {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 px-4 py-10">
-            <div className="mx-auto w-full max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-lg">
+        <div className="bg-slate-50 px-4 py-10">
+            <div className="mx-auto w-full max-w-2xl rounded-2xl bg-white shadow-lg border border-slate-200">
                 <div className="flex items-center justify-between border-b border-slate-200 px-8 py-6">
                     <h1 className="text-2xl font-bold text-slate-900">
                         Create Announcement
@@ -161,10 +168,7 @@ export default function NoticeBoard(): JSX.Element {
                     {errors.length > 0 && (
                         <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
                             {errors.map((error, index) => (
-                                <p
-                                    key={index}
-                                    className="text-sm text-red-600"
-                                >
+                                <p key={index} className="text-sm text-red-600">
                                     {error}
                                 </p>
                             ))}
@@ -210,11 +214,11 @@ export default function NoticeBoard(): JSX.Element {
                             onChange={handleChange}
                             placeholder="Write your announcement here"
                             rows={6}
-                            className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-600"
+                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-600 resize-none"
                         />
                     </div>
 
-                    <div className="mb-8">
+                    <div className="mb-6">
                         <label className="mb-2 block text-sm font-semibold text-slate-700">
                             Announcement Logo
                         </label>
@@ -228,7 +232,7 @@ export default function NoticeBoard(): JSX.Element {
                                         className="h-full w-full object-cover"
                                     />
                                 ) : (
-                                    <span className="px-2 text-center text-xs text-slate-400">
+                                    <span className="text-xs text-slate-400 text-center px-2">
                                         Upload Logo
                                     </span>
                                 )}
@@ -242,20 +246,51 @@ export default function NoticeBoard(): JSX.Element {
                             </label>
 
                             <p className="text-sm text-slate-500">
-                                Optional image that will appear with the
-                                announcement.
+                                Optional image that will appear with the announcement.
                             </p>
                         </div>
+                    </div>
+
+                    <div className="mb-6">
+                        <label className="mb-2 block text-sm font-semibold text-slate-700">
+                            Recipient Group
+                        </label>
+
+                        <select
+                            value={group}
+                            onChange={(e) => setGroup(e.target.value)}
+                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-600"
+                        >
+                            <option value="none">None</option>
+                            <option value="all@iiti.ac.in">All Students</option>
+                            <option value="managerplacement@iiti.ac.in">Manager</option>
+                        </select>
+                    </div>
+
+                    <div className="mb-8">
+                        <label className="mb-2 block text-sm font-semibold text-slate-700">
+                            Extra Emails
+                        </label>
+
+                        <input
+                            type="text"
+                            value={manualEmails}
+                            onChange={(e) => setManualEmails(e.target.value)}
+                            placeholder="example1@gmail.com, example2@gmail.com"
+                            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-600"
+                        />
+
+                        <p className="mt-2 text-sm text-slate-500">
+                            Enter additional email addresses separated by commas.
+                        </p>
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-400"
+                        className="w-full rounded-lg bg-blue-700 px-4 py-3 text-white font-semibold hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-400 transition"
                     >
-                        {loading
-                            ? "Publishing..."
-                            : "Publish Announcement"}
+                        {loading ? "Publishing..." : "Publish Announcement"}
                     </button>
                 </form>
             </div>
