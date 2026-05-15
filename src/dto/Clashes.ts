@@ -85,6 +85,40 @@ export interface ClashesFC {
   offCampus: OffCampus[];
 }
 
+type MaybeClashesPayload = Partial<
+  Record<keyof ClashesFC, unknown>
+>;
+
+const asArray = <T>(value: unknown): T[] => {
+  return Array.isArray(value) ? (value as T[]) : [];
+};
+
+export const EMPTY_CLASHES: ClashesFC = {
+  onCampus: [],
+  event: [],
+  offCampus: [],
+};
+
+export const normalizeClashesResponse = (
+  payload: MaybeClashesPayload | null | undefined,
+): ClashesFC => {
+  return {
+    onCampus: asArray<OnCampus>(payload?.onCampus),
+    event: asArray<Event>(payload?.event),
+    offCampus: asArray<OffCampus>(payload?.offCampus),
+  };
+};
+
+export const isValidClashesResponse = (
+  payload: MaybeClashesPayload | null | undefined,
+): boolean => {
+  return (
+    Array.isArray(payload?.onCampus) &&
+    Array.isArray(payload?.event) &&
+    Array.isArray(payload?.offCampus)
+  );
+};
+
 export const clashesDto = {
   onCampus: [
     {
