@@ -44,7 +44,7 @@ const AuthLayout = async ({ children }: Props) => {
 
           {/* Right side - Form section - Scrollable */}
           <div className="flex-1 flex flex-col justify-center px-8 py-12 lg:px-12 xl:px-16 bg-white lg:ml-[560px]">
-            <div className="sm:mx-auto sm:w-full sm:max-w-lg lg:max-w-xl xl:max-w-2xl">
+            <div className="sm:mx-auto sm:w-full max-w-none">
               <Suspense fallback={<div className="animate-pulse bg-gray-200 h-64 rounded-lg"></div>}>
                 {children}
               </Suspense>

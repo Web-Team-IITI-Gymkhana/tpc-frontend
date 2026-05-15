@@ -125,6 +125,11 @@ function JAF({ mode = "standalone", onSubmit, submitLabel }: JAFProps) {
             toast.error("At least one recruiter contact is required");
             return;
           }
+          const sanitizedSalaries = (values.salaries || []).map((salary: any) => {
+            const { hasCpiCriterion, hasHighSchoolCriteria, ...rest } = salary || {};
+            return rest;
+          });
+
           const payload: JafDto = {
             job: {
               seasonId: values.seasonId,
@@ -176,7 +181,7 @@ function JAF({ mode = "standalone", onSubmit, submitLabel }: JAFProps) {
                     : undefined,
               },
             },
-            salaries: values.salaries || [],
+            salaries: sanitizedSalaries,
           };
 
           try {
