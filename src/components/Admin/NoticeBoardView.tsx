@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 
 interface NotificationItem {
     id?: string;
-    clubname?: string;
+    announcelogo: string;
     heading: string;
     info: string;
-    announcelogo: string;
     createdAt?: string;
+    clubname?: string;
 }
 
 export default function NoticeBoardView(): JSX.Element {
@@ -31,26 +31,37 @@ export default function NoticeBoardView(): JSX.Element {
                     }
                 );
 
-                const result = await response.json();
+                const data = await response.json();
 
                 if (!response.ok) {
                     throw new Error(
-                        result.message || "Failed to load announcements."
+                        data.message || "Failed to fetch announcements."
                     );
                 }
 
-                let announcements: NotificationItem[] = [];
-
-                if (Array.isArray(result)) {
-                    announcements = result;
-                } else if (Array.isArray(result.data)) {
-                    announcements = result.data;
+                // Latest announcement first
+                if (Array.isArray(data)) {
+                    setNotifications(
+                        [...data].sort(
+                            (a, b) =>
+                                new Date(b.createdAt || "").getTime() -
+                                new Date(a.createdAt || "").getTime()
+                        )
+                    );
+                } else if (Array.isArray(data.data)) {
+                    setNotifications(
+                        [...data.data].sort(
+                            (a, b) =>
+                                new Date(b.createdAt || "").getTime() -
+                                new Date(a.createdAt || "").getTime()
+                        )
+                    );
+                } else {
+                    setNotifications([]);
                 }
-
-                setNotifications([...announcements].reverse());
-            } catch (error: any) {
+            } catch (err: any) {
                 setError(
-                    error?.message ||
+                    err?.message ||
                     "Something went wrong while loading announcements."
                 );
             } finally {
@@ -63,8 +74,8 @@ export default function NoticeBoardView(): JSX.Element {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-                <p className="text-lg text-slate-600">
+            <div className="w-full bg-slate-50 flex items-center justify-center p-6">
+                <p className="text-slate-600 text-lg">
                     Loading announcements...
                 </p>
             </div>
@@ -73,9 +84,9 @@ export default function NoticeBoardView(): JSX.Element {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+            <div className="w-full bg-slate-50 flex items-center justify-center p-6">
                 <div className="max-w-md rounded-xl border border-red-200 bg-red-50 p-6 text-center">
-                    <p className="font-medium text-red-600">{error}</p>
+                    <p className="text-red-600 font-medium">{error}</p>
                 </div>
             </div>
         );
@@ -83,8 +94,8 @@ export default function NoticeBoardView(): JSX.Element {
 
     return (
         <>
-            <div className="min-h-screen bg-slate-50 px-4 py-10">
-                <div className="mx-auto max-w-5xl">
+            <div className="w-full bg-slate-50 p-6 overflow-x-hidden">
+                <div className="mx-auto w-full max-w-4xl">
                     <div className="mb-10 text-center">
                         <h1 className="text-4xl font-bold text-slate-900">
                             Announcements
@@ -133,7 +144,7 @@ export default function NoticeBoardView(): JSX.Element {
                                         </div>
 
                                         {item.announcelogo && (
-                                            <div className="flex-shrink-0">
+                                            <div className="md:w-32 flex-shrink-0">
                                                 <img
                                                     src={item.announcelogo}
                                                     alt="Announcement logo"
@@ -142,7 +153,7 @@ export default function NoticeBoardView(): JSX.Element {
                                                             item.announcelogo
                                                         )
                                                     }
-                                                    className="h-24 w-24 cursor-pointer rounded-xl border border-slate-200 object-cover hover:scale-105 transition"
+                                                    className="h-24 w-24 rounded-xl border border-slate-200 object-cover cursor-pointer hover:scale-105 transition"
                                                 />
                                             </div>
                                         )}
@@ -166,7 +177,7 @@ export default function NoticeBoardView(): JSX.Element {
                         <button
                             type="button"
                             onClick={() => setSelectedImage(null)}
-                            className="absolute -top-12 right-0 text-4xl font-bold text-white"
+                            className="absolute -top-12 right-0 text-white text-4xl font-bold"
                         >
                             ×
                         </button>
