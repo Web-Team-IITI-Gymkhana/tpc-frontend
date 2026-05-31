@@ -1139,7 +1139,7 @@ export default function RecruiterSignup() {
             <Separator />
 
             {/* Step 3: Optional JAF */}
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 bg-slate-700 text-white rounded-full text-sm font-medium">
                   3
@@ -1177,7 +1177,7 @@ export default function RecruiterSignup() {
                   </p>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {!includeJaf && (
               <>
