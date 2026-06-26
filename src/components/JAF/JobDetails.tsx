@@ -861,13 +861,9 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong className="text-xs md:text-sm text-gray-700">
-                    <span className="text-red-500">* </span>
                     Work Location
                   </Text>
                 }
-                required
-                hasFeedback
-                validateStatus={getFieldError("location") ? "error" : undefined}
                 help={getFieldError("location")}
                 className="mb-3 md:mb-4"
               >
@@ -3091,14 +3087,8 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong className="text-xs md:text-sm text-gray-700">
-                    <span className="text-red-500">* </span>
                     Selection Mode
                   </Text>
-                }
-                required
-                hasFeedback
-                validateStatus={
-                  getFieldError("selectionMode") ? "error" : undefined
                 }
                 help={getFieldError("selectionMode")}
                 className="mb-3 md:mb-4"
