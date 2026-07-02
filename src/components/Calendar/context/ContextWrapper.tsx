@@ -16,6 +16,7 @@ export const labelsClasses = new Map([
   ["COMPLETED", "blue"],
   ["APPLICATION", "purple"],
   ["POLL", "gray"],
+  ["EVENTS","yellow"],
 ]);
 
 function savedEventsReducer(

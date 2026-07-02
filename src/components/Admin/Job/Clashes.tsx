@@ -1,10 +1,20 @@
-import { ClashesFC } from "@/dto/Clashes";
+import { ClashesFC, Event, OffCampus, OnCampus } from "@/dto/Clashes";
 import React, { useState } from "react";
 import Modal from "@mui/material/Modal";
 import TableComponent from "@/components/NewTableComponent/Table";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { Button } from "@/components/ui/button";
 import { EventModal, OffCampusModal, OnCampusModal } from "./ClashModal";
+
+type ClashDateFields = {
+  startDateTime?: string;
+  cstartDateTime?: string;
+  endDateTime?: string;
+  cendDateTime?: string;
+};
+
+type ClashModalType = "event" | "onCampus" | "offCampus";
+type ClashModalData = Event | OnCampus | OffCampus;
 
 const eventColumns = [
   {
@@ -25,31 +35,43 @@ const eventColumns = [
 ];
 
 const Clashes = ({ clashes }: { clashes: ClashesFC }) => {
-  const [selectedClash, setSelectedClash] = useState<any>(null);
-  const [modalType, setModalType] = useState<string>("");
+  const [selectedClash, setSelectedClash] = useState<ClashModalData | null>(
+    null,
+  );
+  const [modalType, setModalType] = useState<ClashModalType | "">("");
 
-  const formatClashes = (clashesEvent: any, modalType: string) => {
-    return clashesEvent.map((clash) => ({
+  const toDisplayDate = (value?: string) => {
+    if (!value) return "N/A";
+
+    const parsedDate = new Date(value);
+    return Number.isNaN(parsedDate.getTime())
+      ? "N/A"
+      : parsedDate.toLocaleString();
+  };
+
+  const formatClashes = <T extends ClashModalData & ClashDateFields>(
+    clashesEvent: T[],
+    currentModalType: ClashModalType,
+  ) => {
+    const safeClashes = Array.isArray(clashesEvent) ? clashesEvent : [];
+
+    return safeClashes.map((clash) => ({
       ...clash,
-      startDateTime: new Date(clash.startDateTime).toLocaleString(),
-      cstartDateTime: new Date(clash.cstartDateTime).toLocaleString(),
-      endDateTime: new Date(clash.endDateTime).toLocaleString(),
-      cendDateTime: new Date(clash.cendDateTime).toLocaleString(),
+      startDateTime: toDisplayDate(clash.startDateTime),
+      cstartDateTime: toDisplayDate(clash.cstartDateTime),
+      endDateTime: toDisplayDate(clash.endDateTime),
+      cendDateTime: toDisplayDate(clash.cendDateTime),
       viewMore: (
         <Button
           onClick={() => {
             setSelectedClash(clash);
-            setModalType(modalType);
+            setModalType(currentModalType);
           }}
         >
           View More
         </Button>
       ),
     }));
-  };
-
-  const onViewClash = async (event: any) => {
-    setSelectedClash(event);
   };
 
   const onCloseModal = () => {
@@ -65,18 +87,22 @@ const Clashes = ({ clashes }: { clashes: ClashesFC }) => {
   return (
     <div className="bg-white p-4 px-8 rounded-lg border-gray-300 hover:border-blue-200 border-2">
       <Modal
-        open={selectedClash}
+        open={Boolean(selectedClash)}
         onClose={onCloseModal}
         aria-labelledby="Event Details"
         aria-describedby="Event Details"
         className="flex justify-center items-center"
       >
         <>
-          {modalType === "event" && <EventModal event={selectedClash} />}
-          {modalType === "onCampus" && (
+          {modalType === "event" &&
+            selectedClash &&
+            "ceventId" in selectedClash && (
+              <EventModal event={selectedClash} />
+            )}
+          {modalType === "onCampus" && selectedClash && "baseSalary" in selectedClash && (
             <OnCampusModal onCampusEvent={selectedClash} />
           )}
-          {modalType === "offCampus" && (
+          {modalType === "offCampus" && selectedClash && "salary" in selectedClash && (
             <OffCampusModal offCampusEvent={selectedClash} />
           )}
         </>

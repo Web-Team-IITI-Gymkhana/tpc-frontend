@@ -11,6 +11,7 @@ import RecruiterDashboard from "./SideBar/Roles/recruiter";
 import FacultyDashboard from "./SideBar/Roles/faculty";
 import { jwtDecode } from "jwt-decode";
 import TpcMemberDashboard from "./SideBar/Roles/tpcMember";
+
 const Sidebar = () => {
   const context = useContext(ToggleContext);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -105,6 +106,7 @@ const Sidebar = () => {
               {isRecruiter && <RecruiterDashboard />}
               {isFaculty && <FacultyDashboard />}
               {isTpcMember && <TpcMemberDashboard />}
+              
             </div>
 
             {/* Mobile Profile and Logout Section */}

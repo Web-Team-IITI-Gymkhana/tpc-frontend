@@ -1405,7 +1405,7 @@ const JobDetails = ({
                                           >
                                             <Button
                                               type="text"
-                                              size="small"
+                                              size="large"
                                               icon={
                                                 expandedYears.has(year)
                                                   ? "▼"
@@ -1418,7 +1418,7 @@ const JobDetails = ({
                                                 minWidth: 20,
                                                 height: 20,
                                                 padding: 0,
-                                                fontSize: 10,
+                                                fontSize: 15,
                                                 color: "#6b7280",
                                               }}
                                             />
@@ -2673,6 +2673,33 @@ const JobDetails = ({
                             </Form.Item>
                           </Col>
                         </Row>
+                         <Row gutter={[16, 12]} className="md:gutter-24">
+                          <Col span={24}>
+                            <Form.Item
+                              name={[field.name, "hasBondRequirement"]}
+                              valuePropName="checked"
+                              initialValue={false}
+                              className="mb-3 md:mb-4"
+                            >
+                              <Checkbox
+                                onChange={(e) => {
+                                  if (!e.target.checked) {
+                                    form.setFieldValue(["salaries", index, "bondAmount"], 0);
+                                    form.setFieldValue(["salaries", index, "bondDuration"], "");
+                                    setFieldValue(`salaries.${index}.bondAmount`, 0);
+                                    setFieldValue(`salaries.${index}.bondDuration`, "");
+                                  }
+                                }}
+                              >
+                                <Text strong className="text-xs md:text-sm text-gray-700">
+                                  Is there a  bond requirement?
+                                </Text>
+                              </Checkbox>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+
+                        {form.getFieldValue(["salaries", index, "hasBondRequirement"]) === true && (
                         <Row gutter={[24, 16]}>
                           <Col span={12}>
                             <Form.Item
@@ -2751,7 +2778,8 @@ const JobDetails = ({
                             </Form.Item>
                           </Col>
                         </Row>
-                      </>
+                       )}  
+                    </>
                     ) : (
                       <>
                         <Title
@@ -3214,7 +3242,7 @@ const JobDetails = ({
                               style={{ fontSize: 14, color: "#374151" }}
                             >
                               <span style={{ color: "#ef4444" }}>* </span>
-                              Duration
+                              Duration (in Min)
                             </Text>
                           }
                           name={[field.name, "duration"]}
@@ -3373,7 +3401,7 @@ const JobDetails = ({
                               style={{ fontSize: 14, color: "#374151" }}
                             >
                               <span style={{ color: "#ef4444" }}>* </span>
-                              Duration
+                              Duration (in Min)
                             </Text>
                           }
                           name={[field.name, "duration"]}

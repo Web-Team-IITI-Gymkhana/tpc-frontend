@@ -13,6 +13,15 @@ export async function signupRecruiter(data) {
   });
 }
 
+export async function signupRecruiterWithJaf(data) {
+  return apiCall("/auth/recruiter-with-jaf", {
+    isAuth: false,
+    method: "POST",
+    body: data,
+    recieveResponse: true
+  });
+}
+
 export async function postCompany(data) {
   return apiCall("/companies", {
     isAuth: false,

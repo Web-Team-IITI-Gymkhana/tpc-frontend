@@ -25,7 +25,12 @@ import Salaries from "@/components/Admin/Job/Salaries";
 import SelectionProcedure from "@/components/Admin/Job/SelectionProcedure";
 import Clashes from "@/components/Admin/Job/Clashes";
 import JobAnalytics from "@/components/Admin/Job/JobAnalytics";
-import { ClashesFC } from "@/dto/Clashes";
+import {
+  ClashesFC,
+  EMPTY_CLASHES,
+  isValidClashesResponse,
+  normalizeClashesResponse,
+} from "@/dto/Clashes";
 const currentStatusOptions = [
   "INITIALIZED",
   "SCHEDULED",
@@ -42,7 +47,7 @@ const currentStatusOptions = [
 
 const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [job, setData] = useState<JobDetailFC>(null);
-  const [clashes, setClashes] = useState<ClashesFC>(null);
+  const [clashes, setClashes] = useState<ClashesFC>(EMPTY_CLASHES);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(null);
@@ -87,25 +92,32 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [
-          jobDetailData,
-          jafDetailsData,
-          recruiterData,
-          facultyData,
-          clashes,
-        ] = await Promise.all([
+        const [jobDetailData, jafDetailsData, recruiterData, facultyData] =
+          await Promise.all([
           fetchJobById(params.jobId),
           getJafDetails(),
           fetchRecruiterData(),
           fetchFaculties(),
-          fetchClashes(params.jobId),
         ]);
         setJafDetails(jafDetailsData);
         setData(jobDetailData);
         setFormData(jobDetailData);
         setFacultyData(facultyData);
-        setClashes(clashes);
+        try {
+          const clashesData = await fetchClashes(params.jobId);
+          const normalizedClashes = normalizeClashesResponse(clashesData);
+
+          if (!isValidClashesResponse(clashesData)) {
+            toast.error("Could not load clashes for this job");
+          }
+
+          setClashes(normalizedClashes);
+        } catch (_error) {
+          setClashes(EMPTY_CLASHES);
+          toast.error("Could not load clashes for this job");
+        }
       } catch (error) {
+        setClashes(EMPTY_CLASHES);
         toast.error("Error fetching data");
       } finally {
         setLoading(false);
@@ -702,7 +714,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
             loading={loading}
           />
           {job && <JobAnalytics jobId={job.id} />}
-          {clashes ? <Clashes clashes={clashes} /> : <Loader />}
+          <Clashes clashes={clashes} />
         </div>
       )}
     </div>
