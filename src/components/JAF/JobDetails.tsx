@@ -831,7 +831,7 @@ const JobDetails = ({
                 <Form.Item
                   label={
                     <Text strong className="text-xs md:text-sm text-gray-700">
-                      Internship Duration
+                      Internship Duration(In Month)
                     </Text>
                   }
                   validateStatus={
@@ -1348,6 +1348,17 @@ const JobDetails = ({
                                     selected
                                   </Text>
                                 </div>
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      color: "#9ca3af",
+                                      display: "block",
+                                      marginTop: 4,
+                                      fontStyle: "bold",
+                                    }}
+                                  >
+                                     please select relevant branches/Specialization from the below drop-down
+                                  </Text>
                               </div>
 
                               <div
