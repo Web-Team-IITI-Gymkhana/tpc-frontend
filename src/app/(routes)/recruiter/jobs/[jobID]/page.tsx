@@ -104,7 +104,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        tests: prev.selectionProcedure?.tests.filter((_, i) => i !== index),
+        tests: (prev.selectionProcedure?.tests ?? []).filter((_, i) => i !== index),
       },
     }));
   };
@@ -128,9 +128,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        interviews: prev.selectionProcedure?.interviews.filter(
-          (_, i) => i !== index,
-        ),
+        interviews: (prev.selectionProcedure?.interviews ?? []).filter((_, i) => i !== index),
       },
     }));
   };
