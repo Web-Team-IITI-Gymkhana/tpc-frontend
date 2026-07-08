@@ -72,6 +72,36 @@ export default function NoticeBoardView(): JSX.Element {
         fetchAnnouncements();
     }, []);
 
+    const handleDelete = async (id: string) => {
+    const confirmed = window.confirm(
+        "Are you sure you want to delete this announcement?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/notification/${id}`,
+            {
+                method: "DELETE",
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Delete failed");
+        }
+
+        setNotifications((prev) =>
+            prev.filter((item) => item.id !== id)
+        );
+
+        alert("Announcement deleted successfully.");
+    } catch (err: any) {
+        alert(err.message || "Delete failed.");
+    }
+};
     if (loading) {
         return (
             <div className="w-full bg-slate-50 flex items-center justify-center p-6">
@@ -143,20 +173,27 @@ export default function NoticeBoardView(): JSX.Element {
                                             )}
                                         </div>
 
-                                        {item.announcelogo && (
-                                            <div className="md:w-32 flex-shrink-0">
-                                                <img
-                                                    src={item.announcelogo}
-                                                    alt="Announcement logo"
-                                                    onClick={() =>
-                                                        setSelectedImage(
-                                                            item.announcelogo
-                                                        )
-                                                    }
-                                                    className="h-24 w-24 rounded-xl border border-slate-200 object-cover cursor-pointer hover:scale-105 transition"
-                                                />
-                                            </div>
-                                        )}
+                                        <div className="flex flex-col items-end gap-3">
+    {item.announcelogo && (
+        <div className="md:w-32 flex-shrink-0">
+            <img
+                src={item.announcelogo}
+                alt="Announcement logo"
+                onClick={() =>
+                    setSelectedImage(item.announcelogo)
+                }
+                className="h-24 w-24 rounded-xl border border-slate-200 object-cover cursor-pointer hover:scale-105 transition"
+            />
+        </div>
+    )}
+
+    <button
+        onClick={() => handleDelete(item.id!)}
+        className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition"
+    >
+        Delete
+    </button>
+</div>
                                     </div>
                                 </div>
                             ))}
