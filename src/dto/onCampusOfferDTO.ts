@@ -1,3 +1,12 @@
+export const ON_CAMPUS_OFFER_STATUS_LABELS: Record<string, string> = {
+  ACCEPTED: "Accepted",
+  REJECTED: "Rejected",
+  ONGOING: "Ongoing",
+  PPO_ACCEPTED: "PPO Accepted",
+  PLACEMENT_FTE: "FTE (Direct)",
+  PLACEMENT_PPO: "FTE (via PPO)",
+};
+
 const onCampusOfferDTO = [
   {
     status: "string",

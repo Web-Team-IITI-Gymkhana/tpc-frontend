@@ -11,8 +11,7 @@ import RecruiterDashboard from "./SideBar/Roles/recruiter";
 import FacultyDashboard from "./SideBar/Roles/faculty";
 import { jwtDecode } from "jwt-decode";
 import TpcMemberDashboard from "./SideBar/Roles/tpcMember";
-import NoticeBoard from "./Admin/NoticeBoard";
-import NoticeBoardView from "./Admin/NoticeBoardView";
+
 const Sidebar = () => {
   const context = useContext(ToggleContext);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -103,8 +102,6 @@ const Sidebar = () => {
             {/* Mobile Role-specific Navigation */}
             <div className="space-y-2">
               {isAdmin && <AdminDashboard />}
-              {isAdmin && <NoticeBoard />}
-              {isAdmin && <NoticeBoardView/>}
               {isStudent && <StudentDashboard />}
               {isRecruiter && <RecruiterDashboard />}
               {isFaculty && <FacultyDashboard />}
@@ -245,8 +242,6 @@ const Sidebar = () => {
             <NavButtonGroup loggedIn={isLoggedIn} />
           </div>
           {isAdmin && <AdminDashboard />}
-          {isAdmin && <NoticeBoard />}
-          {isAdmin && <NoticeBoardView/>}
           {isStudent && <StudentDashboard />}
           {isRecruiter && <RecruiterDashboard />}
           {isFaculty && <FacultyDashboard />}
