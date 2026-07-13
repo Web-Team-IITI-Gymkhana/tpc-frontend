@@ -36,6 +36,17 @@ const options = typeOptions.map((option) => ({
   label: option,
 }));
 
+const formatDateTimeLocalValue = (date: string | Date) => {
+  const value = new Date(date);
+  const timezoneOffset = value.getTimezoneOffset() * 60000;
+
+  return new Date(value.getTime() - timezoneOffset).toISOString().slice(0, 16);
+};
+
+const convertDateTimeLocalToISOString = (date: string) => {
+  return new Date(date).toISOString();
+};
+
 export const EditEvent = ({
   open,
   setOpen,
@@ -91,10 +102,8 @@ export const EditEvent = ({
         roundNumber: eventData.roundNumber,
         type: eventData.type,
         metadata: eventData.metadata,
-        startDateTime: new Date(eventData.startDateTime)
-          .toISOString()
-          .slice(0, 16),
-        endDateTime: new Date(eventData.endDateTime).toISOString().slice(0, 16),
+        startDateTime: formatDateTimeLocalValue(eventData.startDateTime),
+        endDateTime: formatDateTimeLocalValue(eventData.endDateTime),
         visibleToRecruiter: eventData.visibleToRecruiter,
         additionalData: eventData.additionalData || {},
       });
@@ -158,18 +167,14 @@ export const EditEvent = ({
     setFormValues({ ...formValues, additionalData: newAdditionalData });
   };
 
-  const convertToISOFormat = (date: string) => {
-    return new Date(date).toISOString();
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdating(true);
     try {
       const updatedValues = {
         ...formValues,
-        startDateTime: convertToISOFormat(formValues.startDateTime),
-        endDateTime: convertToISOFormat(formValues.endDateTime),
+        startDateTime: convertDateTimeLocalToISOString(formValues.startDateTime),
+        endDateTime: convertDateTimeLocalToISOString(formValues.endDateTime),
         // Only include additionalData if round number is 0
         additionalData: Number(formValues.roundNumber) === 0 ? formValues.additionalData : {},
       };
@@ -483,6 +488,8 @@ export const AddEvent = ({
     try {
       const eventData = {
         ...formValues,
+        startDateTime: convertDateTimeLocalToISOString(formValues.startDateTime),
+        endDateTime: convertDateTimeLocalToISOString(formValues.endDateTime),
         // Only include additionalData if round number is 0
         additionalData: Number(formValues.roundNumber) === 0 ? formValues.additionalData : {},
       };
@@ -794,13 +801,13 @@ const MakeJobOfferModal = ({
   ]);
 
   const makeOffer = async (salaryId: string) => {
-    await postOnCampusOffer([
-      {
-        salaryId: salaryId,
-        studentId: studentIds[0],
+    await postOnCampusOffer(
+      studentIds.map((studentId) => ({
+        salaryId,
+        studentId,
         status: "ACCEPTED",
-      },
-    ]);
+      })),
+    );
     toast.success("Made a successful offer!");
     window.location.reload();
   };
@@ -809,7 +816,7 @@ const MakeJobOfferModal = ({
     const fetchSalaries = async () => {
       const salaries = await getStudentSalaryOffers(
         lastEvent.job.id,
-        studentIds[0],
+          studentIds[0],
       );
       const newSalaries = salaries.map((salary) => ({
         select: (
