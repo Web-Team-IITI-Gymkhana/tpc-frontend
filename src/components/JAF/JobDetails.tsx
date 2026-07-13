@@ -1357,7 +1357,7 @@ const JobDetails = ({
                                       fontStyle: "bold",
                                     }}
                                   >
-                                     please select relevant branches/specialization from the below drop-down
+                                    Please select relevant branches/specialization from the dropdown below.
                                   </Text>
                               </div>
 
