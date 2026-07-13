@@ -15,6 +15,11 @@ import { useState } from "react";
 import submit from "../action";
 import { createJobEvent } from "@/helpers/api";
 import toast from "react-hot-toast";
+
+const convertDateTimeLocalToISOString = (date: string) => {
+  return new Date(date).toISOString();
+};
+
 interface Props {
   jobId: String;
 }
@@ -90,7 +95,7 @@ export function AddEventDialog({ jobId }: Props) {
                     jobId,
                     type,
                     round,
-                    date,
+                    convertDateTimeLocalToISOString(date),
                   );
                   if (success) {
                     submit("AllEvents");

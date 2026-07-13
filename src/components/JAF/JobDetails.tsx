@@ -831,7 +831,7 @@ const JobDetails = ({
                 <Form.Item
                   label={
                     <Text strong className="text-xs md:text-sm text-gray-700">
-                      Internship Duration
+                      Internship Duration(In Month)
                     </Text>
                   }
                   validateStatus={
@@ -861,13 +861,9 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong className="text-xs md:text-sm text-gray-700">
-                    <span className="text-red-500">* </span>
                     Work Location
                   </Text>
                 }
-                required
-                hasFeedback
-                validateStatus={getFieldError("location") ? "error" : undefined}
                 help={getFieldError("location")}
                 className="mb-3 md:mb-4"
               >
@@ -1352,6 +1348,17 @@ const JobDetails = ({
                                     selected
                                   </Text>
                                 </div>
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      color: "#9ca3af",
+                                      display: "block",
+                                      marginTop: 4,
+                                      fontStyle: "bold",
+                                    }}
+                                  >
+                                    Please select relevant branches/specialization from the dropdown below.
+                                  </Text>
                               </div>
 
                               <div
@@ -3091,14 +3098,8 @@ const JobDetails = ({
               <Form.Item
                 label={
                   <Text strong className="text-xs md:text-sm text-gray-700">
-                    <span className="text-red-500">* </span>
                     Selection Mode
                   </Text>
-                }
-                required
-                hasFeedback
-                validateStatus={
-                  getFieldError("selectionMode") ? "error" : undefined
                 }
                 help={getFieldError("selectionMode")}
                 className="mb-3 md:mb-4"

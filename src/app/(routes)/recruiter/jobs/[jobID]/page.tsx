@@ -94,7 +94,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        tests: [...(prev.selectionProcedure.tests || []), newTest],
+        tests: [...(prev.selectionProcedure?.tests || []), newTest],
       },
     }));
   };
@@ -104,7 +104,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        tests: prev.selectionProcedure.tests.filter((_, i) => i !== index),
+        tests: (prev.selectionProcedure?.tests ?? []).filter((_, i) => i !== index),
       },
     }));
   };
@@ -116,7 +116,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       selectionProcedure: {
         ...prev.selectionProcedure,
         interviews: [
-          ...(prev.selectionProcedure.interviews || []),
+          ...(prev.selectionProcedure?.interviews || []),
           newInterview,
         ],
       },
@@ -128,9 +128,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
       ...prev,
       selectionProcedure: {
         ...prev.selectionProcedure,
-        interviews: prev.selectionProcedure.interviews.filter(
-          (_, i) => i !== index,
-        ),
+        interviews: (prev.selectionProcedure?.interviews ?? []).filter((_, i) => i !== index),
       },
     }));
   };
@@ -337,7 +335,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div className="font-semibold my-2">Selection mode</div>{" "}
                 {editMode ? (
                   <select
-                    value={formData.selectionProcedure.selectionMode}
+                    value={formData.selectionProcedure?.selectionMode}
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -353,7 +351,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     <option>HYBRID</option>
                   </select>
                 ) : (
-                  <div>{job.selectionProcedure.selectionMode}</div>
+                  <div>{job.selectionProcedure?.selectionMode}</div>
                 )}
               </div>
               <div>
@@ -362,7 +360,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   <input
                     type="checkbox"
                     name="shortlistFromResume"
-                    checked={formData.selectionProcedure.shortlistFromResume}
+                    checked={formData.selectionProcedure?.shortlistFromResume}
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -375,7 +373,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   />
                 ) : (
                   <div>
-                    {job.selectionProcedure.shortlistFromResume ? "YES" : "NO"}
+                    {job.selectionProcedure?.shortlistFromResume ? "YES" : "NO"}
                   </div>
                 )}
               </div>
@@ -385,7 +383,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   <input
                     type="checkbox"
                     name="groupDiscussion"
-                    checked={formData.selectionProcedure.groupDiscussion}
+                    checked={formData.selectionProcedure?.groupDiscussion}
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -398,7 +396,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   />
                 ) : (
                   <div>
-                    {job.selectionProcedure.groupDiscussion ? "YES" : "NO"}
+                    {job.selectionProcedure?.groupDiscussion ? "YES" : "NO"}
                   </div>
                 )}
               </div>
@@ -409,7 +407,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     type="number"
                     name="numberOfMembers"
                     value={
-                      formData.selectionProcedure.requirements
+                      formData.selectionProcedure?.requirements
                         ?.numberOfMembers || ""
                     }
                     onChange={(e) => {
@@ -418,7 +416,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                         selectionProcedure: {
                           ...prev.selectionProcedure,
                           requirements: {
-                            ...(prev.selectionProcedure.requirements || {}),
+                            ...(prev.selectionProcedure?.requirements || {}),
                             numberOfMembers: e.target.value,
                           },
                         },
@@ -427,7 +425,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                   />
                 ) : (
                   <div>
-                    {job.selectionProcedure.requirements?.numberOfMembers ||
+                    {job.selectionProcedure?.requirements?.numberOfMembers ||
                       "N/A"}
                   </div>
                 )}
@@ -438,7 +436,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div className="font-semibold bg-gray-200">Tests</div>
                 <ul className="list-disc capitalize">
                   {editMode
-                    ? (formData.selectionProcedure.tests || []).map(
+                    ? (formData.selectionProcedure?.tests || []).map(
                         (test, index) => (
                           <li
                             key={index}
@@ -464,7 +462,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                 value={test.type || ""}
                                 onChange={(e) => {
                                   const updatedTests =
-                                    formData.selectionProcedure.tests.map(
+                                    formData.selectionProcedure?.tests.map(
                                       (t, i) =>
                                         i === index
                                           ? { ...t, type: e.target.value }
@@ -496,7 +494,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                 value={test.duration || ""}
                                 onChange={(e) => {
                                   const updatedTests =
-                                    formData.selectionProcedure.tests.map(
+                                    formData.selectionProcedure?.tests.map(
                                       (t, i) =>
                                         i === index
                                           ? { ...t, duration: e.target.value }
@@ -515,7 +513,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                           </li>
                         ),
                       )
-                    : (job.selectionProcedure.tests || []).map(
+                    : (job.selectionProcedure?.tests || []).map(
                         (test, index) => (
                           <li key={index} className="my-2">
                             <div>
@@ -541,7 +539,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                 <div className="font-semibold bg-gray-200">Interviews</div>
                 <ul className="list-disc capitalize">
                   {editMode
-                    ? (formData.selectionProcedure.interviews || []).map(
+                    ? (formData.selectionProcedure?.interviews || []).map(
                         (interview, index) => (
                           <li
                             key={index}
@@ -567,7 +565,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                 value={interview.type || ""}
                                 onChange={(e) => {
                                   const updatedInterviews =
-                                    formData.selectionProcedure.interviews.map(
+                                    formData.selectionProcedure?.interviews.map(
                                       (i, j) =>
                                         j === index
                                           ? { ...i, type: e.target.value }
@@ -601,7 +599,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                                 value={interview.duration || ""}
                                 onChange={(e) => {
                                   const updatedInterviews =
-                                    formData.selectionProcedure.interviews.map(
+                                    formData.selectionProcedure?.interviews.map(
                                       (i, j) =>
                                         j === index
                                           ? { ...i, duration: e.target.value }
@@ -620,7 +618,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                           </li>
                         ),
                       )
-                    : (job.selectionProcedure.interviews || []).map(
+                    : (job.selectionProcedure?.interviews || []).map(
                         (interview, index) => (
                           <li key={index} className="my-2">
                             <div>
@@ -649,7 +647,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                       type="text"
                       name="otherRequirements"
                       value={
-                        formData.selectionProcedure.requirements
+                        formData.selectionProcedure?.requirements
                           ?.otherRequirements || ""
                       }
                       onChange={(e) => {
@@ -658,7 +656,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                           selectionProcedure: {
                             ...prev.selectionProcedure,
                             requirements: {
-                              ...(prev.selectionProcedure.requirements || {}),
+                              ...(prev.selectionProcedure?.requirements || {}),
                               otherRequirements: e.target.value,
                             },
                           },
@@ -667,7 +665,7 @@ const JobDetailPage = ({ params }: { params: { jobID: string } }) => {
                     />
                   ) : (
                     <div>
-                      {job.selectionProcedure.requirements?.otherRequirements ||
+                      {job.selectionProcedure?.requirements?.otherRequirements ||
                         "N/A"}
                     </div>
                   )}

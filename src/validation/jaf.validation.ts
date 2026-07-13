@@ -155,7 +155,8 @@ export const jobDetailsValidationSchema = Yup.object({
     ),
 
   location: Yup.string()
-    .required("Job location is required")
+    .transform((value) => (value === "" ? undefined : value))
+    .notRequired()
     .min(2, "Location must be at least 2 characters")
     .max(200, "Location must not exceed 200 characters"),
 
@@ -248,11 +249,9 @@ export const jobDetailsValidationSchema = Yup.object({
 
   // Selection procedure
   selectionMode: Yup.string()
-    .oneOf(
-      Object.values(SelectionModeEnum),
-      "Please select a valid selection mode",
-    )
-    .required("Selection mode is required"),
+    .transform((value) => (value === "" ? undefined : value))
+    .oneOf(Object.values(SelectionModeEnum), "Please select a valid selection mode")
+    .notRequired(),
 
   shortlistFromResume: Yup.boolean().required(
     "Please specify if shortlisting from resume is required",
