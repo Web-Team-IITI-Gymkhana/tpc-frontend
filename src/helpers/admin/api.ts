@@ -79,3 +79,9 @@ export async function deleteRegistrations(ids: string[]): Promise<any> {
     queryParam: { id: ids },
   });
 }
+export async function updateStudents(payload: any[]): Promise<any> {
+  return apiCall("/students", {
+    method: "PATCH",
+    body: payload,
+  });
+}

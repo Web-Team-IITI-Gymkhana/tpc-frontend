@@ -6,7 +6,12 @@ import type { DTO } from "@/dto/StudentDto";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { jsondto } from "@/dto/StudentDto";
 import { CSVImportModal } from "@/components/common/CSVImportModal";
-import { addStudents, promoteToManagers, deleteStudents } from "@/helpers/admin/api";
+import {
+  addStudents,
+  promoteToManagers,
+  deleteStudents,
+  updateStudents,
+} from "@/helpers/admin/api";
 import { fetchPrograms, fetchAllSeasons } from "@/helpers/api";
 import { Program } from "@/dto/SalaryDto";
 import { toast } from "react-hot-toast";
@@ -36,6 +41,7 @@ const StudentPage = () => {
   const [selectedRows, setSelectedRows] = useState<DTO[]>([]);
   const [seasons, setSeasons] = useState<{ id: string; name: string }[]>([]);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [cpiImportOpen, setCpiImportOpen] = useState(false);
 
   const visibleColumns = columns.filter(
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
@@ -97,7 +103,38 @@ const StudentPage = () => {
     }
     setImportLoading(false);
   };
+  const handleCpiImport = async (data: any[]) => {
+    try {
+      const payload = data
+        .map((row) => {
+          const student = students.find(
+            (s) => String(s.rollNo) === String(row.rollNo),
+          );
 
+          if (!student) return null;
+
+          return {
+            id: student.id,
+            cpi: Number(row.cpi),
+          };
+        })
+        .filter(Boolean);
+      if (payload.length === 0) {
+        toast.error("No matching roll numbers found");
+        return;
+      }
+      await updateStudents(payload);
+
+      toast.success(`Updated CPI for ${payload.length} students`);
+
+      const updatedData = await fetchStudentData();
+      setStudents(updatedData);
+
+      setCpiImportOpen(false);
+    } catch (e) {
+      toast.error("Failed to update CPI");
+    }
+  };
   const parseStudentRow = (row: any) => {
     if (!row.rollNo || !row.name || !row.email) return null;
 
@@ -203,6 +240,9 @@ const StudentPage = () => {
         toast.error("Failed to delete students");
       }
       setBulkLoading(false);
+    } else if (action === "update-cpi") {
+      setBulkModalOpen(false);
+      setCpiImportOpen(true);
     }
     // Add more actions here later
   };
@@ -243,6 +283,16 @@ const StudentPage = () => {
         entityName="students"
         cleanData={true}
       />
+      <CSVImportModal
+        open={cpiImportOpen}
+        onClose={() => setCpiImportOpen(false)}
+        onSubmit={handleCpiImport}
+        templateHeaders={["rollNo", "cpi"]}
+        templateFileName="cpi_update_template.csv"
+        entityName="cpi updates"
+        parseRow={(row) => row}
+        cleanData={true}
+      />
       <div>
         {students.length > 0 && (
           <Table
@@ -260,7 +310,11 @@ const StudentPage = () => {
         actions={[
           { label: "Create registration for season", value: "register-season" },
           { label: "Promote to CAMC Member", value: "promote-tpc" },
-          { label: "🗑️ Delete Students (Admin Only)", value: "delete-students" },
+          {
+            label: "🗑️ Delete Students (Admin Only)",
+            value: "delete-students",
+          },
+          { label: "Bulk CPI Update (Admin Only)", value: "update-cpi" },
         ]}
         onSubmit={handleBulkModalSubmit}
         seasons={seasons}
