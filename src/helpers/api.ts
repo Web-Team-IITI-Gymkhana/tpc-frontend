@@ -939,3 +939,10 @@ export const deleteEvents = async (ids: string[]) => {
     queryParam: { id: ids },
   });
 };
+
+export const deletePenalties = async (ids: string[]) => {
+  return apiCall("/penalties", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};

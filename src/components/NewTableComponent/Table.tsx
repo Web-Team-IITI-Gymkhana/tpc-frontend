@@ -16,6 +16,8 @@ import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
 import SeasonModal from "./SeasonModal";
 import Link from "next/link";
+import { deleteExternalOpportunities } from "@/helpers/api";
+import toast from "react-hot-toast";
 
 type TableProps = {
   data: any[];
@@ -153,6 +155,25 @@ const Table: React.FC<TableProps> = ({
                 }}
               >
                 View Season
+              </MenuItem>,
+            ]
+          : type === "external-opportunities"
+          ? [
+              <MenuItem
+                key="delete"
+                onClick={async () => {
+                  const confirmMessage = `Are you sure you want to delete this external opportunity?`;
+                  if (!window.confirm(confirmMessage)) return;
+                  try {
+                    await deleteExternalOpportunities([row.original.id]);
+                    toast.success("Successfully deleted external opportunity");
+                    window.location.reload();
+                  } catch {
+                    toast.error("Failed to delete external opportunity");
+                  }
+                }}
+              >
+                Delete Opportunity
               </MenuItem>,
             ]
           : [
