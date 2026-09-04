@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
-import NoticeBoard from "@/components/Admin/NoticeBoard";
 
 
 const AdminDashboard = () => {
@@ -444,80 +443,6 @@ const AdminDashboard = () => {
               >
                 On Campus Offers
               </motion.div>
-            </div>
-          </div>
-        </Link>
-        <Link href="/admin/noticeboard">
-          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
-            <div className="flex justify-start gap-3">
-
-              {/* ICON */}
-              <div className="w-5 flex-shrink-0 text-white">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3 11L21 3L13 21L11 13L3 11Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
-
-              {/* TEXT */}
-              <motion.div
-                initial={{ opacity: 1 }}
-                animate={context.isOpen ? "open" : "closed"}
-                transition={{ duration: 0.1 }}
-                variants={{
-                  closed: { opacity: 0 },
-                  open: { opacity: 1 },
-                }}
-                className={`${context.isOpen ? "visible" : "hidden"} flex-1 text-white`}
-              >
-                Announce
-              </motion.div>
-
-            </div>
-          </div>
-        </Link>
-        <Link href="/admin/noticeboardview">
-          <div className="hover:bg-slate-600/50 rounded-md my-2 py-2 px-4 text-white">
-            <div className="flex justify-start gap-3">
-
-              {/* ICON */}
-              <div className="w-5 flex-shrink-0 text-white">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3 11L21 3L13 21L11 13L3 11Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
-
-              {/* TEXT */}
-              <motion.div
-                initial={{ opacity: 1 }}
-                animate={context.isOpen ? "open" : "closed"}
-                transition={{ duration: 0.1 }}
-                variants={{
-                  closed: { opacity: 0 },
-                  open: { opacity: 1 },
-                }}
-                className={`${context.isOpen ? "visible" : "hidden"} flex-1 text-white`}
-              >
-                Notice Board
-              </motion.div>
-
             </div>
           </div>
         </Link>
