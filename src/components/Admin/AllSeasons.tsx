@@ -7,6 +7,7 @@ import { seasonDTO } from "@/dto/SeasonDto";
 import { fetchSeasonData } from "@/helpers/api";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import { useAuthUser } from "@/helpers/authUtils";
 import Select from "react-select";
 import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
@@ -393,6 +394,7 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
   const [seasonYear, setSeasonYear] = useState<string>(null);
   const [editingSeason, setEditingSeason] = useState<SeasonFC | null>(null);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const { isAdmin } = useAuthUser();
 
   const changeRegistered = (seasonYear: string) => {
     setSeasonYear(seasonYear);
@@ -472,15 +474,19 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
               <th scope="col" className="px-6 py-3">
                 Policy Document
               </th>
-              <th scope="col" className="px-6 py-3">
-                Edit
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Actions
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Delete
-              </th>
+              {isAdmin && (
+                <>
+                  <th scope="col" className="px-6 py-3">
+                    Edit
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Actions
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Delete
+                  </th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -521,47 +527,51 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
                     <span className="text-gray-400">No Policy</span>
                   )}
                 </td>
-                <td className="px-6 py-4">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingSeason(season);
-                      setEditModalOpen(true);
-                    }}
-                    variant="outline"
-                    size="sm"
-                  >
-                    ✏️ Edit
-                  </Button>
-                </td>
-                <td className="px-6 py-4">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleStatus(
-                        season.id,
-                        season.year,
-                        season.type,
-                        season.status,
-                        index,
-                      );
-                    }}
-                  >
-                    {season.status === "ACTIVE" ? "Deactivate" : "Activate"}
-                  </Button>
-                </td>
-                <td className="px-6 py-4">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(season.id, season.year, season.type);
-                    }}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    🗑️ Delete
-                  </Button>
-                </td>
+                {isAdmin && (
+                  <>
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSeason(season);
+                          setEditModalOpen(true);
+                        }}
+                        variant="outline"
+                        size="sm"
+                      >
+                        ✏️ Edit
+                      </Button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatus(
+                            season.id,
+                            season.year,
+                            season.type,
+                            season.status,
+                            index,
+                          );
+                        }}
+                      >
+                        {season.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                      </Button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(season.id, season.year, season.type);
+                        }}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        🗑️ Delete
+                      </Button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
