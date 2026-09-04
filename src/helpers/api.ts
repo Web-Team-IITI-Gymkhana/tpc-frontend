@@ -457,6 +457,20 @@ export const addSeason = async (body: any) => {
   }
 };
 
+export const updateSeason = async (seasonId: string, body: any) => {
+  if (body instanceof FormData) {
+    return apiCall(`/seasons/${seasonId}`, {
+      method: "PATCH",
+      formData: body,
+    });
+  } else {
+    return apiCall(`/seasons`, {
+      method: "PATCH",
+      body: Array.isArray(body) ? body : [body],
+    });
+  }
+};
+
 export const getSeasonPolicyDocument = (fileName: string) => {
   OpenFileViaUploads(fileName, "policy");
 };
