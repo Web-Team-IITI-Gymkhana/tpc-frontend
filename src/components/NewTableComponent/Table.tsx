@@ -16,6 +16,10 @@ import PenaltyModal from "./PenaltyModal";
 import RecruiterModal from "./RecruiterModal";
 import SeasonModal from "./SeasonModal";
 import Link from "next/link";
+import { deleteExternalOpportunities } from "@/helpers/api";
+import toast from "react-hot-toast";
+import { isAdmin } from "@/helpers/authUtils";
+import { JobExportModal } from "../jobs/JobExportModal";
 
 type TableProps = {
   data: any[];
@@ -46,6 +50,10 @@ const Table: React.FC<TableProps> = ({
   const [seasontype, setSeasonType] = useState<string | null>(null);
   const [year, setYear] = useState<string | null>(null);
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
+  const [exportModalOpen, setExportModalOpen] = useState<boolean>(false);
+  const [exportJobId, setExportJobId] = useState<string | null>(null);
+  const [exportJobRole, setExportJobRole] = useState<string>("");
+  const [exportCompanyName, setExportCompanyName] = useState<string>("");
 
   const flattenObject = (obj: any, prefix = ""): Record<string, any> => {
     return Object.keys(obj).reduce((acc, key) => {
@@ -140,6 +148,21 @@ const Table: React.FC<TableProps> = ({
             <Link href={`/admin/jobs/${row.original.id}`} key="view">
               <MenuItem>View {type}</MenuItem>
             </Link>,
+            ...(isAdmin()
+              ? [
+                  <MenuItem
+                    key="export"
+                    onClick={() => {
+                      setExportJobId(row.original.id);
+                      setExportJobRole(row.original.role || "");
+                      setExportCompanyName(row.original.company?.name || "");
+                      setExportModalOpen(true);
+                    }}
+                  >
+                    Download All Details
+                  </MenuItem>,
+                ]
+              : []),
           ]
         : type === "season"
           ? [
@@ -153,6 +176,25 @@ const Table: React.FC<TableProps> = ({
                 }}
               >
                 View Season
+              </MenuItem>,
+            ]
+          : type === "external-opportunities"
+          ? [
+              <MenuItem
+                key="delete"
+                onClick={async () => {
+                  const confirmMessage = `Are you sure you want to delete this external opportunity?`;
+                  if (!window.confirm(confirmMessage)) return;
+                  try {
+                    await deleteExternalOpportunities([row.original.id]);
+                    toast.success("Successfully deleted external opportunity");
+                    window.location.reload();
+                  } catch {
+                    toast.error("Failed to delete external opportunity");
+                  }
+                }}
+              >
+                Delete Opportunity
               </MenuItem>,
             ]
           : [
@@ -279,6 +321,15 @@ const Table: React.FC<TableProps> = ({
           id={id}
           type={seasontype}
           year={year}
+        />
+      )}
+      {exportModalOpen && exportJobId && (
+        <JobExportModal
+          open={exportModalOpen}
+          onClose={() => setExportModalOpen(false)}
+          jobId={exportJobId}
+          jobRole={exportJobRole}
+          companyName={exportCompanyName}
         />
       )}
     </>

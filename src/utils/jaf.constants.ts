@@ -42,6 +42,16 @@ export const BACKLOG_OPTIONS = [
   { value: "PREVIOUS", label: "No" },
 ];
 
+export const COMPANY_DOMAIN_OPTIONS = [
+  "Semiconductors/Electronics",
+  "Automotive/Manufacturing/Engineering",
+  "IT/ITES",
+  "Analytics/Consulting",
+  "Banking/Financial services/Investment Banking",
+  "Healthcare/Education/Others",
+  "Oil & Gas/Energy",
+];
+
 // Placeholder texts
 export const PLACEHOLDERS = {
   // Recruiter Details
