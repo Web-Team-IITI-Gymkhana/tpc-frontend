@@ -349,6 +349,7 @@ export interface StudentDataType {
   backlog?: string;
   tenthMarks?: number;
   twelthMarks?: number;
+  numberOfBacklogs?: number;
   user: {
     id: string;
     email: string;
