@@ -1,3 +1,5 @@
+import { CourseEnum } from "@/dto/Programs";
+
 // CAMC Member DTO matching the API response structure
 export interface TPCMemberDTO {
   id: string;
@@ -7,7 +9,7 @@ export interface TPCMemberDTO {
     program: {
       id: string;
       branch: string;
-      course: "BTech" | "MTech" | "MTech / MS(Research)" | "PhD";
+      course: CourseEnum;
       year: string;
       department: string;
     };

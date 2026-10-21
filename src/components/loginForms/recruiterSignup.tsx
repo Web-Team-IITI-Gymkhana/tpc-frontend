@@ -36,6 +36,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { validateCaptcha } from "@/helpers/api";
 import { Combobox } from "../ui/combobox";
 import { handleApiError } from "@/utils/errorHandling";
+import { COMPANY_DOMAIN_OPTIONS } from "@/utils/jaf.constants";
 import { JafDto } from "@/types/jaf.types";
 import {
   User,
@@ -1005,7 +1006,7 @@ export default function RecruiterSignup() {
                         Domains *
                       </Label>
                       <MultiSelect
-                        givenOptions={jaf?.domains || []}
+                        givenOptions={COMPANY_DOMAIN_OPTIONS as unknown as string[]}
                         formData={companyInfo.domains}
                         setFormData={handleDomainsChange}
                         hasError={isFieldInvalid("domains")}

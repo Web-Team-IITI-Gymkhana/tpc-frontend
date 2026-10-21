@@ -1,5 +1,5 @@
 "use client";
-import { fetchExternalOpportunities } from "@/helpers/api";
+import { fetchExternalOpportunities, deleteExternalOpportunities } from "@/helpers/api";
 import generateColumns from "@/components/NewTableComponent/ColumnMapping";
 import { externalOpportunityDTO } from "@/dto/ExternalOpportunityDto";
 import Table from "@/components/NewTableComponent/Table";
@@ -20,19 +20,42 @@ const ExternalOpportunitiesPage = () => {
     (column: any) => !hiddenColumns.includes(column?.accessorKey),
   );
 
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchExternalOpportunities();
+      setAllOpportunities(data);
+    } catch (error) {
+      toast.error("Failed to fetch external opportunities");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await fetchExternalOpportunities();
-        setAllOpportunities(data);
-      } catch (error) {
-        toast.error("Failed to fetch external opportunities");
-      } finally {
-        setLoading(false);
-      }
-    };
     getData();
   }, []);
+
+  const handleDelete = async (selectedOpportunities: any[]) => {
+    if (selectedOpportunities.length === 0) {
+      toast.error("Please select at least one opportunity to delete");
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to delete ${selectedOpportunities.length} external opportunity/opportunities? This action cannot be undone.`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const ids = selectedOpportunities.map((opp) => opp.id);
+      await deleteExternalOpportunities(ids);
+      toast.success(`Successfully deleted ${selectedOpportunities.length} opportunity/opportunities`);
+      await getData();
+    } catch (error) {
+      toast.error("Failed to delete external opportunities");
+    }
+  };
 
   return (
     <div className="container mx-auto my-4 md:my-8 px-2 md:px-4">
@@ -44,15 +67,6 @@ const ExternalOpportunitiesPage = () => {
           open={addOpportunityForm}
           setOpen={setAddOpportunityForm}
           onSuccess={() => {
-            // Refresh data after adding
-            const getData = async () => {
-              try {
-                const data = await fetchExternalOpportunities();
-                setAllOpportunities(data);
-              } catch (error) {
-                toast.error("Failed to refresh data");
-              }
-            };
             getData();
           }}
         />
@@ -78,6 +92,8 @@ const ExternalOpportunitiesPage = () => {
             data={allOpportunities}
             columns={visibleColumns}
             type={"external-opportunities"}
+            buttonText="Delete Selected"
+            buttonAction={handleDelete}
           />
         </div>
       )}

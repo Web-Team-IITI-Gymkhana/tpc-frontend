@@ -60,17 +60,13 @@ export enum CountriesEnum {
 }
 
 export enum IndustryDomainEnum {
-  SOFTWARE = "SOFTWARE",
-  HARDWARE = "HARDWARE",
-  FINANCE = "FINANCE",
-  CONSULTING = "CONSULTING",
-  ANALYTICS = "ANALYTICS",
-  CORE = "CORE",
-  RESEARCH = "RESEARCH",
-  GOVERNMENT = "GOVERNMENT",
-  PSU = "PSU",
-  STARTUP = "STARTUP",
-  OTHER = "OTHER",
+  SEMICONDUCTORS_ELECTRONICS = "Semiconductors/Electronics",
+  AUTOMOTIVE_MANUFACTURING_ENGINEERING = "Automotive/Manufacturing/Engineering",
+  IT_ITES = "IT/ITES",
+  ANALYTICS_CONSULTING = "Analytics/Consulting",
+  BANKING_FINANCIAL_SERVICES_INVESTMENT_BANKING = "Banking/Financial services/Investment Banking",
+  HEALTHCARE_EDUCATION_OTHERS = "Healthcare/Education/Others",
+  OIL_GAS_ENERGY = "Oil & Gas/Energy",
 }
 
 export enum InterviewTypesEnum {

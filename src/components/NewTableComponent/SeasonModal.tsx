@@ -16,7 +16,8 @@ import { grey } from "@mui/material/colors";
 import { Button } from "@mui/material";
 import { fetchRegistrations } from "@/helpers/api";
 import Loader from "@/components/Loader/loader";
-import { fetchStudentDataById, fetchRegistrationDataById, fetchRegistrationDataByIdAndSeason } from "@/helpers/api";
+import { fetchStudentDataById, fetchRegistrationDataById, fetchRegistrationDataByIdAndSeason, deletePenalties } from "@/helpers/api";
+import toast from "react-hot-toast";
 const redirect = () => {};
 const theme = createTheme({
   palette: {
@@ -85,6 +86,21 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [datachange, setDataChange] = useState(false);
+  const handleDeletePenalty = async (penaltyId: string, penaltyAmount: number) => {
+    if (!window.confirm("Are you sure you want to delete this penalty?")) return;
+    try {
+      await deletePenalties([penaltyId]);
+      toast.success("Penalty deleted successfully");
+      setStudentData((prev: any) => ({
+        ...prev,
+        penalties: prev?.penalties?.filter((p: any) => p.id !== penaltyId) || [],
+        totalPenalty: Math.max(0, (prev?.totalPenalty || 0) - penaltyAmount),
+      }));
+    } catch (error) {
+      toast.error("Failed to delete penalty");
+    }
+  };
+
   const fetchStudentData = async (id: any) => {
     setLoading(true);
     try {
@@ -506,17 +522,34 @@ export default function SeasonModal({ open, setOpen, id,type,year }) {
                           <TableCell sx={{ fontWeight: "bold" }}>
                             Reason
                           </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Action
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {studentData.penalties
-                          ? studentData.penalties.map((penalty) => (
-                              <TableRow key={penalty.id}>
-                                <TableCell>{penalty.penalty}</TableCell>
-                                <TableCell>{penalty.reason}</TableCell>
-                              </TableRow>
-                            ))
-                          : "N/A"}
+                        {studentData.penalties && studentData.penalties.length > 0 ? (
+                          studentData.penalties.map((penalty) => (
+                            <TableRow key={penalty.id}>
+                              <TableCell>{penalty.penalty}</TableCell>
+                              <TableCell>{penalty.reason}</TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="outlined"
+                                  color="error"
+                                  size="small"
+                                  onClick={() => handleDeletePenalty(penalty.id, penalty.penalty)}
+                                >
+                                  Delete
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={3}>No penalties</TableCell>
+                          </TableRow>
+                        )}
                       </TableBody>
                     </Table>
                   </TableContainer>

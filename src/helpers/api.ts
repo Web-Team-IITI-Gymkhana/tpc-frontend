@@ -457,6 +457,20 @@ export const addSeason = async (body: any) => {
   }
 };
 
+export const updateSeason = async (seasonId: string, body: any) => {
+  if (body instanceof FormData) {
+    return apiCall(`/seasons/${seasonId}`, {
+      method: "PATCH",
+      formData: body,
+    });
+  } else {
+    return apiCall(`/seasons`, {
+      method: "PATCH",
+      body: Array.isArray(body) ? body : [body],
+    });
+  }
+};
+
 export const getSeasonPolicyDocument = (fileName: string) => {
   OpenFileViaUploads(fileName, "policy");
 };
@@ -924,4 +938,60 @@ export const deleteEvents = async (ids: string[]) => {
     method: "DELETE",
     queryParam: { id: ids },
   });
+};
+
+export const deletePenalties = async (ids: string[]) => {
+  return apiCall("/penalties", {
+    method: "DELETE",
+    queryParam: { id: ids },
+  });
+};
+
+export const exportJobDetails = async (
+  jobId: string,
+  format: "csv" | "pdf",
+  sendEmail: boolean,
+  email?: string
+) => {
+  const accessToken = Cookies.get("accessToken");
+  let requestUrl = getUrl(`/jobs/${jobId}/export?format=${format}&sendEmail=${sendEmail}`);
+  if (sendEmail && email) {
+    requestUrl += `&email=${encodeURIComponent(email)}`;
+  }
+
+  const res = await fetch(requestUrl, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ message: "Export failed" }));
+    throw new Error(errorData.message || "Failed to export job details");
+  }
+
+  if (sendEmail) {
+    const data = await res.json();
+    return data;
+  }
+
+  const blob = await res.blob();
+  const contentDisposition = res.headers.get("Content-Disposition");
+  let filename = `job_details_${jobId}.${format}`;
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^";]+)"?/);
+    if (match && match[1]) {
+      filename = match[1];
+    }
+  }
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
 };

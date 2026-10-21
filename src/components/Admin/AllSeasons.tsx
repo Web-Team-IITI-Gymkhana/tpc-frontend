@@ -7,11 +7,13 @@ import { seasonDTO } from "@/dto/SeasonDto";
 import { fetchSeasonData } from "@/helpers/api";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
+import { useAuthUser } from "@/helpers/authUtils";
 import Select from "react-select";
 import Table from "../NewTableComponent/Table";
 import generateColumns from "../NewTableComponent/ColumnMapping";
 import {
   addSeason,
+  updateSeason,
   activateSeason,
   getSeasonPolicyDocumentAdmin,
   deleteSeasons,
@@ -171,6 +173,215 @@ export const AddSeason = ({
     </Modal>
   );
 };
+
+const statusOptions = [
+  { value: "ACTIVE", label: "ACTIVE" },
+  { value: "INACTIVE", label: "INACTIVE" },
+];
+
+export const EditSeason = ({
+  open,
+  setOpen,
+  season,
+  onUpdateSuccess,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  season: SeasonFC | null;
+  onUpdateSuccess?: (updatedSeason: SeasonFC) => void;
+}) => {
+  const [formValues, setFormValues] = useState({
+    year: "",
+    type: "",
+    status: "ACTIVE",
+    policy: null as File | null,
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (season) {
+      setFormValues({
+        year: season.year || "",
+        type: season.type || "",
+        status: season.status || "ACTIVE",
+        policy: null,
+      });
+    }
+  }, [season]);
+
+  const handleClose = () => setOpen(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+    setFormValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+
+    if (file && file.size > 10 * 1024 * 1024) {
+      toast.error("File size must be less than 10MB");
+      e.target.value = "";
+      return;
+    }
+
+    if (file && file.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed");
+      e.target.value = "";
+      return;
+    }
+
+    setFormValues((prev) => ({
+      ...prev,
+      policy: file,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!season) return;
+    setSubmitting(true);
+    try {
+      if (formValues.policy) {
+        const formData = new FormData();
+        formData.append("id", season.id);
+        formData.append("year", formValues.year);
+        formData.append("type", formValues.type);
+        formData.append("status", formValues.status);
+        formData.append("policy", formValues.policy);
+
+        await updateSeason(season.id, formData);
+      } else {
+        await updateSeason(season.id, {
+          id: season.id,
+          year: formValues.year,
+          type: formValues.type,
+          status: formValues.status,
+        });
+      }
+
+      toast.success("Successfully updated season");
+      setOpen(false);
+      if (onUpdateSuccess) {
+        onUpdateSuccess({
+          ...season,
+          year: formValues.year,
+          type: formValues.type,
+          status: formValues.status,
+        });
+      } else {
+        window.location.reload();
+      }
+    } catch {
+      toast.error("Some Error Occurred");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      className="!text-black flex justify-center items-center"
+    >
+      <div className="p-4 bg-white rounded-xl md:w-1/3 w-11/12">
+        <h2 className="text-xl font-bold text-center mb-4">Edit Season</h2>
+        <form className="max-w-sm mx-auto p-4" onSubmit={handleSubmit}>
+          <div className="mb-5">
+            <label
+              htmlFor="year"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              name="year"
+              value={formValues.year}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="type"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Type
+            </label>
+            <Select
+              name="type"
+              value={{ value: formValues.type, label: formValues.type }}
+              // @ts-ignore
+              options={options}
+              onChange={(value: any) => {
+                setFormValues((prev) => ({ ...prev, type: value.value }));
+              }}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="status"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Status
+            </label>
+            <Select
+              name="status"
+              value={{ value: formValues.status, label: formValues.status }}
+              // @ts-ignore
+              options={statusOptions}
+              onChange={(value: any) => {
+                setFormValues((prev) => ({ ...prev, status: value.value }));
+              }}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="policy"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Policy Document (PDF)
+            </label>
+            <input
+              type="file"
+              name="policy"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Optional: Upload a new season policy document (PDF only, max 10MB)
+            </p>
+          </div>
+          <div className="flex justify-between gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={submitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
+};
+
 interface AllSeasonsProps {
   seasons: SeasonFC[];
   setSeason: React.Dispatch<React.SetStateAction<SeasonFC[]>>;
@@ -181,6 +392,9 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
   setSeason,
 }) => {
   const [seasonYear, setSeasonYear] = useState<string>(null);
+  const [editingSeason, setEditingSeason] = useState<SeasonFC | null>(null);
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const { isAdmin } = useAuthUser();
 
   const changeRegistered = (seasonYear: string) => {
     setSeasonYear(seasonYear);
@@ -232,6 +446,18 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
 
   return (
     <div>
+      {editModalOpen && (
+        <EditSeason
+          open={editModalOpen}
+          setOpen={setEditModalOpen}
+          season={editingSeason}
+          onUpdateSuccess={(updatedSeason) => {
+            setSeason((prev) =>
+              prev.map((s) => (s.id === updatedSeason.id ? { ...s, ...updatedSeason } : s))
+            );
+          }}
+        />
+      )}
       <div className="overflow-y-auto">
         <table className="w-full overflow-y-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -248,12 +474,19 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
               <th scope="col" className="px-6 py-3">
                 Policy Document
               </th>
-              <th scope="col" className="px-6 py-3">
-                Actions
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Delete
-              </th>
+              {isAdmin && (
+                <>
+                  <th scope="col" className="px-6 py-3">
+                    Edit
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Actions
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Delete
+                  </th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -281,9 +514,10 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
                 <td className="px-6 py-4">
                   {season.policyDocument ? (
                     <Button
-                      onClick={() =>
-                        getSeasonPolicyDocumentAdmin(season.policyDocument!)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        getSeasonPolicyDocumentAdmin(season.policyDocument!);
+                      }}
                       variant="outline"
                       size="sm"
                     >
@@ -293,33 +527,51 @@ export const AllSeasons: React.FC<AllSeasonsProps> = ({
                     <span className="text-gray-400">No Policy</span>
                   )}
                 </td>
-                <td className="px-6 py-4">
-                  <Button
-                    onClick={() => {
-                      handleStatus(
-                        season.id,
-                        season.year,
-                        season.type,
-                        season.status,
-                        index,
-                      );
-                    }}
-                  >
-                    {season.status === "ACTIVE" ? "Deactivate" : "Activate"}
-                  </Button>
-                </td>
-                <td className="px-6 py-4">
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(season.id, season.year, season.type);
-                    }}
-                    variant="destructive"
-                    size="sm"
-                  >
-                    🗑️ Delete
-                  </Button>
-                </td>
+                {isAdmin && (
+                  <>
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSeason(season);
+                          setEditModalOpen(true);
+                        }}
+                        variant="outline"
+                        size="sm"
+                      >
+                        ✏️ Edit
+                      </Button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatus(
+                            season.id,
+                            season.year,
+                            season.type,
+                            season.status,
+                            index,
+                          );
+                        }}
+                      >
+                        {season.status === "ACTIVE" ? "Deactivate" : "Activate"}
+                      </Button>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(season.id, season.year, season.type);
+                        }}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        🗑️ Delete
+                      </Button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>

@@ -6,6 +6,7 @@ import { Label } from "../ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { patchProfile } from "@/helpers/recruiter/api";
 import { getDomains } from "@/helpers/recruiter/api";
+import { COMPANY_DOMAIN_OPTIONS } from "@/utils/jaf.constants";
 import { MultiSelect } from "@/components/ui/multiselect";
 import { CompanyDetailsLoader } from "../Loader/loaders";
 import { 
@@ -413,7 +414,7 @@ export const EditCompanyForm = (params: { profile: ProfileFC }) => {
               <MultiSelect
                 formData={domains}
                 setFormData={setDomains}
-                givenOptions={domainOptions.map((domain, index) => domain)}
+                givenOptions={COMPANY_DOMAIN_OPTIONS as unknown as string[]}
               />
               <p className="text-xs text-slate-500">Select all domains that apply to your company</p>
             </div>

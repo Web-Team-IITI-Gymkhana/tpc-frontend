@@ -2,39 +2,26 @@
 import { useContext, useEffect, useState } from "react";
 import { ToggleContext } from "@/contextProviders/ToggleProvider";
 import { motion } from "framer-motion";
-import Cookies from "js-cookie";
+import { useAuthUser } from "@/helpers/authUtils";
 import Link from "next/link";
 import NavButtonGroup from "@/components/NavButtonGroup";
 import AdminDashboard from "./SideBar/Roles/admin";
 import StudentDashboard from "./SideBar/Roles/student";
 import RecruiterDashboard from "./SideBar/Roles/recruiter";
 import FacultyDashboard from "./SideBar/Roles/faculty";
-import { jwtDecode } from "jwt-decode";
 import TpcMemberDashboard from "./SideBar/Roles/tpcMember";
 
 const Sidebar = () => {
   const context = useContext(ToggleContext);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [isRecruiter, setIsRecruiter] = useState<boolean>(false);
-  const [isStudent, setIsStudent] = useState<boolean>(false);
-  const [isFaculty, setIsFaculty] = useState<boolean>(false);
-  const [isTpcMember, setIsTpcMember] = useState<boolean>(false);
-  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
-  const [role, setRole] = useState<string>("");
-
-  useEffect(() => {
-    const userString = Cookies.get("user");
-    const user = userString ? JSON.parse(userString) : null;
-    if (user) {
-      setLoggedIn(true);
-    }
-    setRole(user?.role.toLowerCase());
-    setIsAdmin(user?.role === "ADMIN");
-    setIsRecruiter(user?.role === "RECRUITER");
-    setIsStudent(user?.role === "STUDENT");
-    setIsFaculty(user?.role === "FACULTY");
-    setIsTpcMember(user?.role === "TPC_MEMBER");
-  }, []);
+  const {
+    isAdmin,
+    isRecruiter,
+    isStudent,
+    isFaculty,
+    isTpcMember,
+    isLoggedIn,
+    role,
+  } = useAuthUser();
 
   return (
     <>

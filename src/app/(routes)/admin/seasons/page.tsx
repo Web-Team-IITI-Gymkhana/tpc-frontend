@@ -9,10 +9,13 @@ import { AddSeason } from "@/components/Admin/AllSeasons";
 import Loader from "@/components/Loader/loader";
 import toast from "react-hot-toast";
 
+import { useAuthUser } from "@/helpers/authUtils";
+
 const SeasonsPage = () => {
   const [seasons, setData] = useState<SeasonFC[]>(null);
   const [loading, setLoading] = useState(true);
   const [addSeasonForm, setAddSeasonForm] = useState(false);
+  const { isAdmin } = useAuthUser();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,16 +39,18 @@ const SeasonsPage = () => {
       {addSeasonForm && (
         <AddSeason open={addSeasonForm} setOpen={setAddSeasonForm} />
       )}
-      <div className="w-full px-2 md:px-4 pb-4 flex justify-center md:justify-end">
-        <Button
-          onClick={() => {
-            setAddSeasonForm(true);
-          }}
-          className="w-full sm:w-auto"
-        >
-          Add Season
-        </Button>
-      </div>
+      {isAdmin && (
+        <div className="w-full px-2 md:px-4 pb-4 flex justify-center md:justify-end">
+          <Button
+            onClick={() => {
+              setAddSeasonForm(true);
+            }}
+            className="w-full sm:w-auto"
+          >
+            Add Season
+          </Button>
+        </div>
+      )}
       {loading && (
         <div className="w-full flex justify-center">
           <Loader />

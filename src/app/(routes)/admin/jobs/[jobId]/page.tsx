@@ -31,6 +31,8 @@ import {
   isValidClashesResponse,
   normalizeClashesResponse,
 } from "@/dto/Clashes";
+import { isAdmin } from "@/helpers/authUtils";
+import { JobExportModal } from "@/components/jobs/JobExportModal";
 const currentStatusOptions = [
   "INITIALIZED",
   "SCHEDULED",
@@ -57,6 +59,7 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
   const [selectedFaculties, setSelectedFaculties] = useState([]);
   const [facultyDropDown, setFacultyDropdown] = useState([false]);
   const [approvalModal, setApprovalModal] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
   const [companyFormData, setCompanyFormData] = useState({
     name: "",
     size: 0,
@@ -319,6 +322,15 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
                 <Button onClick={handleEditClick}>
                   {editMode ? "Save Application" : "Edit Application"}
                 </Button>
+                {isAdmin() && (
+                  <Button
+                    variant="outline"
+                    className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                    onClick={() => setExportModalOpen(true)}
+                  >
+                    Download All Details
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -715,6 +727,15 @@ const JobDetailPage = ({ params }: { params: { jobId: string } }) => {
           />
           {job && <JobAnalytics jobId={job.id} />}
           <Clashes clashes={clashes} />
+          {exportModalOpen && (
+            <JobExportModal
+              open={exportModalOpen}
+              onClose={() => setExportModalOpen(false)}
+              jobId={job.id}
+              jobRole={job.role}
+              companyName={job.company?.name}
+            />
+          )}
         </div>
       )}
     </div>
