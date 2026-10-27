@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
@@ -42,25 +42,68 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   const [backlog, setBacklog] = useState<string>("");
   const [tenthMarks, setTenthMarks] = useState<string>("");
   const [twelthMarks, setTwelthMarks] = useState<string>("");
+  const [numberOfBacklogs, setNumberOfBacklogs] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingField, setPendingField] = useState<
-    "backlog" | "tenthMarks" | "twelthMarks" | null
+    "backlog" | "tenthMarks" | "twelthMarks" | "numberOfBacklogs" | null
   >(null);
+  const [autoSaving, setAutoSaving] = useState(false);
+
+  // Determine saved backlog status (from server)
+  const savedBacklogStatus = studentData.backlog as
+    | "NEVER"
+    | "PREVIOUS"
+    | "ACTIVE"
+    | undefined;
+
+  // Auto-save numberOfBacklogs = 0 when saved backlog is NEVER or PREVIOUS
+  useEffect(() => {
+    const shouldAutoSaveZero =
+      (savedBacklogStatus === "NEVER" || savedBacklogStatus === "PREVIOUS") &&
+      studentData.numberOfBacklogs == null;
+
+    if (!shouldAutoSaveZero || autoSaving) return;
+
+    let cancelled = false;
+    const run = async () => {
+      try {
+        setAutoSaving(true);
+        setNumberOfBacklogs("0");
+        const result = await updateOnboarding({ numberOfBacklogs: 0 });
+        if (!cancelled && result) {
+          toast.success("Number of backlogs saved as 0");
+          onUpdate();
+        }
+      } catch (error: any) {
+        if (!cancelled) {
+          toast.error(error?.message || "Failed to save number of backlogs");
+        }
+      } finally {
+        if (!cancelled) setAutoSaving(false);
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [savedBacklogStatus, studentData.numberOfBacklogs]);
 
   // Check which fields need to be filled
   const needsBacklog =
-    studentData.backlog === null || studentData.backlog === undefined;
+    studentData?.backlog == null ||
+    studentData.backlog === "";
   const needsTenthMarks =
-    studentData.tenthMarks === null || studentData.tenthMarks === undefined;
+    studentData?.tenthMarks == null;
   const needsTwelthMarks =
-    studentData.twelthMarks === null || studentData.twelthMarks === undefined;
-
+    studentData?.twelthMarks == null;
+  const needsNumberOfBacklogs =
+    studentData?.numberOfBacklogs == null;
   const hasAnyPendingFields =
-    needsBacklog || needsTenthMarks || needsTwelthMarks;
+    needsBacklog || needsTenthMarks || needsTwelthMarks || needsNumberOfBacklogs;
 
   const handleSubmit = async (
-    field: "backlog" | "tenthMarks" | "twelthMarks",
+    field: "backlog" | "tenthMarks" | "twelthMarks" | "numberOfBacklogs",
   ) => {
     // Validate the field value first
     if (field === "backlog" && !backlog) {
@@ -71,6 +114,9 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       return;
     } else if (field === "twelthMarks" && !twelthMarks) {
       toast.error("Please enter 12th marks");
+      return;
+    } else if (field === "numberOfBacklogs" && !numberOfBacklogs) {
+      toast.error("Please enter number of backlogs");
       return;
     }
 
@@ -85,6 +131,25 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       const marks = parseFloat(twelthMarks);
       if (marks < 0 || marks > 100) {
         toast.error("12th marks should be between 0 and 100");
+        return;
+      }
+    } else if (field === "numberOfBacklogs" && numberOfBacklogs !== "") {
+      const backlogs = Number(numberOfBacklogs);
+      if (!/^\d+$/.test(numberOfBacklogs) || !Number.isSafeInteger(backlogs)) {
+        toast.error("Number of backlogs must be a nonnegative integer");
+        return;
+      }
+      // Logical consistency with saved backlog status
+      if (savedBacklogStatus !== "ACTIVE" && backlogs !== 0) {
+        toast.error(
+          "If you do not have an active backlog, the number of backlogs must be 0",
+        );
+        return;
+      }
+      if (savedBacklogStatus === "ACTIVE" && backlogs === 0) {
+        toast.error(
+          "If you have an active backlog, the number of backlogs must be at least 1",
+        );
         return;
       }
     }
@@ -109,19 +174,22 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
         updateData.tenthMarks = parseFloat(tenthMarks);
       } else if (pendingField === "twelthMarks" && twelthMarks) {
         updateData.twelthMarks = parseFloat(twelthMarks);
+      } else if (pendingField === "numberOfBacklogs" && numberOfBacklogs) {
+        updateData.numberOfBacklogs = Number(numberOfBacklogs);
       }
 
       const result = await updateOnboarding(updateData);
 
       if (result) {
         toast.success(
-          `${pendingField === "backlog" ? "Backlog status" : pendingField === "tenthMarks" ? "10th marks" : "12th marks"} saved successfully!`,
+          `${pendingField === "backlog" ? "Backlog status" : pendingField === "tenthMarks" ? "10th marks" : pendingField === "twelthMarks" ? "12th marks" : "Number of backlogs"} saved successfully!`,
         );
 
         // Clear the form field
         if (pendingField === "backlog") setBacklog("");
         else if (pendingField === "tenthMarks") setTenthMarks("");
         else if (pendingField === "twelthMarks") setTwelthMarks("");
+        else if (pendingField === "numberOfBacklogs") setNumberOfBacklogs("");
 
         onUpdate(); // Refresh parent data
       } else {
@@ -159,12 +227,19 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-blue-600">
           <Info className="w-6 h-6" />
-          Complete Your Profile
+          {needsNumberOfBacklogs && savedBacklogStatus === "ACTIVE" && !needsBacklog && !needsTenthMarks && !needsTwelthMarks
+            ? "Update Your Backlog Count"
+            : "Complete Your Profile"}
         </CardTitle>
         <p className="text-sm text-slate-600">
           Please complete the following information. You can fill and save each
           field individually.
         </p>
+        {needsNumberOfBacklogs && savedBacklogStatus === "ACTIVE" && (
+          <p className="text-sm text-amber-700">
+            Your active backlog count is missing. Please enter it before registering for a new season.
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {needsBacklog && (
@@ -191,6 +266,43 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
               <Button
                 onClick={() => handleSubmit("backlog")}
                 disabled={!backlog || loading}
+                className="min-w-[80px]"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {needsNumberOfBacklogs && savedBacklogStatus === "ACTIVE" && (
+          <div className="space-y-3">
+            <Label
+              htmlFor="numberOfBacklogs"
+              className="text-sm font-medium text-slate-700"
+            >
+              Number of Backlogs *
+            </Label>
+            <p className="text-xs text-slate-500 mb-2">
+              Enter the number of active backlogs you currently have (at least 1).
+            </p>
+            <div className="flex gap-3">
+              <Input
+                id="numberOfBacklogs"
+                type="number"
+                min={1}
+                step="1"
+                value={numberOfBacklogs}
+                onChange={(e) => setNumberOfBacklogs(e.target.value)}
+                placeholder="Enter number of backlogs (e.g., 1)"
+                className="flex-1"
+              />
+              <Button
+                onClick={() => handleSubmit("numberOfBacklogs")}
+                disabled={!numberOfBacklogs || loading}
                 className="min-w-[80px]"
               >
                 {loading ? (
@@ -282,6 +394,8 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
             </div>
           </div>
         )}
+
+        
 
         <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-sm text-red-800 font-medium mb-2">

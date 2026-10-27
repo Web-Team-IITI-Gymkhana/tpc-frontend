@@ -86,8 +86,12 @@ const ProfilePage = () => {
   };
 
   const handleRegisterClick = (seasonId: string, registered: boolean) => {
-    // Check onboarding completion before attempting registration
-    if (needsOnboarding) {
+    // Existing registrations can be removed without a backlog count.
+    if (registered && needsCoreOnboarding) {
+      toast.error("Please complete your profile onboarding before changing season registrations");
+      return;
+    }
+    if (!registered && needsOnboarding) {
       toast.error(
         "Please complete your profile onboarding before registering for seasons",
       );
@@ -199,15 +203,17 @@ const ProfilePage = () => {
   }
 
   // Check if onboarding is needed
+  const needsCoreOnboarding =
+    studentData?.backlog === undefined ||
+    studentData?.backlog === null ||
+    studentData?.tenthMarks === undefined ||
+    studentData?.tenthMarks === null ||
+    studentData?.twelthMarks === undefined ||
+    studentData?.twelthMarks === null;
   const needsOnboarding =
-    studentData.backlog === null ||
-    studentData.backlog === undefined ||
-    studentData.tenthMarks === null ||
-    studentData.tenthMarks === undefined ||
-    studentData.twelthMarks === null ||
-    studentData.twelthMarks === undefined;
-
-  const isOnboardingComplete = !needsOnboarding;
+    needsCoreOnboarding ||
+    studentData?.numberOfBacklogs === undefined ||
+    studentData?.numberOfBacklogs === null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-6">
@@ -505,6 +511,29 @@ const ProfilePage = () => {
                 </p>
               </div>
             </div>
+            {/* Number of Backlogs */}
+            <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-300 shadow-sm">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-orange-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-slate-600 mb-1">
+                  Number of Backlogs
+                </p>
+                <p className="text-slate-900 font-medium text-sm">
+                  {studentData.numberOfBacklogs !== null &&
+                  studentData.numberOfBacklogs !== undefined ? (
+                    studentData.numberOfBacklogs === 0 ? (
+                      "No Backlogs"
+                    ) : (
+                      `${studentData.numberOfBacklogs} Backlog${studentData.numberOfBacklogs > 1 ? 's' : ''}`
+                    )
+                  ) : (
+                    <span className="text-amber-600 font-medium">Pending</span>
+                  )}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -614,7 +643,7 @@ const ProfilePage = () => {
                                   registration.registered,
                                 )
                               }
-                              disabled={registering || needsOnboarding}
+                              disabled={registering || (registration.registered ? needsCoreOnboarding : needsOnboarding)}
                               size="sm"
                               variant={
                                 registration.registered ? "outline" : "default"
@@ -629,7 +658,7 @@ const ProfilePage = () => {
                                 "Register"
                               )}
                             </Button>
-                            {needsOnboarding && (
+                            {(registration.registered ? needsCoreOnboarding : needsOnboarding) && (
                               <p className="text-xs text-amber-600 text-center sm:text-left">
                                 Complete profile first
                               </p>

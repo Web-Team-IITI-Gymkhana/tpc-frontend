@@ -83,6 +83,7 @@ export const updateOnboarding = async (data: {
   backlog?: string;
   tenthMarks?: number;
   twelthMarks?: number;
+  numberOfBacklogs?: number;
 }) => {
   return apiCall("/student-view/onboarding", {
     method: "PATCH",
