@@ -61,7 +61,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
   useEffect(() => {
     const shouldAutoSaveZero =
       (savedBacklogStatus === "NEVER" || savedBacklogStatus === "PREVIOUS") &&
-      studentData.numberOfBacklogs !== 0;
+      studentData.numberOfBacklogs == null;
 
     if (!shouldAutoSaveZero || autoSaving) return;
 
@@ -134,18 +134,12 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
         return;
       }
     } else if (field === "numberOfBacklogs" && numberOfBacklogs !== "") {
-      const backlogs = parseInt(numberOfBacklogs);
-      if (Number.isNaN(backlogs) || backlogs < 0 || backlogs > 20) {
-        toast.error("Number of backlogs should be between 0 and 20");
+      const backlogs = Number(numberOfBacklogs);
+      if (!/^\d+$/.test(numberOfBacklogs) || !Number.isSafeInteger(backlogs)) {
+        toast.error("Number of backlogs must be a nonnegative integer");
         return;
       }
       // Logical consistency with saved backlog status
-      if (savedBacklogStatus === "NEVER" && backlogs !== 0) {
-        toast.error(
-          "If you never had backlogs, the number of backlogs must be 0",
-        );
-        return;
-      }
       if (savedBacklogStatus !== "ACTIVE" && backlogs !== 0) {
         toast.error(
           "If you do not have an active backlog, the number of backlogs must be 0",
@@ -181,7 +175,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       } else if (pendingField === "twelthMarks" && twelthMarks) {
         updateData.twelthMarks = parseFloat(twelthMarks);
       } else if (pendingField === "numberOfBacklogs" && numberOfBacklogs) {
-        updateData.numberOfBacklogs = parseInt(numberOfBacklogs);
+        updateData.numberOfBacklogs = Number(numberOfBacklogs);
       }
 
       const result = await updateOnboarding(updateData);
@@ -233,12 +227,19 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-blue-600">
           <Info className="w-6 h-6" />
-          Complete Your Profile
+          {needsNumberOfBacklogs && savedBacklogStatus === "ACTIVE" && !needsBacklog && !needsTenthMarks && !needsTwelthMarks
+            ? "Update Your Backlog Count"
+            : "Complete Your Profile"}
         </CardTitle>
         <p className="text-sm text-slate-600">
           Please complete the following information. You can fill and save each
           field individually.
         </p>
+        {needsNumberOfBacklogs && savedBacklogStatus === "ACTIVE" && (
+          <p className="text-sm text-amber-700">
+            Your active backlog count is missing. Please enter it before registering for a new season.
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {needsBacklog && (
@@ -286,14 +287,13 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({
               Number of Backlogs *
             </Label>
             <p className="text-xs text-slate-500 mb-2">
-              Enter the total number of backlogs you currently have. If you have no backlogs, enter <strong>0</strong>.
+              Enter the number of active backlogs you currently have (at least 1).
             </p>
             <div className="flex gap-3">
               <Input
                 id="numberOfBacklogs"
                 type="number"
                 min={1}
-                max={20}
                 step="1"
                 value={numberOfBacklogs}
                 onChange={(e) => setNumberOfBacklogs(e.target.value)}

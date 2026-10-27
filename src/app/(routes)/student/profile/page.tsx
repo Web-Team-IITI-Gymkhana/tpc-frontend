@@ -86,8 +86,12 @@ const ProfilePage = () => {
   };
 
   const handleRegisterClick = (seasonId: string, registered: boolean) => {
-    // Check onboarding completion before attempting registration
-    if (needsOnboarding) {
+    // Existing registrations can be removed without a backlog count.
+    if (registered && needsCoreOnboarding) {
+      toast.error("Please complete your profile onboarding before changing season registrations");
+      return;
+    }
+    if (!registered && needsOnboarding) {
       toast.error(
         "Please complete your profile onboarding before registering for seasons",
       );
@@ -199,17 +203,17 @@ const ProfilePage = () => {
   }
 
   // Check if onboarding is needed
-  const needsOnboarding =
+  const needsCoreOnboarding =
     studentData?.backlog === undefined ||
     studentData?.backlog === null ||
     studentData?.tenthMarks === undefined ||
     studentData?.tenthMarks === null ||
     studentData?.twelthMarks === undefined ||
-    studentData?.twelthMarks === null ||
+    studentData?.twelthMarks === null;
+  const needsOnboarding =
+    needsCoreOnboarding ||
     studentData?.numberOfBacklogs === undefined ||
     studentData?.numberOfBacklogs === null;
-
-  const isOnboardingComplete = !needsOnboarding;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-6">
@@ -639,7 +643,7 @@ const ProfilePage = () => {
                                   registration.registered,
                                 )
                               }
-                              disabled={registering || needsOnboarding}
+                              disabled={registering || (registration.registered ? needsCoreOnboarding : needsOnboarding)}
                               size="sm"
                               variant={
                                 registration.registered ? "outline" : "default"
@@ -654,7 +658,7 @@ const ProfilePage = () => {
                                 "Register"
                               )}
                             </Button>
-                            {needsOnboarding && (
+                            {(registration.registered ? needsCoreOnboarding : needsOnboarding) && (
                               <p className="text-xs text-amber-600 text-center sm:text-left">
                                 Complete profile first
                               </p>
