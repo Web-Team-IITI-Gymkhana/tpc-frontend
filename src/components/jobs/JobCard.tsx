@@ -73,6 +73,41 @@ const JobCard = ({ jobItem, type }: Props) => {
             </div>
           </div>
         </div>
+
+        {/* See more / See less toggle */}
+        <div className="flex justify-center mt-5">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-expanded={showDescription}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewDetails();
+            }}
+            className="border-blue-600 text-blue-600 bg-white hover:bg-blue-600 hover:text-white font-semibold px-6 gap-2 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            {showDescription ? "See less" : "See more"}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className={`transition-transform duration-200 ${
+                showDescription ? "rotate-180" : ""
+              }`}
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </Button>
+        </div>
+
         {showDescription && (
           <div className="mt-4">
             <div className="my-4">
