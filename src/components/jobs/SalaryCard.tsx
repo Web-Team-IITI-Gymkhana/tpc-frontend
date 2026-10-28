@@ -349,7 +349,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
               }}
               onKeyDown={(e) => e.stopPropagation()}
             >
-              Apply
+             View
             </Button>
           )}
         </div>
