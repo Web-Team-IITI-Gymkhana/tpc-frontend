@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import {
   Table,
   TableHeader,
@@ -126,6 +126,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
   });
   const [isApplying, setIsApplying] = useState<boolean>(false);
   const [additionalData, setAdditionalData] = useState<Record<string, string>>({});
+  const applySectionRef = useRef<HTMLDivElement>(null);
 
   const hasApplied = useMemo(() => {
     return salaryData?.job?.applications?.length > 0;
@@ -142,7 +143,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
   const eventAdditionalData = useMemo(() => {
     if (!salaryData?.job?.events?.length) return {};
     // Find event with lowest round number
-    const applicationEvent = salaryData.job.events.reduce((lowest, current) => 
+    const applicationEvent = salaryData.job.events.reduce((lowest, current) =>
       current.roundNumber < lowest.roundNumber ? current : lowest
     );
     return applicationEvent?.additionalData || {};
@@ -274,6 +275,17 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
     setIsExpanded((prev) => !prev);
   }, []);
 
+  // Opens the card (if closed) and scrolls to the resume picker + Apply button
+  const handleApplyClick = useCallback(() => {
+    setIsExpanded(true);
+    setTimeout(() => {
+      applySectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 100);
+  }, []);
+
   if (loading) {
     return (
       <div className="h-64 w-full flex justify-center items-center bg-white rounded-xl">
@@ -322,10 +334,23 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
       >
         <div className="flex justify-between items-center">
           <span>{salaryData.job?.company?.name || "Unknown Company"}</span>
-          {hasApplied && (
+          {hasApplied ? (
             <div className="text-green-500 font-semibold px-3 py-1 border rounded-full inline-block border-green-500 text-xs bg-green-50">
               Applied
             </div>
+          ) : (
+            <Button
+              type="button"
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white px-5"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleApplyClick();
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+             View
+            </Button>
           )}
         </div>
       </div>
@@ -835,6 +860,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
             </>
           )}
 
+          <div ref={applySectionRef}>
           {/* Additional Data Fields - Only show if event requires additional data and user hasn't applied yet */}
           {Object.keys(eventAdditionalData).length > 0 && !hasApplied && (
             <div className="my-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -906,11 +932,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
             <Button
               disabled={!selectedResume || isApplying || hasApplied}
               onClick={handleApply}
-              className={`w-full sm:w-auto px-6 ${
-                hasApplied
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
+              className="w-full sm:w-auto px-6 bg-green-600 hover:bg-green-700 text-white disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isApplying ? (
                 <div className="flex items-center gap-2">
@@ -923,6 +945,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                 "Apply"
               )}
             </Button>
+          </div>
           </div>
         </>
       )}
