@@ -15,6 +15,7 @@ interface ApiCallOptions {
   next?: object;
   formData?: FormData;
   recieveResponse?: boolean;
+  queryArrayFormat?: "indices" | "brackets" | "repeat" | "comma";
 }
 
 const redirect = () => {};
@@ -36,6 +37,7 @@ export const apiCall = async (
     formData = null,
     next = null,
     recieveResponse = false,
+    queryArrayFormat = "indices",
   }: ApiCallOptions = {},
 ) => {
   const accessToken = Cookies.get("accessToken");
@@ -68,6 +70,7 @@ export const apiCall = async (
     const encodedQueryString = qs.stringify(queryParam, {
       encodeValuesOnly: true,
       encode: false,
+      arrayFormat: queryArrayFormat,
     });
     requestUrl += `?${encodedQueryString}`;
   }
@@ -87,6 +90,171 @@ export const apiCall = async (
     if (res.ok) return await res.json();
     else return res.json();
   } else return res.ok;
+};
+// NoticeBoard API helpers
+
+export interface AnnouncementPayload {
+  clubname: string;
+  heading: string;
+  info: string;
+  announcelogo: string;
+  group: "all" | "none" | "manager" | "programs";
+  emails: string[];
+  programIds: string[];
+}
+
+export interface NoticeboardAnnouncement {
+  id: number | string;
+  clubname?: string | null;
+  heading: string;
+  info: string;
+  announcelogo?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface NoticeboardListResponse {
+  data: NoticeboardAnnouncement[];
+  total?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface NoticeboardApiResponse {
+  statusCode?: number;
+  message?: string | string[];
+  data?: any;
+  deletedCount?: number;
+}
+
+export interface CreateAnnouncementResponse
+  extends NoticeboardApiResponse {
+  data?: NoticeboardAnnouncement;
+}
+
+const validateNoticeboardResponse = <T extends NoticeboardApiResponse>(
+  response: T | undefined | null,
+  fallbackMessage: string,
+): T => {
+  if (!response || typeof response !== "object") {
+    throw new Error(
+      "No response received from the server. Please try again.",
+    );
+  }
+
+  if (
+    typeof response.statusCode === "number" &&
+    response.statusCode >= 400
+  ) {
+    const message = Array.isArray(response.message)
+      ? response.message.join(", ")
+      : response.message;
+
+    throw new Error(message || fallbackMessage);
+  }
+
+  return response;
+};
+
+/**
+ * Fetch announcements through the shared API helper.
+ * Uses the existing backend URL and JWT authorization from apiCall().
+ */
+export const fetchAnnouncements =
+  async (): Promise<NoticeboardListResponse> => {
+    const rawResponse: any = await apiCall("/notification", {
+      method: "GET",
+      queryParam: {
+        page: 1,
+        limit: 500,
+      },
+      recieveResponse: true,
+    });
+
+    const response = validateNoticeboardResponse(
+      rawResponse,
+      "Failed to fetch announcements.",
+    );
+
+    // Support both a plain array and a paginated response.
+    if (Array.isArray(response)) {
+      return {
+        data: response as NoticeboardAnnouncement[],
+        total: response.length,
+        page: 1,
+        limit: response.length,
+      };
+    }
+
+    if (Array.isArray(response.data)) {
+      return response as NoticeboardListResponse;
+    }
+
+    const message = Array.isArray(response.message)
+      ? response.message.join(", ")
+      : response.message;
+
+    throw new Error(message || "Failed to fetch announcements.");
+  };
+
+/**
+ * Create an announcement through the shared API helper.
+ */
+export const createAnnouncement = async (
+  payload: AnnouncementPayload,
+): Promise<CreateAnnouncementResponse> => {
+  const rawResponse: any = await apiCall("/announce", {
+    method: "POST",
+    body: payload,
+    isAuth: true,
+    recieveResponse: true,
+  });
+
+  return validateNoticeboardResponse(
+    rawResponse,
+    "Failed to publish announcement.",
+  );
+};
+
+/**
+ * Delete one or more announcements through the shared API helper.
+ *
+ * Sends repeated query parameters:
+ * /notification?id=1&id=2
+ *
+ * The backend DELETE route must accept an "id" query parameter
+ * and return { deletedCount, message }.
+ */
+export const deleteAnnouncements = async (
+  ids: Array<string | number>,
+): Promise<NoticeboardApiResponse> => {
+  const normalizedIds = ids.map((id) => String(id).trim());
+
+  if (
+    normalizedIds.length === 0 ||
+    normalizedIds.some(
+      (id) => !/^\d+$/.test(id) || Number(id) <= 0,
+    )
+  ) {
+    throw new Error(
+      "Please select one or more valid announcements to delete.",
+    );
+  }
+
+  const rawResponse: any = await apiCall("/notification", {
+    method: "DELETE",
+    isAuth: true,
+    queryParam: {
+      id: normalizedIds,
+    },
+    queryArrayFormat: "repeat",
+    recieveResponse: true,
+  });
+
+  return validateNoticeboardResponse(
+    rawResponse,
+    "Failed to delete announcements.",
+  );
 };
 
 export const OpenFile = async (path: string, options: ApiCallOptions = {}) => {
