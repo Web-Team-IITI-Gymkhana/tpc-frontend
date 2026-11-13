@@ -76,11 +76,15 @@ export default function Dashboard() {
         if (newOptions.length > 0) {
           setSeason(newOptions[0].value);
           setSeasonType(newOptions[0].type);
+        } else {
+          setError("No seasons are available yet.");
         }
         setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setError("Failed to load seasons");
+        setIsLoading(false);
       });
   }, []);
 
