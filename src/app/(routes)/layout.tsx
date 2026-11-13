@@ -3,6 +3,7 @@ import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import { Providers } from "@/store/provider";
 import { Suspense } from "react";
+import AgentChat from "@/components/agents/AgentChat";
 
 interface Props {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ const RouteLayout = async ({ children }: Props) => {
       <MainContent>
         <Providers>{children}</Providers>
       </MainContent>
+      <AgentChat />
     </div>
   );
 };
